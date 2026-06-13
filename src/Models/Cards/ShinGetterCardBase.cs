@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
+using ShinGetterMod.Models.CardPools;
 using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
@@ -18,6 +19,8 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public abstract class ShinGetterCardBase : CardModel
 {
+    public override CardPoolModel Pool => ModelDb.CardPool<ShinGetterCardPool>();
+
     public virtual ShinGetterForm CardForm => ShinGetterForm.None;
     public virtual int SpiritRequirement => 0;
 

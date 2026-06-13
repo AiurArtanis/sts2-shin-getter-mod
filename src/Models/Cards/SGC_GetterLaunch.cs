@@ -35,7 +35,6 @@ public sealed class SGC_GetterLaunch : ShinGetterCardBase
 
     protected override void OnUpgrade()
     {
-        // 升级效果需要在 OnUpgrade 中修改费用
-        // TODO: 1→0 费
+        base.EnergyCost.UpgradeBy(-1);
     }
 }
