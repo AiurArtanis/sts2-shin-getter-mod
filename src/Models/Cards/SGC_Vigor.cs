@@ -4,8 +4,11 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -15,7 +18,19 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_Vigor : ShinGetterCardBase
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars => System.Array.Empty<DynamicVar>();
+    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Retain, CardKeyword.Exhaust };
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[]
+    {
+        HoverTipFactory.FromPower<SGP_Ki>(),
+        HoverTipFactory.FromPower<VigorPower>(),
+    };
+
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
+    {
+        new PowerVar<SGP_Ki>(1m),
+        new PowerVar<VigorPower>(2m),
+    };
 
     public SGC_Vigor()
         : base(1, CardType.Skill, CardRarity.Common, TargetType.Self)
@@ -24,12 +39,12 @@ public sealed class SGC_Vigor : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // TODO: 获得 1 气力(FightingSpiritPower)
-        // TODO: 获得 2 活力(VigorPower)
+        await PowerCmd.Apply<SGP_Ki>(choiceContext, Owner.Creature, DynamicVars["SGP_Ki"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, DynamicVars["VigorPower"].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
     {
-        // 1→0 费
+        EnergyCost.UpgradeBy(-1);
     }
 }

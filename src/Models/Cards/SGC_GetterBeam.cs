@@ -26,8 +26,12 @@ public sealed class SGC_GetterBeam : ShinGetterCardBase
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
         await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
-        await PowerCmd.Apply<SGP_Wane>(choiceContext, cardPlay.Target, 1m, base.Owner.Creature, this);
-        // TODO: 一号机额外造成本场战斗获得的活力伤害
+        await PowerCmd.Apply<SGP_Wane>(
+            choiceContext,
+            cardPlay.Target,
+            DynamicVars["SGP_Wane"].BaseValue,
+            Owner.Creature,
+            this);
     }
 
     protected override void OnUpgrade()

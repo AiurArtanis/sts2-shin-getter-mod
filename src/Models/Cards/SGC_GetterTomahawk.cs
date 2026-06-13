@@ -5,7 +5,9 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -27,8 +29,12 @@ public sealed class SGC_GetterTomahawk : ShinGetterCardBase
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
         await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
-        // TODO: 下回合开始时额外打出 1 次
-        // TODO: 一号机获得 2 活力
+
+        if (!cardPlay.IsAutoPlay)
+            await PowerCmd.Apply<SGP_Tomahawk>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
+
+        if (HasForm(Owner, ShinGetterForm.Getter1))
+            await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, 2m, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()

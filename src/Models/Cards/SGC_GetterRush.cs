@@ -26,7 +26,15 @@ public sealed class SGC_GetterRush : ShinGetterCardBase
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
         await PowerCmd.Apply<VulnerablePower>(choiceContext, cardPlay.Target, 1m, base.Owner.Creature, this);
         await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_blunt").Execute(choiceContext);
-        // TODO: 三号机触发 1 次覆甲
+
+        if (HasForm(Owner, ShinGetterForm.Getter3) && Owner.Creature.GetPower<PlatingPower>() is { Amount: > 0 } plating)
+        {
+            await CreatureCmd.GainBlock(
+                Owner.Creature,
+                plating.Amount,
+                ValueProp.Unpowered,
+                null);
+        }
     }
 
     protected override void OnUpgrade()

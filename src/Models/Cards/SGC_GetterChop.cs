@@ -21,14 +21,21 @@ public sealed class SGC_GetterChop : ShinGetterCardBase
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
+
+        decimal stolenBlock = Math.Min(cardPlay.Target.Block, DynamicVars.Block.BaseValue);
+        if (stolenBlock > 0m)
+        {
+            await CreatureCmd.LoseBlock(cardPlay.Target, stolenBlock);
+            await CreatureCmd.GainBlock(Owner.Creature, stolenBlock, ValueProp.Unpowered, cardPlay);
+        }
+
         await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
         await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
-        // TODO: 掠夺敌方 4 格挡
     }
 
     protected override void OnUpgrade()
     {
-        base.DynamicVars.Damage.UpgradeValueBy(3m);
+        base.DynamicVars.Damage.UpgradeValueBy(2m);
         base.DynamicVars.Block.UpgradeValueBy(2m);
     }
 }

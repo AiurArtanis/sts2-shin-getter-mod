@@ -5,7 +5,9 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -25,12 +27,20 @@ public sealed class SGC_ShedLoad : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // TODO: 失去所有气力，每失去 1 点获得 1 敏捷(DexterityPower)
-        // TODO: 二号机每失去 1 点获得 1 再生(RegenPower)
+        var ki = Owner.Creature.GetPower<SGP_Ki>();
+        if (ki is null || ki.Amount <= 0)
+            return;
+
+        int amount = ki.Amount;
+        await PowerCmd.Remove(ki);
+        await PowerCmd.Apply<DexterityPower>(choiceContext, Owner.Creature, amount, Owner.Creature, this);
+
+        if (HasForm(Owner, ShinGetterForm.Getter2))
+            await PowerCmd.Apply<RegenPower>(choiceContext, Owner.Creature, amount, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
     {
-        // 2→1 费
+        EnergyCost.UpgradeBy(-1);
     }
 }

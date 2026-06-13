@@ -21,7 +21,7 @@ public sealed class SGC_TacticalRetreat : ShinGetterCardBase
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.GainBlock(base.Owner.Creature, base.DynamicVars.Block, cardPlay);
-        // TODO: 变形到下一形态
+        await Transform(choiceContext, Owner, this);
         await CreatureCmd.GainBlock(base.Owner.Creature, base.DynamicVars.Block, cardPlay);
     }
 

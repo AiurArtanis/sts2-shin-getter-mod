@@ -15,7 +15,7 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_Meltdown : ShinGetterCardBase
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars => System.Array.Empty<DynamicVar>();
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new CardsVar(2) };
 
     public SGC_Meltdown()
         : base(1, CardType.Skill, CardRarity.Common, TargetType.Self)
@@ -24,11 +24,15 @@ public sealed class SGC_Meltdown : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // TODO: 将 2 张放射能(SGC_Radiated)加入手牌
+        for (int i = 0; i < DynamicVars.Cards.IntValue; i++)
+        {
+            var card = CombatState.CreateCard<SGC_Radiated>(Owner);
+            await CardPileCmd.AddGeneratedCardToCombat(card, PileType.Hand, Owner);
+        }
     }
 
     protected override void OnUpgrade()
     {
-        // 2→3 张
+        DynamicVars.Cards.UpgradeValueBy(1m);
     }
 }

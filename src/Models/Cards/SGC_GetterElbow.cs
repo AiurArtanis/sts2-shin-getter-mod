@@ -25,13 +25,14 @@ public sealed class SGC_GetterElbow : ShinGetterCardBase
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
         await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_blunt").Execute(choiceContext);
-        await PowerCmd.Apply<WeakPower>(choiceContext, cardPlay.Target, 1m, base.Owner.Creature, this);
-        // TODO: 三号机获得 3 覆甲
+        await PowerCmd.Apply<WeakPower>(choiceContext, cardPlay.Target, DynamicVars["WeakPower"].BaseValue, Owner.Creature, this);
+        if (HasForm(Owner, ShinGetterForm.Getter3))
+            await PowerCmd.Apply<PlatingPower>(choiceContext, Owner.Creature, 3m, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
     {
         base.DynamicVars.Damage.UpgradeValueBy(2m);
-        // TODO: 1→2 虚弱
+        DynamicVars["WeakPower"].UpgradeValueBy(1m);
     }
 }
