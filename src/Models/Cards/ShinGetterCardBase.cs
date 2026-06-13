@@ -34,12 +34,30 @@ public abstract class ShinGetterCardBase : CardModel
     {
     }
 
+    public override bool TryModifyEnergyCostInCombatLate(
+        CardModel card,
+        decimal originalCost,
+        out decimal modifiedCost)
+    {
+        modifiedCost = originalCost;
+
+        if (!ReferenceEquals(card, this) || SpiritRequirement <= 0 || originalCost <= 0m)
+            return false;
+
+        int ki = card.Owner.Creature.GetPower<SGP_Ki>()?.Amount ?? 0;
+        if (ki < SpiritRequirement)
+            return false;
+
+        modifiedCost = 0m;
+        return true;
+    }
+
     // ──── 形态检测 ────
 
     /// <summary>
     /// 获取当前玩家拥有的形态列表。真化形态同时返回所有三个形态。
     /// </summary>
-    protected ShinGetterForm[] GetCurrentForms(Player player)
+    protected static ShinGetterForm[] GetCurrentForms(Player player)
     {
         var forms = new List<ShinGetterForm>();
 
@@ -62,7 +80,7 @@ public abstract class ShinGetterCardBase : CardModel
     /// <summary>
     /// 检查当前是否处于指定形态（包含真化形态）。
     /// </summary>
-    protected bool HasForm(Player player, ShinGetterForm form)
+    protected static bool HasForm(Player player, ShinGetterForm form)
     {
         return GetCurrentForms(player).Contains(form);
     }
@@ -73,7 +91,7 @@ public abstract class ShinGetterCardBase : CardModel
     /// 变形到下一个形态：1→2→3→1。
     /// 真化形态下不变，改为同时触发三个形态的变形效果。
     /// </summary>
-    public async Task Transform(PlayerChoiceContext choiceContext, Player player, CardModel cardSource)
+    public static async Task Transform(PlayerChoiceContext choiceContext, Player player, CardModel cardSource)
     {
         var creature = player.Creature;
 
@@ -137,7 +155,7 @@ public abstract class ShinGetterCardBase : CardModel
             await chosenOne.OnTransform(creature);
     }
 
-    private async Task RemoveAllFormPowers(PlayerChoiceContext choiceContext, Creature creature)
+    private static async Task RemoveAllFormPowers(PlayerChoiceContext choiceContext, Creature creature)
     {
         var one = creature.GetPower<SGP_ShinGetterOne>();
         var two = creature.GetPower<SGP_ShinGetterTwo>();

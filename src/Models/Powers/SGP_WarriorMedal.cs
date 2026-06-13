@@ -25,6 +25,9 @@ public sealed class SGP_WarriorMedal : PowerModel
 
     public override async Task AfterEnergyReset(Player player)
     {
+        if (player != Owner.Player)
+            return;
+
         int ki = player.Creature.GetPower<SGP_Ki>()?.Amount ?? 0;
         if (ki <= 0 || base.Amount <= 0) return;
         int gain = ki * base.Amount;

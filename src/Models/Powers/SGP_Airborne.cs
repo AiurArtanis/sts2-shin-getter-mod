@@ -33,7 +33,9 @@ public sealed class SGP_Airborne : PowerModel
 
     public override async Task AfterEnergyReset(Player player)
     {
-        // 每回-1层
+        if (player != Owner.Player)
+            return;
+
         await PowerCmd.Decrement(this);
     }
 

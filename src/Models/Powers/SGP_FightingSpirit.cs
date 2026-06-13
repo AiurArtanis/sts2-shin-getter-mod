@@ -24,10 +24,16 @@ public sealed class SGP_FightingSpirit : PowerModel
 
     public override async Task BeforeDamageReceived(PlayerChoiceContext choiceContext, Creature target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
-        // 被攻击前，对攻击者造成反击伤害
-        if (target == base.Owner && dealer != null && base.Amount > 0)
+        if (target == Owner && dealer != null && props.IsPoweredAttack() && Amount > 0)
         {
-            await DamageCmd.Attack(base.Amount).FromCard(null).Targeting(dealer).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+            Flash();
+            await CreatureCmd.Damage(
+                choiceContext,
+                dealer,
+                Amount,
+                ValueProp.Unpowered | ValueProp.SkipHurtAnim,
+                Owner,
+                null);
         }
     }
 }

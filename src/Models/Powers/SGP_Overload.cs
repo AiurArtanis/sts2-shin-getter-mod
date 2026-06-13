@@ -22,7 +22,11 @@ public sealed class SGP_Overload : PowerModel
 
     public override async Task AfterEnergyReset(Player player)
     {
-        // 下回合开始减1能量
-        await PlayerCmd.GainEnergy(-1, player);
+        if (player != Owner.Player)
+            return;
+
+        int energyLoss = System.Math.Min(Amount, 1);
+        await PlayerCmd.GainEnergy(-energyLoss, player);
+        await PowerCmd.Decrement(this);
     }
 }

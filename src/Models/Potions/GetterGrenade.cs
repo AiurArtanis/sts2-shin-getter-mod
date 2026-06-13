@@ -1,3 +1,4 @@
+#nullable enable
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
@@ -27,9 +28,13 @@ public sealed class GetterGrenade : PotionModel
 
     protected override async Task OnUse(PlayerChoiceContext choiceContext, Creature? target)
     {
+        var combatState = Owner.Creature.CombatState;
+        if (combatState is null)
+            return;
+
         await CreatureCmd.Damage(
             choiceContext,
-            Owner.Creature.CombatState.HittableEnemies,
+            combatState.HittableEnemies,
             DynamicVars.Damage.BaseValue,
             DynamicVars.Damage.Props,
             Owner.Creature,

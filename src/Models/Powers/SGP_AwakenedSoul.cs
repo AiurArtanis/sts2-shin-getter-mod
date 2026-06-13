@@ -33,7 +33,7 @@ public sealed class SGP_AwakenedSoul : PowerModel
         if (!props.IsPoweredAttack()) return 1m;
         int attacksStarted = CombatManager.Instance.History.CardPlaysStarted
             .Count(e => e.Actor == base.Owner && e.CardPlay.IsFirstInSeries && e.HappenedThisTurn(base.CombatState));
-        if (attacksStarted >= base.Amount) return 1m;
+        if (attacksStarted > base.Amount) return 1m;
         return 2m;
     }
 }

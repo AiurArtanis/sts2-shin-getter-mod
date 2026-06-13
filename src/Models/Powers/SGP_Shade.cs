@@ -1,8 +1,13 @@
 #nullable enable
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
@@ -10,38 +15,74 @@ using MegaCrit.Sts2.Core.ValueProps;
 namespace ShinGetterMod.Models.Powers;
 
 /// <summary>
-/// 分身。本回合受多段攻击仅1次伤害，非多段伤害减半。
-/// 不可堆叠，仅本回合生效。
+/// 分身。本回合受到的多段攻击只有第一次造成伤害，非多段攻击伤害减半。
 /// </summary>
 public sealed class SGP_Shade : PowerModel
 {
-    private class Data
+    private sealed class Data
     {
-        public bool firstHitPassed; // 多段攻击已放过第1次
+        public AttackCommand? ActiveAttack;
+        public int HitCount;
+        public int OwnerHitsReceived;
     }
 
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Single;
 
-    protected override System.Collections.Generic.IEnumerable<DynamicVar> CanonicalVars =>
-        System.Array.Empty<DynamicVar>();
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        Array.Empty<DynamicVar>();
 
     protected override object InitInternalData() => new Data();
 
-    public override decimal ModifyDamageAdditive(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
+    public override int ModifyAttackHitCount(AttackCommand attack, int hitCount)
     {
-        if (target != base.Owner) return 0m;
+        if (attack.TargetSide == Owner.Side)
+        {
+            var data = GetInternalData<Data>();
+            data.ActiveAttack = attack;
+            data.HitCount = hitCount;
+            data.OwnerHitsReceived = 0;
+        }
+
+        return hitCount;
+    }
+
+    public override decimal ModifyDamageMultiplicative(
+        Creature? target,
+        decimal amount,
+        ValueProp props,
+        Creature? dealer,
+        CardModel? cardSource)
+    {
+        if (target != Owner || !props.IsPoweredAttack())
+            return 1m;
 
         var data = GetInternalData<Data>();
-
-        // 判断是否多段攻击：WithHitCount > 1
-        // 无法直接获取 WithHitCount，简化处理：
-        // 第1次伤害保留，后续伤害减为0
-        if (!data.firstHitPassed)
+        if (data.ActiveAttack?.Attacker == dealer && data.HitCount > 1)
         {
-            data.firstHitPassed = true;
-            return 0m; // 第1次伤害照常
+            data.OwnerHitsReceived++;
+            return data.OwnerHitsReceived == 1 ? 1m : 0m;
         }
-        return -amount; // 后续伤害减为0
+
+        return 0.5m;
+    }
+
+    public override Task AfterAttack(PlayerChoiceContext choiceContext, AttackCommand command)
+    {
+        var data = GetInternalData<Data>();
+        if (data.ActiveAttack == command)
+        {
+            data.ActiveAttack = null;
+            data.HitCount = 0;
+            data.OwnerHitsReceived = 0;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public override async Task AfterEnergyReset(Player player)
+    {
+        if (player.Creature == Owner)
+            await PowerCmd.Remove(this);
     }
 }

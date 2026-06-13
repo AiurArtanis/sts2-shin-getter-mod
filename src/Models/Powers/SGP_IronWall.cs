@@ -1,7 +1,9 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
@@ -25,5 +27,11 @@ public sealed class SGP_IronWall : PowerModel
         if (target == base.Owner)
             return -base.Amount;
         return 0m;
+    }
+
+    public override async Task AfterEnergyReset(Player player)
+    {
+        if (player.Creature == Owner)
+            await PowerCmd.Remove(this);
     }
 }

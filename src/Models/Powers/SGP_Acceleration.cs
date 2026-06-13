@@ -22,7 +22,14 @@ public sealed class SGP_Acceleration : PowerModel
 
     public override async Task AfterEnergyReset(Player player)
     {
+        if (player != Owner.Player)
+            return;
+
         await PlayerCmd.GainEnergy(base.Amount, player);
-        // TODO: DrawCards(base.Amount)
+    }
+
+    public override decimal ModifyHandDraw(Player player, decimal count)
+    {
+        return player.Creature == Owner ? count + Amount : count;
     }
 }

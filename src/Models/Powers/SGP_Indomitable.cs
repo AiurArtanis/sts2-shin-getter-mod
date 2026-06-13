@@ -22,10 +22,13 @@ public sealed class SGP_Indomitable : PowerModel
     {
         public decimal delayedDamage;
         public int delayedRound;
+        public int chargesConsumed;
+        public bool isResolving;
     }
 
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
+    public override int DisplayAmount => System.Math.Max(0, Amount - GetInternalData<Data>().chargesConsumed);
 
     protected override System.Collections.Generic.IEnumerable<DynamicVar> CanonicalVars =>
         System.Array.Empty<DynamicVar>();
@@ -34,26 +37,50 @@ public sealed class SGP_Indomitable : PowerModel
 
     public override decimal ModifyHpLostAfterOstyLate(Creature target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
-        if (target != base.Owner) return amount;
-        var data = GetInternalData<Data>();
-        data.delayedDamage += amount;
-        data.delayedRound = base.CombatState?.RoundNumber ?? 0;
-        return 0m;
-    }
+        if (target != Owner || amount <= 0m)
+            return amount;
 
-    public override async Task AfterModifyingHpLostAfterOsty()
-    {
-        await PowerCmd.Decrement(this);
+        var data = GetInternalData<Data>();
+        if (data.isResolving || data.chargesConsumed >= Amount)
+            return amount;
+
+        data.delayedDamage += amount;
+        data.delayedRound = CombatState?.RoundNumber ?? 0;
+        data.chargesConsumed++;
+        InvokeDisplayAmountChanged();
+        return 0m;
     }
 
     public override async Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants, ICombatState combatState)
     {
-        if (!participants.Contains(base.Owner) || combatState == null) return;
+        if (!participants.Contains(Owner))
+            return;
+
         var data = GetInternalData<Data>();
         if (data.delayedDamage > 0 && data.delayedRound < combatState.RoundNumber)
         {
-            await DamageCmd.Attack(data.delayedDamage).FromCard(null).Targeting(base.Owner).Execute(new ThrowingPlayerChoiceContext());
-            data.delayedDamage = 0;
+            decimal delayedDamage = data.delayedDamage;
+            int chargesConsumed = data.chargesConsumed;
+            data.delayedDamage = 0m;
+            data.chargesConsumed = 0;
+            data.isResolving = true;
+            InvokeDisplayAmountChanged();
+
+            await CreatureCmd.Damage(
+                new ThrowingPlayerChoiceContext(),
+                Owner,
+                delayedDamage,
+                ValueProp.Unpowered | ValueProp.Unblockable,
+                null,
+                null);
+
+            data.isResolving = false;
+            await PowerCmd.ModifyAmount(
+                new ThrowingPlayerChoiceContext(),
+                this,
+                -chargesConsumed,
+                null,
+                null);
         }
     }
 }

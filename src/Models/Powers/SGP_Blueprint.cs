@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
-using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
@@ -23,14 +22,15 @@ public sealed class SGP_Blueprint : PowerModel
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         System.Array.Empty<DynamicVar>();
 
-    public override decimal ModifyHpLostAfterOsty(Creature target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
+    public override async Task AfterDamageGiven(
+        MegaCrit.Sts2.Core.GameActions.Multiplayer.PlayerChoiceContext choiceContext,
+        Creature? dealer,
+        DamageResult result,
+        ValueProp props,
+        Creature target,
+        CardModel? cardSource)
     {
-        // 失去HP时获得进化（不改变伤害量）
-        if (target == base.Owner && amount > 0 && base.Amount > 0)
-        {
-            var ctx = new ThrowingPlayerChoiceContext();
-            _ = PowerCmd.Apply<SGP_Evolution>(ctx, target, base.Amount, target, null);
-        }
-        return amount;
+        if (target == Owner && result.UnblockedDamage > 0 && Amount > 0)
+            await PowerCmd.Apply<SGP_Evolution>(choiceContext, Owner, Amount, Owner, cardSource);
     }
 }

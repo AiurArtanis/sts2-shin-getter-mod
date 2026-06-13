@@ -1,10 +1,10 @@
 #nullable enable
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
-using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
@@ -31,11 +31,29 @@ public sealed class SGP_Wane : PowerModel
         return 0m;
     }
 
-    public override async Task AfterEnergyReset(Player player)
+    public override async Task AfterDamageGiven(
+        PlayerChoiceContext choiceContext,
+        Creature? dealer,
+        DamageResult result,
+        ValueProp props,
+        Creature target,
+        CardModel? cardSource)
     {
-        // 回合初层数减半
-        int half = base.Amount / 2;
-        if (half > 0)
-            await PowerCmd.ModifyAmount(new ThrowingPlayerChoiceContext(), this, -half, null, null);
+        if (target == Owner && result.UnblockedDamage > 0)
+            await PowerCmd.Apply<SGP_Wane>(choiceContext, Owner, 1m, dealer, cardSource);
+    }
+
+    public override async Task AfterSideTurnStart(
+        CombatSide side,
+        IReadOnlyList<Creature> participants,
+        ICombatState combatState)
+    {
+        if (!participants.Contains(Owner))
+            return;
+
+        int retainedAmount = Amount / 2;
+        int amountToRemove = Amount - retainedAmount;
+        if (amountToRemove > 0)
+            await PowerCmd.ModifyAmount(new ThrowingPlayerChoiceContext(), this, -amountToRemove, null, null);
     }
 }

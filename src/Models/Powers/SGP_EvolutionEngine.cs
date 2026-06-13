@@ -30,17 +30,17 @@ public sealed class SGP_EvolutionEngine : PowerModel
 
     protected override object InitInternalData() => new Data();
 
-    public override Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants, ICombatState combatState)
+    public override async Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants, ICombatState combatState)
     {
-        if (!participants.Contains(base.Owner)) return Task.CompletedTask;
+        if (!participants.Contains(Owner) || Owner.Player is not { } player)
+            return;
+
         var data = GetInternalData<Data>();
         if (data.pendingEnergyGain)
         {
             data.pendingEnergyGain = false;
-            // 下回合获得能量
-            _ = PlayerCmd.GainEnergy(base.Amount, base.Owner.Player);
+            await PlayerCmd.GainEnergy(Amount, player);
         }
-        return Task.CompletedTask;
     }
 
     /// <summary>

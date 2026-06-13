@@ -24,6 +24,9 @@ public sealed class SGP_SuperKi : PowerModel
 
     public override async Task AfterEnergyReset(Player player)
     {
+        if (player != Owner.Player)
+            return;
+
         var combatState = player.Creature.CombatState;
         if (combatState == null) return;
 

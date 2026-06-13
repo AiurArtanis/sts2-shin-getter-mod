@@ -1,11 +1,9 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MegaCrit.Sts2.Core.Combat;
-using System.Linq;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
-using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
@@ -34,16 +32,6 @@ public sealed class SGP_TripleUnity : PowerModel
 
     protected override object InitInternalData() => new Data();
 
-    public override Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants, ICombatState combatState)
-    {
-        if (participants.Contains(base.Owner))
-        {
-            GetInternalData<Data>().cardsPlayed = 0;
-            InvokeDisplayAmountChanged();
-        }
-        return Task.CompletedTask;
-    }
-
     public override async Task AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         var card = cardPlay.Card;
@@ -52,9 +40,13 @@ public sealed class SGP_TripleUnity : PowerModel
         data.cardsPlayed++;
         InvokeDisplayAmountChanged();
 
-        // 变形
-        var cardBase = card as ShinGetterCardBase;
-        if (cardBase != null)
-            await cardBase.Transform(choiceContext, base.Owner.Player, cardBase);
+        if (data.cardsPlayed < Amount)
+            return;
+
+        if (Owner.Player is { } player)
+        {
+            await PowerCmd.Remove(this);
+            await ShinGetterCardBase.Transform(choiceContext, player, card);
+        }
     }
 }

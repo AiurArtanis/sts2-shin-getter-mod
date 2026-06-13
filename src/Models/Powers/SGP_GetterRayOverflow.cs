@@ -20,10 +20,9 @@ public sealed class SGP_GetterRayOverflow : PowerModel
 
     public override bool TryModifyEnergyCostInCombat(CardModel card, decimal originalCost, out decimal modifiedCost)
     {
-        // 检测类名以 SGC_Getter 开头
-        if (card.GetType().Name.StartsWith("SGC_Getter"))
+        if (card.GetType().Name.StartsWith("SGC_Getter", System.StringComparison.Ordinal))
         {
-            modifiedCost = originalCost - 1;
+            modifiedCost = System.Math.Max(0m, originalCost - Amount);
             return true;
         }
         modifiedCost = originalCost;

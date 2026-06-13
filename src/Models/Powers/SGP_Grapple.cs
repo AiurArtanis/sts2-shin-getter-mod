@@ -1,59 +1,44 @@
 #nullable enable
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;
-using System.Linq;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.ValueProps;
 
 namespace ShinGetterMod.Models.Powers;
 
 /// <summary>
-/// 擒拿。受到的后N次伤害为0。
-/// 例如怪物6×3，擒拿2层→第2、3次基础伤害按0算。
+/// 擒拿。本回合打出的多段攻击减少等同于层数的次数。
 /// </summary>
 public sealed class SGP_Grapple : PowerModel
 {
-    private class Data
-    {
-        public int hitsNegated;
-    }
-
     public override PowerType Type => PowerType.Debuff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
-    public override int DisplayAmount => System.Math.Max(0, base.Amount - GetInternalData<Data>().hitsNegated);
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        Array.Empty<DynamicVar>();
 
-    protected override System.Collections.Generic.IEnumerable<DynamicVar> CanonicalVars =>
-        System.Array.Empty<DynamicVar>();
-
-    protected override object InitInternalData() => new Data();
-
-    public override decimal ModifyDamageAdditive(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
+    public override int ModifyAttackHitCount(AttackCommand attack, int hitCount)
     {
-        // 仅对持有擒拿的目标生效
-        if (target != base.Owner) return 0m;
+        if (attack.Attacker != Owner || hitCount <= 1)
+            return hitCount;
 
-        var data = GetInternalData<Data>();
-        if (data.hitsNegated < base.Amount)
-        {
-            data.hitsNegated++;
-            InvokeDisplayAmountChanged();
-            return -amount; // 将本次伤害减为0
-        }
-        return 0m;
+        return Math.Max(1, hitCount - Amount);
     }
 
-    public override Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants, ICombatState combatState)
+    public override async Task AfterSideTurnEnd(
+        PlayerChoiceContext choiceContext,
+        CombatSide side,
+        IEnumerable<Creature> participants)
     {
-        if (participants.Contains(base.Owner))
-        {
-            GetInternalData<Data>().hitsNegated = 0;
-            InvokeDisplayAmountChanged();
-        }
-        return Task.CompletedTask;
+        if (participants.Contains(Owner))
+            await PowerCmd.Remove(this);
     }
 }

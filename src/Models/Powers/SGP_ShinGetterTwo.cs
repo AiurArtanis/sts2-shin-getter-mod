@@ -25,8 +25,15 @@ public sealed class SGP_ShinGetterTwo : PowerModel
 
     public override async Task AfterEnergyReset(Player player)
     {
+        if (player != Owner.Player)
+            return;
+
         await PlayerCmd.GainEnergy(1, player);
-        // TODO: 抽1张牌
+    }
+
+    public override decimal ModifyHandDraw(Player player, decimal count)
+    {
+        return player.Creature == Owner ? count + 1m : count;
     }
 
     public override decimal ModifyBlockMultiplicative(Creature target, decimal block, ValueProp props, CardModel? cardSource, CardPlay? cardPlay)

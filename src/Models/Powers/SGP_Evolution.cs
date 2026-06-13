@@ -1,10 +1,11 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
-using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
@@ -24,31 +25,36 @@ public sealed class SGP_Evolution : PowerModel
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         System.Array.Empty<DynamicVar>();
 
-    public override async Task AfterEnergyReset(Player player)
+    public override async Task BeforeSideTurnEnd(
+        PlayerChoiceContext choiceContext,
+        CombatSide side,
+        IEnumerable<Creature> participants)
     {
-        int E = base.Amount;
-        if (E <= 0) return;
+        if (!participants.Contains(Owner) || Owner.IsDead || Amount <= 0)
+            return;
 
-        int V = player.Creature.GetPower<VigorPower>()?.Amount ?? 0;
-        int R = player.Creature.GetPower<RegenPower>()?.Amount ?? 0;
-        int P = player.Creature.GetPower<PlatingPower>()?.Amount ?? 0;
+        var vigor = Owner.GetPower<VigorPower>();
+        var regen = Owner.GetPower<RegenPower>();
+        var plating = Owner.GetPower<PlatingPower>();
 
-        int X = Math.Min(Math.Min(E, V), Math.Min(R, P));
-        if (X <= 0) return;
+        int vigorAmount = vigor?.Amount ?? 0;
+        int regenAmount = regen?.Amount ?? 0;
+        int platingAmount = plating?.Amount ?? 0;
+        int evolutionAmount = Math.Min(Amount, Math.Min(vigorAmount, Math.Min(regenAmount, platingAmount)));
 
-        var ctx = new ThrowingPlayerChoiceContext();
+        if (evolutionAmount <= 0)
+            return;
 
-        await PowerCmd.ModifyAmount(ctx, this, -X, null, null);
-        if (V > 0) await PowerCmd.ModifyAmount(ctx, player.Creature.GetPower<VigorPower>()!, -X, null, null);
-        if (R > 0) await PowerCmd.ModifyAmount(ctx, player.Creature.GetPower<RegenPower>()!, -X, null, null);
-        if (P > 0) await PowerCmd.ModifyAmount(ctx, player.Creature.GetPower<PlatingPower>()!, -X, null, null);
+        Flash();
+        await PowerCmd.ModifyAmount(choiceContext, vigor!, -evolutionAmount, null, null);
+        await PowerCmd.ModifyAmount(choiceContext, regen!, -evolutionAmount, null, null);
+        await PowerCmd.ModifyAmount(choiceContext, plating!, -evolutionAmount, null, null);
 
-        await PowerCmd.Apply<StrengthPower>(ctx, player.Creature, X, player.Creature, null);
-        await CreatureCmd.GainMaxHp(player.Creature, X);
-        await PowerCmd.Apply<DexterityPower>(ctx, player.Creature, X, player.Creature, null);
+        await PowerCmd.Apply<StrengthPower>(choiceContext, Owner, evolutionAmount, Owner, null);
+        await CreatureCmd.GainMaxHp(Owner, evolutionAmount);
+        await PowerCmd.Apply<DexterityPower>(choiceContext, Owner, evolutionAmount, Owner, null);
 
-        // 广播：通知进化引擎下回合获得能量
-        var engine = player.Creature.GetPower<SGP_EvolutionEngine>();
+        var engine = Owner.GetPower<SGP_EvolutionEngine>();
         engine?.MarkPendingEnergyGain();
     }
 }

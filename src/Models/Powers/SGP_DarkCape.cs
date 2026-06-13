@@ -25,17 +25,18 @@ public sealed class SGP_DarkCape : PowerModel
 
     public override async Task AfterDamageGiven(PlayerChoiceContext choiceContext, Creature? dealer, DamageResult result, ValueProp props, Creature target, CardModel? cardSource)
     {
-        // 格挡完全格挡时触发
-        if (dealer == base.Owner && result.WasFullyBlocked && base.Amount > 0)
+        if (target == Owner && result.WasFullyBlocked && Amount > 0)
         {
-            var enemies = base.Owner.CombatState?.HittableEnemies;
+            var enemies = Owner.CombatState?.HittableEnemies;
             if (enemies != null)
             {
-                foreach (var enemy in enemies)
-                {
-                    if (enemy != target) // skip the original attacker
-                        await DamageCmd.Attack(base.Amount).FromCard(null).Targeting(enemy).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
-                }
+                Flash();
+                await CreatureCmd.Damage(
+                    choiceContext,
+                    enemies,
+                    Amount,
+                    ValueProp.Unpowered,
+                    Owner);
             }
         }
     }

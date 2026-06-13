@@ -24,6 +24,9 @@ public sealed class SGP_Ki : PowerModel
 
     public override async Task AfterEnergyReset(Player player)
     {
+        if (player != Owner.Player)
+            return;
+
         int amount = base.Amount;
         if (amount <= 0) return;
         await PowerCmd.Apply<VigorPower>(
