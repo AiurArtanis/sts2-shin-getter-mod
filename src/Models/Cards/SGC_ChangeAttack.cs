@@ -1,0 +1,36 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.ValueProps;
+
+namespace ShinGetterMod.Models.Cards;
+
+/// <summary>
+/// 变形攻击 | 攻击 | 罕见 | X费 | 变形流
+/// 变形 X 次，每次造成 5 伤害
+/// </summary>
+public sealed class SGC_ChangeAttack : ShinGetterCardBase
+{
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new DamageVar(5m, ValueProp.Move) };
+
+    public SGC_ChangeAttack()
+        : base(-1, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
+    {
+    }
+
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
+        // TODO: 变形 X 次（X = 消耗能量数），每次造成 5 伤害
+        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+    }
+
+    protected override void OnUpgrade()
+    {
+        // TODO: X → X+1 次变形
+    }
+}

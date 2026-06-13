@@ -1,0 +1,17 @@
+{
+	"SHIN_GETTER.title": "真盖塔",
+	"SHIN_GETTER.description": "具备三形态切换能力的超级机器人。\n在盖塔射线的引导下，抵达高塔，前往进化的尽头。",
+	"SHIN_GETTER.titleObject": "真盖塔",
+	"SHIN_GETTER.pronounObject": "他",
+	"SHIN_GETTER.possessiveAdjective": "他的",
+	"SHIN_GETTER.pronounPossessive": "他的",
+	"SHIN_GETTER.pronounSubject": "他",
+	"SHIN_GETTER.goldMonologue": "[sine]切，良好市民才用不上这些东西[/sine]",
+	"SHIN_GETTER.aromaPrinciple": "[sine][red]现在不是计较物理法则的时候了[/red][/sine]",
+	"SHIN_GETTER.cardsModifierTitle": "真盖塔卡牌",
+	"SHIN_GETTER.cardsModifierDescription": "真盖塔的卡牌现在会出现在奖励和商店中。",
+	"SHIN_GETTER.eventDeathPrevention": "至少……把盖塔的火种……留给未来——",
+	"SHIN_GETTER.unlockText": "完成 {Prerequisite} 的条件后解锁。",
+	"SHIN_GETTER.banter.alive.endTurnPing": "[sine]慢得像盖塔三号机一样[/sine]",
+	"SHIN_GETTER.banter.dead.endTurnPing": "让你也见识一下地狱"
+}

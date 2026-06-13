@@ -1,0 +1,28 @@
+# Godot generated files
+.godot/
+/Godot/
+/android/
+
+# IDE and .NET build output
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.pdb
+*.tmp
+*.Backup.tmp
+
+# Mod build/export output
+/build/
+*.pck
+
+# Local game assemblies. Restore these from the installed game.
+/lib/*.dll
+
+# Game/editor addons are local SDK dependencies, not mod source.
+/addons/
+
+# Local export credentials and logs
+export_credentials.cfg
+*.log

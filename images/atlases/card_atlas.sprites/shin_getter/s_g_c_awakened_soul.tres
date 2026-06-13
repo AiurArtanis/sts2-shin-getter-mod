@@ -1,0 +1,7 @@
+[gd_resource type="AtlasTexture" load_steps=2 format=3 uid="uid://b0dth8kx63qwg"]
+
+[ext_resource type="Texture2D" uid="uid://blrtb6njddrlo" path="res://images/atlases/card_atlas_shin_getter_01.png" id="1"]
+
+[resource]
+atlas = ExtResource("1")
+region = Rect2(3025, 577, 250, 190)
