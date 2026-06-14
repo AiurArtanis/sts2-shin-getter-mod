@@ -2,6 +2,7 @@
 param(
     [string]$Configuration = "Debug",
     [string]$GodotExe = "E:\Work\Godot\Godot_v4.5.1-stable_mono_win64\Godot_v4.5.1-stable_mono_win64_console.exe",
+    [string]$GameProject = "E:\Work\SlaytheSpare2",
     [string]$DeployDirectory = "E:\Work\Godot\Godot_v4.5.1-stable_mono_win64\mods\ShinGetterMod"
 )
 
@@ -17,8 +18,11 @@ $buildManifest = Join-Path $buildDirectory "ShinGetterMod.json"
 $temporaryPck = Join-Path $buildDirectory "ShinGetterMod.export.pck"
 $manifest = Join-Path $projectRoot "ShinGetterMod.json"
 $exportLog = Join-Path $buildDirectory "godot-export.log"
+$validationScript = Join-Path $projectRoot "tools\validate-mod-resources.gd"
+$validationLog = Join-Path $buildDirectory "godot-validation.log"
+$gameProjectFile = Join-Path $GameProject "project.godot"
 
-foreach ($requiredPath in @($GodotExe, $projectFile, $manifest)) {
+foreach ($requiredPath in @($GodotExe, $projectFile, $manifest, $validationScript, $gameProjectFile)) {
     if (-not (Test-Path -LiteralPath $requiredPath -PathType Leaf)) {
         throw "Required file not found: $requiredPath"
     }
@@ -63,6 +67,14 @@ finally {
     if (Test-Path -LiteralPath $stagedDll -PathType Leaf) {
         Move-Item -LiteralPath $stagedDll -Destination $buildDll -Force
     }
+}
+
+Write-Host "Validating required resources in exported PCK..."
+& $GodotExe --headless --path $GameProject --script $validationScript -- $buildPck *> $validationLog
+$validationExitCode = $LASTEXITCODE
+if ($validationExitCode -ne 0) {
+    Get-Content -LiteralPath $validationLog -Tail 40
+    throw "PCK resource validation failed with exit code $validationExitCode."
 }
 
 Copy-Item -LiteralPath $manifest -Destination $buildManifest -Force

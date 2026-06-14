@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://1sb3yjut1s62"]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" uid="uid://cghtlla3sw0po" path="res://src/Core/Nodes/Combat/NCreatureVisuals.cs" id="1_v62mv"]
 [ext_resource type="SpineSkeletonDataResource" uid="uid://b8e4wst5vt8xh" path="res://animations/characters/ironclad/ironclad_skel_data.tres" id="2_0jedi"]
@@ -23,7 +23,7 @@ shader_parameter/noise_2_tex = ExtResource("4_x8wap")
 shader_parameter/noise_2_strength = 1.0
 shader_parameter/opacity = 0.8
 
-[node name="Ironclad" type="Node2D"]
+[node name="ShinGetter" type="Node2D"]
 script = ExtResource("1_v62mv")
 metadata/_edit_group_ = true
 

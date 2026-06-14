@@ -1,4 +1,4 @@
-[gd_resource type="AtlasTexture" load_steps=2 format=3 uid="uid://cxnepi0"]
+[gd_resource type="AtlasTexture" load_steps=2 format=3]
 
 [ext_resource type="Texture2D" uid="uid://blrtb6njddrlo" path="res://images/atlases/card_atlas_shin_getter_01.png" id="1"]
 

@@ -1,10 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://fc5x7hciyofl"]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="SpineSkeletonDataResource" uid="uid://b8nbwey4uwrqk" path="res://animations/rest_site/ironclad/rest_site_ironclad_skel_data.tres" id="1_dht52"]
 [ext_resource type="Script" uid="uid://b64aobp5wi2hq" path="res://src/Core/Nodes/RestSite/NRestSiteCharacter.cs" id="1_qpoiy"]
 [ext_resource type="PackedScene" uid="uid://bgy88bk44xxvk" path="res://scenes/ui/selection_reticle.tscn" id="3_mt86d"]
 
-[node name="IroncladRestSite" type="Node2D"]
+[node name="ShinGetterRestSite" type="Node2D"]
 position = Vector2(-2, 42)
 scale = Vector2(0.760006, 0.760006)
 script = ExtResource("1_qpoiy")
