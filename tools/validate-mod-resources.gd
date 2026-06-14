@@ -1,14 +1,14 @@
 extends SceneTree
 
-const REQUIRED_RESOURCES := [
-	"res://images/atlases/ui_atlas.sprites/card/energy_shin_getter.tres",
-	"res://scenes/vfx/card_trail_shin_getter.tscn",
-	"res://scenes/creature_visuals/shin_getter.tscn",
-	"res://scenes/combat/energy_counters/shin_getter_energy_counter.tscn",
-	"res://scenes/ui/character_icons/shin_getter_icon.tscn",
-	"res://scenes/merchant/characters/shin_getter_merchant.tscn",
-	"res://scenes/rest_site/characters/shin_getter_rest_site.tscn",
-]
+const REQUIRED_RESOURCES := {
+	"res://images/atlases/ui_atlas.sprites/card/energy_shin_getter.tres": false,
+	"res://scenes/vfx/card_trail_shin_getter.tscn": true,
+	"res://scenes/creature_visuals/shin_getter.tscn": true,
+	"res://scenes/combat/energy_counters/shin_getter_energy_counter.tscn": true,
+	"res://scenes/ui/character_icons/shin_getter_icon.tscn": false,
+	"res://scenes/merchant/characters/shin_getter_merchant.tscn": true,
+	"res://scenes/rest_site/characters/shin_getter_rest_site.tscn": true,
+}
 
 
 func _initialize() -> void:
@@ -29,7 +29,19 @@ func _initialize() -> void:
 		if resource == null:
 			push_error("Unable to load mod resource: %s" % path)
 			failed = true
-		else:
-			print("MOD_RESOURCE_OK: %s" % path)
+			continue
+
+		if resource is PackedScene:
+			var instance := (resource as PackedScene).instantiate()
+			if instance == null:
+				push_error("Unable to instantiate mod scene: %s" % path)
+				failed = true
+				continue
+			if REQUIRED_RESOURCES[path] and instance.get_script() == null:
+				push_error("Instantiated scene has no root script: %s" % path)
+				failed = true
+			instance.free()
+
+		print("MOD_RESOURCE_OK: %s" % path)
 
 	quit(1 if failed else 0)

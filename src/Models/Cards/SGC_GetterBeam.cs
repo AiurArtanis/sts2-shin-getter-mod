@@ -15,7 +15,7 @@ namespace ShinGetterMod.Models.Cards;
 public sealed class SGC_GetterBeam : ShinGetterCardBase
 {
     protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[] { HoverTipFactory.FromPower<SGP_Wane>() };
-    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new DamageVar(9m, ValueProp.Move), new PowerVar<SGP_Wane>(1m) };
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new DamageVar(9m, ValueProp.Move), new DynamicVar("Wane", 1m) };
 
     public SGC_GetterBeam()
         : base(1, CardType.Attack, CardRarity.Basic, TargetType.AnyEnemy)
@@ -29,7 +29,7 @@ public sealed class SGC_GetterBeam : ShinGetterCardBase
         await PowerCmd.Apply<SGP_Wane>(
             choiceContext,
             cardPlay.Target,
-            DynamicVars["SGP_Wane"].BaseValue,
+            DynamicVars["Wane"].BaseValue,
             Owner.Creature,
             this);
     }
