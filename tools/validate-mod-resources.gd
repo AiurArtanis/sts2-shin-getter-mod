@@ -1,6 +1,7 @@
 extends SceneTree
 
 const REQUIRED_RESOURCES := {
+	"res://materials/cards/frames/card_frame_shin_getter_mat.tres": false,
 	"res://images/atlases/ui_atlas.sprites/card/energy_shin_getter.tres": false,
 	"res://scenes/vfx/card_trail_shin_getter.tscn": true,
 	"res://scenes/creature_visuals/shin_getter.tscn": true,

@@ -8,9 +8,9 @@ namespace ShinGetterMod.Models.CardPools;
 public sealed class ShinGetterCardPool : CardPoolModel
 {
 	public override string Title => "shin_getter";
-	public override string CardFrameMaterialPath => "card_frame_green";
-	public override Color DeckEntryCardColor => new Color("34fabb");
-	public override Color EnergyOutlineColor => new Color("01b29b");
+	public override string CardFrameMaterialPath => "card_frame_shin_getter";
+	public override Color DeckEntryCardColor => new Color("4BFEC4");
+	public override Color EnergyOutlineColor => new Color("16B98D");
 	public override string EnergyColorName => "shin_getter";
 	public override bool IsColorless => false;
 
