@@ -15,6 +15,7 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_Guts : ShinGetterCardBase
 {
+    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Retain, CardKeyword.Exhaust };
     public override int SpiritRequirement => 1;
     protected override IEnumerable<DynamicVar> CanonicalVars => System.Array.Empty<DynamicVar>();
 
@@ -25,11 +26,11 @@ public sealed class SGC_Guts : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // TODO: 获得等同于已失去生命值的格挡
+        await CreatureCmd.GainBlock(Owner.Creature, Owner.Creature.MaxHp - Owner.Creature.CurrentHp, ValueProp.Move, cardPlay);
     }
 
     protected override void OnUpgrade()
     {
-        // 3→2 费
+        EnergyCost.UpgradeBy(-1);
     }
 }

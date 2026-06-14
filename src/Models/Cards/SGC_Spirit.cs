@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.CardSelection;
+using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -11,8 +14,13 @@ namespace ShinGetterMod.Models.Cards;
 
 public sealed class SGC_Spirit : ShinGetterCardBase
 {
+    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Retain, CardKeyword.Exhaust };
     public override int SpiritRequirement => 2;
-    protected override IEnumerable<DynamicVar> CanonicalVars => System.Array.Empty<DynamicVar>();
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
+    {
+        new PowerVar<VigorPower>(5m),
+        new CardsVar(1),
+    };
 
     public SGC_Spirit()
         : base(2, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
@@ -21,12 +29,19 @@ public sealed class SGC_Spirit : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // TODO: 获 5 活力
-        // TODO: 将手牌中最多 1 张变成「气势」
+        await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, DynamicVars["VigorPower"].BaseValue, Owner.Creature, this);
+        int max = Math.Min(DynamicVars.Cards.IntValue, PileType.Hand.GetPile(Owner).Cards.Count(card => card != this));
+        if (max > 0)
+        {
+            var selected = await CardSelectCmd.FromHand(choiceContext, Owner,
+                new CardSelectorPrefs(SelectionScreenPrompt, 0, max), card => card != this, this);
+            foreach (var card in selected.ToList())
+                await CardCmd.TransformTo<SGC_Ki>(card);
+        }
     }
 
     protected override void OnUpgrade()
     {
-        // 1→2 张变气势
+        DynamicVars.Cards.UpgradeValueBy(1m);
     }
 }

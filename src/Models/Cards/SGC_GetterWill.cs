@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -25,12 +27,18 @@ public sealed class SGC_GetterWill : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // TODO: 选择抽牌堆 1 张能力卡加入手牌
-        // TODO: 一号机：加入手牌的能力卡可以免费打出
+        var selected = (await CardSelectCmd.FromCombatPile(choiceContext, PileType.Draw.GetPile(Owner), Owner,
+            new CardSelectorPrefs(SelectionScreenPrompt, 1), card => card.Type == CardType.Power)).FirstOrDefault();
+        if (selected != null)
+        {
+            if (HasForm(Owner, ShinGetterForm.Getter1))
+                selected.SetToFreeThisTurn();
+            await CardPileCmd.Add(selected, PileType.Hand);
+        }
     }
 
     protected override void OnUpgrade()
     {
-        // 增加固有
+        AddKeyword(CardKeyword.Innate);
     }
 }

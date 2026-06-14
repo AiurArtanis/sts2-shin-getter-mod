@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -15,7 +16,11 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_FinalGetterBeam : ShinGetterCardBase
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new DamageVar(40m, ValueProp.Move) };
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
+    {
+        new DamageVar(40m, ValueProp.Move),
+        new DynamicVar("StrengthLoss", 10m),
+    };
 
     public SGC_FinalGetterBeam()
         : base(4, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)
@@ -26,11 +31,11 @@ public sealed class SGC_FinalGetterBeam : ShinGetterCardBase
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
         await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
-        // TODO: 该敌人本回合失去 10 力量(StrengthPower)
+        await PowerCmd.Apply<SGP_FinalGetterBeamStrengthLoss>(choiceContext, cardPlay.Target, DynamicVars["StrengthLoss"].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
     {
-        // 4→3 费
+        EnergyCost.UpgradeBy(-1);
     }
 }

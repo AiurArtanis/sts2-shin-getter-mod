@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -15,6 +16,7 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_Jammer : ShinGetterCardBase
 {
+    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Ethereal };
     protected override IEnumerable<DynamicVar> CanonicalVars => System.Array.Empty<DynamicVar>();
 
     public SGC_Jammer()
@@ -24,13 +26,13 @@ public sealed class SGC_Jammer : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // TODO: 虚无
-        // TODO: 获得 1 层分身
-        // TODO: 变形直到变成二号机
+        await PowerCmd.Apply<SGP_Shade>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
+        for (int i = 0; i < 3 && !HasForm(Owner, ShinGetterForm.Getter2); i++)
+            await Transform(choiceContext, Owner, this);
     }
 
     protected override void OnUpgrade()
     {
-        // TODO: 去掉虚无
+        RemoveKeyword(CardKeyword.Ethereal);
     }
 }

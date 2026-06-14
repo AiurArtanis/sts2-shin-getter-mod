@@ -7,13 +7,23 @@ namespace ShinGetterMod.Patches;
 [HarmonyPatch(typeof(MegaRichTextLabel), "InstallEffectsIfNeeded")]
 internal static class RichTextWhitePatch
 {
-    private static readonly RichTextWhite Effect = new();
+    private static readonly RichTextWhite WhiteEffect = new();
+    private static readonly RichTextYellow YellowEffect = new();
 
     private static void Postfix(MegaRichTextLabel __instance)
     {
-        if (__instance.BbcodeEnabled && !__instance.CustomEffects.Contains(Effect))
+        if (!__instance.BbcodeEnabled)
         {
-            __instance.CustomEffects.Add(Effect);
+            return;
+        }
+
+        if (!__instance.CustomEffects.Contains(WhiteEffect))
+        {
+            __instance.CustomEffects.Add(WhiteEffect);
+        }
+        if (!__instance.CustomEffects.Contains(YellowEffect))
+        {
+            __instance.CustomEffects.Add(YellowEffect);
         }
     }
 }

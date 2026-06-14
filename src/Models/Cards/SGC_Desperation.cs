@@ -4,8 +4,10 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.ValueProps;
+using MegaCrit.Sts2.Core.Models.Powers;
+using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -16,7 +18,24 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_Desperation : ShinGetterCardBase
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars => System.Array.Empty<DynamicVar>();
+    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Retain, CardKeyword.Exhaust };
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[]
+    {
+        HoverTipFactory.FromPower<SGP_Desperation>(),
+        HoverTipFactory.FromPower<StrengthPower>(),
+        HoverTipFactory.FromPower<BufferPower>(),
+        HoverTipFactory.FromPower<ArtifactPower>(),
+    };
+
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
+    {
+        new PowerVar<StrengthPower>(5m),
+        new EnergyVar(2),
+        new CardsVar(3),
+        new PowerVar<BufferPower>(1m),
+        new PowerVar<ArtifactPower>(1m),
+    };
 
     public SGC_Desperation()
         : base(1, CardType.Power, CardRarity.Rare, TargetType.Self)
@@ -25,13 +44,30 @@ public sealed class SGC_Desperation : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // TODO: 降低生命至 1，战斗结束回复等量 HP
-        // TODO: 本回合可以免费打出精神指令卡
-        // TODO: 形态加成
+        int hpLost = Math.Max(Owner.Creature.CurrentHp - 1, 0);
+        if (hpLost > 0)
+        {
+            await CreatureCmd.SetCurrentHp(Owner.Creature, 1m);
+            await PowerCmd.Apply<SGP_Desperation>(
+                choiceContext, Owner.Creature, hpLost, Owner.Creature, this);
+        }
+
+        if (HasForm(Owner, ShinGetterForm.Getter1))
+            await PowerCmd.Apply<StrengthPower>(choiceContext, Owner.Creature, DynamicVars["StrengthPower"].BaseValue, Owner.Creature, this);
+        if (HasForm(Owner, ShinGetterForm.Getter2))
+        {
+            await PlayerCmd.GainEnergy(DynamicVars.Energy.BaseValue, Owner);
+            await CardPileCmd.Draw(choiceContext, DynamicVars.Cards.BaseValue, Owner);
+        }
+        if (HasForm(Owner, ShinGetterForm.Getter3))
+        {
+            await PowerCmd.Apply<BufferPower>(choiceContext, Owner.Creature, DynamicVars["BufferPower"].BaseValue, Owner.Creature, this);
+            await PowerCmd.Apply<ArtifactPower>(choiceContext, Owner.Creature, DynamicVars["ArtifactPower"].BaseValue, Owner.Creature, this);
+        }
     }
 
     protected override void OnUpgrade()
     {
-        // 1→0 费
+        EnergyCost.UpgradeBy(-1);
     }
 }

@@ -33,7 +33,7 @@ public sealed class SGC_GetterTomahawk : ShinGetterCardBase
         if (!cardPlay.IsAutoPlay)
             await PowerCmd.Apply<SGP_Tomahawk>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
 
-        if (HasForm(Owner, ShinGetterForm.Getter1))
+        if (!cardPlay.IsAutoPlay && HasForm(Owner, ShinGetterForm.Getter1))
             await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, 2m, Owner.Creature, this);
     }
 

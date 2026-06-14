@@ -26,9 +26,16 @@ public sealed class SGC_SpiralDrill : ShinGetterCardBase
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
-        // TODO: 造成 3 伤害 4 次
-        // TODO: 二号机加成 — 无视格挡造成伤害
-        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+        if (HasForm(Owner, ShinGetterForm.Getter2))
+        {
+            for (int i = 0; i < 4; i++)
+                await CreatureCmd.Damage(choiceContext, cardPlay.Target, DynamicVars.Damage.BaseValue, ValueProp.Move | ValueProp.Unblockable, this);
+        }
+        else
+        {
+            await DamageCmd.Attack(DynamicVars.Damage.BaseValue).WithHitCount(4).FromCard(this)
+                .Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+        }
     }
 
     protected override void OnUpgrade()

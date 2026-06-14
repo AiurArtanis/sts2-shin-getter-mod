@@ -62,5 +62,7 @@
   "SGP_TOMAHAWK.title": "飞斧",
   "SGP_TOMAHAWK.description": "下回合开始时额外打出。",
   "SGP_DARK_CAPE.title": "漆黑披风",
-  "SGP_DARK_CAPE.description": "每次格挡格挡伤害时对所有敌人造成 N 伤害。"
+  "SGP_DARK_CAPE.description": "每次格挡格挡伤害时对所有敌人造成 N 伤害。",
+  "SGP_ENABLE.title": "再动",
+  "SGP_ENABLE.description": "当前回合结束后，获得 1 个额外回合。"
 }

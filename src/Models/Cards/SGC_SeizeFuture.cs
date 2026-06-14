@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 
 namespace ShinGetterMod.Models.Cards;
@@ -15,6 +18,8 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_SeizeFuture : ShinGetterCardBase
 {
+    public override bool GainsBlock => true;
+
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new BlockVar(7m, ValueProp.Move) };
 
     public SGC_SeizeFuture()
@@ -25,11 +30,27 @@ public sealed class SGC_SeizeFuture : ShinGetterCardBase
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.GainBlock(base.Owner.Creature, base.DynamicVars.Block, cardPlay);
-        // TODO: 将 1 张手牌本回合耗费减 1
+        List<CardModel> candidates = PileType.Hand.GetPile(Owner).Cards
+            .Where(card => card != this && !card.EnergyCost.CostsX)
+            .ToList();
+
+        IEnumerable<CardModel> selected = candidates;
+        if (!IsUpgraded)
+        {
+            selected = await CardSelectCmd.FromHand(
+                choiceContext,
+                Owner,
+                new CardSelectorPrefs(SelectionScreenPrompt, 1),
+                card => candidates.Contains(card),
+                this);
+        }
+
+        foreach (CardModel card in selected)
+            card.EnergyCost.AddThisTurnOrUntilPlayed(-1, reduceOnly: true);
     }
 
     protected override void OnUpgrade()
     {
-        // TODO: 1→全部手牌
+        // Upgrade changes the selection from one card to the entire hand.
     }
 }

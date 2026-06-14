@@ -26,8 +26,10 @@ public sealed class SGC_TornadoDrill : ShinGetterCardBase
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
-        // TODO: 二号机加成 — 对格挡造成双倍伤害
-        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+        decimal damage = DynamicVars.Damage.BaseValue;
+        if (HasForm(Owner, ShinGetterForm.Getter2) && cardPlay.Target.Block > 0)
+            damage *= 2m;
+        await DamageCmd.Attack(damage).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
     }
 
     protected override void OnUpgrade()

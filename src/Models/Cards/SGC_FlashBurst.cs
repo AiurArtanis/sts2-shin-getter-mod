@@ -6,6 +6,8 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using MegaCrit.Sts2.Core.Models.Powers;
+using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -15,7 +17,11 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_FlashBurst : ShinGetterCardBase
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new DamageVar(10m, ValueProp.Move) };
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
+    {
+        new DamageVar(10m, ValueProp.Move),
+        new DynamicVar("KiDamage", 5m),
+    };
 
     public SGC_FlashBurst()
         : base(1, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)
@@ -25,14 +31,21 @@ public sealed class SGC_FlashBurst : ShinGetterCardBase
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
-        // TODO: 获得 1 易伤(VulnerablePower)、1 脆弱(FrailPower)
-        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
-        // TODO: 每有 1 点气力就对随机敌人造成 5 伤害
+        await PowerCmd.Apply<VulnerablePower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
+        await PowerCmd.Apply<FrailPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+        int ki = Owner.Creature.GetPower<SGP_Ki>()?.Amount ?? 0;
+        if (ki > 0)
+        {
+            await DamageCmd.Attack(DynamicVars["KiDamage"].BaseValue).WithHitCount(ki).FromCard(this)
+                .TargetingRandomOpponents(CombatState)
+                .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+        }
     }
 
     protected override void OnUpgrade()
     {
         base.DynamicVars.Damage.UpgradeValueBy(4m);
-        // 5→8 伤害(气力加成部分)
+        DynamicVars["KiDamage"].UpgradeValueBy(3m);
     }
 }

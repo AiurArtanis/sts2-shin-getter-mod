@@ -2,7 +2,17 @@ extends SceneTree
 
 const REQUIRED_RESOURCES := {
 	"res://materials/cards/frames/card_frame_shin_getter_mat.tres": false,
+	"res://shaders/shin_getter_hsv.gdshader": false,
 	"res://images/atlases/ui_atlas.sprites/card/energy_shin_getter.tres": false,
+	"res://images/atlases/card_atlas.sprites/shin_getter/s_g_c_ki.tres": false,
+	"res://images/atlases/power_atlas.sprites/s_g_p_ki.tres": false,
+	"res://images/atlases/power_atlas.sprites/s_g_p_enable.tres": false,
+	"res://images/atlases/power_atlas.sprites/s_g_p_final_getter_beam_strength_loss.tres": false,
+	"res://images/ui/hands/multiplayer_hand_shin_getter_atlas.png": false,
+	"res://images/ui/hands/multiplayer_hand_shin_getter_point.png": false,
+	"res://images/ui/hands/multiplayer_hand_shin_getter_rock.png": false,
+	"res://images/ui/hands/multiplayer_hand_shin_getter_paper.png": false,
+	"res://images/ui/hands/multiplayer_hand_shin_getter_scissors.png": false,
 	"res://scenes/vfx/card_trail_shin_getter.tscn": true,
 	"res://scenes/creature_visuals/shin_getter.tscn": true,
 	"res://scenes/combat/energy_counters/shin_getter_energy_counter.tscn": true,

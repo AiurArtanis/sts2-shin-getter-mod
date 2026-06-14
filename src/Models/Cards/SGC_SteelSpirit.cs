@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -15,6 +16,7 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_SteelSpirit : ShinGetterCardBase
 {
+    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Ethereal };
     protected override IEnumerable<DynamicVar> CanonicalVars => System.Array.Empty<DynamicVar>();
 
     public SGC_SteelSpirit()
@@ -24,11 +26,17 @@ public sealed class SGC_SteelSpirit : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // TODO: 随机获 1 张精神指令卡加入手牌
+        var candidates = Pool.AllCards.OfType<ShinGetterCardBase>().Where(card => card.SpiritRequirement > 0).ToList();
+        if (candidates.Count > 0)
+        {
+            var card = CombatState.CreateCard(Owner.RunState.Rng.CombatCardSelection.NextItem(candidates), Owner);
+            card.SetToFreeThisTurn();
+            await CardPileCmd.AddGeneratedCardToCombat(card, PileType.Hand, Owner);
+        }
     }
 
     protected override void OnUpgrade()
     {
-        // 去掉虚无
+        RemoveKeyword(CardKeyword.Ethereal);
     }
 }

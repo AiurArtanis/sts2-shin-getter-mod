@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -15,7 +17,7 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_AntiEvolution : ShinGetterCardBase
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars => System.Array.Empty<DynamicVar>();
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new PowerVar<SGP_Seal>(1m) };
 
     public SGC_AntiEvolution()
         : base(1, CardType.Power, CardRarity.Rare, TargetType.Self)
@@ -24,11 +26,12 @@ public sealed class SGC_AntiEvolution : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // TODO: 施加封印(SealPower)给敌我全体，持续 1 回合
+        foreach (var creature in CombatState.Creatures.Where(creature => creature.IsAlive))
+            await PowerCmd.Apply<SGP_Seal>(choiceContext, creature, DynamicVars["SGP_Seal"].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
     {
-        // 1→2 回合
+        DynamicVars["SGP_Seal"].UpgradeValueBy(1m);
     }
 }

@@ -26,17 +26,13 @@ public sealed class GetterFurnace : RelicModel
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
         new IHoverTip[] { HoverTipFactory.FromPower<SGP_Ki>() };
 
-    public override async Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants, ICombatState combatState)
+    public override async Task BeforeCombatStart()
     {
-        if (participants.Contains(Owner.Creature) && Owner.PlayerCombatState.TurnNumber <= 1)
-        {
-            Flash();
-            await PowerCmd.Apply<SGP_Ki>(
-                new ThrowingPlayerChoiceContext(),
-                Owner.Creature,
-                DynamicVars["SGP_Ki"].BaseValue,
-                Owner.Creature,
-                null);
-        }
+        Flash();
+        await PowerCmd.Apply<SGP_ShinGetterOne>(
+            new ThrowingPlayerChoiceContext(), Owner.Creature, 1m, Owner.Creature, null);
+        await PowerCmd.Apply<SGP_Ki>(
+            new ThrowingPlayerChoiceContext(), Owner.Creature,
+            DynamicVars["SGP_Ki"].BaseValue, Owner.Creature, null);
     }
 }

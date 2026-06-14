@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using MegaCrit.Sts2.Core.Models.Powers;
+using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -15,7 +18,11 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_GetterNova : ShinGetterCardBase
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars => System.Array.Empty<DynamicVar>();
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
+    {
+        new PowerVar<VigorPower>(15m),
+        new PowerVar<SGP_Radiation>(2m),
+    };
 
     public SGC_GetterNova()
         : base(3, CardType.Skill, CardRarity.Rare, TargetType.AllEnemies)
@@ -24,12 +31,14 @@ public sealed class SGC_GetterNova : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // TODO: 获 15 活力(VigorPower)
-        // TODO: 给予全体敌人 2 辐射(RadiationPower)
+        await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, DynamicVars["VigorPower"].BaseValue, Owner.Creature, this);
+        foreach (var enemy in CombatState.GetOpponentsOf(Owner.Creature).Where(creature => creature.IsAlive))
+            await PowerCmd.Apply<SGP_Radiation>(choiceContext, enemy, DynamicVars["SGP_Radiation"].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
     {
-        // 15→20 活力, 2→3 辐射
+        DynamicVars["VigorPower"].UpgradeValueBy(5m);
+        DynamicVars["SGP_Radiation"].UpgradeValueBy(1m);
     }
 }

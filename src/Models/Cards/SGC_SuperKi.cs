@@ -6,6 +6,8 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using MegaCrit.Sts2.Core.Models.Powers;
+using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -15,7 +17,11 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_SuperKi : ShinGetterCardBase
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars => System.Array.Empty<DynamicVar>();
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
+    {
+        new PowerVar<VigorPower>(10m),
+        new PowerVar<SGP_SuperKi>(1m),
+    };
 
     public SGC_SuperKi()
         : base(3, CardType.Power, CardRarity.Rare, TargetType.Self)
@@ -24,12 +30,12 @@ public sealed class SGC_SuperKi : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // TODO: 获 10 活力(VigorPower)
-        // TODO: 施加 Power：每回开始将 1 张「气势」(SGC_Ki)加入手牌
+        await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, DynamicVars["VigorPower"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<SGP_SuperKi>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
     {
-        // 10→15 活力
+        DynamicVars["VigorPower"].UpgradeValueBy(5m);
     }
 }

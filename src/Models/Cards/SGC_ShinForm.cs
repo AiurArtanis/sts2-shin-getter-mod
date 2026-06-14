@@ -17,12 +17,12 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_ShinForm : ShinGetterCardBase
 {
+    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Ethereal };
     protected override IEnumerable<DynamicVar> CanonicalVars => System.Array.Empty<DynamicVar>();
 
     public SGC_ShinForm()
         : base(3, CardType.Power, CardRarity.Ancient, TargetType.Self)
     {
-        // TODO: IsEthereal = true;
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -46,6 +46,6 @@ public sealed class SGC_ShinForm : ShinGetterCardBase
 
     protected override void OnUpgrade()
     {
-        // 3→2 费
+        EnergyCost.UpgradeBy(-1);
     }
 }

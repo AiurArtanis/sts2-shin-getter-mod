@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -15,7 +16,7 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_GetterRayBurst : ShinGetterCardBase
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars => System.Array.Empty<DynamicVar>();
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new PowerVar<SGP_GetterRayOverflow>(1m) };
 
     public SGC_GetterRayBurst()
         : base(3, CardType.Power, CardRarity.Rare, TargetType.Self)
@@ -24,11 +25,11 @@ public sealed class SGC_GetterRayBurst : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // TODO: 施加 Power，所有名带"盖塔"的卡牌费用减 1
+        await PowerCmd.Apply<SGP_GetterRayOverflow>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
     {
-        // 3→2 费
+        EnergyCost.UpgradeBy(-1);
     }
 }

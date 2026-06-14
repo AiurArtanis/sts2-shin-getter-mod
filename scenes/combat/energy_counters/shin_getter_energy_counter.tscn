@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/combat/energy_counters/ironclad_energy_counter.tscn" id="1_base"]
 [ext_resource type="Texture2D" path="res://images/ui/combat/energy_counters/shin_getter/shin_getter_orb_layer_1.png" id="2_layer1"]
@@ -7,7 +7,87 @@
 [ext_resource type="Texture2D" path="res://images/ui/combat/energy_counters/shin_getter/shin_getter_orb_layer_4.png" id="5_layer4"]
 [ext_resource type="Texture2D" path="res://images/ui/combat/energy_counters/shin_getter/shin_getter_orb_layer_5.png" id="6_layer5"]
 
+[sub_resource type="Gradient" id="Gradient_ray"]
+offsets = PackedFloat32Array(0, 0.55, 1)
+colors = PackedColorArray(0.74902, 1, 0.94902, 1, 0.294118, 0.996078, 0.768627, 1, 0.086275, 0.72549, 0.552941, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture_ray"]
+gradient = SubResource("Gradient_ray")
+use_hdr = true
+
+[sub_resource type="Curve" id="Curve_fade"]
+_data = [Vector2(0, 0), 0.0, 8.0, 0, 0, Vector2(0.18, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -3.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_fade"]
+curve = SubResource("Curve_fade")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_glow"]
+lifetime_randomness = 0.3
+particle_flag_disable_z = true
+gravity = Vector3(0, 0, 0)
+scale_min = 0.25
+scale_max = 0.65
+color_ramp = SubResource("GradientTexture_ray")
+alpha_curve = SubResource("CurveTexture_fade")
+
+[sub_resource type="Curve" id="Curve_scatter_scale"]
+_data = [Vector2(0, 0.25), 0.0, 2.0, 0, 0, Vector2(0.35, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -2.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_scatter_scale"]
+curve = SubResource("Curve_scatter_scale")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_scatter"]
+lifetime_randomness = 0.45
+particle_flag_align_y = true
+particle_flag_disable_z = true
+emission_shape = 6
+emission_ring_axis = Vector3(0, 0, 1)
+emission_ring_height = 1.0
+emission_ring_radius = 76.0
+emission_ring_inner_radius = 42.0
+emission_ring_cone_angle = 90.0
+radial_velocity_min = 320.0
+radial_velocity_max = 980.0
+gravity = Vector3(0, 0, 0)
+damping_min = 0.6
+damping_max = 1.4
+scale_min = 0.12
+scale_max = 0.32
+scale_curve = SubResource("CurveTexture_scatter_scale")
+color_ramp = SubResource("GradientTexture_ray")
+alpha_curve = SubResource("CurveTexture_fade")
+turbulence_enabled = true
+turbulence_noise_strength = 12.0
+turbulence_noise_scale = 8.0
+turbulence_noise_speed = Vector3(0.25, 0.2, 0)
+turbulence_influence_min = 0.1
+turbulence_influence_max = 0.35
+
 [node name="ShinGetterEnergyCounter" instance=ExtResource("1_base")]
+
+[node name="vfx_common_glow" parent="EnergyVfxBack" index="0"]
+self_modulate = Color(0.086275, 0.72549, 0.552941, 1)
+
+[node name="vfx_fire_flipbook_1" parent="EnergyVfxFront" index="0"]
+self_modulate = Color(0.294118, 0.996078, 0.768627, 1)
+process_material = SubResource("ParticleProcessMaterial_glow")
+
+[node name="vfx_fire_flipbook_2" parent="EnergyVfxFront" index="1"]
+self_modulate = Color(0.74902, 1, 0.94902, 1)
+process_material = SubResource("ParticleProcessMaterial_glow")
+
+[node name="vfx_fire_flipbook_3" parent="EnergyVfxFront" index="2"]
+self_modulate = Color(0.086275, 0.72549, 0.552941, 1)
+process_material = SubResource("ParticleProcessMaterial_glow")
+
+[node name="vfx_fire_embers_straight" parent="EnergyVfxFront" index="3"]
+self_modulate = Color(0.294118, 0.996078, 0.768627, 1)
+process_material = SubResource("ParticleProcessMaterial_scatter")
+
+[node name="vfx_common_ring_polar_a" parent="EnergyVfxFront" index="4"]
+self_modulate = Color(0.74902, 1, 0.94902, 1)
 
 [node name="Layer1" parent="Layers" index="0"]
 texture = ExtResource("2_layer1")
@@ -25,3 +105,5 @@ texture = ExtResource("5_layer4")
 texture = ExtResource("6_layer5")
 
 [editable path="Layers"]
+[editable path="EnergyVfxBack"]
+[editable path="EnergyVfxFront"]

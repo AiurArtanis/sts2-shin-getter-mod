@@ -45,7 +45,7 @@ public sealed class ShinGetter : CharacterModel
 	public override Color EnergyLabelOutlineColor => new Color("801212FF");
 	public override Color DialogueColor => new Color("590700");
 	public override VfxColor SpeechBubbleColor => VfxColor.Red;
-	public override Color MapDrawingColor => new Color("CB282B");
+	public override Color MapDrawingColor => new Color("4BFEC4");
 	public override Color RemoteTargetingLineColor => new Color("E15847FF");
 	public override Color RemoteTargetingLineOutline => new Color("801212FF");
 

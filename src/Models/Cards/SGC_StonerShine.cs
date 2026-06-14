@@ -1,6 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Combat.History.Entries;
+using MegaCrit.Sts2.Core.Entities.Powers;
+using ShinGetterMod.Models.Powers;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -24,9 +29,13 @@ public sealed class SGC_StonerShine : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // TODO: 对所有敌人造成 10 伤害，给予 2 衰退(DecayPower)
-        // TODO: 额外造成本场战斗获得的正面层数伤害
-        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+        decimal buffsGained = CombatManager.Instance.History.Entries.OfType<PowerReceivedEntry>()
+            .Where(entry => entry.Actor == Owner.Creature && entry.Power.Type == PowerType.Buff && entry.Amount > 0)
+            .Sum(entry => entry.Amount);
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue + buffsGained).FromCard(this)
+            .TargetingAllOpponents(CombatState).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+        foreach (var enemy in CombatState.GetOpponentsOf(Owner.Creature).Where(creature => creature.IsAlive))
+            await PowerCmd.Apply<SGP_Wane>(choiceContext, enemy, 2m, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()

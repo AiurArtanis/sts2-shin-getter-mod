@@ -6,6 +6,8 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using MegaCrit.Sts2.Core.Models.Powers;
+using System.Linq;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -16,6 +18,7 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_GetterRayOverflow : ShinGetterCardBase
 {
+    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Exhaust };
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new DamageVar(8m, ValueProp.Move) };
 
     public SGC_GetterRayOverflow()
@@ -26,13 +29,15 @@ public sealed class SGC_GetterRayOverflow : ShinGetterCardBase
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
-        // TODO: 本回合名字中有"盖塔"的卡牌费用减 1；消耗
-        // TODO: 一号机加成 — 获得 8 活力
-        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+        foreach (var card in PileType.Hand.GetPile(Owner).Cards.Where(card => card.GetType().Name.StartsWith("SGC_Getter", StringComparison.Ordinal)))
+            card.EnergyCost.AddThisTurnOrUntilPlayed(-1, reduceOnly: true);
+        if (HasForm(Owner, ShinGetterForm.Getter1))
+            await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, 8m, Owner.Creature, this);
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
     }
 
     protected override void OnUpgrade()
     {
-        // TODO: 费用 1 → 0
+        EnergyCost.UpgradeBy(-1);
     }
 }

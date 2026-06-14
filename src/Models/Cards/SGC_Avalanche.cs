@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using MegaCrit.Sts2.Core.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -26,9 +27,14 @@ public sealed class SGC_Avalanche : ShinGetterCardBase
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
-        // TODO: 消耗全部格挡，每消耗 1 点额外造成 1 伤害
-        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
-        // TODO: 三号机每有一层覆甲就额外造成 1 伤害
+        decimal consumedBlock = Owner.Creature.Block;
+        decimal plating = HasForm(Owner, ShinGetterForm.Getter3)
+            ? Owner.Creature.GetPower<PlatingPower>()?.Amount ?? 0
+            : 0;
+        await CreatureCmd.LoseBlock(Owner.Creature, consumedBlock);
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue + consumedBlock + plating)
+            .FromCard(this).Targeting(cardPlay.Target)
+            .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
     }
 
     protected override void OnUpgrade()

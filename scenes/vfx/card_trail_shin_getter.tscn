@@ -1,5 +1,43 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/vfx/card_trail_ironclad.tscn" id="1_ironclad"]
 
+[sub_resource type="Gradient" id="Gradient_outer"]
+offsets = PackedFloat32Array(0, 0.35, 1)
+colors = PackedColorArray(0, 0, 0, 0, 0.294118, 0.996078, 0.768627, 0.48, 0.74902, 1, 0.94902, 1)
+
+[sub_resource type="Gradient" id="Gradient_inner"]
+offsets = PackedFloat32Array(0, 0.45, 1)
+colors = PackedColorArray(0, 0, 0, 0, 0.086275, 0.72549, 0.552941, 0.42, 0.74902, 1, 0.94902, 1)
+
+[sub_resource type="Gradient" id="Gradient_big_sparks"]
+offsets = PackedFloat32Array(0, 0.45, 0.8, 1)
+colors = PackedColorArray(0.74902, 1, 0.94902, 1, 0.294118, 0.996078, 0.768627, 0.85, 0.086275, 0.72549, 0.552941, 0.45, 0.086275, 0.72549, 0.552941, 0)
+
+[sub_resource type="Gradient" id="Gradient_little_sparks"]
+colors = PackedColorArray(0.74902, 1, 0.94902, 1, 0.294118, 0.996078, 0.768627, 0)
+
 [node name="CardTrailShinGetter" instance=ExtResource("1_ironclad")]
+
+[node name="OuterTrail" parent="Trails" index="0"]
+modulate = Color(0.294118, 0.996078, 0.768627, 0.82)
+gradient = SubResource("Gradient_outer")
+
+[node name="InnerTrail" parent="Trails" index="1"]
+modulate = Color(0.74902, 1, 0.94902, 0.72)
+gradient = SubResource("Gradient_inner")
+
+[node name="BigSparks" parent="Sprites" index="0"]
+color_ramp = SubResource("Gradient_big_sparks")
+
+[node name="LittleSparks" parent="Sprites" index="1"]
+color_ramp = SubResource("Gradient_little_sparks")
+
+[node name="Sprite2D2" parent="Sprites" index="2"]
+modulate = Color(0.294118, 0.996078, 0.768627, 0.78)
+
+[node name="Sprite2D3" parent="Sprites" index="3"]
+modulate = Color(0.74902, 1, 0.94902, 0.58)
+
+[editable path="Trails"]
+[editable path="Sprites"]

@@ -1,0 +1,6 @@
+{
+  "SHIN_GETTER_TRANSFORM.title": "变形",
+  "SHIN_GETTER_TRANSFORM.description": "按一号机→二号机→三号机→一号机的顺序切换形态。真化形态下只触发一次变形事件，不改变形态。",
+  "SHIN_GETTER_SPIRIT_COMMAND.title": "精神指令卡",
+  "SHIN_GETTER_SPIRIT_COMMAND.description": "达到卡牌标注的气力要求后，该精神指令卡的能量消耗变为 0。"
+}

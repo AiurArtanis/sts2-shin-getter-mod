@@ -8,6 +8,9 @@ using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Models.Powers;
+using ShinGetterMod.Models.Cards;
 
 namespace ShinGetterMod.Models.Powers;
 
@@ -27,6 +30,12 @@ public sealed class SGP_IronWall : PowerModel
         if (target == base.Owner)
             return -base.Amount;
         return 0m;
+    }
+
+    public override async Task AfterDamageReceived(PlayerChoiceContext choiceContext, Creature target, DamageResult result, ValueProp props, Creature? dealer, CardModel? cardSource)
+    {
+        if (target == Owner && result.TotalDamage > 0 && Owner.Player is { } player && ShinGetterCardBase.IsInForm(player, ShinGetterForm.Getter3))
+            await PowerCmd.Apply<PlatingPower>(choiceContext, Owner, 1m, Owner, null);
     }
 
     public override async Task AfterEnergyReset(Player player)

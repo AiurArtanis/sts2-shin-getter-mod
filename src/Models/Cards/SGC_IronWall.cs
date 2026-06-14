@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -16,8 +17,9 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_IronWall : ShinGetterCardBase
 {
+    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Retain, CardKeyword.Exhaust };
     public override int SpiritRequirement => 2;
-    protected override IEnumerable<DynamicVar> CanonicalVars => System.Array.Empty<DynamicVar>();
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new PowerVar<SGP_IronWall>(5m) };
 
     public SGC_IronWall()
         : base(2, CardType.Skill, CardRarity.Rare, TargetType.Self)
@@ -26,12 +28,11 @@ public sealed class SGC_IronWall : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // TODO: 下回合开始前，受到的所有伤害减 5
-        // TODO: 三号机：受到伤害获得 1 覆甲
+        await PowerCmd.Apply<SGP_IronWall>(choiceContext, Owner.Creature, DynamicVars["SGP_IronWall"].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
     {
-        // 2→1 费
+        EnergyCost.UpgradeBy(-1);
     }
 }

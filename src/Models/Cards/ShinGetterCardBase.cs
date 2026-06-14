@@ -1,3 +1,4 @@
+#nullable enable
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -85,6 +86,8 @@ public abstract class ShinGetterCardBase : CardModel
         return GetCurrentForms(player).Contains(form);
     }
 
+    public static bool IsInForm(Player player, ShinGetterForm form) => HasForm(player, form);
+
     // ──── 变形 ────
 
     /// <summary>
@@ -102,19 +105,19 @@ public abstract class ShinGetterCardBase : CardModel
             return;
         }
 
-        var currentForms = GetCurrentForms(player);
-        ShinGetterForm current = ShinGetterForm.None;
+        PowerModel? currentPower = creature.GetPower<SGP_ShinGetterOne>()
+            ?? (PowerModel?)creature.GetPower<SGP_ShinGetterTwo>()
+            ?? creature.GetPower<SGP_ShinGetterThree>();
+        ShinGetterForm current = currentPower switch
+        {
+            SGP_ShinGetterOne => ShinGetterForm.Getter1,
+            SGP_ShinGetterTwo => ShinGetterForm.Getter2,
+            SGP_ShinGetterThree => ShinGetterForm.Getter3,
+            _ => ShinGetterForm.None,
+        };
 
-        // 确定当前形态
-        if (currentForms.Contains(ShinGetterForm.Getter1) && !currentForms.Contains(ShinGetterForm.Getter2))
-            current = ShinGetterForm.Getter1;
-        else if (currentForms.Contains(ShinGetterForm.Getter2) && !currentForms.Contains(ShinGetterForm.Getter3))
-            current = ShinGetterForm.Getter2;
-        else if (currentForms.Contains(ShinGetterForm.Getter3))
-            current = ShinGetterForm.Getter3;
-
-        // 移除所有旧形态
-        await RemoveAllFormPowers(choiceContext, creature);
+        if (currentPower != null)
+            await PowerCmd.Remove(currentPower);
 
         // 确定下一个形态
         ShinGetterForm next = current switch
@@ -124,7 +127,7 @@ public abstract class ShinGetterCardBase : CardModel
             _ => ShinGetterForm.Getter1,
         };
 
-        // 应用新形态
+        // The form power remains the first visible state throughout normal play.
         await ApplyFormPower(choiceContext, creature, next, player, cardSource);
 
         // 通知天选之子：变形计数+1
@@ -138,34 +141,10 @@ public abstract class ShinGetterCardBase : CardModel
     /// </summary>
     private static async Task TriggerShinFormTransform(PlayerChoiceContext choiceContext, Creature creature, CardModel cardSource)
     {
-        // 一号机效果：获得1活力
-        await PowerCmd.Apply<VigorPower>(
-            choiceContext, creature, 1m, creature, cardSource);
-
-        // 二号机效果：+1能量（通过直接给予能量）
-        if (creature.Player != null)
-            await PlayerCmd.GainEnergy(1, creature.Player);
-
-        // 三号机效果：格挡→覆甲（形态切换不影响属性，仅触发格挡转化）
-        // 三号机的 -2力/-2敏 只在形态变更时触发，真化形态不变不触发
-
-        // 通知天选之子：变形计数+1
+        // 真化形态只触发一次“发生了变形”的事件，不切换或重复施加形态入场效果。
         var chosenOne = creature.GetPower<SGP_ChosenOne>();
         if (chosenOne != null)
             await chosenOne.OnTransform(creature);
-    }
-
-    private static async Task RemoveAllFormPowers(PlayerChoiceContext choiceContext, Creature creature)
-    {
-        var one = creature.GetPower<SGP_ShinGetterOne>();
-        var two = creature.GetPower<SGP_ShinGetterTwo>();
-        var three = creature.GetPower<SGP_ShinGetterThree>();
-        var shin = creature.GetPower<SGP_ShinForm>();
-
-        if (one != null) await PowerCmd.Remove(one);
-        if (two != null) await PowerCmd.Remove(two);
-        if (three != null) await PowerCmd.Remove(three);
-        if (shin != null) await PowerCmd.Remove(shin);
     }
 
     private static async Task ApplyFormPower(PlayerChoiceContext choiceContext, Creature creature, ShinGetterForm form, Player player, CardModel cardSource)

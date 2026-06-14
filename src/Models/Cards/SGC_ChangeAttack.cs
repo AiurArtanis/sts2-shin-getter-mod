@@ -15,6 +15,7 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_ChangeAttack : ShinGetterCardBase
 {
+    protected override bool HasEnergyCostX => true;
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new DamageVar(5m, ValueProp.Move) };
 
     public SGC_ChangeAttack()
@@ -25,12 +26,16 @@ public sealed class SGC_ChangeAttack : ShinGetterCardBase
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
-        // TODO: 变形 X 次（X = 消耗能量数），每次造成 5 伤害
-        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+        int x = ResolveEnergyXValue() + (IsUpgraded ? 1 : 0);
+        for (int i = 0; i < x; i++)
+        {
+            await Transform(choiceContext, Owner, this);
+            await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this)
+                .Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+        }
     }
 
     protected override void OnUpgrade()
     {
-        // TODO: X → X+1 次变形
     }
 }

@@ -6,12 +6,13 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
 
 public sealed class SGC_InfiniteEvolution : ShinGetterCardBase
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars => System.Array.Empty<DynamicVar>();
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new PowerVar<SGP_InfiniteEvolution>(1m) };
 
     public SGC_InfiniteEvolution()
         : base(1, CardType.Skill, CardRarity.Event, TargetType.Self, false)
@@ -20,11 +21,11 @@ public sealed class SGC_InfiniteEvolution : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // TODO: 战斗结束后随机获得 1 永久力量/敏捷/最大生命
+        await PowerCmd.Apply<SGP_InfiniteEvolution>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
     {
-        // 1→0 费
+        EnergyCost.UpgradeBy(-1);
     }
 }

@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -15,7 +16,11 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_EvolutionEngine : ShinGetterCardBase
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars => System.Array.Empty<DynamicVar>();
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
+    {
+        new PowerVar<SGP_Evolution>(2m),
+        new PowerVar<SGP_EvolutionEngine>(1m),
+    };
 
     public SGC_EvolutionEngine()
         : base(2, CardType.Power, CardRarity.Rare, TargetType.Self)
@@ -24,12 +29,13 @@ public sealed class SGC_EvolutionEngine : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // TODO: 获得 2 进化(EvolutionPower)
-        // TODO: 施加 Power：进化后下一回合获得 1 能量
+        await PowerCmd.Apply<SGP_Evolution>(choiceContext, Owner.Creature, DynamicVars["SGP_Evolution"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<SGP_EvolutionEngine>(choiceContext, Owner.Creature, DynamicVars["SGP_EvolutionEngine"].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
     {
-        // 2→3 进化, 1→2 能量
+        DynamicVars["SGP_Evolution"].UpgradeValueBy(1m);
+        DynamicVars["SGP_EvolutionEngine"].UpgradeValueBy(1m);
     }
 }

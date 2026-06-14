@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -16,6 +17,7 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_LigerAssault : ShinGetterCardBase
 {
+    protected override bool HasEnergyCostX => true;
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new DamageVar(12m, ValueProp.Move) };
 
     public SGC_LigerAssault()
@@ -26,13 +28,14 @@ public sealed class SGC_LigerAssault : ShinGetterCardBase
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
-        // TODO: 造成 12 伤害 X 次（X = 消耗能量数）
-        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
-        // TODO: 二号机获得 X 分身
+        int x = ResolveEnergyXValue() + (IsUpgraded ? 1 : 0);
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).WithHitCount(x).FromCard(this)
+            .Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+        if (x > 0 && HasForm(Owner, ShinGetterForm.Getter2))
+            await PowerCmd.Apply<SGP_Shade>(choiceContext, Owner.Creature, x, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
     {
-        // X→X+1
     }
 }
