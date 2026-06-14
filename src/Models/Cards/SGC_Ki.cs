@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
@@ -7,16 +6,15 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
-using MegaCrit.Sts2.Core.ValueProps;
 using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
 /// 气势 | 技能 | 普通 | 1费 | 钢之魂流
-/// 保留。获得 1 气力，2 活力。消耗
+/// 保留。获得 1 气力，2 活力。消耗。
 /// </summary>
-public sealed class SGC_Vigor : ShinGetterCardBase
+public sealed class SGC_Ki : ShinGetterCardBase
 {
     public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Retain, CardKeyword.Exhaust };
 
@@ -32,7 +30,7 @@ public sealed class SGC_Vigor : ShinGetterCardBase
         new PowerVar<VigorPower>(2m),
     };
 
-    public SGC_Vigor()
+    public SGC_Ki()
         : base(1, CardType.Skill, CardRarity.Common, TargetType.Self)
     {
     }

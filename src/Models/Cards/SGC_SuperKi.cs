@@ -25,7 +25,7 @@ public sealed class SGC_SuperKi : ShinGetterCardBase
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         // TODO: 获 10 活力(VigorPower)
-        // TODO: 施加 Power：每回开始将 1 张「气势」(SGC_Vigor)加入手牌
+        // TODO: 施加 Power：每回开始将 1 张「气势」(SGC_Ki)加入手牌
     }
 
     protected override void OnUpgrade()

@@ -32,7 +32,7 @@ public sealed class ShinGetterCardPool : CardPoolModel
 			ModelDb.Card<SGC_GetterDrill>(),
 			ModelDb.Card<SGC_GetterRush>(),
 			ModelDb.Card<SGC_Meltdown>(),
-			ModelDb.Card<SGC_Vigor>(),
+			ModelDb.Card<SGC_Ki>(),
 			ModelDb.Card<SGC_Indomitable>(),
 			ModelDb.Card<SGC_TacticalRetreat>(),
 			ModelDb.Card<SGC_BlackArmor>(),

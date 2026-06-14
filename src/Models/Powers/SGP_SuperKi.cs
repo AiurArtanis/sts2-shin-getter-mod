@@ -30,7 +30,7 @@ public sealed class SGP_SuperKi : PowerModel
         var combatState = player.Creature.CombatState;
         if (combatState == null) return;
 
-        var card = combatState.CreateCard<SGC_Vigor>(player);
+        var card = combatState.CreateCard<SGC_Ki>(player);
         await CardPileCmd.AddGeneratedCardToCombat(card, PileType.Hand, player);
     }
 }
