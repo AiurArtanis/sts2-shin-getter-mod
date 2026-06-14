@@ -4,8 +4,10 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -16,6 +18,9 @@ namespace ShinGetterMod.Models.Cards;
 public sealed class SGC_FightingSpirit : ShinGetterCardBase
 {
     public override int SpiritRequirement => 2;
+    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Retain };
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[] { HoverTipFactory.FromPower<SGP_FightingSpirit>() };
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new DamageVar(6m, ValueProp.Move) };
 
@@ -26,11 +31,11 @@ public sealed class SGC_FightingSpirit : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // TODO: 施加 Power — 被攻击前先对敌人造成 6 伤害
+        await PowerCmd.Apply<SGP_FightingSpirit>(choiceContext, Owner.Creature, DynamicVars.Damage.BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
     {
-        // TODO: 6→9 伤害
+        DynamicVars.Damage.UpgradeValueBy(3m);
     }
 }

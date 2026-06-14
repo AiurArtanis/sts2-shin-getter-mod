@@ -16,19 +16,32 @@ public sealed class SGP_ChosenOne : PowerModel
     private class Data
     {
         public int transformCount;
+        public int threshold = 3;
     }
-
-    private const int Threshold = 3;
 
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
-    public override int DisplayAmount => System.Math.Max(0, Threshold - GetInternalData<Data>().transformCount % Threshold);
+    public override int DisplayAmount
+    {
+        get
+        {
+            var data = GetInternalData<Data>();
+            return System.Math.Max(0, data.threshold - data.transformCount % data.threshold);
+        }
+    }
 
     protected override System.Collections.Generic.IEnumerable<DynamicVar> CanonicalVars =>
         System.Array.Empty<DynamicVar>();
 
     protected override object InitInternalData() => new Data();
+
+    public void SetThreshold(int threshold)
+    {
+        var data = GetInternalData<Data>();
+        data.threshold = System.Math.Min(data.threshold, System.Math.Max(1, threshold));
+        InvokeDisplayAmountChanged();
+    }
 
     /// <summary>
     /// 每次变形时调用。达到阈值时获得气力。
@@ -39,7 +52,7 @@ public sealed class SGP_ChosenOne : PowerModel
         data.transformCount++;
         InvokeDisplayAmountChanged();
 
-        if (data.transformCount % Threshold == 0)
+        if (data.transformCount % data.threshold == 0)
         {
             await MegaCrit.Sts2.Core.Commands.PowerCmd.Apply<SGP_Ki>(
                 new MegaCrit.Sts2.Core.GameActions.Multiplayer.ThrowingPlayerChoiceContext(),

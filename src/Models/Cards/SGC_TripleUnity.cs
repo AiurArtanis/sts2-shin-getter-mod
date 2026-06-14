@@ -4,18 +4,21 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
 /// 三体同心 | 技能 | 罕见 | 1费 | 进化流
-/// 本回合接下来打出的 2 张牌后变形
+/// 接下来打出的 2 张牌，每张打出后变形
 /// </summary>
 public sealed class SGC_TripleUnity : ShinGetterCardBase
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars => System.Array.Empty<DynamicVar>();
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[] { HoverTipFactory.FromPower<SGP_TripleUnity>() };
+
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new PowerVar<SGP_TripleUnity>(2m) };
 
     public SGC_TripleUnity()
         : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
@@ -24,11 +27,12 @@ public sealed class SGC_TripleUnity : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // TODO: 本回合接下来打出的 2 张牌后变形
+        var power = await PowerCmd.Apply<SGP_TripleUnity>(choiceContext, Owner.Creature, DynamicVars["SGP_TripleUnity"].BaseValue, Owner.Creature, this);
+        power?.IgnoreNextTriggerFrom(this);
     }
 
     protected override void OnUpgrade()
     {
-        // TODO: 2→3 张
+        DynamicVars["SGP_TripleUnity"].UpgradeValueBy(1m);
     }
 }

@@ -4,10 +4,9 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Models.Powers;
-using MegaCrit.Sts2.Core.ValueProps;
 
 namespace ShinGetterMod.Models.Powers;
 
@@ -22,15 +21,16 @@ public sealed class SGP_Blueprint : PowerModel
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         System.Array.Empty<DynamicVar>();
 
-    public override async Task AfterDamageGiven(
-        MegaCrit.Sts2.Core.GameActions.Multiplayer.PlayerChoiceContext choiceContext,
-        Creature? dealer,
-        DamageResult result,
-        ValueProp props,
-        Creature target,
-        CardModel? cardSource)
+    public override async Task AfterCurrentHpChanged(Creature creature, decimal delta)
     {
-        if (target == Owner && result.UnblockedDamage > 0 && Amount > 0)
-            await PowerCmd.Apply<SGP_Evolution>(choiceContext, Owner, Amount, Owner, cardSource);
+        if (creature == Owner && delta < 0m && Amount > 0)
+        {
+            await PowerCmd.Apply<SGP_Evolution>(
+                new ThrowingPlayerChoiceContext(),
+                Owner,
+                Amount,
+                Owner,
+                null);
+        }
     }
 }

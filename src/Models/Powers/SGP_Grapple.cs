@@ -30,7 +30,7 @@ public sealed class SGP_Grapple : PowerModel
         if (attack.Attacker != Owner || hitCount <= 1)
             return hitCount;
 
-        return Math.Max(1, hitCount - Amount);
+        return Math.Max(0, hitCount - Amount);
     }
 
     public override async Task AfterSideTurnEnd(

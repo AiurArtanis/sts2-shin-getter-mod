@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -15,7 +16,13 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_SaotomeBlueprint : ShinGetterCardBase
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars => System.Array.Empty<DynamicVar>();
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[]
+    {
+        HoverTipFactory.FromPower<SGP_Blueprint>(),
+        HoverTipFactory.FromPower<SGP_Evolution>(),
+    };
+
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new PowerVar<SGP_Blueprint>(1m) };
 
     public SGC_SaotomeBlueprint()
         : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
@@ -24,11 +31,11 @@ public sealed class SGC_SaotomeBlueprint : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // TODO: 施加 Power — 失去生命时获得 1 进化
+        await PowerCmd.Apply<SGP_Blueprint>(choiceContext, Owner.Creature, DynamicVars["SGP_Blueprint"].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
     {
-        // TODO: 1→2 进化
+        DynamicVars["SGP_Blueprint"].UpgradeValueBy(1m);
     }
 }

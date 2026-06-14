@@ -4,8 +4,10 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -16,6 +18,12 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_DarkCape : ShinGetterCardBase
 {
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[]
+    {
+        HoverTipFactory.FromPower<SGP_DarkCape>(),
+        HoverTipFactory.FromPower<SGP_Airborne>(),
+    };
+
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] {
         new BlockVar(10m, ValueProp.Move),
         new DamageVar(2m, ValueProp.Move)
@@ -29,13 +37,15 @@ public sealed class SGC_DarkCape : ShinGetterCardBase
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.GainBlock(base.Owner.Creature, base.DynamicVars.Block, cardPlay);
-        // TODO: 本回合格挡每次格挡伤害就对所有敌人造成 2 伤害
-        // TODO: 一号机加成：获得 1 腾空
+        await PowerCmd.Apply<SGP_DarkCape>(choiceContext, Owner.Creature, DynamicVars.Damage.BaseValue, Owner.Creature, this);
+
+        if (HasForm(Owner, ShinGetterForm.Getter1))
+            await PowerCmd.Apply<SGP_Airborne>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
     {
         base.DynamicVars.Block.UpgradeValueBy(3m);
-        // TODO: 2→3 伤害
+        base.DynamicVars.Damage.UpgradeValueBy(1m);
     }
 }

@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
@@ -39,5 +40,14 @@ public sealed class SGP_DarkCape : PowerModel
                     Owner);
             }
         }
+    }
+
+    public override async Task AfterSideTurnEnd(
+        PlayerChoiceContext choiceContext,
+        CombatSide side,
+        IEnumerable<Creature> participants)
+    {
+        if (participants.Contains(Owner))
+            await PowerCmd.Remove(this);
     }
 }

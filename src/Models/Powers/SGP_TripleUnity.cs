@@ -17,35 +17,40 @@ namespace ShinGetterMod.Models.Powers;
 /// </summary>
 public sealed class SGP_TripleUnity : PowerModel
 {
-    private class Data
+    private sealed class Data
     {
-        public int cardsPlayed;
+        public CardModel? IgnoredCard;
     }
 
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
-
-    public override int DisplayAmount => System.Math.Max(0, base.Amount - GetInternalData<Data>().cardsPlayed);
 
     protected override System.Collections.Generic.IEnumerable<DynamicVar> CanonicalVars =>
         System.Array.Empty<DynamicVar>();
 
     protected override object InitInternalData() => new Data();
 
+    public void IgnoreNextTriggerFrom(CardModel card)
+    {
+        GetInternalData<Data>().IgnoredCard = card;
+    }
+
     public override async Task AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         var card = cardPlay.Card;
-        if (card.Owner.Creature != base.Owner) return;
-        var data = GetInternalData<Data>();
-        data.cardsPlayed++;
-        InvokeDisplayAmountChanged();
-
-        if (data.cardsPlayed < Amount)
+        if (card.Owner.Creature != base.Owner || Amount <= 0)
             return;
+
+        var data = GetInternalData<Data>();
+        if (ReferenceEquals(data.IgnoredCard, card))
+        {
+            data.IgnoredCard = null;
+            return;
+        }
 
         if (Owner.Player is { } player)
         {
-            await PowerCmd.Remove(this);
+            await PowerCmd.Decrement(this);
             await ShinGetterCardBase.Transform(choiceContext, player, card);
         }
     }

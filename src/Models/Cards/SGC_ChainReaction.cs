@@ -4,8 +4,10 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.ValueProps;
+using MegaCrit.Sts2.Core.Models.Powers;
+using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -15,7 +17,15 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_ChainReaction : ShinGetterCardBase
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars => System.Array.Empty<DynamicVar>();
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[]
+    {
+        HoverTipFactory.FromPower<SGP_ChainReaction>(),
+        HoverTipFactory.FromPower<VigorPower>(),
+        HoverTipFactory.FromPower<RegenPower>(),
+        HoverTipFactory.FromPower<PlatingPower>(),
+    };
+
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new PowerVar<SGP_ChainReaction>(1m) };
 
     public SGC_ChainReaction()
         : base(2, CardType.Power, CardRarity.Uncommon, TargetType.Self)
@@ -24,11 +34,11 @@ public sealed class SGC_ChainReaction : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // TODO: 施加 Power — 失去活力时，获得 1 再生和 1 覆甲
+        await PowerCmd.Apply<SGP_ChainReaction>(choiceContext, Owner.Creature, DynamicVars["SGP_ChainReaction"].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
     {
-        // TODO: 1→2 再生, 1→2 覆甲
+        DynamicVars["SGP_ChainReaction"].UpgradeValueBy(1m);
     }
 }

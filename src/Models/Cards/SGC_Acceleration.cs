@@ -4,15 +4,25 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
 
 public sealed class SGC_Acceleration : ShinGetterCardBase
 {
     public override int SpiritRequirement => 2;
-    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new EnergyVar(1) };
+    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Retain };
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[] { HoverTipFactory.FromPower<SGP_Acceleration>() };
+
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
+    {
+        new EnergyVar(1),
+        new CardsVar(1),
+        new PowerVar<SGP_Acceleration>(1m),
+    };
 
     public SGC_Acceleration()
         : base(3, CardType.Power, CardRarity.Uncommon, TargetType.Self)
@@ -21,11 +31,13 @@ public sealed class SGC_Acceleration : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // TODO: 施加 Power：每回合获得 1 能量，额外抽 1 张
+        await PowerCmd.Apply<SGP_Acceleration>(choiceContext, Owner.Creature, DynamicVars["SGP_Acceleration"].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
     {
-        // 1→2 能量, 1→2 张
+        DynamicVars.Energy.UpgradeValueBy(1m);
+        DynamicVars.Cards.UpgradeValueBy(1m);
+        DynamicVars["SGP_Acceleration"].UpgradeValueBy(1m);
     }
 }

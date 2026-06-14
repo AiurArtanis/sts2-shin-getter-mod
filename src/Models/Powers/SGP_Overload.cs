@@ -25,8 +25,8 @@ public sealed class SGP_Overload : PowerModel
         if (player != Owner.Player)
             return;
 
-        int energyLoss = System.Math.Min(Amount, 1);
+        int energyLoss = Amount;
         await PlayerCmd.GainEnergy(-energyLoss, player);
-        await PowerCmd.Decrement(this);
+        await PowerCmd.Remove(this);
     }
 }
