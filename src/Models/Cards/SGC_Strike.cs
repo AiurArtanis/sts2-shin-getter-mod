@@ -15,6 +15,7 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_Strike : ShinGetterCardBase
 {
+    protected override HashSet<CardTag> CanonicalTags => new() { CardTag.Strike };
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new DamageVar(6m, ValueProp.Move) };
 
     public SGC_Strike()

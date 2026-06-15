@@ -53,13 +53,87 @@ public abstract class ShinGetterCardBase : CardModel
             ["气势"] = _ => HoverTipFactory.FromCard<SGC_Ki>(),
             ["放射能"] = _ => HoverTipFactory.FromCard<SGC_Radiated>(),
             ["变形"] = _ => CustomTip("SHIN_GETTER_TRANSFORM"),
+            ["精神"] = _ => CustomTip("SHIN_GETTER_SPIRIT_COMMAND"),
             ["精神指令卡"] = _ => CustomTip("SHIN_GETTER_SPIRIT_COMMAND"),
+            ["专属形态卡"] = _ => CustomTip("SHIN_GETTER_FORM_CARD"),
+            ["真盖塔龙"] = _ => HoverTipFactory.FromPower<SGP_ShinForm>(),
+        };
+
+    private static readonly IReadOnlyDictionary<string, string[]> CardDescriptionTerms =
+        new Dictionary<string, string[]>
+        {
+            ["SGC_Acceleration"] = new[] { "精神" },
+            ["SGC_Annihilation"] = new[] { "放射能" },
+            ["SGC_AntiEvolution"] = new[] { "封印" },
+            ["SGC_Avalanche"] = new[] { "格挡", "覆甲", "三号机" },
+            ["SGC_AwakenedSoul"] = new[] { "精神" },
+            ["SGC_BackupPlan"] = new[] { "二号机" },
+            ["SGC_BlackArmor"] = new[] { "格挡", "一号机", "易伤", "虚弱", "脆弱" },
+            ["SGC_BoldPlan"] = new[] { "气力" },
+            ["SGC_ChainReaction"] = new[] { "活力", "再生", "覆甲" },
+            ["SGC_ChangeAttack"] = new[] { "变形" },
+            ["SGC_ChangeStrike"] = new[] { "变形", "活力", "再生", "覆甲" },
+            ["SGC_ChosenOne"] = new[] { "变形", "气力" },
+            ["SGC_DarkCape"] = new[] { "格挡", "一号机", "腾空" },
+            ["SGC_Defend"] = new[] { "格挡" },
+            ["SGC_Desperation"] = new[] { "精神指令卡", "力量", "缓冲", "人工制品" },
+            ["SGC_DiveStrike"] = new[] { "腾空", "一号机" },
+            ["SGC_Enable"] = new[] { "精神" },
+            ["SGC_EvolutionEngine"] = new[] { "进化" },
+            ["SGC_EvolutionResonance"] = new[] { "进化" },
+            ["SGC_ExpansionStrike"] = new[] { "三号机", "覆甲" },
+            ["SGC_FightingSpirit"] = new[] { "精神" },
+            ["SGC_FinalGetterBeam"] = new[] { "力量" },
+            ["SGC_FlashBurst"] = new[] { "易伤", "脆弱", "气力" },
+            ["SGC_GetterBeam"] = new[] { "衰退", "一号机", "活力" },
+            ["SGC_GetterChop"] = new[] { "格挡" },
+            ["SGC_GetterDrill"] = new[] { "二号机" },
+            ["SGC_GetterLaunch"] = new[] { "气力", "变形" },
+            ["SGC_GetterMissile"] = new[] { "三号机", "格挡" },
+            ["SGC_GetterNova"] = new[] { "活力", "辐射" },
+            ["SGC_GetterRayOverflow"] = new[] { "活力", "一号机" },
+            ["SGC_GetterRush"] = new[] { "易伤", "覆甲", "三号机" },
+            ["SGC_GetterTomahawk"] = new[] { "一号机", "活力" },
+            ["SGC_GetterWill"] = new[] { "一号机" },
+            ["SGC_Grapple"] = new[] { "虚弱", "三号机", "力量" },
+            ["SGC_Guts"] = new[] { "精神", "格挡" },
+            ["SGC_HedgehogTactic"] = new[] { "格挡", "活力" },
+            ["SGC_HotBlood"] = new[] { "精神" },
+            ["SGC_HurricaneStrike"] = new[] { "二号机", "敏捷" },
+            ["SGC_Indomitable"] = new[] { "易伤" },
+            ["SGC_InfiniteEvolution"] = new[] { "力量", "敏捷" },
+            ["SGC_InsectVirus"] = new[] { "衰退" },
+            ["SGC_Insight"] = new[] { "精神", "敏捷", "力量", "荆棘" },
+            ["SGC_IronWall"] = new[] { "精神", "三号机", "覆甲" },
+            ["SGC_Jammer"] = new[] { "分身", "变形", "二号机" },
+            ["SGC_Ki"] = new[] { "气力", "活力" },
+            ["SGC_LigerAssault"] = new[] { "二号机", "分身" },
+            ["SGC_Meltdown"] = new[] { "放射能" },
+            ["SGC_PoseidonThunder"] = new[] { "易伤", "虚弱", "脆弱" },
+            ["SGC_Radiated"] = new[] { "进化", "辐射" },
+            ["SGC_SaotomeBlueprint"] = new[] { "进化" },
+            ["SGC_SeizeFuture"] = new[] { "格挡" },
+            ["SGC_ShedLoad"] = new[] { "气力", "敏捷", "再生", "二号机" },
+            ["SGC_ShinForm"] = new[] { "真盖塔龙" },
+            ["SGC_Specialization"] = new[] { "专属形态卡", "二号机" },
+            ["SGC_SpiralDrill"] = new[] { "二号机", "格挡" },
+            ["SGC_Spirit"] = new[] { "精神", "气势" },
+            ["SGC_StarSlash"] = new[] { "一号机", "活力" },
+            ["SGC_SteelSpirit"] = new[] { "精神指令卡" },
+            ["SGC_StonerShine"] = new[] { "衰退" },
+            ["SGC_SuperKi"] = new[] { "活力", "气势" },
+            ["SGC_TacticalRetreat"] = new[] { "格挡", "变形" },
+            ["SGC_TomahawkFury"] = new[] { "活力", "一号机" },
+            ["SGC_TornadoDrill"] = new[] { "二号机", "格挡" },
+            ["SGC_TripleUnity"] = new[] { "变形" },
+            ["SGC_WarriorMedal"] = new[] { "气力", "再生", "覆甲" },
         };
 
     public override CardPoolModel Pool => ModelDb.CardPool<ShinGetterCardPool>();
 
     public virtual ShinGetterForm CardForm => ShinGetterForm.None;
     public virtual int SpiritRequirement => 0;
+    public virtual int UpgradePreviewSpiritRequirement => SpiritRequirement;
 
     protected ShinGetterCardBase(
         int canonicalEnergyCost,
@@ -78,9 +152,13 @@ public abstract class ShinGetterCardBase : CardModel
         get
         {
             string description = Description.GetRawText();
-            return TermTips
-                .Where(pair => description.Contains(pair.Key, StringComparison.Ordinal))
-                .Select(pair => pair.Value(this));
+            CardDescriptionTerms.TryGetValue(GetType().Name, out string[]? registeredTerms);
+            return TermTips.Keys
+                .Where(term => description.Contains(term, StringComparison.Ordinal))
+                .Concat(registeredTerms ?? Array.Empty<string>())
+                .Distinct(StringComparer.Ordinal)
+                .Where(TermTips.ContainsKey)
+                .Select(term => TermTips[term](this));
         }
     }
 

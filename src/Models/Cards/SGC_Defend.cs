@@ -11,6 +11,7 @@ namespace ShinGetterMod.Models.Cards;
 
 public sealed class SGC_Defend : ShinGetterCardBase
 {
+    protected override HashSet<CardTag> CanonicalTags => new() { CardTag.Defend };
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new BlockVar(5m, ValueProp.Move) };
 
     public SGC_Defend()

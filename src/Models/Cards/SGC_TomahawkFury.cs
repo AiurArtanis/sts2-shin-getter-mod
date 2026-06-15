@@ -14,7 +14,7 @@ namespace ShinGetterMod.Models.Cards;
 /// <summary>
 /// 战斧乱舞 | 攻击 | 罕见 | 2费 | 一号/输出终端
 /// 获得 3 活力，对所有敌人造成 5 伤害 2 次
-/// 一号机加成：斩杀时获得 2 活力
+/// 一号机加成：斩杀时获得 3 活力
 /// </summary>
 public sealed class SGC_TomahawkFury : ShinGetterCardBase
 {
@@ -35,7 +35,7 @@ public sealed class SGC_TomahawkFury : ShinGetterCardBase
         var attack = await DamageCmd.Attack(DynamicVars.Damage.BaseValue).WithHitCount(2).FromCard(this)
             .TargetingAllOpponents(CombatState).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
         if (HasForm(Owner, ShinGetterForm.Getter1) && attack.Results.SelectMany(results => results).Any(result => result.WasTargetKilled))
-            await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, 2m, Owner.Creature, this);
+            await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, 3m, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()

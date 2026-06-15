@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Combat;
@@ -9,6 +10,7 @@ using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 
@@ -37,8 +39,7 @@ public sealed class SGC_StarSlash : ShinGetterCardBase
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
         var selected = (await CardSelectCmd.FromCombatPile(choiceContext, PileType.Draw.GetPile(Owner), Owner,
             new CardSelectorPrefs(CardSelectorPrefs.ExhaustSelectionPrompt, DynamicVars.Cards.IntValue))).ToList();
-        decimal stackedValue = selected.SelectMany(card => card.DynamicVars.Values)
-            .Sum(variable => Math.Max(0m, variable.BaseValue));
+        decimal stackedValue = selected.Sum(card => SumDescriptionNumbers(card.GetDescriptionForPile(PileType.Draw).StripBbCode()));
         foreach (var card in selected)
             await CardCmd.Exhaust(choiceContext, card);
 
@@ -56,5 +57,16 @@ public sealed class SGC_StarSlash : ShinGetterCardBase
     protected override void OnUpgrade()
     {
         DynamicVars.Cards.UpgradeValueBy(1m);
+    }
+
+    private static decimal SumDescriptionNumbers(string description)
+    {
+        decimal total = 0m;
+        foreach (Match match in Regex.Matches(description, @"\d+"))
+        {
+            if (decimal.TryParse(match.Value, out decimal value))
+                total += value;
+        }
+        return total;
     }
 }

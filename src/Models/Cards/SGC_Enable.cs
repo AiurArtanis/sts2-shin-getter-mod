@@ -17,6 +17,7 @@ namespace ShinGetterMod.Models.Cards;
 public sealed class SGC_Enable : ShinGetterCardBase
 {
     public override int SpiritRequirement => IsUpgraded ? 4 : 5;
+    public override int UpgradePreviewSpiritRequirement => 4;
     public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Retain };
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new PowerVar<SGP_Enable>(1m) };
 

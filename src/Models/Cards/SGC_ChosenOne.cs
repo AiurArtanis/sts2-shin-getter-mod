@@ -12,13 +12,13 @@ namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
 /// 天选之子 | 能力 | 罕见 | 1费 | 钢之魂流/变形流
-/// 每变形 3 次，获得 1 气力
+/// 每变形 3 次，获得 2 气力
 /// </summary>
 public sealed class SGC_ChosenOne : ShinGetterCardBase
 {
     protected override IEnumerable<IHoverTip> ExtraHoverTips => WithContextualHoverTips(new IHoverTip[] { HoverTipFactory.FromPower<SGP_ChosenOne>() });
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new PowerVar<SGP_ChosenOne>(1m) };
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new PowerVar<SGP_ChosenOne>(2m) };
 
     public SGC_ChosenOne()
         : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
@@ -28,10 +28,11 @@ public sealed class SGC_ChosenOne : ShinGetterCardBase
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         var power = await PowerCmd.Apply<SGP_ChosenOne>(choiceContext, Owner.Creature, DynamicVars["SGP_ChosenOne"].BaseValue, Owner.Creature, this);
-        power?.SetThreshold(IsUpgraded ? 2 : 3);
+        power?.SetThreshold(3);
     }
 
     protected override void OnUpgrade()
     {
+        DynamicVars["SGP_ChosenOne"].UpgradeValueBy(1m);
     }
 }

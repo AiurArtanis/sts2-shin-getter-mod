@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.ValueProps;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -28,19 +26,17 @@ public sealed class SGC_Specialization : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        CardModel[] candidates = GetCurrentForms(Owner).SelectMany(form => form switch
+        foreach (ShinGetterForm form in GetCurrentForms(Owner))
         {
-            ShinGetterForm.Getter1 => new CardModel[] { ModelDb.Card<SGC_TomahawkFury>(), ModelDb.Card<SGC_GetterRayOverflow>(), ModelDb.Card<SGC_StarSlash>() },
-            ShinGetterForm.Getter2 => new CardModel[] { ModelDb.Card<SGC_TornadoDrill>(), ModelDb.Card<SGC_SpiralDrill>(), ModelDb.Card<SGC_LigerAssault>() },
-            ShinGetterForm.Getter3 => new CardModel[] { ModelDb.Card<SGC_ExpansionStrike>(), ModelDb.Card<SGC_Avalanche>(), ModelDb.Card<SGC_IronWall>() },
-            _ => System.Array.Empty<CardModel>(),
-        }).DistinctBy(card => card.GetType()).ToArray();
-        if (candidates.Length > 0)
-        {
-            var card = CombatState.CreateCard(Owner.RunState.Rng.CombatCardSelection.NextItem(candidates), Owner);
-            card.SetToFreeThisTurn();
-            await CardPileCmd.AddGeneratedCardToCombat(card, PileType.Hand, Owner);
+            CardModel[] candidates = GetFormCards(form);
+            if (candidates.Length > 0)
+            {
+                var card = CombatState.CreateCard(Owner.RunState.Rng.CombatCardSelection.NextItem(candidates), Owner);
+                card.SetToFreeThisTurn();
+                await CardPileCmd.AddGeneratedCardToCombat(card, PileType.Hand, Owner);
+            }
         }
+
         if (HasForm(Owner, ShinGetterForm.Getter2))
         {
             await PlayerCmd.GainEnergy(1, Owner);
@@ -52,4 +48,49 @@ public sealed class SGC_Specialization : ShinGetterCardBase
     {
         RemoveKeyword(CardKeyword.Exhaust);
     }
+
+    private static CardModel[] GetFormCards(ShinGetterForm form) => form switch
+    {
+        ShinGetterForm.Getter1 => new CardModel[]
+        {
+            ModelDb.Card<SGC_BlackArmor>(),
+            ModelDb.Card<SGC_DarkCape>(),
+            ModelDb.Card<SGC_Desperation>(),
+            ModelDb.Card<SGC_DiveStrike>(),
+            ModelDb.Card<SGC_GetterBeam>(),
+            ModelDb.Card<SGC_GetterRayOverflow>(),
+            ModelDb.Card<SGC_GetterTomahawk>(),
+            ModelDb.Card<SGC_GetterWill>(),
+            ModelDb.Card<SGC_Insight>(),
+            ModelDb.Card<SGC_StarSlash>(),
+            ModelDb.Card<SGC_TomahawkFury>(),
+        },
+        ShinGetterForm.Getter2 => new CardModel[]
+        {
+            ModelDb.Card<SGC_BackupPlan>(),
+            ModelDb.Card<SGC_Desperation>(),
+            ModelDb.Card<SGC_GetterDrill>(),
+            ModelDb.Card<SGC_HurricaneStrike>(),
+            ModelDb.Card<SGC_Insight>(),
+            ModelDb.Card<SGC_Jammer>(),
+            ModelDb.Card<SGC_LigerAssault>(),
+            ModelDb.Card<SGC_ShedLoad>(),
+            ModelDb.Card<SGC_SpiralDrill>(),
+            ModelDb.Card<SGC_TornadoDrill>(),
+        },
+        ShinGetterForm.Getter3 => new CardModel[]
+        {
+            ModelDb.Card<SGC_Avalanche>(),
+            ModelDb.Card<SGC_Desperation>(),
+            ModelDb.Card<SGC_ExpansionStrike>(),
+            ModelDb.Card<SGC_GetterElbow>(),
+            ModelDb.Card<SGC_GetterMissile>(),
+            ModelDb.Card<SGC_GetterRush>(),
+            ModelDb.Card<SGC_Grapple>(),
+            ModelDb.Card<SGC_HedgehogTactic>(),
+            ModelDb.Card<SGC_Insight>(),
+            ModelDb.Card<SGC_IronWall>(),
+        },
+        _ => System.Array.Empty<CardModel>(),
+    };
 }

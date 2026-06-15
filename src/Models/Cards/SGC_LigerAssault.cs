@@ -13,7 +13,7 @@ namespace ShinGetterMod.Models.Cards;
 /// <summary>
 /// 狮虎突击 | 攻击 | 稀有 | X费 | 二号/攻防一体
 /// 造成 12 伤害 X 次
-/// 二号机：获得 X 分身
+/// 二号机：获得 1 分身
 /// </summary>
 public sealed class SGC_LigerAssault : ShinGetterCardBase
 {
@@ -32,7 +32,7 @@ public sealed class SGC_LigerAssault : ShinGetterCardBase
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).WithHitCount(x).FromCard(this)
             .Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
         if (x > 0 && HasForm(Owner, ShinGetterForm.Getter2))
-            await PowerCmd.Apply<SGP_Shade>(choiceContext, Owner.Creature, x, Owner.Creature, this);
+            await PowerCmd.Apply<SGP_Shade>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
