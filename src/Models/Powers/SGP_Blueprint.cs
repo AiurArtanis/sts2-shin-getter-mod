@@ -25,6 +25,7 @@ public sealed class SGP_Blueprint : PowerModel
     {
         if (creature == Owner && delta < 0m && Amount > 0)
         {
+            Flash();
             await PowerCmd.Apply<SGP_Evolution>(
                 new ThrowingPlayerChoiceContext(),
                 Owner,

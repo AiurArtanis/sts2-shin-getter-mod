@@ -31,6 +31,7 @@ public sealed class SGP_WarriorMedal : PowerModel
         int ki = player.Creature.GetPower<SGP_Ki>()?.Amount ?? 0;
         if (ki <= 0 || base.Amount <= 0) return;
         int gain = ki * base.Amount;
+        Flash();
         var ctx = new ThrowingPlayerChoiceContext();
         await PowerCmd.Apply<RegenPower>(ctx, player.Creature, gain, player.Creature, null);
         await PowerCmd.Apply<PlatingPower>(ctx, player.Creature, gain, player.Creature, null);

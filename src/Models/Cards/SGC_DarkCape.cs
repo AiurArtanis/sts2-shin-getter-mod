@@ -18,11 +18,11 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_DarkCape : ShinGetterCardBase
 {
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[]
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => WithContextualHoverTips(new IHoverTip[]
     {
         HoverTipFactory.FromPower<SGP_DarkCape>(),
         HoverTipFactory.FromPower<SGP_Airborne>(),
-    };
+    });
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] {
         new BlockVar(10m, ValueProp.Move),

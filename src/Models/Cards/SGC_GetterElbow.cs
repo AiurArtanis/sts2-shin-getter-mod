@@ -13,7 +13,7 @@ namespace ShinGetterMod.Models.Cards;
 
 public sealed class SGC_GetterElbow : ShinGetterCardBase
 {
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[] { HoverTipFactory.FromPower<WeakPower>() };
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => WithContextualHoverTips(new IHoverTip[] { HoverTipFactory.FromPower<WeakPower>() });
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new DamageVar(6m, ValueProp.Move), new PowerVar<WeakPower>(1m) };
 
     public SGC_GetterElbow()

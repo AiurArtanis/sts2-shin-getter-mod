@@ -39,6 +39,7 @@ public sealed class SGP_HotBlood : PowerModel
         var data = GetInternalData<Data>();
         if (data.commandToModify != null) return Task.CompletedTask;
         data.commandToModify = command;
+        Flash();
         return Task.CompletedTask;
     }
 

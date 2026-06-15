@@ -39,6 +39,7 @@ public sealed class SGP_EvolutionEngine : PowerModel
         if (data.pendingEnergyGain)
         {
             data.pendingEnergyGain = false;
+            Flash();
             await PlayerCmd.GainEnergy(Amount, player);
         }
     }

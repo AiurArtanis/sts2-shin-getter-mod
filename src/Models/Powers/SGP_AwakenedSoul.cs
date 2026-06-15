@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Combat.History.Entries;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
@@ -24,6 +25,21 @@ public sealed class SGP_AwakenedSoul : PowerModel
 
     protected override System.Collections.Generic.IEnumerable<DynamicVar> CanonicalVars =>
         System.Array.Empty<DynamicVar>();
+
+    public override Task BeforeAttack(AttackCommand command)
+    {
+        if (command.ModelSource is CardModel card &&
+            card.Owner.Creature == Owner &&
+            card.Type == CardType.Attack &&
+            command.DamageProps.IsPoweredAttack())
+        {
+            int attacksStarted = CombatManager.Instance.History.CardPlaysStarted
+                .Count(e => e.Actor == Owner && e.CardPlay.IsFirstInSeries && e.HappenedThisTurn(CombatState));
+            if (attacksStarted <= Amount)
+                Flash();
+        }
+        return Task.CompletedTask;
+    }
 
     public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
     {

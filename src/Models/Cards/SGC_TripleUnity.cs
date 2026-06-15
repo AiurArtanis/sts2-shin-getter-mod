@@ -16,7 +16,7 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_TripleUnity : ShinGetterCardBase
 {
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[] { HoverTipFactory.FromPower<SGP_TripleUnity>() };
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => WithContextualHoverTips(new IHoverTip[] { HoverTipFactory.FromPower<SGP_TripleUnity>() });
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new PowerVar<SGP_TripleUnity>(2m) };
 

@@ -20,7 +20,7 @@ public sealed class SGC_HotBlood : ShinGetterCardBase
     public override int SpiritRequirement => 2;
     public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Retain, CardKeyword.Exhaust };
 
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[] { HoverTipFactory.FromPower<SGP_HotBlood>() };
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => WithContextualHoverTips(new IHoverTip[] { HoverTipFactory.FromPower<SGP_HotBlood>() });
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {

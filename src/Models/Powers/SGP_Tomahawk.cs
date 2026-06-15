@@ -27,6 +27,7 @@ public sealed class SGP_Tomahawk : PowerModel
         var player = base.Owner.Player;
         if (player == null || combatState == null) return;
 
+        Flash();
         // 创建并自动打出盖塔飞斧
         for (int i = 0; i < base.Amount; i++)
         {

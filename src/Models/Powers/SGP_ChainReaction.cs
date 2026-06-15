@@ -18,4 +18,6 @@ public sealed class SGP_ChainReaction : PowerModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         System.Array.Empty<DynamicVar>();
+
+    public void FlashTrigger() => Flash();
 }

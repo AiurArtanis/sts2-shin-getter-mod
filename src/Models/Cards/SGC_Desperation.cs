@@ -20,13 +20,13 @@ public sealed class SGC_Desperation : ShinGetterCardBase
 {
     public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Retain, CardKeyword.Exhaust };
 
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[]
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => WithContextualHoverTips(new IHoverTip[]
     {
         HoverTipFactory.FromPower<SGP_Desperation>(),
         HoverTipFactory.FromPower<StrengthPower>(),
         HoverTipFactory.FromPower<BufferPower>(),
         HoverTipFactory.FromPower<ArtifactPower>(),
-    };
+    });
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {

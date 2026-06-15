@@ -28,6 +28,7 @@ public sealed class SGP_Seal : PowerModel
         // 封印期间阻止所有Power层数增加（正值）
         if (amount > 0)
         {
+            Flash();
             modifiedAmount = 0m;
             return true;
         }

@@ -40,7 +40,10 @@ public sealed class SGP_Wane : PowerModel
         CardModel? cardSource)
     {
         if (target == Owner && result.UnblockedDamage > 0)
+        {
+            Flash();
             await PowerCmd.Apply<SGP_Wane>(choiceContext, Owner, 1m, dealer, cardSource);
+        }
     }
 
     public override async Task AfterSideTurnStart(

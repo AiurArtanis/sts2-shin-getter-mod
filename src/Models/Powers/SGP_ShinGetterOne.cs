@@ -25,6 +25,7 @@ public sealed class SGP_ShinGetterOne : PowerModel
     {
         if (base.Owner != null && base.Amount > 0)
         {
+            Flash();
             await PowerCmd.Apply<VigorPower>(new ThrowingPlayerChoiceContext(), base.Owner, 1m, base.Owner, null);
         }
     }

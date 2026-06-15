@@ -44,6 +44,7 @@ internal static class VigorPowerSetAmountPatch
 
         // 每减少 1 层活力 → 获得 chain.Amount 层再生+覆甲
         int gain = delta * chain.Amount;
+        chain.FlashTrigger();
         var ctx = new ThrowingPlayerChoiceContext();
         await PowerCmd.Apply<RegenPower>(ctx, owner, gain, owner, null);
         await PowerCmd.Apply<PlatingPower>(ctx, owner, gain, owner, null);

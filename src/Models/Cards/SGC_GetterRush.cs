@@ -13,7 +13,7 @@ namespace ShinGetterMod.Models.Cards;
 
 public sealed class SGC_GetterRush : ShinGetterCardBase
 {
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[] { HoverTipFactory.FromPower<VulnerablePower>() };
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => WithContextualHoverTips(new IHoverTip[] { HoverTipFactory.FromPower<VulnerablePower>() });
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new DamageVar(7m, ValueProp.Move), new PowerVar<VulnerablePower>(1m) };
 
     public SGC_GetterRush()

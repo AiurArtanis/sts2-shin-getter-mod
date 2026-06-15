@@ -17,6 +17,9 @@ public sealed class SGP_Enable : PowerModel
     public override async Task AfterTakingExtraTurn(Player player)
     {
         if (player == Owner.Player)
+        {
+            Flash();
             await PowerCmd.Decrement(this);
+        }
     }
 }

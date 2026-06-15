@@ -14,12 +14,12 @@ namespace ShinGetterMod.Models.Cards;
 
 public sealed class SGC_Grapple : ShinGetterCardBase
 {
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[]
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => WithContextualHoverTips(new IHoverTip[]
     {
         HoverTipFactory.FromPower<WeakPower>(),
         HoverTipFactory.FromPower<SGP_Grapple>(),
         HoverTipFactory.FromPower<StrengthPower>(),
-    };
+    });
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {

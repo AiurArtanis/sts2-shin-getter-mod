@@ -18,11 +18,11 @@ public sealed class SGC_Ki : ShinGetterCardBase
 {
     public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Retain, CardKeyword.Exhaust };
 
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[]
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => WithContextualHoverTips(new IHoverTip[]
     {
         HoverTipFactory.FromPower<SGP_Ki>(),
         HoverTipFactory.FromPower<VigorPower>(),
-    };
+    });
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {

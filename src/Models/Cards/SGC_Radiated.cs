@@ -16,11 +16,11 @@ public sealed class SGC_Radiated : ShinGetterCardBase
 {
     public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Exhaust };
 
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[]
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => WithContextualHoverTips(new IHoverTip[]
     {
         HoverTipFactory.FromPower<SGP_Evolution>(),
         HoverTipFactory.FromPower<SGP_Radiation>(),
-    };
+    });
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {

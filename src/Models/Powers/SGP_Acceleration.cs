@@ -25,6 +25,7 @@ public sealed class SGP_Acceleration : PowerModel
         if (player != Owner.Player)
             return;
 
+        Flash();
         await PlayerCmd.GainEnergy(base.Amount, player);
     }
 

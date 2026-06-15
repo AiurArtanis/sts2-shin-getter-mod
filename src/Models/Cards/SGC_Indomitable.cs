@@ -14,11 +14,11 @@ namespace ShinGetterMod.Models.Cards;
 
 public sealed class SGC_Indomitable : ShinGetterCardBase
 {
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[]
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => WithContextualHoverTips(new IHoverTip[]
     {
         HoverTipFactory.FromPower<VulnerablePower>(),
         HoverTipFactory.FromPower<SGP_Indomitable>(),
-    };
+    });
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {

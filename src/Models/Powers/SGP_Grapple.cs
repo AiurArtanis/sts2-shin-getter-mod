@@ -30,6 +30,7 @@ public sealed class SGP_Grapple : PowerModel
         if (attack.Attacker != Owner || hitCount <= 1)
             return hitCount;
 
+        Flash();
         return Math.Max(0, hitCount - Amount);
     }
 

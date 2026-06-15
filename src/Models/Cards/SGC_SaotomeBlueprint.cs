@@ -16,11 +16,11 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_SaotomeBlueprint : ShinGetterCardBase
 {
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[]
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => WithContextualHoverTips(new IHoverTip[]
     {
         HoverTipFactory.FromPower<SGP_Blueprint>(),
         HoverTipFactory.FromPower<SGP_Evolution>(),
-    };
+    });
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new PowerVar<SGP_Blueprint>(1m) };
 

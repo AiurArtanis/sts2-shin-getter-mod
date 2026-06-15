@@ -28,6 +28,7 @@ public sealed class SGP_ShinGetterTwo : PowerModel
         if (player != Owner.Player)
             return;
 
+        Flash();
         await PlayerCmd.GainEnergy(1, player);
     }
 

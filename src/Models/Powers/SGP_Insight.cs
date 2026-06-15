@@ -44,6 +44,7 @@ public sealed class SGP_Insight : PowerModel
         {
             var data = GetInternalData<Data>();
             data.TemporaryDexterity += Amount;
+            Flash();
             await PowerCmd.Apply<DexterityPower>(
                 new ThrowingPlayerChoiceContext(),
                 Owner,

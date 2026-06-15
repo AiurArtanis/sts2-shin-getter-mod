@@ -17,13 +17,13 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_WarriorMedal : ShinGetterCardBase
 {
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[]
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => WithContextualHoverTips(new IHoverTip[]
     {
         HoverTipFactory.FromPower<SGP_WarriorMedal>(),
         HoverTipFactory.FromPower<SGP_Ki>(),
         HoverTipFactory.FromPower<RegenPower>(),
         HoverTipFactory.FromPower<PlatingPower>(),
-    };
+    });
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new PowerVar<SGP_WarriorMedal>(1m) };
 

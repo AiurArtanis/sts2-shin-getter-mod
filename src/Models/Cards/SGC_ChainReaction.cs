@@ -17,13 +17,13 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_ChainReaction : ShinGetterCardBase
 {
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[]
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => WithContextualHoverTips(new IHoverTip[]
     {
         HoverTipFactory.FromPower<SGP_ChainReaction>(),
         HoverTipFactory.FromPower<VigorPower>(),
         HoverTipFactory.FromPower<RegenPower>(),
         HoverTipFactory.FromPower<PlatingPower>(),
-    };
+    });
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new PowerVar<SGP_ChainReaction>(1m) };
 

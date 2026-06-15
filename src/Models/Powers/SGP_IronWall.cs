@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
@@ -25,6 +26,13 @@ public sealed class SGP_IronWall : PowerModel
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         System.Array.Empty<DynamicVar>();
 
+    public override Task BeforeDamageReceived(PlayerChoiceContext choiceContext, Creature target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
+    {
+        if (target == Owner && amount > 0m)
+            Flash();
+        return Task.CompletedTask;
+    }
+
     public override decimal ModifyDamageAdditive(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
         if (target == base.Owner)
@@ -35,7 +43,10 @@ public sealed class SGP_IronWall : PowerModel
     public override async Task AfterDamageReceived(PlayerChoiceContext choiceContext, Creature target, DamageResult result, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
         if (target == Owner && result.TotalDamage > 0 && Owner.Player is { } player && ShinGetterCardBase.IsInForm(player, ShinGetterForm.Getter3))
+        {
+            Flash();
             await PowerCmd.Apply<PlatingPower>(choiceContext, Owner, 1m, Owner, null);
+        }
     }
 
     public override async Task AfterEnergyReset(Player player)

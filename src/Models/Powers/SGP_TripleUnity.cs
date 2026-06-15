@@ -50,6 +50,7 @@ public sealed class SGP_TripleUnity : PowerModel
 
         if (Owner.Player is { } player)
         {
+            Flash();
             await PowerCmd.Decrement(this);
             await ShinGetterCardBase.Transform(choiceContext, player, card);
         }
