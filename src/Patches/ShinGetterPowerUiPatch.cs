@@ -19,6 +19,38 @@ internal static class ShinGetterPowerHoverPatch
     }
 }
 
+[HarmonyPatch(typeof(NPower), "Reload")]
+internal static class ShinGetterPowerIconFlashPatch
+{
+    private static void Postfix(NPower __instance)
+    {
+        if (__instance.Model.GetType().Namespace != typeof(SGP_Ki).Namespace)
+            return;
+
+        __instance.GetNode<CpuParticles2D>("%PowerFlash").Texture = __instance.Model.Icon;
+    }
+}
+
+[HarmonyPatch(typeof(NPowerFlashVfx), "StartVfx")]
+internal static class ShinGetterPowerBigFlashPatch
+{
+    private static readonly AccessTools.FieldRef<NPowerFlashVfx, PowerModel> PowerRef =
+        AccessTools.FieldRefAccess<NPowerFlashVfx, PowerModel>("_power");
+
+    private static readonly AccessTools.FieldRef<NPowerFlashVfx, Sprite2D> SpriteRef =
+        AccessTools.FieldRefAccess<NPowerFlashVfx, Sprite2D>("_sprite");
+
+    private static void Postfix(NPowerFlashVfx __instance)
+    {
+        PowerModel power = PowerRef(__instance);
+        if (power.GetType().Namespace != typeof(SGP_Ki).Namespace)
+            return;
+
+        Sprite2D sprite = SpriteRef(__instance);
+        sprite.Texture = power.Icon;
+    }
+}
+
 [HarmonyPatch(typeof(NPowerRemovedVfx), nameof(NPowerRemovedVfx.Create))]
 internal static class ShinGetterPowerRemovedVfxPatch
 {

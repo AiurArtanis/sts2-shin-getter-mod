@@ -26,6 +26,7 @@ public sealed class SGP_Desperation : PowerModel
         System.Array.Empty<DynamicVar>();
 
     private bool _spiritCardsAreFree = true;
+    private bool _hasRecovered;
 
     public override bool TryModifyEnergyCostInCombatLate(CardModel card, decimal originalCost, out decimal modifiedCost)
     {
@@ -44,10 +45,15 @@ public sealed class SGP_Desperation : PowerModel
         return Task.CompletedTask;
     }
 
-    public override async Task AfterCombatVictory(CombatRoom _)
+    public override Task AfterCombatEnd(CombatRoom room) => RecoverAfterCombat();
+
+    public override Task AfterCombatVictory(CombatRoom _) => RecoverAfterCombat();
+
+    private async Task RecoverAfterCombat()
     {
-        if (!base.Owner.IsDead && base.Amount > 0)
+        if (!_hasRecovered && !base.Owner.IsDead && base.Amount > 0)
         {
+            _hasRecovered = true;
             await CreatureCmd.Heal(base.Owner, base.Amount);
         }
     }

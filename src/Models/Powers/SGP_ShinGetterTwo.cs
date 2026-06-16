@@ -23,13 +23,12 @@ public sealed class SGP_ShinGetterTwo : PowerModel
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         System.Array.Empty<DynamicVar>();
 
-    public override async Task AfterEnergyReset(Player player)
+    public override decimal ModifyMaxEnergy(Player player, decimal amount)
     {
         if (player != Owner.Player)
-            return;
+            return amount;
 
-        Flash();
-        await PlayerCmd.GainEnergy(1, player);
+        return amount + 1m;
     }
 
     public override decimal ModifyHandDraw(Player player, decimal count)
