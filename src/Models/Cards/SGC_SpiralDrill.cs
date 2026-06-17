@@ -34,7 +34,7 @@ public sealed class SGC_SpiralDrill : ShinGetterCardBase
         else
         {
             await DamageCmd.Attack(DynamicVars.Damage.BaseValue).WithHitCount(4).FromCard(this)
-                .Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+                .Targeting(cardPlay.Target).WithHitFx("vfx/vfx_heavy_blunt").Execute(choiceContext);
         }
     }
 

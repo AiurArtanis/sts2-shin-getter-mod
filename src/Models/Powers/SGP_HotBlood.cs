@@ -49,6 +49,8 @@ public sealed class SGP_HotBlood : PowerModel
         if (cardSource.Owner.Creature != base.Owner) return 1m;
         if (!props.IsPoweredAttack()) return 1m;
         var data = GetInternalData<Data>();
+        if (data.commandToModify == null && Amount > 0 && cardSource.Type == CardType.Attack)
+            return 2m;
         if (data.commandToModify != null && cardSource == data.commandToModify.ModelSource)
             return 2m;
         return 1m;

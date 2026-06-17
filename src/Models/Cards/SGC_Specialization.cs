@@ -58,7 +58,7 @@ public sealed class SGC_Specialization : ShinGetterCardBase
             ModelDb.Card<SGC_Desperation>(),
             ModelDb.Card<SGC_DiveStrike>(),
             ModelDb.Card<SGC_GetterBeam>(),
-            ModelDb.Card<SGC_GetterRayOverflow>(),
+            ModelDb.Card<SGC_GetterFlash>(),
             ModelDb.Card<SGC_GetterTomahawk>(),
             ModelDb.Card<SGC_GetterWill>(),
             ModelDb.Card<SGC_Insight>(),

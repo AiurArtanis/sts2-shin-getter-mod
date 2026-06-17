@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Models.Relics;
 using MegaCrit.Sts2.Core.Nodes.Vfx;
 using ShinGetterMod.Models.CardPools;
+using ShinGetterMod.Models.Cards;
 using ShinGetterMod.Models.Relics;
 using ShinGetterMod.Models.RelicPools;
 
@@ -27,8 +28,19 @@ public sealed class ShinGetter : CharacterModel
 	public override PotionPoolModel PotionPool => ModelDb.PotionPool<SharedPotionPool>();
 	public override RelicPoolModel RelicPool => ModelDb.RelicPool<ShinGetterRelicPool>();
 
-	// Temporary test deck: include one copy of every Shin Getter card.
-	public override IEnumerable<CardModel> StartingDeck => CardPool.AllCards;
+	public override IEnumerable<CardModel> StartingDeck => new CardModel[]
+	{
+		ModelDb.Card<SGC_Strike>(),
+		ModelDb.Card<SGC_Strike>(),
+		ModelDb.Card<SGC_Strike>(),
+		ModelDb.Card<SGC_Strike>(),
+		ModelDb.Card<SGC_Defend>(),
+		ModelDb.Card<SGC_Defend>(),
+		ModelDb.Card<SGC_Defend>(),
+		ModelDb.Card<SGC_Defend>(),
+		ModelDb.Card<SGC_GetterLaunch>(),
+		ModelDb.Card<SGC_GetterBeam>(),
+	};
 	public override IReadOnlyList<RelicModel> StartingRelics => new RelicModel[] { ModelDb.Relic<GetterFurnace>() };
 
 	protected override string CharacterSelectIconPath =>

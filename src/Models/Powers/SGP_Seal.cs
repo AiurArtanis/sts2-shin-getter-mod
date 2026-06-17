@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Powers;
 
 namespace ShinGetterMod.Models.Powers;
 
@@ -25,8 +26,8 @@ public sealed class SGP_Seal : PowerModel
 
     public override bool TryModifyPowerAmountReceived(PowerModel canonicalPower, Creature target, decimal amount, Creature? applier, out decimal modifiedAmount)
     {
-        // 封印期间阻止所有Power层数增加（正值）
-        if (amount > 0)
+        // 封印阻止外部新增层数；再生等状态自身的回合结算仍需要正常衰减/触发。
+        if (amount > 0 && canonicalPower is not RegenPower)
         {
             Flash();
             modifiedAmount = 0m;

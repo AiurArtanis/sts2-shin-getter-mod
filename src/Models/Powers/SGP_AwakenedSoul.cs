@@ -1,8 +1,8 @@
 #nullable enable
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;
-using MegaCrit.Sts2.Core.Combat.History.Entries;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -20,23 +20,43 @@ namespace ShinGetterMod.Models.Powers;
 /// </summary>
 public sealed class SGP_AwakenedSoul : PowerModel
 {
+    private class Data
+    {
+        public int remaining = -1;
+    }
+
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
+    public override int DisplayAmount => Remaining;
 
     protected override System.Collections.Generic.IEnumerable<DynamicVar> CanonicalVars =>
         System.Array.Empty<DynamicVar>();
+
+    protected override object InitInternalData() => new Data();
+
+    public override Task AfterApplied(Creature? applier, CardModel? cardSource)
+    {
+        ResetCounter();
+        return Task.CompletedTask;
+    }
+
+    public override Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants, ICombatState combatState)
+    {
+        if (participants.Contains(Owner))
+            ResetCounter();
+
+        return Task.CompletedTask;
+    }
 
     public override Task BeforeAttack(AttackCommand command)
     {
         if (command.ModelSource is CardModel card &&
             card.Owner.Creature == Owner &&
             card.Type == CardType.Attack &&
-            command.DamageProps.IsPoweredAttack())
+            command.DamageProps.IsPoweredAttack() &&
+            Remaining > 0)
         {
-            int attacksStarted = CombatManager.Instance.History.CardPlaysStarted
-                .Count(e => e.Actor == Owner && e.CardPlay.IsFirstInSeries && e.HappenedThisTurn(CombatState));
-            if (attacksStarted <= Amount)
-                Flash();
+            Flash();
         }
         return Task.CompletedTask;
     }
@@ -47,9 +67,37 @@ public sealed class SGP_AwakenedSoul : PowerModel
         if (cardSource.Owner.Creature != base.Owner) return 1m;
         if (cardSource.Type != CardType.Attack) return 1m;
         if (!props.IsPoweredAttack()) return 1m;
-        int attacksStarted = CombatManager.Instance.History.CardPlaysStarted
-            .Count(e => e.Actor == base.Owner && e.CardPlay.IsFirstInSeries && e.HappenedThisTurn(base.CombatState));
-        if (attacksStarted > base.Amount) return 1m;
+        if (Remaining <= 0) return 1m;
         return 2m;
+    }
+
+    public override Task AfterAttack(PlayerChoiceContext choiceContext, AttackCommand command)
+    {
+        if (command.ModelSource is CardModel card &&
+            card.Owner.Creature == Owner &&
+            card.Type == CardType.Attack &&
+            command.DamageProps.IsPoweredAttack() &&
+            Remaining > 0)
+        {
+            GetInternalData<Data>().remaining--;
+            InvokeDisplayAmountChanged();
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private int Remaining
+    {
+        get
+        {
+            int remaining = GetInternalData<Data>().remaining;
+            return remaining < 0 ? Amount : remaining;
+        }
+    }
+
+    private void ResetCounter()
+    {
+        GetInternalData<Data>().remaining = Amount;
+        InvokeDisplayAmountChanged();
     }
 }

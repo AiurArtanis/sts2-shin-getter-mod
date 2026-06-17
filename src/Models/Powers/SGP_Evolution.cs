@@ -49,6 +49,7 @@ public sealed class SGP_Evolution : PowerModel
         await PowerCmd.ModifyAmount(choiceContext, vigor!, -evolutionAmount, null, null);
         await PowerCmd.ModifyAmount(choiceContext, regen!, -evolutionAmount, null, null);
         await PowerCmd.ModifyAmount(choiceContext, plating!, -evolutionAmount, null, null);
+        await PowerCmd.ModifyAmount(choiceContext, this, -evolutionAmount, null, null);
 
         await PowerCmd.Apply<StrengthPower>(choiceContext, Owner, evolutionAmount, Owner, null);
         await CreatureCmd.GainMaxHp(Owner, evolutionAmount);

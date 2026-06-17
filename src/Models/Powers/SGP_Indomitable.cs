@@ -51,13 +51,14 @@ public sealed class SGP_Indomitable : PowerModel
         return 0m;
     }
 
-    public override async Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants, ICombatState combatState)
+    public override async Task AfterSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, IEnumerable<Creature> participants)
     {
         if (!participants.Contains(Owner))
             return;
 
         var data = GetInternalData<Data>();
-        if (data.delayedDamage > 0 && data.delayedRound < combatState.RoundNumber)
+        int currentRound = CombatState?.RoundNumber ?? 0;
+        if (data.delayedDamage > 0 && data.delayedRound < currentRound)
         {
             decimal delayedDamage = data.delayedDamage;
             int chargesConsumed = data.chargesConsumed;
@@ -67,7 +68,7 @@ public sealed class SGP_Indomitable : PowerModel
             InvokeDisplayAmountChanged();
 
             await CreatureCmd.Damage(
-                new ThrowingPlayerChoiceContext(),
+                choiceContext,
                 Owner,
                 delayedDamage,
                 ValueProp.Unpowered | ValueProp.Unblockable,

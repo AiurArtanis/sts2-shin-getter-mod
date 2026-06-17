@@ -12,16 +12,16 @@ using System.Linq;
 namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
-/// 盖塔线爆发 | 攻击 | 罕见 | 1费 | 一号/输出终端
+/// 盖塔闪光 | 攻击 | 罕见 | 1费 | 一号/输出终端
 /// 造成 8 伤害，本回合名字中有"盖塔"的卡牌费用减 1，消耗
 /// 一号机加成：获得 8 活力
 /// </summary>
-public sealed class SGC_GetterRayOverflow : ShinGetterCardBase
+public sealed class SGC_GetterFlash : ShinGetterCardBase
 {
     public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Exhaust };
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new DamageVar(8m, ValueProp.Move) };
 
-    public SGC_GetterRayOverflow()
+    public SGC_GetterFlash()
         : base(1, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
     {
     }
@@ -33,7 +33,7 @@ public sealed class SGC_GetterRayOverflow : ShinGetterCardBase
             card.EnergyCost.AddThisTurnOrUntilPlayed(-1, reduceOnly: true);
         if (HasForm(Owner, ShinGetterForm.Getter1))
             await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, 8m, Owner.Creature, this);
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_starry_impact").Execute(choiceContext);
     }
 
     protected override void OnUpgrade()

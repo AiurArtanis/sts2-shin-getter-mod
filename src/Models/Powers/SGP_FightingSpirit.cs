@@ -36,4 +36,12 @@ public sealed class SGP_FightingSpirit : PowerModel
                 null);
         }
     }
+
+    public override decimal ModifyHpLostAfterOstyLate(Creature target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
+    {
+        if (target == Owner && dealer?.IsDead == true && props.IsPoweredAttack())
+            return 0m;
+
+        return amount;
+    }
 }

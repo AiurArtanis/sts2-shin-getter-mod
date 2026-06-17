@@ -33,7 +33,7 @@ public sealed class SGC_TomahawkFury : ShinGetterCardBase
     {
         await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, DynamicVars["VigorPower"].BaseValue, Owner.Creature, this);
         var attack = await DamageCmd.Attack(DynamicVars.Damage.BaseValue).WithHitCount(2).FromCard(this)
-            .TargetingAllOpponents(CombatState).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+            .TargetingAllOpponents(CombatState).WithHitFx("vfx/vfx_giant_horizontal_slash").Execute(choiceContext);
         if (HasForm(Owner, ShinGetterForm.Getter1) && attack.Results.SelectMany(results => results).Any(result => result.WasTargetKilled))
             await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, 3m, Owner.Creature, this);
     }

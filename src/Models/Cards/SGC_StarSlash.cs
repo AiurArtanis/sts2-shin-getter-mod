@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Combat;
@@ -12,6 +11,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 
 namespace ShinGetterMod.Models.Cards;
@@ -39,7 +39,7 @@ public sealed class SGC_StarSlash : ShinGetterCardBase
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
         var selected = (await CardSelectCmd.FromCombatPile(choiceContext, PileType.Draw.GetPile(Owner), Owner,
             new CardSelectorPrefs(CardSelectorPrefs.ExhaustSelectionPrompt, DynamicVars.Cards.IntValue))).ToList();
-        decimal stackedValue = selected.Sum(card => SumDescriptionNumbers(card.GetDescriptionForPile(PileType.Draw).StripBbCode()));
+        decimal stackedValue = selected.Sum(SumOriginalCardValues);
         foreach (var card in selected)
             await CardCmd.Exhaust(choiceContext, card);
 
@@ -51,7 +51,7 @@ public sealed class SGC_StarSlash : ShinGetterCardBase
                 .Sum(entry => entry.Amount);
         }
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue + stackedValue + vigorGained).FromCard(this)
-            .Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+            .Targeting(cardPlay.Target).WithHitFx("vfx/vfx_giant_horizontal_slash").Execute(choiceContext);
     }
 
     protected override void OnUpgrade()
@@ -59,14 +59,19 @@ public sealed class SGC_StarSlash : ShinGetterCardBase
         DynamicVars.Cards.UpgradeValueBy(1m);
     }
 
-    private static decimal SumDescriptionNumbers(string description)
+    private static decimal SumOriginalCardValues(CardModel card)
     {
-        decimal total = 0m;
-        foreach (Match match in Regex.Matches(description, @"\d+"))
+        decimal total = card.DynamicVars.ContainsKey("CalculatedDamage")
+            ? card.DynamicVars.CalculationBase.BaseValue
+            : 0m;
+
+        foreach (DynamicVar dynamicVar in card.DynamicVars.Values)
         {
-            if (decimal.TryParse(match.Value, out decimal value))
-                total += value;
+            if (dynamicVar.Name is "CalculatedDamage" or "CalculationBase" or "CalculationExtra" or "ExtraDamage")
+                continue;
+            total += dynamicVar.BaseValue;
         }
+
         return total;
     }
 }

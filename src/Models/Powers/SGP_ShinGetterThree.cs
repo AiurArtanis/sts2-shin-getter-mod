@@ -56,8 +56,10 @@ public sealed class SGP_ShinGetterThree : PowerModel
         if (target != Owner || cardSource is null)
             return 1m;
 
-        if (cardPlay is not null)
-            GetInternalData<Data>().PendingPlating = Math.Max(block, 0m);
+        if (cardPlay is null)
+            return 1m;
+
+        GetInternalData<Data>().PendingPlating = Math.Max(block, 0m);
 
         return 0m;
     }

@@ -38,7 +38,7 @@ public sealed class SGC_GetterDrill : ShinGetterCardBase
 
     public override async Task AfterCardExhausted(PlayerChoiceContext choiceContext, CardModel card, bool causedByEthereal)
     {
-        if (card.Owner != Owner || Pile?.Type is PileType.Hand or PileType.Play)
+        if (card.Owner != Owner || card == this || Pile?.Type is not (PileType.Draw or PileType.Discard))
             return;
 
         await CardPileCmd.Add(this, PileType.Hand);

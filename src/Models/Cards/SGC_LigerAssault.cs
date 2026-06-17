@@ -30,7 +30,7 @@ public sealed class SGC_LigerAssault : ShinGetterCardBase
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
         int x = ResolveEnergyXValue() + (IsUpgraded ? 1 : 0);
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).WithHitCount(x).FromCard(this)
-            .Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+            .Targeting(cardPlay.Target).WithHitFx("vfx/vfx_scratch").Execute(choiceContext);
         if (x > 0 && HasForm(Owner, ShinGetterForm.Getter2))
             await PowerCmd.Apply<SGP_Shade>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
     }
