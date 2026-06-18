@@ -12,6 +12,7 @@ obj/
 *.pdb
 *.tmp
 *.Backup.tmp
+tmp/
 
 # Mod build/export output
 /build/

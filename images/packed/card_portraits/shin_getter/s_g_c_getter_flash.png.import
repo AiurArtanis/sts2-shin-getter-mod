@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b16dnd2bklchk"
-path="res://.godot/imported/power_029.png-1e1838a5497abfd08556cce6ec661536.ctex"
+uid="uid://cfuvb4x66qh4s"
+path="res://.godot/imported/s_g_c_getter_flash.png-42e50b98c1a4e6535221408c13ea57af.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://images/powers/power_029.png"
-dest_files=["res://.godot/imported/power_029.png-1e1838a5497abfd08556cce6ec661536.ctex"]
+source_file="res://images/packed/card_portraits/shin_getter/s_g_c_getter_flash.png"
+dest_files=["res://.godot/imported/s_g_c_getter_flash.png-42e50b98c1a4e6535221408c13ea57af.ctex"]
 
 [params]
 

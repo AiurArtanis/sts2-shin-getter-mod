@@ -77,7 +77,7 @@ public sealed class ShinGetterCardPool : CardPoolModel
 			ModelDb.Card<SGC_Guts>(),
 			ModelDb.Card<SGC_GetterNova>(),
 			ModelDb.Card<SGC_BoldPlan>(),
-			ModelDb.Card<SGC_GetterRayBurst>(),
+			ModelDb.Card<SGC_GetterRayOverflow>(),
 			ModelDb.Card<SGC_AwakenedSoul>(),
 			ModelDb.Card<SGC_SuperKi>(),
 			ModelDb.Card<SGC_EvolutionEngine>(),

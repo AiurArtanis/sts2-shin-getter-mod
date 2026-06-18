@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b3opymf01m4pr"
-path="res://.godot/imported/power_020.png-582a811f4f4973496596e6250db27e92.ctex"
+uid="uid://d20mlpk1mivn4"
+path="res://.godot/imported/s_g_c_shining_spark.png-44d252b8f435fd20c69b65a52e791f84.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://images/powers/power_020.png"
-dest_files=["res://.godot/imported/power_020.png-582a811f4f4973496596e6250db27e92.ctex"]
+source_file="res://images/packed/card_portraits/shin_getter/s_g_c_shining_spark.png"
+dest_files=["res://.godot/imported/s_g_c_shining_spark.png-44d252b8f435fd20c69b65a52e791f84.ctex"]
 
 [params]
 

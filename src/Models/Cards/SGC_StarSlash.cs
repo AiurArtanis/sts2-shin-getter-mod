@@ -53,7 +53,7 @@ public sealed class SGC_StarSlash : ShinGetterCardBase
         }
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue + stackedValue + vigorGained).FromCard(this)
             .Targeting(cardPlay.Target)
-            .WithHitVfxNode(_ => ShinGetterCombatVfx.CreateGetterSlashImpact())
+            .BeforeDamage(() => ShinGetterCombatVfx.PlayHeavyCleave(Owner.Creature, new[] { cardPlay.Target }))
             .WithHitFx("vfx/vfx_giant_horizontal_slash").Execute(choiceContext);
     }
 

@@ -18,41 +18,41 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_ShiningSpark : ShinGetterCardBase
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
-    {
-        new DamageVar(10m, ValueProp.Move),
-        new DynamicVar("KiDamage", 5m),
-    };
+	protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
+	{
+		new DamageVar(10m, ValueProp.Move),
+		new DynamicVar("KiDamage", 5m),
+	};
 
-    public SGC_ShiningSpark()
-        : base(1, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)
-    {
-    }
+	public SGC_ShiningSpark()
+		: base(1, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)
+	{
+	}
 
-    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-        ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
-        await PowerCmd.Apply<VulnerablePower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
-        await PowerCmd.Apply<FrailPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
-            .BeforeDamage(async () =>
-            {
-                await ShinGetterCombatVfx.PlayWhiteFlash(Owner.Creature);
-                await ShinGetterCombatVfx.PlayRush(Owner.Creature, cardPlay.Target, whiteFlash: true);
-            })
-            .WithHitFx("vfx/vfx_starry_impact").Execute(choiceContext);
-        int ki = Owner.Creature.GetPower<SGP_Ki>()?.Amount ?? 0;
-        if (ki > 0)
-        {
-            await DamageCmd.Attack(DynamicVars["KiDamage"].BaseValue).WithHitCount(ki).FromCard(this)
-                .TargetingRandomOpponents(CombatState)
-                .WithHitFx("vfx/vfx_attack_lightning").Execute(choiceContext);
-        }
-    }
+	protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+	{
+		ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
+		await PowerCmd.Apply<VulnerablePower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
+		await PowerCmd.Apply<FrailPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
+		await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
+			.BeforeDamage(async () =>
+			{
+				await ShinGetterCombatVfx.PlayWhiteFlash(Owner.Creature);
+				await ShinGetterCombatVfx.PlayRush(Owner.Creature, cardPlay.Target, whiteFlash: true);
+			})
+			.WithHitFx("vfx/vfx_starry_impact").Execute(choiceContext);
+		int ki = Owner.Creature.GetPower<SGP_Ki>()?.Amount ?? 0;
+		if (ki > 0)
+		{
+			await DamageCmd.Attack(DynamicVars["KiDamage"].BaseValue).WithHitCount(ki).FromCard(this)
+				.TargetingRandomOpponents(CombatState)
+				.WithHitFx("vfx/vfx_attack_lightning").Execute(choiceContext);
+		}
+	}
 
-    protected override void OnUpgrade()
-    {
-        base.DynamicVars.Damage.UpgradeValueBy(4m);
-        DynamicVars["KiDamage"].UpgradeValueBy(3m);
-    }
+	protected override void OnUpgrade()
+	{
+		base.DynamicVars.Damage.UpgradeValueBy(4m);
+		DynamicVars["KiDamage"].UpgradeValueBy(3m);
+	}
 }

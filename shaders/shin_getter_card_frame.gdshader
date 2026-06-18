@@ -11,16 +11,9 @@ void fragment() {
 	vec4 tex = texture(TEXTURE, UV);
 	float lum = dot(tex.rgb, vec3(0.299, 0.587, 0.114));
 
-	vec2 centered = UV - vec2(0.5);
-	float angle = atan(centered.y, centered.x);
-	float band = fract((angle + 3.1415926) / 6.2831853 + 0.08);
-
-	vec3 palette = red_color.rgb;
-	if (band > 0.34 && band <= 0.62) {
-		palette = white_color.rgb;
-	} else if (band > 0.62 && band <= 0.84) {
-		palette = yellow_color.rgb;
-	}
+	vec3 top_to_mid = mix(red_color.rgb, white_color.rgb, smoothstep(0.0, 0.45, UV.y));
+	vec3 mid_to_bottom = mix(white_color.rgb, yellow_color.rgb, smoothstep(0.55, 1.0, UV.y));
+	vec3 palette = UV.y < 0.5 ? top_to_mid : mid_to_bottom;
 
 	float ray_line = smoothstep(0.965, 1.0, sin((UV.x + UV.y) * 18.0) * 0.5 + 0.5);
 	palette = mix(palette, ray_color.rgb, ray_line * 0.12);

@@ -22,13 +22,13 @@ public sealed class SGC_GetterMissile : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        await ShinGetterCombatVfx.PlayBurningGrowl(Owner.Creature);
         for (int i = 0; i < 4; i++)
         {
             var candidates = CombatState.Creatures.Where(creature => creature.IsAlive).ToList();
             if (candidates.Count == 0)
                 break;
             var target = Owner.RunState.Rng.CombatTargets.NextItem(candidates);
-            await ShinGetterCombatVfx.PlayMissile(Owner.Creature, target, i);
             var results = await CreatureCmd.Damage(choiceContext, target, DynamicVars.Damage.BaseValue, ValueProp.Move, this);
             if (target == Owner.Creature && HasForm(Owner, ShinGetterForm.Getter3))
             {

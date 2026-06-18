@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
+using MegaCrit.Sts2.Core.Nodes.Vfx;
 using MegaCrit.Sts2.Core.Nodes.Vfx.Utilities;
 
 namespace ShinGetterMod.Nodes.Vfx;
@@ -24,11 +25,11 @@ internal static class ShinGetterCombatVfx
     private static readonly Color SpiritGold = new(1f, 0.72f, 0.02f, 1f);
     private static readonly Color WhiteFlash = new(1f, 1f, 0.92f, 1f);
 
-    public static Task PlayKiAura(Creature creature) => PlayAura(creature, KiYellow, 0.38f, 120f);
+    public static Task PlayKiAura(Creature creature) => PlayForbiddenIncantationAura(creature, KiYellow, 0.38f, 120f);
 
-    public static Task PlayHotBloodAura(Creature creature) => PlayAura(creature, HotBloodOrange, 0.45f, 135f);
+    public static Task PlayHotBloodAura(Creature creature) => PlayForbiddenIncantationAura(creature, HotBloodOrange, 0.45f, 135f);
 
-    public static Task PlaySpiritAura(Creature creature) => PlayAura(creature, SpiritGold, 0.5f, 150f);
+    public static Task PlaySpiritAura(Creature creature) => PlayForbiddenIncantationAura(creature, SpiritGold, 0.5f, 150f);
 
     public static async Task PlayRush(Creature owner, Creature target, bool whiteFlash = false)
     {
@@ -46,6 +47,7 @@ internal static class ShinGetterCombatVfx
         if (whiteFlash)
             AddFlash(ownerCenter, WhiteFlash, 190f, 0.22f);
 
+        owner.GetVfxContainer()?.AddChildSafely(NHorizontalLinesVfx.Create(new Color("4BFEC4AA"), 1.0, movingRightwards: !owner.IsEnemy));
         AddSpeedLines(ownerCenter, targetCenter, whiteFlash ? WhiteFlash : GetterRay);
 
         Tween tween = ownerNode.CreateTween();
@@ -55,17 +57,33 @@ internal static class ShinGetterCombatVfx
         await Cmd.Wait(0.21f);
     }
 
-    public static async Task PlayExpansion(Creature creature)
+    public static async Task PlayExpansionRush(Creature owner, Creature target)
     {
-        NCreature? node = NCombatRoom.Instance?.GetCreatureNode(creature);
-        if (node == null)
+        NCreature? ownerNode = NCombatRoom.Instance?.GetCreatureNode(owner);
+        NCreature? targetNode = NCombatRoom.Instance?.GetCreatureNode(target);
+        if (ownerNode == null || targetNode == null)
             return;
 
-        AddFlash(node.VfxSpawnPosition, GetterRay, 150f, 0.28f);
-        node.ScaleTo(1.5f, 0.12);
-        await Cmd.Wait(0.16f);
-        node.ScaleTo(1f, 0.14);
-        await Cmd.Wait(0.06f);
+        Vector2 origin = ownerNode.GlobalPosition;
+        Vector2 ownerCenter = ownerNode.VfxSpawnPosition;
+        Vector2 targetCenter = targetNode.VfxSpawnPosition;
+        Vector2 direction = (targetCenter - ownerCenter).Normalized();
+        Vector2 lunge = direction * Math.Max(0f, ownerCenter.DistanceTo(targetCenter) - 105f);
+
+        AddFlash(ownerCenter, GetterRay, 150f, 0.22f);
+        ownerNode.ScaleTo(1.5f, 0.12);
+        await Cmd.Wait(0.12f);
+        owner.GetVfxContainer()?.AddChildSafely(NHorizontalLinesVfx.Create(new Color("4BFEC4AA"), 1.15, movingRightwards: !owner.IsEnemy));
+        AddSpeedLines(ownerCenter, targetCenter, GetterRay);
+
+        Tween tween = ownerNode.CreateTween();
+        tween.TweenProperty(ownerNode, "global_position", origin + lunge, 0.08f).SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Cubic);
+        tween.TweenProperty(ownerNode, "global_position", origin, 0.12f).SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Back);
+        await Cmd.Wait(0.1f);
+        target.GetVfxContainer()?.AddChildSafely(NLineBurstVfx.Create(target));
+        NGame.Instance?.ScreenShake(ShakeStrength.Strong, ShakeDuration.Short);
+        await Cmd.Wait(0.12f);
+        ownerNode.ScaleTo(1f, 0.12);
     }
 
     public static async Task PlayAvalanche(Creature target)
@@ -84,25 +102,15 @@ internal static class ShinGetterCombatVfx
         NGame.Instance?.ScreenShake(ShakeStrength.Strong, ShakeDuration.Short);
     }
 
-    public static async Task PlayMissile(Creature owner, Creature target, int index)
+    public static async Task PlayBurningGrowl(Creature owner)
     {
         NCreature? ownerNode = NCombatRoom.Instance?.GetCreatureNode(owner);
-        NCreature? targetNode = NCombatRoom.Instance?.GetCreatureNode(target);
-        if (ownerNode == null || targetNode == null)
+        if (ownerNode == null)
             return;
 
-        Vector2 source = ownerNode.VfxSpawnPosition + new Vector2(0f, -20f + index * 12f);
-        Vector2 destination = targetNode.VfxSpawnPosition;
-        Node2D missile = CreateMissile(source, destination);
-        NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(missile);
-
-        Tween tween = missile.CreateTween();
-        Vector2 arc = source.Lerp(destination, 0.45f) + Vector2.Up * (90f + index * 15f);
-        tween.TweenProperty(missile, "global_position", arc, 0.09f).SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Sine);
-        tween.TweenProperty(missile, "global_position", destination, 0.11f).SetEase(Tween.EaseType.In).SetTrans(Tween.TransitionType.Sine);
-        tween.TweenCallback(Callable.From(missile.QueueFreeSafely));
-        await Cmd.Wait(0.2f);
-        AddFlash(destination, GetterPink, 70f, 0.16f);
+        owner.GetBackVfxContainer()?.AddChildSafely(NTestSubjectBurnVfx.Create());
+        AddFlash(ownerNode.VfxSpawnPosition, HotBloodOrange, 160f, 0.35f);
+        await Cmd.Wait(0.75f);
     }
 
     public static async Task PlayThunderField(Creature owner, IEnumerable<Creature> targets)
@@ -142,7 +150,7 @@ internal static class ShinGetterCombatVfx
         if (ownerNode == null || targetPositions.Count == 0)
             return;
 
-        Vector2 source = ownerNode.VfxSpawnPosition + Vector2.Up * 185f;
+        Vector2 source = ownerNode.VfxSpawnPosition;
         Vector2 destination = targetPositions.Aggregate(Vector2.Zero, (sum, pos) => sum + pos) / targetPositions.Count;
         Node2D ball = new() { GlobalPosition = source };
         ball.AddChild(CreateCircle(88f, GetterRay, 18f, 0.85f));
@@ -151,10 +159,10 @@ internal static class ShinGetterCombatVfx
         NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(ball);
 
         Tween tween = ball.CreateTween();
-        tween.TweenProperty(ball, "scale", Vector2.One * 1.45f, 0.26f).From(Vector2.One * 0.2f).SetEase(Tween.EaseType.Out);
-        tween.TweenProperty(ball, "global_position", destination, 0.22f).SetEase(Tween.EaseType.In).SetTrans(Tween.TransitionType.Cubic);
+        tween.TweenProperty(ball, "scale", Vector2.One * 1.65f, 0.55f).From(Vector2.One * 0.12f).SetEase(Tween.EaseType.Out);
+        tween.TweenProperty(ball, "global_position", destination, 0.32f).SetEase(Tween.EaseType.In).SetTrans(Tween.TransitionType.Cubic);
         tween.TweenCallback(Callable.From(ball.QueueFreeSafely));
-        await Cmd.Wait(0.5f);
+        await Cmd.Wait(0.9f);
 
         foreach (Vector2 pos in targetPositions)
             AddFlash(pos, GetterRay, 130f, 0.22f);
@@ -204,12 +212,31 @@ internal static class ShinGetterCombatVfx
         return root;
     }
 
-    private static async Task PlayAura(Creature creature, Color color, float duration, float radius)
+    public static async Task PlayHeavyCleave(Creature owner, IEnumerable<Creature> targets)
+    {
+        List<Vector2> targetPositions = targets
+            .Where(target => target.IsAlive)
+            .Select(target => NCombatRoom.Instance?.GetCreatureNode(target)?.VfxSpawnPosition)
+            .OfType<Vector2>()
+            .ToList();
+        if (targetPositions.Count == 0)
+            return;
+
+        Vector2 center = targetPositions.Aggregate(Vector2.Zero, (sum, pos) => sum + pos) / targetPositions.Count;
+        NCombatRoom.Instance?.RadialBlur(VfxPosition.Right);
+        NGame.Instance?.DoHitStop(ShakeStrength.Strong, ShakeDuration.Normal);
+        NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(NBigSlashVfx.Create(center, facingRight: true, GetterRay));
+        NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(NBigSlashImpactVfx.Create(center, 0f, GetterRay));
+        await Cmd.Wait(0.18f);
+    }
+
+    private static async Task PlayForbiddenIncantationAura(Creature creature, Color color, float duration, float radius)
     {
         NCreature? node = NCombatRoom.Instance?.GetCreatureNode(creature);
         if (node == null)
             return;
 
+        VfxCmd.PlayOnCreatureCenter(creature, "vfx/vfx_scream");
         Node2D root = new() { GlobalPosition = node.VfxSpawnPosition };
         root.AddChild(CreateCircle(radius, color, 8f, 0.8f));
         root.AddChild(CreateCircle(radius * 0.68f, new Color(1f, 1f, 1f, 0.75f), 4f, 0.45f));
@@ -309,38 +336,6 @@ internal static class ShinGetterCombatVfx
         Tween tween = spiral.CreateTween();
         tween.TweenProperty(spiral, "modulate:a", 0f, 0.38f);
         tween.TweenCallback(Callable.From(spiral.QueueFreeSafely));
-    }
-
-    private static Node2D CreateMissile(Vector2 source, Vector2 destination)
-    {
-        Vector2 direction = (destination - source).Normalized();
-        Node2D root = new()
-        {
-            GlobalPosition = source,
-            Rotation = direction.Angle(),
-        };
-        Polygon2D body = new()
-        {
-            Polygon = new[]
-            {
-                new Vector2(24f, 0f),
-                new Vector2(-16f, -9f),
-                new Vector2(-8f, 0f),
-                new Vector2(-16f, 9f),
-            },
-            Color = GetterPink,
-        };
-        Line2D trail = new()
-        {
-            Width = 10f,
-            DefaultColor = new Color(GetterRay.R, GetterRay.G, GetterRay.B, 0.65f),
-            Antialiased = true,
-        };
-        trail.AddPoint(new Vector2(-18f, 0f));
-        trail.AddPoint(new Vector2(-70f, 0f));
-        root.AddChild(trail);
-        root.AddChild(body);
-        return root;
     }
 
     private static Line2D CreateCrackLine(Vector2 from, Vector2 to, Color color)
