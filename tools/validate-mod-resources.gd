@@ -7,7 +7,6 @@ const REQUIRED_RESOURCES := {
 	"res://images/atlases/card_atlas.sprites/shin_getter/s_g_c_ki.tres": false,
 	"res://images/atlases/power_atlas.sprites/s_g_p_ki.tres": false,
 	"res://images/atlases/power_atlas.sprites/s_g_p_enable.tres": false,
-	"res://images/atlases/power_atlas.sprites/s_g_p_final_getter_beam_strength_loss.tres": false,
 	"res://images/ui/hands/multiplayer_hand_shin_getter_atlas.png": false,
 	"res://images/ui/hands/multiplayer_hand_shin_getter_point.png": false,
 	"res://images/ui/hands/multiplayer_hand_shin_getter_rock.png": false,
