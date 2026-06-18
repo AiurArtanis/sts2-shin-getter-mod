@@ -47,7 +47,7 @@ internal static class ShinGetterPowerBigFlashPatch
             return;
 
         Sprite2D sprite = SpriteRef(__instance);
-        sprite.Texture = power.Icon;
+        sprite.Texture = power.BigIcon;
     }
 }
 

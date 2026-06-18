@@ -5,9 +5,9 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
 using ShinGetterMod.Nodes.Vfx;
-using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -35,7 +35,7 @@ public sealed class SGC_FinalGetterBeam : ShinGetterCardBase
             .WithAttackerAnim("Cast", 0.5f)
             .BeforeDamage(() => ShinGetterBeamVfx.Play(Owner.Creature, new[] { cardPlay.Target }, ShinGetterBeamStyle.FinalGetterBeam))
             .Execute(choiceContext);
-        await PowerCmd.Apply<SGP_FinalGetterBeamStrengthLoss>(choiceContext, cardPlay.Target, DynamicVars["StrengthLoss"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<ManglePower>(choiceContext, cardPlay.Target, DynamicVars["StrengthLoss"].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()

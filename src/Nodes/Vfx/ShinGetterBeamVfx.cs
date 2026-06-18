@@ -21,7 +21,8 @@ internal static class ShinGetterBeamVfx
 {
     private static readonly Color GetterPink = new(1f, 0.19f, 0.62f, 1f);
     private static readonly Color GetterWhite = new(1f, 0.94f, 1f, 1f);
-    private static readonly Color GetterRay = new(0.294f, 0.996f, 0.768f, 1f);
+    private static readonly Color GetterRay = new("4BFEC4");
+    private static readonly Color GetterRayGlow = new("CFFFF0");
 
     public static async Task Play(Creature owner, IEnumerable<Creature> targets, ShinGetterBeamStyle style)
     {
@@ -51,7 +52,7 @@ internal static class ShinGetterBeamVfx
     private static void ApplyBeamSkin(Node2D beam, ShinGetterBeamStyle style)
     {
         Color primary = style == ShinGetterBeamStyle.FinalGetterBeam ? GetterRay : GetterPink;
-        Color secondary = GetterWhite;
+        Color secondary = style == ShinGetterBeamStyle.FinalGetterBeam ? GetterRayGlow : GetterWhite;
         float width = style == ShinGetterBeamStyle.FinalGetterBeam ? 560f : 90f;
 
         TintCanvasItems(beam, primary, secondary);
@@ -73,7 +74,7 @@ internal static class ShinGetterBeamVfx
     private static void ApplyImpactSkin(Node2D impact, ShinGetterBeamStyle style)
     {
         Color primary = style == ShinGetterBeamStyle.FinalGetterBeam ? GetterRay : GetterPink;
-        Color secondary = GetterWhite;
+        Color secondary = style == ShinGetterBeamStyle.FinalGetterBeam ? GetterRayGlow : GetterWhite;
         TintCanvasItems(impact, primary, secondary);
 
         impact.Scale = style == ShinGetterBeamStyle.GetterBeam

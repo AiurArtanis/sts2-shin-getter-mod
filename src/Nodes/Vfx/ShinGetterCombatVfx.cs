@@ -20,16 +20,20 @@ internal static class ShinGetterCombatVfx
     private static readonly Color GetterRay = new(0.294f, 0.996f, 0.768f, 1f);
     private static readonly Color GetterPink = new(1f, 0.18f, 0.58f, 1f);
     private static readonly Color GetterWhite = new(1f, 0.95f, 1f, 1f);
+    private static readonly Color RushLine = new(0.92f, 0.92f, 0.88f, 1f);
     private static readonly Color KiYellow = new(1f, 0.88f, 0.22f, 1f);
     private static readonly Color HotBloodOrange = new(1f, 0.36f, 0.08f, 1f);
     private static readonly Color SpiritGold = new(1f, 0.72f, 0.02f, 1f);
     private static readonly Color WhiteFlash = new(1f, 1f, 0.92f, 1f);
+    private static readonly Color SolarCore = new(1f, 0.96f, 0.72f, 1f);
+    private static readonly Color SolarGold = new(1f, 0.68f, 0.06f, 1f);
+    private static readonly Color SolarOrange = new(1f, 0.28f, 0.02f, 1f);
 
-    public static Task PlayKiAura(Creature creature) => PlayForbiddenIncantationAura(creature, KiYellow, 0.38f, 120f);
+    public static Task PlayKiAura(Creature creature) => PlayForbiddenIncantationAura(creature, KiYellow, 0.42f, 118f, 1, 8, ShakeStrength.Weak);
 
-    public static Task PlayHotBloodAura(Creature creature) => PlayForbiddenIncantationAura(creature, HotBloodOrange, 0.45f, 135f);
+    public static Task PlayHotBloodAura(Creature creature) => PlayForbiddenIncantationAura(creature, HotBloodOrange, 0.52f, 145f, 2, 12, ShakeStrength.Medium);
 
-    public static Task PlaySpiritAura(Creature creature) => PlayForbiddenIncantationAura(creature, SpiritGold, 0.5f, 150f);
+    public static Task PlaySpiritAura(Creature creature) => PlayForbiddenIncantationAura(creature, SpiritGold, 0.62f, 172f, 3, 16, ShakeStrength.Strong);
 
     public static async Task PlayRush(Creature owner, Creature target, bool whiteFlash = false)
     {
@@ -47,8 +51,8 @@ internal static class ShinGetterCombatVfx
         if (whiteFlash)
             AddFlash(ownerCenter, WhiteFlash, 190f, 0.22f);
 
-        owner.GetVfxContainer()?.AddChildSafely(NHorizontalLinesVfx.Create(new Color("4BFEC4AA"), 1.0, movingRightwards: !owner.IsEnemy));
-        AddSpeedLines(ownerCenter, targetCenter, whiteFlash ? WhiteFlash : GetterRay);
+        owner.GetVfxContainer()?.AddChildSafely(NHorizontalLinesVfx.Create(new Color("F0F0E8AA"), 1.0, movingRightwards: !owner.IsEnemy));
+        AddSpeedLines(ownerCenter, targetCenter, whiteFlash ? WhiteFlash : RushLine);
 
         Tween tween = ownerNode.CreateTween();
         tween.TweenProperty(ownerNode, "global_position", origin + lunge, 0.07f).SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Cubic);
@@ -70,20 +74,32 @@ internal static class ShinGetterCombatVfx
         Vector2 direction = (targetCenter - ownerCenter).Normalized();
         Vector2 lunge = direction * Math.Max(0f, ownerCenter.DistanceTo(targetCenter) - 105f);
 
+        Vector2 originalScale = ownerNode.Scale;
+        Vector2 enlargedScale = originalScale * 1.55f;
+
         AddFlash(ownerCenter, GetterRay, 150f, 0.22f);
-        ownerNode.ScaleTo(1.5f, 0.12);
-        await Cmd.Wait(0.12f);
-        owner.GetVfxContainer()?.AddChildSafely(NHorizontalLinesVfx.Create(new Color("4BFEC4AA"), 1.15, movingRightwards: !owner.IsEnemy));
-        AddSpeedLines(ownerCenter, targetCenter, GetterRay);
+        Tween growTween = ownerNode.CreateTween();
+        growTween.TweenProperty(ownerNode, "scale", enlargedScale, 0.22f)
+            .SetEase(Tween.EaseType.Out)
+            .SetTrans(Tween.TransitionType.Back);
+        await Cmd.Wait(0.28f);
+
+        owner.GetVfxContainer()?.AddChildSafely(NHorizontalLinesVfx.Create(new Color("F0F0E8AA"), 1.15, movingRightwards: !owner.IsEnemy));
+        AddSpeedLines(ownerCenter, targetCenter, RushLine);
 
         Tween tween = ownerNode.CreateTween();
-        tween.TweenProperty(ownerNode, "global_position", origin + lunge, 0.08f).SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Cubic);
-        tween.TweenProperty(ownerNode, "global_position", origin, 0.12f).SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Back);
-        await Cmd.Wait(0.1f);
+        tween.TweenProperty(ownerNode, "global_position", origin + lunge, 0.13f).SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Cubic);
+        tween.TweenProperty(ownerNode, "global_position", origin, 0.16f).SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Back);
+        await Cmd.Wait(0.14f);
         target.GetVfxContainer()?.AddChildSafely(NLineBurstVfx.Create(target));
         NGame.Instance?.ScreenShake(ShakeStrength.Strong, ShakeDuration.Short);
-        await Cmd.Wait(0.12f);
-        ownerNode.ScaleTo(1f, 0.12);
+        await Cmd.Wait(0.18f);
+
+        Tween shrinkTween = ownerNode.CreateTween();
+        shrinkTween.TweenProperty(ownerNode, "scale", originalScale, 0.14f)
+            .SetEase(Tween.EaseType.Out)
+            .SetTrans(Tween.TransitionType.Cubic);
+        await Cmd.Wait(0.14f);
     }
 
     public static async Task PlayAvalanche(Creature target)
@@ -152,20 +168,20 @@ internal static class ShinGetterCombatVfx
 
         Vector2 source = ownerNode.VfxSpawnPosition;
         Vector2 destination = targetPositions.Aggregate(Vector2.Zero, (sum, pos) => sum + pos) / targetPositions.Count;
-        Node2D ball = new() { GlobalPosition = source };
-        ball.AddChild(CreateCircle(88f, GetterRay, 18f, 0.85f));
-        ball.AddChild(CreateCircle(48f, GetterWhite, 10f, 0.7f));
-        ball.AddChild(CreateCircle(118f, GetterPink, 7f, 0.42f));
+        Node2D ball = CreateSolarEnergyBall();
+        ball.GlobalPosition = source + Vector2.Up * 18f;
         NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(ball);
 
         Tween tween = ball.CreateTween();
-        tween.TweenProperty(ball, "scale", Vector2.One * 1.65f, 0.55f).From(Vector2.One * 0.12f).SetEase(Tween.EaseType.Out);
-        tween.TweenProperty(ball, "global_position", destination, 0.32f).SetEase(Tween.EaseType.In).SetTrans(Tween.TransitionType.Cubic);
+        tween.TweenProperty(ball, "scale", Vector2.One * 1.75f, 0.78f).From(Vector2.One * 0.08f)
+            .SetEase(Tween.EaseType.Out)
+            .SetTrans(Tween.TransitionType.Back);
+        tween.TweenProperty(ball, "global_position", destination, 0.4f).SetEase(Tween.EaseType.In).SetTrans(Tween.TransitionType.Cubic);
         tween.TweenCallback(Callable.From(ball.QueueFreeSafely));
-        await Cmd.Wait(0.9f);
+        await Cmd.Wait(1.2f);
 
         foreach (Vector2 pos in targetPositions)
-            AddFlash(pos, GetterRay, 130f, 0.22f);
+            AddFlash(pos, SolarOrange, 155f, 0.26f);
         NGame.Instance?.ScreenShake(ShakeStrength.Strong, ShakeDuration.Short);
     }
 
@@ -230,23 +246,28 @@ internal static class ShinGetterCombatVfx
         await Cmd.Wait(0.18f);
     }
 
-    private static async Task PlayForbiddenIncantationAura(Creature creature, Color color, float duration, float radius)
+    private static async Task PlayForbiddenIncantationAura(Creature creature, Color color, float duration, float radius, int ringCount, int rayCount, ShakeStrength shakeStrength)
     {
         NCreature? node = NCombatRoom.Instance?.GetCreatureNode(creature);
         if (node == null)
             return;
 
         VfxCmd.PlayOnCreatureCenter(creature, "vfx/vfx_scream");
+        NGame.Instance?.ScreenShake(shakeStrength, ShakeDuration.Short);
         Node2D root = new() { GlobalPosition = node.VfxSpawnPosition };
-        root.AddChild(CreateCircle(radius, color, 8f, 0.8f));
-        root.AddChild(CreateCircle(radius * 0.68f, new Color(1f, 1f, 1f, 0.75f), 4f, 0.45f));
+        for (int i = 0; i < ringCount; i++)
+        {
+            float ringRadius = radius * (1f - i * 0.18f);
+            root.AddChild(CreateCircle(ringRadius, color, 10f - i * 1.8f, 0.86f - i * 0.12f));
+        }
+        root.AddChild(CreateCircle(radius * 0.56f, new Color(1f, 1f, 1f, 0.75f), 5f, 0.5f));
 
-        for (int i = 0; i < 10; i++)
-            root.AddChild(CreateRay(i, radius, color));
+        for (int i = 0; i < rayCount; i++)
+            root.AddChild(CreateRay(i, rayCount, radius, color));
 
         NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(root);
         Tween tween = root.CreateTween().SetParallel();
-        tween.TweenProperty(root, "scale", Vector2.One * 1.35f, duration);
+        tween.TweenProperty(root, "scale", Vector2.One * (1.18f + ringCount * 0.14f), duration);
         tween.TweenProperty(root, "modulate:a", 0f, duration).SetEase(Tween.EaseType.In);
         tween.Chain().TweenCallback(Callable.From(root.QueueFreeSafely));
         await Cmd.Wait(duration);
@@ -266,13 +287,38 @@ internal static class ShinGetterCombatVfx
         return line;
     }
 
-    private static Line2D CreateRay(int index, float radius, Color color)
+    private static Node2D CreateSolarEnergyBall()
     {
-        float angle = Mathf.Tau * index / 10f;
+        Node2D root = new();
+        root.AddChild(CreateFilledCircle(128f, new Color(SolarOrange.R, SolarOrange.G, SolarOrange.B, 0.24f)));
+        root.AddChild(CreateFilledCircle(94f, new Color(SolarGold.R, SolarGold.G, SolarGold.B, 0.46f)));
+        root.AddChild(CreateFilledCircle(54f, new Color(SolarCore.R, SolarCore.G, SolarCore.B, 0.92f)));
+        root.AddChild(CreateCircle(134f, SolarOrange, 15f, 0.78f));
+        root.AddChild(CreateCircle(100f, SolarGold, 9f, 0.75f));
+        root.AddChild(CreateCircle(58f, SolarCore, 7f, 0.68f));
+        for (int i = 0; i < 18; i++)
+            root.AddChild(CreateRay(i, 18, 150f + (i % 3) * 18f, i % 2 == 0 ? SolarGold : SolarOrange));
+        return root;
+    }
+
+    private static Polygon2D CreateFilledCircle(float radius, Color color)
+    {
+        Polygon2D polygon = new()
+        {
+            Color = color,
+            Antialiased = true,
+        };
+        polygon.Polygon = CirclePoints(radius, 64).ToArray();
+        return polygon;
+    }
+
+    private static Line2D CreateRay(int index, int count, float radius, Color color)
+    {
+        float angle = Mathf.Tau * index / count;
         Vector2 dir = Vector2.Right.Rotated(angle);
         Line2D ray = new()
         {
-            Width = 5f,
+            Width = 5f + (index % 3),
             DefaultColor = new Color(color.R, color.G, color.B, 0.62f),
             Antialiased = true,
         };
