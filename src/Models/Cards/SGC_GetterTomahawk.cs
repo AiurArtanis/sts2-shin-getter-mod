@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
 using ShinGetterMod.Models.Powers;
+using ShinGetterMod.Nodes.Vfx;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -28,7 +29,9 @@ public sealed class SGC_GetterTomahawk : ShinGetterCardBase
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
-        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_flying_slash").Execute(choiceContext);
+        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
+            .BeforeDamage(() => ShinGetterCombatVfx.PlayTomahawk(Owner.Creature, cardPlay.Target))
+            .WithHitFx("vfx/vfx_flying_slash").Execute(choiceContext);
 
         if (!cardPlay.IsAutoPlay)
             await PowerCmd.Apply<SGP_Tomahawk>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);

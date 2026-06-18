@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using MegaCrit.Sts2.Core.Models.Powers;
 using ShinGetterMod.Models.Powers;
+using ShinGetterMod.Nodes.Vfx;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -33,7 +34,13 @@ public sealed class SGC_ShiningSpark : ShinGetterCardBase
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
         await PowerCmd.Apply<VulnerablePower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
         await PowerCmd.Apply<FrailPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_starry_impact").Execute(choiceContext);
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
+            .BeforeDamage(async () =>
+            {
+                await ShinGetterCombatVfx.PlayWhiteFlash(Owner.Creature);
+                await ShinGetterCombatVfx.PlayRush(Owner.Creature, cardPlay.Target, whiteFlash: true);
+            })
+            .WithHitFx("vfx/vfx_starry_impact").Execute(choiceContext);
         int ki = Owner.Creature.GetPower<SGP_Ki>()?.Amount ?? 0;
         if (ki > 0)
         {

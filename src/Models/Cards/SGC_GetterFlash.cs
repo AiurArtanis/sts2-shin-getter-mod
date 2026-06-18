@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using MegaCrit.Sts2.Core.Models.Powers;
 using System.Linq;
+using ShinGetterMod.Nodes.Vfx;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -33,7 +34,9 @@ public sealed class SGC_GetterFlash : ShinGetterCardBase
             card.EnergyCost.AddThisTurnOrUntilPlayed(-1, reduceOnly: true);
         if (HasForm(Owner, ShinGetterForm.Getter1))
             await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, 8m, Owner.Creature, this);
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_starry_impact").Execute(choiceContext);
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
+            .BeforeDamage(() => ShinGetterCombatVfx.PlayWhiteFlash(Owner.Creature))
+            .WithHitFx("vfx/vfx_starry_impact").Execute(choiceContext);
     }
 
     protected override void OnUpgrade()

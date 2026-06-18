@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Nodes.Vfx;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -30,7 +31,9 @@ public sealed class SGC_PoseidonThunder : ShinGetterCardBase
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this)
-            .TargetingAllOpponents(CombatState).WithHitFx("vfx/vfx_attack_lightning").Execute(choiceContext);
+            .TargetingAllOpponents(CombatState)
+            .BeforeDamage(() => ShinGetterCombatVfx.PlayThunderField(Owner.Creature, CombatState.GetOpponentsOf(Owner.Creature)))
+            .WithHitFx("vfx/vfx_attack_lightning").Execute(choiceContext);
 
         foreach (var enemy in CombatState.GetOpponentsOf(Owner.Creature).Where(creature => creature.IsAlive))
         {

@@ -13,6 +13,7 @@ using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Nodes.Vfx;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -51,7 +52,9 @@ public sealed class SGC_StarSlash : ShinGetterCardBase
                 .Sum(entry => entry.Amount);
         }
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue + stackedValue + vigorGained).FromCard(this)
-            .Targeting(cardPlay.Target).WithHitFx("vfx/vfx_giant_horizontal_slash").Execute(choiceContext);
+            .Targeting(cardPlay.Target)
+            .WithHitVfxNode(_ => ShinGetterCombatVfx.CreateGetterSlashImpact())
+            .WithHitFx("vfx/vfx_giant_horizontal_slash").Execute(choiceContext);
     }
 
     protected override void OnUpgrade()

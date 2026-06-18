@@ -6,8 +6,10 @@ using Godot;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Helpers;
+using MegaCrit.Sts2.Core.Nodes;
+using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
-using MegaCrit.Sts2.Core.Nodes.Vfx;
+using MegaCrit.Sts2.Core.Nodes.Vfx.Utilities;
 
 namespace ShinGetterMod.Nodes.Vfx;
 
@@ -19,8 +21,8 @@ internal enum ShinGetterBeamStyle
 
 internal static class ShinGetterBeamVfx
 {
-    private static readonly Color GetterPink = new(1f, 0.19f, 0.62f, 1f);
-    private static readonly Color GetterWhite = new(1f, 0.94f, 1f, 1f);
+    private static readonly Color GetterPink = new(1f, 0.18f, 0.58f, 1f);
+    private static readonly Color GetterWhite = new(1f, 0.95f, 1f, 1f);
     private static readonly Color GetterRay = new(0.294f, 0.996f, 0.768f, 1f);
 
     public static async Task Play(Creature owner, IEnumerable<Creature> targets, ShinGetterBeamStyle style)
@@ -29,104 +31,142 @@ internal static class ShinGetterBeamVfx
         if (livingTargets.Count == 0)
             return;
 
-        NHyperbeamVfx? beam = NHyperbeamVfx.Create(owner, livingTargets.Last());
-        if (beam != null)
+        NCreature? ownerNode = NCombatRoom.Instance?.GetCreatureNode(owner);
+        NCreature? mainTargetNode = NCombatRoom.Instance?.GetCreatureNode(livingTargets.Last());
+        if (ownerNode == null || mainTargetNode == null)
+            return;
+
+        Vector2 source = ownerNode.VfxSpawnPosition + Vector2.Up * 32f;
+        Vector2 target = mainTargetNode.VfxSpawnPosition;
+        float chargeTime = style == ShinGetterBeamStyle.GetterBeam ? 0.14f : 0.38f;
+        float beamTime = style == ShinGetterBeamStyle.GetterBeam ? 0.22f : 0.42f;
+
+        Node2D root = new() { GlobalPosition = source };
+        NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(root);
+        AddCharge(root, style);
+        await Cmd.Wait(chargeTime);
+
+        Node2D beam = CreateBeam(source, target, style);
+        NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(beam);
+
+        foreach (Creature creature in livingTargets)
         {
-            ApplyBeamSkin(beam, style);
-            NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(beam);
-            await Cmd.Wait(NHyperbeamVfx.hyperbeamAnticipationDuration);
+            NCreature? node = NCombatRoom.Instance?.GetCreatureNode(creature);
+            if (node != null)
+                AddImpact(node.VfxSpawnPosition, style);
         }
 
-        foreach (Creature target in livingTargets)
-        {
-            NHyperbeamImpactVfx? impact = NHyperbeamImpactVfx.Create(owner, target);
-            if (impact == null)
-                continue;
+        NGame.Instance?.ScreenShake(
+            style == ShinGetterBeamStyle.GetterBeam ? ShakeStrength.Medium : ShakeStrength.Strong,
+            ShakeDuration.Short);
 
-            ApplyImpactSkin(impact, style);
-            NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(impact);
-        }
+        await Cmd.Wait(beamTime);
+        root.QueueFreeSafely();
+        beam.QueueFreeSafely();
     }
 
-    private static void ApplyBeamSkin(Node2D beam, ShinGetterBeamStyle style)
+    private static void AddCharge(Node2D root, ShinGetterBeamStyle style)
     {
-        Color primary = style == ShinGetterBeamStyle.FinalGetterBeam ? GetterRay : GetterPink;
-        Color secondary = style == ShinGetterBeamStyle.FinalGetterBeam ? GetterWhite : GetterWhite;
-        float width = style == ShinGetterBeamStyle.FinalGetterBeam ? 560f : 90f;
+        Color color = style == ShinGetterBeamStyle.GetterBeam ? GetterPink : GetterRay;
+        float radius = style == ShinGetterBeamStyle.GetterBeam ? 48f : 86f;
+        Line2D ring = CreateCircle(radius, color, 7f, 0.8f);
+        Line2D inner = CreateCircle(radius * 0.55f, GetterWhite, 4f, 0.5f);
+        root.AddChild(ring);
+        root.AddChild(inner);
 
-        TintCanvasItems(beam, primary, secondary);
+        Tween tween = root.CreateTween().SetParallel();
+        tween.TweenProperty(root, "scale", Vector2.One * 0.35f, style == ShinGetterBeamStyle.GetterBeam ? 0.12f : 0.34f)
+            .From(Vector2.One * 1.35f)
+            .SetEase(Tween.EaseType.In)
+            .SetTrans(Tween.TransitionType.Cubic);
+        tween.TweenProperty(root, "modulate:a", 0f, style == ShinGetterBeamStyle.GetterBeam ? 0.14f : 0.38f);
+    }
 
-        if (beam.GetNodeOrNull<Line2D>("laser/vfx_hyperbeam_laser_line") is { } line)
-        {
-            ConfigureLine(line, width, primary);
-            if (style == ShinGetterBeamStyle.FinalGetterBeam)
-                AddPinkWrapLines(line);
-        }
+    private static Node2D CreateBeam(Vector2 source, Vector2 target, ShinGetterBeamStyle style)
+    {
+        Node2D root = new();
+        Vector2 direction = target - source;
+        float length = direction.Length() + 260f;
+        float angle = direction.Angle();
+        root.GlobalPosition = source;
+        root.Rotation = angle;
 
         if (style == ShinGetterBeamStyle.GetterBeam)
         {
-            ScaleNode(beam.GetNodeOrNull<Node2D>("anticipation"), new Vector2(0.55f, 0.55f));
-            ScaleNode(beam.GetNodeOrNull<Node2D>("end"), new Vector2(0.65f, 0.65f));
+            root.AddChild(CreateStraightLine(length, 78f, new Color(GetterPink.R, GetterPink.G, GetterPink.B, 0.78f), 0f));
+            root.AddChild(CreateStraightLine(length, 30f, GetterWhite, 0f));
         }
-    }
-
-    private static void ApplyImpactSkin(Node2D impact, ShinGetterBeamStyle style)
-    {
-        Color primary = style == ShinGetterBeamStyle.FinalGetterBeam ? GetterRay : GetterPink;
-        Color secondary = style == ShinGetterBeamStyle.FinalGetterBeam ? GetterWhite : GetterWhite;
-        TintCanvasItems(impact, primary, secondary);
-
-        if (style == ShinGetterBeamStyle.GetterBeam)
-            impact.Scale = new Vector2(0.65f, 0.65f);
         else
-            impact.Scale = new Vector2(1.15f, 1.15f);
-    }
-
-    private static void ConfigureLine(Line2D line, float width, Color color)
-    {
-        line.Width = width;
-        line.DefaultColor = color;
-        line.SelfModulate = color;
-        line.Material = null;
-        line.Texture = null;
-    }
-
-    private static void AddPinkWrapLines(Line2D source)
-    {
-        AddWrapLine(source, -38f, -1.4f, 72f);
-        AddWrapLine(source, 38f, 1.4f, 52f);
-    }
-
-    private static void AddWrapLine(Line2D source, float yOffset, float rotationDegrees, float width)
-    {
-        var wrap = (Line2D)source.Duplicate();
-        wrap.Name = "shin_getter_pink_wrap";
-        wrap.Position += new Vector2(0f, yOffset);
-        wrap.RotationDegrees += rotationDegrees;
-        wrap.ZIndex = source.ZIndex + 2;
-        ConfigureLine(wrap, width, GetterPink);
-        source.GetParent()?.AddChild(wrap);
-    }
-
-    private static void TintCanvasItems(Node node, Color primary, Color secondary)
-    {
-        foreach (Node child in node.GetChildren())
-            TintCanvasItems(child, primary, secondary);
-
-        if (node is CanvasItem canvasItem)
         {
-            canvasItem.SelfModulate = node.Name.ToString().Contains("glow") ? secondary : primary;
+            root.AddChild(CreateStraightLine(length, 210f, new Color(GetterRay.R, GetterRay.G, GetterRay.B, 0.78f), 0f));
+            root.AddChild(CreateStraightLine(length, 86f, new Color(GetterWhite.R, GetterWhite.G, GetterWhite.B, 0.72f), 0f));
+            root.AddChild(CreateWrappedLine(length, -52f, 34f, GetterPink, 0f));
+            root.AddChild(CreateWrappedLine(length, 52f, 34f, GetterPink, 1.7f));
+            root.AddChild(CreateWrappedLine(length, 0f, 20f, new Color(GetterPink.R, GetterPink.G, GetterPink.B, 0.78f), 3.2f));
         }
 
-        if (node is GpuParticles2D particles)
-        {
-            particles.SelfModulate = node.Name.ToString().Contains("glow") ? secondary : primary;
-        }
+        Tween tween = root.CreateTween().SetParallel();
+        tween.TweenProperty(root, "modulate:a", 0f, style == ShinGetterBeamStyle.GetterBeam ? 0.22f : 0.42f)
+            .SetDelay(style == ShinGetterBeamStyle.GetterBeam ? 0.16f : 0.28f);
+        return root;
     }
 
-    private static void ScaleNode(Node2D? node, Vector2 scale)
+    private static Line2D CreateStraightLine(float length, float width, Color color, float y)
     {
-        if (node != null)
-            node.Scale = scale;
+        Line2D line = new()
+        {
+            Width = width,
+            DefaultColor = color,
+            Antialiased = true,
+        };
+        line.AddPoint(new Vector2(-30f, y));
+        line.AddPoint(new Vector2(length, y));
+        return line;
+    }
+
+    private static Line2D CreateWrappedLine(float length, float yOffset, float width, Color color, float phase)
+    {
+        Line2D line = new()
+        {
+            Width = width,
+            DefaultColor = color,
+            Antialiased = true,
+        };
+        for (int i = 0; i < 32; i++)
+        {
+            float t = i / 31f;
+            float x = Mathf.Lerp(-20f, length, t);
+            float y = yOffset * Mathf.Sin(t * Mathf.Tau * 2.5f + phase);
+            line.AddPoint(new Vector2(x, y));
+        }
+        return line;
+    }
+
+    private static void AddImpact(Vector2 position, ShinGetterBeamStyle style)
+    {
+        Node2D root = new() { GlobalPosition = position };
+        Color color = style == ShinGetterBeamStyle.GetterBeam ? GetterPink : GetterRay;
+        float radius = style == ShinGetterBeamStyle.GetterBeam ? 68f : 120f;
+        root.AddChild(CreateCircle(radius, color, 10f, 0.8f));
+        root.AddChild(CreateCircle(radius * 0.5f, GetterWhite, 5f, 0.65f));
+        NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(root);
+        Tween tween = root.CreateTween().SetParallel();
+        tween.TweenProperty(root, "scale", Vector2.One * 1.55f, 0.24f);
+        tween.TweenProperty(root, "modulate:a", 0f, 0.24f);
+        tween.Chain().TweenCallback(Callable.From(root.QueueFreeSafely));
+    }
+
+    private static Line2D CreateCircle(float radius, Color color, float width, float alpha)
+    {
+        Line2D line = new()
+        {
+            Width = width,
+            DefaultColor = new Color(color.R, color.G, color.B, alpha),
+            Closed = true,
+            Antialiased = true,
+        };
+        for (int i = 0; i < 48; i++)
+            line.AddPoint(Vector2.Right.Rotated(Mathf.Tau * i / 48f) * radius);
+        return line;
     }
 }

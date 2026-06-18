@@ -11,6 +11,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Nodes.Vfx;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -33,7 +34,9 @@ public sealed class SGC_StonerShine : ShinGetterCardBase
             .Where(entry => entry.Actor == Owner.Creature && entry.Power.Type == PowerType.Buff && entry.Amount > 0)
             .Sum(entry => entry.Amount);
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue + buffsGained).FromCard(this)
-            .TargetingAllOpponents(CombatState).WithHitFx("vfx/vfx_starry_impact").Execute(choiceContext);
+            .TargetingAllOpponents(CombatState)
+            .BeforeDamage(() => ShinGetterCombatVfx.PlayEnergyBall(Owner.Creature, CombatState.GetOpponentsOf(Owner.Creature)))
+            .WithHitFx("vfx/vfx_starry_impact").Execute(choiceContext);
         foreach (var enemy in CombatState.GetOpponentsOf(Owner.Creature).Where(creature => creature.IsAlive))
             await PowerCmd.Apply<SGP_Wane>(choiceContext, enemy, 2m, Owner.Creature, this);
     }

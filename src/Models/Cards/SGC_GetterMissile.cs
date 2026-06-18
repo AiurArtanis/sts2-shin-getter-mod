@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using System.Linq;
+using ShinGetterMod.Nodes.Vfx;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -27,6 +28,7 @@ public sealed class SGC_GetterMissile : ShinGetterCardBase
             if (candidates.Count == 0)
                 break;
             var target = Owner.RunState.Rng.CombatTargets.NextItem(candidates);
+            await ShinGetterCombatVfx.PlayMissile(Owner.Creature, target, i);
             var results = await CreatureCmd.Damage(choiceContext, target, DynamicVars.Damage.BaseValue, ValueProp.Move, this);
             if (target == Owner.Creature && HasForm(Owner, ShinGetterForm.Getter3))
             {

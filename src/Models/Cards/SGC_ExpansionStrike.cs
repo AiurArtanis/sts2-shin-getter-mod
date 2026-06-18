@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.Models.Powers;
+using ShinGetterMod.Nodes.Vfx;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -35,7 +36,9 @@ public sealed class SGC_ExpansionStrike : ShinGetterCardBase
             .Distinct()
             .Count();
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue * debuffTypes).FromCard(this)
-            .Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+            .Targeting(cardPlay.Target)
+            .BeforeDamage(() => ShinGetterCombatVfx.PlayExpansion(Owner.Creature))
+            .WithHitFx("vfx/vfx_attack_blunt").Execute(choiceContext);
         if (debuffTypes > 0 && HasForm(Owner, ShinGetterForm.Getter3))
             await PowerCmd.Apply<PlatingPower>(choiceContext, Owner.Creature, debuffTypes * 2m, Owner.Creature, this);
     }

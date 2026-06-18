@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using MegaCrit.Sts2.Core.Models.Powers;
+using ShinGetterMod.Nodes.Vfx;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -42,6 +43,7 @@ public sealed class SGC_Avalanche : ShinGetterCardBase
         await CreatureCmd.LoseBlock(Owner.Creature, consumedBlock);
         await DamageCmd.Attack(DynamicVars.CalculatedDamage.BaseValue + consumedBlock + plating)
             .FromCard(this).Targeting(cardPlay.Target)
+            .BeforeDamage(() => ShinGetterCombatVfx.PlayAvalanche(cardPlay.Target))
             .WithHitFx("vfx/vfx_rock_shatter").Execute(choiceContext);
     }
 
