@@ -1,10 +1,7 @@
 #nullable enable
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Combat;
-using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -24,13 +21,15 @@ public sealed class SGP_Overload : PowerModel
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         System.Array.Empty<DynamicVar>();
 
-    public override async Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants, ICombatState combatState)
+    public override async Task AfterEnergyReset(Player player)
     {
-        var player = Owner.Player;
-        if (!participants.Contains(Owner) || player == null)
+        if (player != Owner.Player)
             return;
 
         int energyLoss = Amount;
+        if (energyLoss <= 0)
+            return;
+
         Flash();
         await PlayerCmd.GainEnergy(-energyLoss, player);
         await PowerCmd.Remove(this);

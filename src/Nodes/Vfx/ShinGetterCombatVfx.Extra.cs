@@ -337,27 +337,121 @@ internal static partial class ShinGetterCombatVfx
     private static Node2D CreateGetterNovaNode()
     {
         Node2D root = new();
-        root.AddChild(CreateFilledCircle(132f, new Color(GetterRay.R, GetterRay.G, GetterRay.B, 0.22f)));
-        root.AddChild(CreateFilledCircle(72f, new Color(GetterWhite.R, GetterWhite.G, GetterWhite.B, 0.78f)));
-        root.AddChild(CreateCircle(148f, GetterRay, 12f, 0.70f));
-        root.AddChild(CreateCircle(88f, GetterWhite, 7f, 0.58f));
-        for (int i = 0; i < 32; i++)
-        {
-            float angle = Mathf.Tau * i / 32f;
-            Vector2 dir = Vector2.Right.Rotated(angle);
-            Line2D ray = new()
-            {
-                Width = 5f + (i % 4),
-                DefaultColor = i % 2 == 0 ? new Color(GetterRay.R, GetterRay.G, GetterRay.B, 0.72f) : new Color(GetterWhite.R, GetterWhite.G, GetterWhite.B, 0.55f),
-                Antialiased = true,
-            };
-            ray.AddPoint(dir * 74f);
-            ray.AddPoint(dir * (230f + (i % 5) * 18f));
-            root.AddChild(ray);
-        }
+        root.AddChild(CreateFilledCircle(188f, new Color(GetterRay.R, GetterRay.G, GetterRay.B, 0.10f)));
+        root.AddChild(CreateFilledCircle(132f, new Color(GetterRay.R, GetterRay.G, GetterRay.B, 0.18f)));
+
+        for (int i = 0; i < 22; i++)
+            root.AddChild(CreateNovaPetal(i, 22));
+        for (int i = 0; i < 10; i++)
+            root.AddChild(CreateNovaArc(i, 10));
+
+        root.AddChild(CreateFilledCircle(102f, new Color(GetterRay.R, GetterRay.G, GetterRay.B, 0.44f)));
+        root.AddChild(CreateFilledCircle(70f, new Color(GetterWhite.R, GetterWhite.G, GetterWhite.B, 0.74f)));
+        root.AddChild(CreateFilledCircle(34f, new Color(1f, 1f, 1f, 0.98f)));
+        root.AddChild(CreateCircle(148f, GetterRay, 8f, 0.46f));
+        root.AddChild(CreateCircle(98f, GetterWhite, 5f, 0.52f));
+        root.AddChild(CreateCircle(54f, GetterRay, 3f, 0.62f));
+
+        for (int i = 0; i < 16; i++)
+            root.AddChild(CreateNovaShard(i, 16));
+        for (int i = 0; i < 20; i++)
+            root.AddChild(CreateNovaSpark(i, 20));
+
         return root;
     }
 
+    private static Polygon2D CreateNovaPetal(int index, int count)
+    {
+        float angle = Mathf.Tau * index / count + 0.045f * Mathf.Sin(index * 1.7f);
+        Vector2 dir = Vector2.Right.Rotated(angle);
+        Vector2 tangent = new(-dir.Y, dir.X);
+        float inner = 76f + (index % 3) * 4f;
+        float mid = 152f + (index % 4) * 9f;
+        float outer = 236f + (index % 5) * 13f;
+        float baseWidth = 18f + (index % 4) * 3.5f;
+        float midWidth = 10f + (index % 3) * 2f;
+        Color color = index % 3 == 0
+            ? new Color(1f, 0.24f, 0.66f, 0.30f)
+            : new Color(GetterRay.R, GetterRay.G, GetterRay.B, 0.38f);
+
+        Polygon2D petal = new()
+        {
+            Color = color,
+            Antialiased = true,
+        };
+        Vector2 bend = tangent * Mathf.Sin(index * 1.13f) * 18f;
+        petal.Polygon = new[]
+        {
+            dir * inner - tangent * baseWidth,
+            dir * mid + bend - tangent * midWidth,
+            dir * outer,
+            dir * mid + bend + tangent * midWidth,
+            dir * inner + tangent * baseWidth,
+        };
+        return petal;
+    }
+
+    private static Line2D CreateNovaArc(int index, int count)
+    {
+        float baseAngle = Mathf.Tau * index / count;
+        float radius = 86f + (index % 5) * 18f;
+        float direction = index % 2 == 0 ? 1f : -1f;
+        Line2D arc = new()
+        {
+            Width = 4.5f + index % 3,
+            DefaultColor = index % 2 == 0
+                ? new Color(GetterWhite.R, GetterWhite.G, GetterWhite.B, 0.44f)
+                : new Color(GetterRay.R, GetterRay.G, GetterRay.B, 0.52f),
+            Antialiased = true,
+        };
+
+        const int segmentCount = 11;
+        for (int i = 0; i < segmentCount; i++)
+        {
+            float t = i / (float)(segmentCount - 1);
+            float angle = baseAngle + direction * Mathf.Lerp(-0.62f, 0.62f, t);
+            float ripple = Mathf.Sin((t + index) * 5.4f) * 5f;
+            arc.AddPoint(Vector2.Right.Rotated(angle) * (radius + ripple));
+        }
+
+        return arc;
+    }
+
+    private static Polygon2D CreateNovaShard(int index, int count)
+    {
+        float angle = Mathf.Tau * index / count + 0.11f * (index % 3);
+        Vector2 dir = Vector2.Right.Rotated(angle);
+        Vector2 tangent = new(-dir.Y, dir.X);
+        float inner = 112f + (index % 4) * 8f;
+        float outer = 174f + (index % 5) * 10f;
+        float width = 7f + (index % 3) * 2f;
+        Polygon2D shard = new()
+        {
+            Color = index % 2 == 0
+                ? new Color(GetterWhite.R, GetterWhite.G, GetterWhite.B, 0.58f)
+                : new Color(GetterRay.R, GetterRay.G, GetterRay.B, 0.54f),
+            Antialiased = true,
+        };
+        shard.Polygon = new[]
+        {
+            dir * inner - tangent * width,
+            dir * outer,
+            dir * inner + tangent * width,
+        };
+        return shard;
+    }
+
+    private static Polygon2D CreateNovaSpark(int index, int count)
+    {
+        float angle = Mathf.Tau * index / count + 0.23f * (index % 4);
+        float distance = 38f + (index * 31 % 146);
+        float radius = 3.5f + index % 4;
+        Polygon2D spark = CreateFilledCircle(radius, index % 2 == 0
+            ? new Color(GetterWhite.R, GetterWhite.G, GetterWhite.B, 0.66f)
+            : new Color(GetterRay.R, GetterRay.G, GetterRay.B, 0.58f));
+        spark.Position = Vector2.Right.Rotated(angle) * distance;
+        return spark;
+    }
     private static Node2D CreateNewtypeSign()
     {
         Node2D root = new();
@@ -376,4 +470,3 @@ internal static partial class ShinGetterCombatVfx
         return root;
     }
 }
-

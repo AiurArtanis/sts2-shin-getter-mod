@@ -1,11 +1,10 @@
 [gd_resource type="ShaderMaterial" load_steps=2 format=3]
 
-[ext_resource type="Shader" path="res://shaders/shin_getter_card_frame.gdshader" id="1_frame"]
+[ext_resource type="Shader" path="res://shaders/shin_getter_hsv.gdshader" id="1_frame"]
 
 [resource]
 resource_local_to_scene = true
 shader = ExtResource("1_frame")
-shader_parameter/red_color = Color(0.776471, 0.054902, 0.039216, 1)
-shader_parameter/white_color = Color(1, 1, 1, 1)
-shader_parameter/yellow_color = Color(0.803922, 0.615686, 0.137255, 1)
-shader_parameter/frame_height = 512.0
+shader_parameter/h = 0.45
+shader_parameter/s = 0.85
+shader_parameter/v = 1.12

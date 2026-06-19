@@ -30,12 +30,16 @@ public sealed class SGC_GetterBeam : ShinGetterCardBase
             .WithAttackerAnim("Cast", 0.5f)
             .BeforeDamage(() => ShinGetterBeamVfx.Play(Owner.Creature, new[] { cardPlay.Target }, ShinGetterBeamStyle.GetterBeam))
             .Execute(choiceContext);
-        await PowerCmd.Apply<SGP_Wane>(
-            choiceContext,
-            cardPlay.Target,
-            DynamicVars["Wane"].BaseValue,
-            Owner.Creature,
-            this);
+
+        if (cardPlay.Target.IsAlive)
+        {
+            await PowerCmd.Apply<SGP_Wane>(
+                choiceContext,
+                cardPlay.Target,
+                DynamicVars["Wane"].BaseValue,
+                Owner.Creature,
+                this);
+        }
     }
 
     protected override void OnUpgrade()
