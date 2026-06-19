@@ -35,6 +35,7 @@ public sealed class SGC_StonerShine : ShinGetterCardBase
             .Sum(entry => entry.Amount);
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue + buffsGained).FromCard(this)
             .TargetingAllOpponents(CombatState)
+            .WithAttackerAnim("Cast", 0.5f)
             .BeforeDamage(() => ShinGetterCombatVfx.PlayEnergyBall(Owner.Creature, CombatState.GetOpponentsOf(Owner.Creature)))
             .WithHitFx("vfx/vfx_starry_impact").Execute(choiceContext);
         foreach (var enemy in CombatState.GetOpponentsOf(Owner.Creature).Where(creature => creature.IsAlive))

@@ -3,11 +3,12 @@
   "name": "真盖塔模组",
   "author": "Artanis",
   "description": "穿越时空来到高塔的真盖塔机器人",
-  "version": "v0.8.10",
+  "version": "v0.8.11",
   "has_pck": true,
   "has_dll": true,
   "dependencies": [],
   "affects_gameplay": true,
   "min_game_version": "0.106.1"
 }
+
 

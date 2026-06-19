@@ -93,20 +93,46 @@ internal static class ShinGetterBeamVfx
 
     private static void AddPinkWrapLines(Line2D source)
     {
-        AddWrapLine(source, -44f, -1.7f, 72f);
-        AddWrapLine(source, 44f, 1.7f, 56f);
-        AddWrapLine(source, 0f, 0.8f, 34f);
+        AddWavyWrapLine(source, -54f, 68f, 18f, 2.25f, 0f);
+        AddWavyWrapLine(source, 46f, 54f, 15f, 2.65f, Mathf.Pi);
+        AddWavyWrapLine(source, -2f, 34f, 11f, 3.1f, Mathf.Pi * 0.5f);
     }
 
-    private static void AddWrapLine(Line2D source, float yOffset, float rotationDegrees, float width)
+    private static void AddWavyWrapLine(Line2D source, float offset, float width, float amplitude, float waves, float phase)
     {
-        var wrap = (Line2D)source.Duplicate();
-        wrap.Name = "shin_getter_pink_wrap";
-        wrap.Position += new Vector2(0f, yOffset);
-        wrap.RotationDegrees += rotationDegrees;
-        wrap.ZIndex = source.ZIndex + 2;
-        ConfigureLine(wrap, width, GetterPink);
-        source.GetParent()?.AddChild(wrap);
+        Node? parent = source.GetParent();
+        if (parent == null)
+            return;
+
+        Vector2 start = source.GetPointCount() > 0 ? source.GetPointPosition(0) : new Vector2(-600f, 0f);
+        Vector2 end = source.GetPointCount() > 1 ? source.GetPointPosition(source.GetPointCount() - 1) : new Vector2(600f, 0f);
+        Vector2 direction = (end - start).Normalized();
+        if (direction == Vector2.Zero)
+            direction = Vector2.Right;
+        Vector2 normal = new(-direction.Y, direction.X);
+
+        Line2D wrap = new()
+        {
+            Name = "shin_getter_pink_wrap",
+            Width = width,
+            DefaultColor = GetterPink,
+            SelfModulate = GetterPink,
+            Antialiased = true,
+            ZIndex = source.ZIndex + 2,
+            Material = null,
+            Texture = null,
+            Transform = source.Transform,
+        };
+
+        const int segmentCount = 26;
+        for (int i = 0; i <= segmentCount; i++)
+        {
+            float t = i / (float)segmentCount;
+            float wave = Mathf.Sin(t * Mathf.Tau * waves + phase) * amplitude;
+            wrap.AddPoint(start.Lerp(end, t) + normal * (offset + wave));
+        }
+
+        parent.AddChild(wrap);
     }
 
     private static void TintCanvasItems(Node node, Color primary, Color secondary)

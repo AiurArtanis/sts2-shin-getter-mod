@@ -5,9 +5,6 @@
 [resource]
 resource_local_to_scene = true
 shader = ExtResource("1_frame")
-shader_parameter/red_color = Color(0.77, 0.1, 0.12, 1)
-shader_parameter/white_color = Color(0.96, 0.95, 0.86, 1)
-shader_parameter/yellow_color = Color(1, 0.82, 0.12, 1)
-shader_parameter/ray_color = Color(0.294118, 0.996078, 0.768627, 1)
-shader_parameter/saturation = 1.45
-shader_parameter/brightness = 1.18
+shader_parameter/red_color = Color(0.776471, 0.054902, 0.039216, 1)
+shader_parameter/white_color = Color(1, 1, 1, 1)
+shader_parameter/yellow_color = Color(0.803922, 0.615686, 0.137255, 1)

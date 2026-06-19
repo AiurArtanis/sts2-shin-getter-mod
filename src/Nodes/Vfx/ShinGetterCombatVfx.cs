@@ -28,12 +28,15 @@ internal static class ShinGetterCombatVfx
     private static readonly Color SolarCore = new(1f, 0.96f, 0.72f, 1f);
     private static readonly Color SolarGold = new(1f, 0.68f, 0.06f, 1f);
     private static readonly Color SolarOrange = new(1f, 0.28f, 0.02f, 1f);
+    private static readonly Color SolarRed = new(0.95f, 0.08f, 0.01f, 1f);
 
     public static Task PlayKiAura(Creature creature) => PlayForbiddenIncantationAura(creature, KiYellow, 0.42f, 118f, 1, 8, ShakeStrength.Weak);
 
     public static Task PlayHotBloodAura(Creature creature) => PlayForbiddenIncantationAura(creature, HotBloodOrange, 0.52f, 145f, 2, 12, ShakeStrength.Medium);
 
     public static Task PlaySpiritAura(Creature creature) => PlayForbiddenIncantationAura(creature, SpiritGold, 0.62f, 172f, 3, 16, ShakeStrength.Strong);
+
+    public static Task PlaySuperKiAura(Creature creature) => PlayForbiddenIncantationAura(creature, SpiritGold, 0.78f, 196f, 4, 22, ShakeStrength.Strong, withLightning: true);
 
     public static async Task PlayRush(Creature owner, Creature target, bool whiteFlash = false)
     {
@@ -246,7 +249,7 @@ internal static class ShinGetterCombatVfx
         await Cmd.Wait(0.18f);
     }
 
-    private static async Task PlayForbiddenIncantationAura(Creature creature, Color color, float duration, float radius, int ringCount, int rayCount, ShakeStrength shakeStrength)
+    private static async Task PlayForbiddenIncantationAura(Creature creature, Color color, float duration, float radius, int ringCount, int rayCount, ShakeStrength shakeStrength, bool withLightning = false)
     {
         NCreature? node = NCombatRoom.Instance?.GetCreatureNode(creature);
         if (node == null)
@@ -254,20 +257,32 @@ internal static class ShinGetterCombatVfx
 
         VfxCmd.PlayOnCreatureCenter(creature, "vfx/vfx_scream");
         NGame.Instance?.ScreenShake(shakeStrength, ShakeDuration.Short);
-        Node2D root = new() { GlobalPosition = node.VfxSpawnPosition };
+        Node2D root = new()
+        {
+            GlobalPosition = node.VfxSpawnPosition,
+            Scale = Vector2.One * 0.62f,
+        };
+
         for (int i = 0; i < ringCount; i++)
         {
-            float ringRadius = radius * (1f - i * 0.18f);
-            root.AddChild(CreateCircle(ringRadius, color, 10f - i * 1.8f, 0.86f - i * 0.12f));
+            float ringRadius = radius * (0.38f + i * 0.15f);
+            root.AddChild(CreateCircle(ringRadius, color, 7.5f - i * 0.9f, 0.46f - i * 0.05f));
         }
-        root.AddChild(CreateCircle(radius * 0.56f, new Color(1f, 1f, 1f, 0.75f), 5f, 0.5f));
+        root.AddChild(CreateCircle(radius * 0.35f, new Color(1f, 1f, 1f, 0.68f), 5f, 0.36f));
 
         for (int i = 0; i < rayCount; i++)
-            root.AddChild(CreateRay(i, rayCount, radius, color));
+            root.AddChild(CreateAuraBurstLine(i, rayCount, radius, color));
+
+        if (withLightning)
+        {
+            int lightningCount = Math.Max(6, rayCount / 2);
+            for (int i = 0; i < lightningCount; i++)
+                root.AddChild(CreateAuraLightning(i, lightningCount, radius * 1.08f, i % 2 == 0 ? GetterRay : WhiteFlash));
+        }
 
         NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(root);
         Tween tween = root.CreateTween().SetParallel();
-        tween.TweenProperty(root, "scale", Vector2.One * (1.18f + ringCount * 0.14f), duration);
+        tween.TweenProperty(root, "scale", Vector2.One * (1.12f + ringCount * 0.12f), duration).SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Cubic);
         tween.TweenProperty(root, "modulate:a", 0f, duration).SetEase(Tween.EaseType.In);
         tween.Chain().TweenCallback(Callable.From(root.QueueFreeSafely));
         await Cmd.Wait(duration);
@@ -287,18 +302,157 @@ internal static class ShinGetterCombatVfx
         return line;
     }
 
+    private static Line2D CreateAuraBurstLine(int index, int count, float radius, Color color)
+    {
+        float angle = Mathf.Tau * index / count + (index % 2 == 0 ? 0.025f : -0.025f);
+        Vector2 dir = Vector2.Right.Rotated(angle);
+        Vector2 tangent = new(-dir.Y, dir.X);
+        float startRadius = radius * (0.50f + (index % 3) * 0.035f);
+        float endRadius = radius * (1.18f + (index % 4) * 0.045f);
+        float bend = ((index % 5) - 2) * 4.5f;
+
+        Line2D line = new()
+        {
+            Width = 7.5f + (index % 3) * 1.2f,
+            DefaultColor = new Color(color.R, color.G, color.B, 0.72f),
+            Antialiased = true,
+        };
+        line.AddPoint(dir * startRadius);
+        line.AddPoint(dir * Mathf.Lerp(startRadius, endRadius, 0.56f) + tangent * bend);
+        line.AddPoint(dir * endRadius);
+        return line;
+    }
+
+    private static Line2D CreateAuraLightning(int index, int count, float radius, Color color)
+    {
+        float angle = Mathf.Tau * index / count + 0.09f * Mathf.Sin(index * 1.7f);
+        Vector2 dir = Vector2.Right.Rotated(angle);
+        Vector2 tangent = new(-dir.Y, dir.X);
+
+        Line2D line = new()
+        {
+            Width = 5f + index % 2,
+            DefaultColor = new Color(color.R, color.G, color.B, 0.84f),
+            Antialiased = true,
+        };
+
+        const int segmentCount = 6;
+        for (int i = 0; i <= segmentCount; i++)
+        {
+            float t = i / (float)segmentCount;
+            float zigzag = (i % 2 == 0 ? -1f : 1f) * (14f + (index % 3) * 4f) * (1f - t * 0.25f);
+            line.AddPoint(dir * Mathf.Lerp(radius * 0.28f, radius * 1.28f, t) + tangent * zigzag);
+        }
+
+        return line;
+    }
+
     private static Node2D CreateSolarEnergyBall()
     {
         Node2D root = new();
-        root.AddChild(CreateFilledCircle(128f, new Color(SolarOrange.R, SolarOrange.G, SolarOrange.B, 0.24f)));
-        root.AddChild(CreateFilledCircle(94f, new Color(SolarGold.R, SolarGold.G, SolarGold.B, 0.46f)));
-        root.AddChild(CreateFilledCircle(54f, new Color(SolarCore.R, SolarCore.G, SolarCore.B, 0.92f)));
-        root.AddChild(CreateCircle(134f, SolarOrange, 15f, 0.78f));
-        root.AddChild(CreateCircle(100f, SolarGold, 9f, 0.75f));
-        root.AddChild(CreateCircle(58f, SolarCore, 7f, 0.68f));
+        root.AddChild(CreateFilledCircle(146f, new Color(SolarRed.R, SolarRed.G, SolarRed.B, 0.16f)));
+        root.AddChild(CreateFilledCircle(126f, new Color(SolarOrange.R, SolarOrange.G, SolarOrange.B, 0.26f)));
+
+        for (int i = 0; i < 28; i++)
+            root.AddChild(CreateSolarFlameTongue(i, 28));
+
+        root.AddChild(CreateFilledCircle(104f, new Color(SolarOrange.R, SolarOrange.G, SolarOrange.B, 0.48f)));
+        root.AddChild(CreateFilledCircle(78f, new Color(SolarGold.R, SolarGold.G, SolarGold.B, 0.58f)));
+        root.AddChild(CreateFilledCircle(42f, new Color(SolarCore.R, SolarCore.G, SolarCore.B, 0.96f)));
+        root.AddChild(CreateCircle(130f, SolarOrange, 12f, 0.62f));
+        root.AddChild(CreateCircle(94f, SolarGold, 7f, 0.68f));
+        root.AddChild(CreateCircle(50f, SolarCore, 5f, 0.58f));
+
+        for (int i = 0; i < 14; i++)
+            root.AddChild(CreateSolarSwirlLine(i, 14));
         for (int i = 0; i < 18; i++)
-            root.AddChild(CreateRay(i, 18, 150f + (i % 3) * 18f, i % 2 == 0 ? SolarGold : SolarOrange));
+            root.AddChild(CreateSolarRay(i, 18));
+        for (int i = 0; i < 18; i++)
+            root.AddChild(CreateSolarSpark(i, 18));
+
         return root;
+    }
+
+    private static Polygon2D CreateSolarFlameTongue(int index, int count)
+    {
+        float angle = Mathf.Tau * index / count;
+        Vector2 dir = Vector2.Right.Rotated(angle);
+        Vector2 tangent = new(-dir.Y, dir.X);
+        float innerRadius = 82f + (index % 4) * 5f;
+        float midRadius = 118f + (index % 3) * 8f;
+        float outerRadius = 150f + (index % 5) * 9f;
+        float halfWidth = 11f + (index % 4) * 2.5f;
+        Color color = index % 3 == 0
+            ? new Color(SolarRed.R, SolarRed.G, SolarRed.B, 0.44f)
+            : new Color(SolarOrange.R, SolarOrange.G, SolarOrange.B, 0.46f);
+
+        Polygon2D flame = new()
+        {
+            Color = color,
+            Antialiased = true,
+        };
+        flame.Polygon = new[]
+        {
+            dir * innerRadius - tangent * halfWidth,
+            dir * midRadius - tangent * halfWidth * 0.55f,
+            dir * outerRadius,
+            dir * midRadius + tangent * halfWidth * 0.55f,
+            dir * innerRadius + tangent * halfWidth,
+        };
+        return flame;
+    }
+
+    private static Line2D CreateSolarSwirlLine(int index, int count)
+    {
+        float baseAngle = Mathf.Tau * index / count;
+        float direction = index % 2 == 0 ? 1f : -1f;
+        Line2D line = new()
+        {
+            Width = 5f + index % 3,
+            DefaultColor = index % 2 == 0
+                ? new Color(SolarGold.R, SolarGold.G, SolarGold.B, 0.66f)
+                : new Color(SolarCore.R, SolarCore.G, SolarCore.B, 0.58f),
+            Antialiased = true,
+        };
+
+        for (int i = 0; i < 8; i++)
+        {
+            float t = i / 7f;
+            float angle = baseAngle + direction * t * 0.72f;
+            float radius = Mathf.Lerp(38f, 118f, t) + Mathf.Sin((index + t) * 4.1f) * 5f;
+            line.AddPoint(Vector2.Right.Rotated(angle) * radius);
+        }
+
+        return line;
+    }
+
+    private static Line2D CreateSolarRay(int index, int count)
+    {
+        float angle = Mathf.Tau * index / count;
+        Vector2 dir = Vector2.Right.Rotated(angle);
+        Line2D ray = new()
+        {
+            Width = 4.5f + (index % 3),
+            DefaultColor = index % 2 == 0
+                ? new Color(SolarGold.R, SolarGold.G, SolarGold.B, 0.54f)
+                : new Color(SolarOrange.R, SolarOrange.G, SolarOrange.B, 0.50f),
+            Antialiased = true,
+        };
+        ray.AddPoint(dir * (96f + (index % 3) * 5f));
+        ray.AddPoint(dir * (158f + (index % 4) * 12f));
+        return ray;
+    }
+
+    private static Polygon2D CreateSolarSpark(int index, int count)
+    {
+        float angle = Mathf.Tau * index / count + 0.21f * (index % 3);
+        float distance = 30f + (index * 37 % 92);
+        float radius = 3f + (index % 4);
+        Polygon2D spark = CreateFilledCircle(radius, index % 2 == 0
+            ? new Color(SolarCore.R, SolarCore.G, SolarCore.B, 0.74f)
+            : new Color(SolarGold.R, SolarGold.G, SolarGold.B, 0.68f));
+        spark.Position = Vector2.Right.Rotated(angle) * distance;
+        return spark;
     }
 
     private static Polygon2D CreateFilledCircle(float radius, Color color)
@@ -310,21 +464,6 @@ internal static class ShinGetterCombatVfx
         };
         polygon.Polygon = CirclePoints(radius, 64).ToArray();
         return polygon;
-    }
-
-    private static Line2D CreateRay(int index, int count, float radius, Color color)
-    {
-        float angle = Mathf.Tau * index / count;
-        Vector2 dir = Vector2.Right.Rotated(angle);
-        Line2D ray = new()
-        {
-            Width = 5f + (index % 3),
-            DefaultColor = new Color(color.R, color.G, color.B, 0.62f),
-            Antialiased = true,
-        };
-        ray.AddPoint(dir * radius * 0.2f);
-        ray.AddPoint(dir * radius * 1.15f);
-        return ray;
     }
 
     private static void AddSpeedLines(Vector2 source, Vector2 target, Color color)
