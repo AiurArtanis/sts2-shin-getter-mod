@@ -4,6 +4,7 @@ const REQUIRED_RESOURCES := {
 	"res://materials/cards/frames/card_frame_shin_getter_mat.tres": false,
 	"res://shaders/shin_getter_hsv.gdshader": false,
 	"res://images/atlases/ui_atlas.sprites/card/energy_shin_getter.tres": false,
+	"res://images/packed/sprite_fonts/shin_getter_energy_icon.png": false,
 	"res://images/atlases/card_atlas.sprites/shin_getter/s_g_c_ki.tres": false,
 	"res://images/atlases/power_atlas.sprites/s_g_p_ki.tres": false,
 	"res://images/atlases/power_atlas.sprites/s_g_p_enable.tres": false,
@@ -55,3 +56,4 @@ func _initialize() -> void:
 		print("MOD_RESOURCE_OK: %s" % path)
 
 	quit(1 if failed else 0)
+

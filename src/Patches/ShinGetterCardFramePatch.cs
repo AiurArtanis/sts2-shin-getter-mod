@@ -15,13 +15,20 @@ internal static class ShinGetterCardFramePatch
 
     private static void Postfix(NCard __instance)
     {
+        if (!__instance.IsNodeReady())
+            return;
+
         CardModel? model = __instance.Model;
         if (model?.VisualCardPool is not ShinGetterCardPool)
             return;
 
-        TextureRect frame = FrameRef(__instance);
+        TextureRect? frame = FrameRef(__instance);
+        if (frame == null)
+            return;
+
         frame.Texture = model.Frame;
         frame.Material = ModelDb.CardPool<ShinGetterCardPool>().FrameMaterial;
         frame.SelfModulate = Colors.White;
     }
 }
+
