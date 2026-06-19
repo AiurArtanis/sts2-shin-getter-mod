@@ -37,14 +37,14 @@ internal static partial class ShinGetterCombatVfx
         Vector2 direction = (targetCenter - ownerCenter).Normalized();
         if (direction == Vector2.Zero)
             direction = owner.IsEnemy ? Vector2.Left : Vector2.Right;
-        Vector2 apex = origin + Vector2.Up * 180f;
+        Vector2 apex = origin + Vector2.Up * 300f + direction * 24f;
         Vector2 hitPosition = origin + (targetCenter - ownerCenter) - direction * 92f + Vector2.Up * 22f;
 
         AddDiveTrail(ownerCenter, targetCenter, GetterRay);
         Tween tween = ownerNode.CreateTween();
-        tween.TweenProperty(ownerNode, "global_position", apex, 0.14f).SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Cubic);
-        tween.TweenProperty(ownerNode, "global_position", hitPosition, 0.09f).SetEase(Tween.EaseType.In).SetTrans(Tween.TransitionType.Cubic);
-        await Cmd.Wait(0.24f);
+        tween.TweenProperty(ownerNode, "global_position", apex, 0.32f).SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Cubic);
+        tween.TweenProperty(ownerNode, "global_position", hitPosition, 0.07f).SetEase(Tween.EaseType.In).SetTrans(Tween.TransitionType.Cubic);
+        await Cmd.Wait(0.40f);
         AddFlash(targetCenter, GetterRay, 130f, 0.18f);
         target.GetVfxContainer()?.AddChildSafely(NLineBurstVfx.Create(target));
         NGame.Instance?.ScreenShake(ShakeStrength.Medium, ShakeDuration.Short);
@@ -103,10 +103,22 @@ internal static partial class ShinGetterCombatVfx
         if (livingTargets.Count == 0)
             return;
 
-        NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(NDaggerSprayFlurryVfx.Create(owner, GetterRay, goingRight: !owner.IsEnemy));
+        Node2D? flurry = NDaggerSprayFlurryVfx.Create(owner, GetterRay, goingRight: !owner.IsEnemy);
+        if (flurry != null)
+        {
+            flurry.Scale = new Vector2(flurry.Scale.X, flurry.Scale.Y * 1.65f);
+            NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(flurry);
+        }
         await Cmd.Wait(0.08f);
         foreach (Creature target in livingTargets)
-            NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(NDaggerSprayImpactVfx.Create(target, GetterRay, goingRight: !owner.IsEnemy));
+        {
+            Node2D? impact = NDaggerSprayImpactVfx.Create(target, GetterRay, goingRight: !owner.IsEnemy);
+            if (impact == null)
+                continue;
+
+            impact.Scale = new Vector2(impact.Scale.X, impact.Scale.Y * 1.55f);
+            NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(impact);
+        }
         await Cmd.Wait(0.18f);
     }
 
@@ -121,17 +133,18 @@ internal static partial class ShinGetterCombatVfx
             return;
 
         Vector2 center = targetPositions.Aggregate(Vector2.Zero, (sum, pos) => sum + pos) / targetPositions.Count;
-        Node2D root = CreateAnnihilationExplosion();
+        Node2D root = CreateAnnihilationBlackHole();
         root.GlobalPosition = center;
         NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(root);
-        NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(NGaseousImpactVfx.Create(center, new Color("#402f45")));
 
-        Tween tween = root.CreateTween().SetParallel();
-        tween.TweenProperty(root, "scale", Vector2.One * 1.38f, 0.34f).From(Vector2.One * 0.18f).SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Expo);
-        tween.TweenProperty(root, "modulate:a", 0f, 0.52f).SetDelay(0.16f).SetEase(Tween.EaseType.In);
-        tween.Chain().TweenCallback(Callable.From(root.QueueFreeSafely));
+        Tween tween = root.CreateTween();
+        tween.TweenProperty(root, "scale", Vector2.One * 1.18f, 0.30f).From(Vector2.One * 0.20f).SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Expo);
+        tween.Parallel().TweenProperty(root, "rotation", Mathf.Pi * 0.75f, 0.54f).AsRelative().SetEase(Tween.EaseType.InOut);
+        tween.TweenProperty(root, "scale", Vector2.One * 0.08f, 0.24f).SetEase(Tween.EaseType.In).SetTrans(Tween.TransitionType.Cubic);
+        tween.Parallel().TweenProperty(root, "modulate:a", 0f, 0.24f).SetEase(Tween.EaseType.In);
+        tween.TweenCallback(Callable.From(root.QueueFreeSafely));
         NGame.Instance?.ScreenShake(ShakeStrength.Strong, ShakeDuration.Normal);
-        await Cmd.Wait(0.38f);
+        await Cmd.Wait(0.56f);
     }
 
     public static async Task PlayGrappleVines(Creature target)
@@ -167,8 +180,8 @@ internal static partial class ShinGetterCombatVfx
         tween.TweenProperty(nova, "scale", Vector2.One * 1.65f, 0.72f).From(Vector2.One * 0.12f).SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Cubic);
         tween.TweenProperty(nova, "modulate:a", 0f, 0.46f).SetDelay(0.28f).SetEase(Tween.EaseType.In);
         tween.Chain().TweenCallback(Callable.From(nova.QueueFreeSafely));
-        NGame.Instance?.ScreenShake(ShakeStrength.Medium, ShakeDuration.Normal);
-        await Cmd.Wait(0.66f);
+        await Cmd.Wait(0.72f);
+        NGame.Instance?.ScreenShake(ShakeStrength.Strong, ShakeDuration.Normal);
     }
 
     public static async Task PlayNewtypeFlash(Creature owner)
@@ -259,50 +272,66 @@ internal static partial class ShinGetterCombatVfx
         tween.TweenCallback(Callable.From(root.QueueFreeSafely));
     }
 
-    private static Node2D CreateAnnihilationExplosion()
+    private static Node2D CreateAnnihilationBlackHole()
     {
         Node2D root = new();
-        root.AddChild(CreateFilledCircle(190f, new Color(0.18f, 0.12f, 0.22f, 0.30f)));
-        root.AddChild(CreateFilledCircle(120f, new Color(SolarOrange.R, SolarOrange.G, SolarOrange.B, 0.34f)));
-        root.AddChild(CreateFilledCircle(64f, new Color(SolarCore.R, SolarCore.G, SolarCore.B, 0.88f)));
-        for (int i = 0; i < 24; i++)
-            root.AddChild(CreateExplosionShard(i, 24));
-        for (int i = 0; i < 20; i++)
-            root.AddChild(CreateSmokePuff(i, 20));
-        root.AddChild(CreateCircle(170f, SolarOrange, 16f, 0.72f));
-        root.AddChild(CreateCircle(94f, SolarCore, 9f, 0.64f));
+        root.AddChild(CreateFilledCircle(206f, new Color(0.02f, 0.00f, 0.05f, 0.48f)));
+        root.AddChild(CreateCircle(188f, new Color(0.24f, 0.07f, 0.42f, 0.66f), 22f, 0.72f));
+        root.AddChild(CreateCircle(142f, new Color(GetterRay.R, GetterRay.G, GetterRay.B, 0.42f), 12f, 0.58f));
+        root.AddChild(CreateCircle(98f, new Color(1.00f, 0.32f, 0.74f, 0.48f), 8f, 0.50f));
+        for (int i = 0; i < 9; i++)
+            root.AddChild(CreateBlackHoleSpiral(i));
+        for (int i = 0; i < 18; i++)
+            root.AddChild(CreateInwardShard(i, 18));
+        root.AddChild(CreateFilledCircle(92f, new Color(0.00f, 0.00f, 0.015f, 0.96f)));
+        root.AddChild(CreateCircle(74f, new Color(0.55f, 0.12f, 0.84f, 0.78f), 5f, 0.72f));
+        root.AddChild(CreateFilledCircle(38f, new Color(0.0f, 0.0f, 0.0f, 1.0f)));
         return root;
     }
 
-    private static Polygon2D CreateExplosionShard(int index, int count)
+    private static Line2D CreateBlackHoleSpiral(int index)
     {
-        float angle = Mathf.Tau * index / count;
+        Line2D spiral = new()
+        {
+            Width = 7f - index * 0.28f,
+            DefaultColor = index % 2 == 0
+                ? new Color(GetterRay.R, GetterRay.G, GetterRay.B, 0.50f)
+                : new Color(1.0f, 0.34f, 0.76f, 0.42f),
+            Antialiased = true
+        };
+
+        float start = Mathf.Tau * index / 9f;
+        for (int i = 0; i < 22; i++)
+        {
+            float t = i / 21f;
+            float angle = start + t * 2.55f;
+            float radius = 34f + t * (158f + index * 3f);
+            spiral.AddPoint(Vector2.Right.Rotated(angle) * radius);
+        }
+
+        return spiral;
+    }
+
+    private static Polygon2D CreateInwardShard(int index, int count)
+    {
+        float angle = Mathf.Tau * index / count + 0.08f * (index % 3);
         Vector2 dir = Vector2.Right.Rotated(angle);
         Vector2 tangent = new(-dir.Y, dir.X);
-        float inner = 34f + (index % 4) * 8f;
-        float outer = 172f + (index % 5) * 18f;
-        float width = 14f + (index % 3) * 4f;
+        float outer = 196f + (index % 4) * 12f;
+        float inner = 92f + (index % 5) * 7f;
+        float width = 10f + (index % 4) * 3f;
         Polygon2D shard = new()
         {
-            Color = index % 2 == 0 ? new Color(SolarGold.R, SolarGold.G, SolarGold.B, 0.72f) : new Color(SolarOrange.R, SolarOrange.G, SolarOrange.B, 0.66f),
+            Color = index % 2 == 0 ? new Color(0.05f, 0.0f, 0.08f, 0.72f) : new Color(GetterRay.R, GetterRay.G, GetterRay.B, 0.30f),
             Antialiased = true,
         };
         shard.Polygon = new[]
         {
-            dir * inner - tangent * width,
-            dir * outer,
-            dir * inner + tangent * width,
+            dir * outer - tangent * width,
+            dir * inner,
+            dir * outer + tangent * width,
         };
         return shard;
-    }
-
-    private static Polygon2D CreateSmokePuff(int index, int count)
-    {
-        float angle = Mathf.Tau * index / count + 0.13f * (index % 4);
-        float radius = 118f + (index % 6) * 14f;
-        Polygon2D puff = CreateFilledCircle(22f + (index % 5) * 5f, new Color(0.13f, 0.10f, 0.15f, 0.34f));
-        puff.Position = Vector2.Right.Rotated(angle) * radius;
-        return puff;
     }
 
     private static Node2D CreateGetterNovaNode()

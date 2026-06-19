@@ -34,7 +34,10 @@ internal static class ShinGetterCardFramePatch
         {
             ShaderMaterial frameMaterial = (ShaderMaterial)shaderMaterial.Duplicate();
             frameMaterial.ResourceLocalToScene = true;
-            frameMaterial.SetShaderParameter("frame_height", Mathf.Max(frame.Size.Y, 1f));
+            float frameWidth = Mathf.Max(frame.Size.X, frame.Texture?.GetWidth() ?? 1);
+            float frameHeight = Mathf.Max(frame.Size.Y, frame.Texture?.GetHeight() ?? 1);
+            frameMaterial.SetShaderParameter("frame_width", frameWidth);
+            frameMaterial.SetShaderParameter("frame_height", frameHeight);
             frame.Material = frameMaterial;
         }
         else
