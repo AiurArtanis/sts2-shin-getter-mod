@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Nodes.Vfx;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -29,7 +30,8 @@ public sealed class SGC_Annihilation : ShinGetterCardBase
     {
         var attack = await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this)
             .TargetingAllOpponents(CombatState)
-            .WithHitFx("vfx/vfx_attack_slash")
+            .WithAttackerAnim("Cast", 0.35f)
+            .BeforeDamage(() => ShinGetterCombatVfx.PlayAnnihilation(Owner.Creature, CombatState.GetOpponentsOf(Owner.Creature)))
             .Execute(choiceContext);
         int targetCount = attack.Results.SelectMany(results => results).Count(result => result.TotalDamage > 0);
 

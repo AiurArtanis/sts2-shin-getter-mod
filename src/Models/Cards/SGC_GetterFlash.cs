@@ -34,9 +34,11 @@ public sealed class SGC_GetterFlash : ShinGetterCardBase
             card.EnergyCost.AddThisTurnOrUntilPlayed(-1, reduceOnly: true);
         if (HasForm(Owner, ShinGetterForm.Getter1))
             await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, 8m, Owner.Creature, this);
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
-            .BeforeDamage(() => ShinGetterCombatVfx.PlayWhiteFlash(Owner.Creature))
-            .WithHitFx("vfx/vfx_starry_impact").Execute(choiceContext);
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this)
+            .WithNoAttackerAnim()
+            .Targeting(cardPlay.Target)
+            .BeforeDamage(() => ShinGetterCombatVfx.PlayFlashRush(Owner.Creature, cardPlay.Target))
+            .Execute(choiceContext);
     }
 
     protected override void OnUpgrade()

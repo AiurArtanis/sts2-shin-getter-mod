@@ -22,7 +22,7 @@ internal static class ShinGetterBeamVfx
     private static readonly Color GetterPink = new(1f, 0.19f, 0.62f, 1f);
     private static readonly Color GetterWhite = new(1f, 0.94f, 1f, 1f);
     private static readonly Color GetterRay = new("4BFEC4");
-    private static readonly Color GetterRayGlow = new("CFFFF0");
+    private static readonly Color GetterRayGlow = new("A8FFE9");
 
     public static async Task Play(Creature owner, IEnumerable<Creature> targets, ShinGetterBeamStyle style)
     {
@@ -93,9 +93,9 @@ internal static class ShinGetterBeamVfx
 
     private static void AddPinkWrapLines(Line2D source)
     {
-        AddWavyWrapLine(source, -54f, 68f, 18f, 2.25f, 0f);
-        AddWavyWrapLine(source, 46f, 54f, 15f, 2.65f, Mathf.Pi);
-        AddWavyWrapLine(source, -2f, 34f, 11f, 3.1f, Mathf.Pi * 0.5f);
+        float[] offsets = { -238f, -166f, -94f, 94f, 166f, 238f };
+        for (int i = 0; i < offsets.Length; i++)
+            AddWavyWrapLine(source, offsets[i], 30f + (i % 2) * 8f, 13f + (i % 3) * 2f, 2.3f + i * 0.12f, i * Mathf.Pi * 0.45f);
     }
 
     private static void AddWavyWrapLine(Line2D source, float offset, float width, float amplitude, float waves, float phase)
@@ -157,3 +157,4 @@ internal static class ShinGetterBeamVfx
             node.Scale = scale;
     }
 }
+

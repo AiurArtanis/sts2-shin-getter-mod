@@ -8,13 +8,16 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Nodes.Vfx.Cards;
 using ShinGetterMod.Models.Powers;
+using ShinGetterMod.Nodes.Vfx;
 
 namespace ShinGetterMod.Models.Cards;
 
 public sealed class SGC_InsectVirus : ShinGetterCardBase
 {
     public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Unplayable };
+    protected override IEnumerable<string> ExtraRunAssetPaths => NNightmareHandsVfx.AssetPaths;
     protected override IEnumerable<DynamicVar> CanonicalVars => System.Array.Empty<DynamicVar>();
 
     public SGC_InsectVirus()
@@ -29,10 +32,14 @@ public sealed class SGC_InsectVirus : ShinGetterCardBase
     public override async Task AfterSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, IEnumerable<Creature> participants)
     {
         if (Pile?.Type == PileType.Hand && participants.Contains(Owner.Creature))
+        {
+            await ShinGetterCombatVfx.PlayInsectVirusNightmare(Owner.Creature);
             await PowerCmd.Apply<SGP_Wane>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
+        }
     }
 
     protected override void OnUpgrade()
     {
     }
 }
+

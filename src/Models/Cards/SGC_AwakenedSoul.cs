@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using ShinGetterMod.Models.Powers;
+using ShinGetterMod.Nodes.Vfx;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -27,6 +28,7 @@ public sealed class SGC_AwakenedSoul : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        await ShinGetterCombatVfx.PlayNewtypeFlash(Owner.Creature);
         await PowerCmd.Apply<SGP_AwakenedSoul>(choiceContext, Owner.Creature, DynamicVars["SGP_AwakenedSoul"].BaseValue, Owner.Creature, this);
     }
 

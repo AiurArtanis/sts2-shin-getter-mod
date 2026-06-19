@@ -15,7 +15,7 @@ using MegaCrit.Sts2.Core.Nodes.Vfx.Utilities;
 
 namespace ShinGetterMod.Nodes.Vfx;
 
-internal static class ShinGetterCombatVfx
+internal static partial class ShinGetterCombatVfx
 {
     private static readonly Color GetterRay = new(0.294f, 0.996f, 0.768f, 1f);
     private static readonly Color GetterPink = new(1f, 0.18f, 0.58f, 1f);
@@ -268,7 +268,7 @@ internal static class ShinGetterCombatVfx
             float ringRadius = radius * (0.38f + i * 0.15f);
             root.AddChild(CreateCircle(ringRadius, color, 7.5f - i * 0.9f, 0.46f - i * 0.05f));
         }
-        root.AddChild(CreateCircle(radius * 0.35f, new Color(1f, 1f, 1f, 0.68f), 5f, 0.36f));
+        root.AddChild(CreateCircle(radius * 0.26f, new Color(1f, 1f, 1f, 0.68f), 4f, 0.28f));
 
         for (int i = 0; i < rayCount; i++)
             root.AddChild(CreateAuraBurstLine(i, rayCount, radius, color));
@@ -302,25 +302,43 @@ internal static class ShinGetterCombatVfx
         return line;
     }
 
-    private static Line2D CreateAuraBurstLine(int index, int count, float radius, Color color)
+    private static Node2D CreateAuraBurstLine(int index, int count, float radius, Color color)
     {
-        float angle = Mathf.Tau * index / count + (index % 2 == 0 ? 0.025f : -0.025f);
+        float angle = Mathf.Tau * index / count + 0.035f * Mathf.Sin(index * 1.31f);
         Vector2 dir = Vector2.Right.Rotated(angle);
         Vector2 tangent = new(-dir.Y, dir.X);
-        float startRadius = radius * (0.50f + (index % 3) * 0.035f);
-        float endRadius = radius * (1.18f + (index % 4) * 0.045f);
-        float bend = ((index % 5) - 2) * 4.5f;
+        float inner = radius * (0.38f + (index % 3) * 0.025f);
+        float outer = radius * (1.24f + (index % 4) * 0.05f);
+        float baseWidth = 18f + (index % 4) * 4f;
+        float midWidth = 8f + (index % 3) * 2f;
 
-        Line2D line = new()
+        Node2D root = new();
+        Polygon2D shard = new()
         {
-            Width = 7.5f + (index % 3) * 1.2f,
-            DefaultColor = new Color(color.R, color.G, color.B, 0.72f),
+            Color = new Color(color.R, color.G, color.B, 0.70f),
             Antialiased = true,
         };
-        line.AddPoint(dir * startRadius);
-        line.AddPoint(dir * Mathf.Lerp(startRadius, endRadius, 0.56f) + tangent * bend);
-        line.AddPoint(dir * endRadius);
-        return line;
+        Vector2 bend = tangent * ((index % 5) - 2) * 7f;
+        shard.Polygon = new[]
+        {
+            dir * inner - tangent * baseWidth,
+            dir * Mathf.Lerp(inner, outer, 0.62f) + bend - tangent * midWidth,
+            dir * outer,
+            dir * Mathf.Lerp(inner, outer, 0.62f) + bend + tangent * midWidth,
+            dir * inner + tangent * baseWidth,
+        };
+        root.AddChild(shard);
+
+        Line2D highlight = new()
+        {
+            Width = 3.5f + index % 2,
+            DefaultColor = new Color(1f, 1f, 0.84f, 0.62f),
+            Antialiased = true,
+        };
+        highlight.AddPoint(dir * (inner + 10f));
+        highlight.AddPoint(dir * (outer - 10f) + bend * 0.35f);
+        root.AddChild(highlight);
+        return root;
     }
 
     private static Line2D CreateAuraLightning(int index, int count, float radius, Color color)
@@ -572,3 +590,4 @@ internal static class ShinGetterCombatVfx
             yield return Vector2.Right.Rotated(Mathf.Tau * i / count) * radius;
     }
 }
+

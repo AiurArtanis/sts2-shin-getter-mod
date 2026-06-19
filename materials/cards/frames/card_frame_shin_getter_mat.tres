@@ -8,3 +8,4 @@ shader = ExtResource("1_frame")
 shader_parameter/red_color = Color(0.776471, 0.054902, 0.039216, 1)
 shader_parameter/white_color = Color(1, 1, 1, 1)
 shader_parameter/yellow_color = Color(0.803922, 0.615686, 0.137255, 1)
+shader_parameter/frame_height = 512.0

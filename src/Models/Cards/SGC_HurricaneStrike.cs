@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Nodes.Vfx;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -30,7 +31,7 @@ public sealed class SGC_HurricaneStrike : ShinGetterCardBase
         await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue)
             .FromCard(this)
             .TargetingAllOpponents(CombatState)
-            .WithHitFx("vfx/vfx_attack_slash")
+            .BeforeDamage(() => ShinGetterCombatVfx.PlayDaggerSpray(Owner.Creature, CombatState.HittableEnemies))
             .Execute(choiceContext);
 
         if (targetCount > 0)

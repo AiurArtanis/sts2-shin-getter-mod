@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Nodes.Vfx;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -24,7 +25,11 @@ public sealed class SGC_GetterElbow : ShinGetterCardBase
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
-        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_blunt").Execute(choiceContext);
+        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this)
+            .WithNoAttackerAnim()
+            .Targeting(cardPlay.Target)
+            .BeforeDamage(() => ShinGetterCombatVfx.PlayRush(Owner.Creature, cardPlay.Target))
+            .Execute(choiceContext);
         await PowerCmd.Apply<WeakPower>(choiceContext, cardPlay.Target, DynamicVars["WeakPower"].BaseValue, Owner.Creature, this);
         if (HasForm(Owner, ShinGetterForm.Getter3))
             await PowerCmd.Apply<PlatingPower>(choiceContext, Owner.Creature, 3m, Owner.Creature, this);

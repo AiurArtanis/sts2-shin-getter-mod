@@ -27,8 +27,19 @@ internal static class ShinGetterCardFramePatch
             return;
 
         frame.Texture = model.Frame;
-        frame.Material = ModelDb.CardPool<ShinGetterCardPool>().FrameMaterial;
         frame.SelfModulate = Colors.White;
+
+        Material? material = ModelDb.CardPool<ShinGetterCardPool>().FrameMaterial;
+        if (material is ShaderMaterial shaderMaterial)
+        {
+            ShaderMaterial frameMaterial = (ShaderMaterial)shaderMaterial.Duplicate();
+            frameMaterial.ResourceLocalToScene = true;
+            frameMaterial.SetShaderParameter("frame_height", Mathf.Max(frame.Size.Y, 1f));
+            frame.Material = frameMaterial;
+        }
+        else
+        {
+            frame.Material = material;
+        }
     }
 }
-

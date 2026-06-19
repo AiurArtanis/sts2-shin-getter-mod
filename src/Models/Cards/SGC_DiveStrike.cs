@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using ShinGetterMod.Models.Powers;
+using ShinGetterMod.Nodes.Vfx;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -29,18 +30,18 @@ public sealed class SGC_DiveStrike : ShinGetterCardBase
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
 
-        // 若腾空，伤害翻倍
         var dmg = base.DynamicVars.Damage.BaseValue;
         if (GetPowerAmount<SGP_Airborne>(base.Owner) > 0)
             dmg *= 2;
 
-        await DamageCmd.Attack(dmg).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+        await DamageCmd.Attack(dmg).FromCard(this)
+            .WithNoAttackerAnim()
+            .Targeting(cardPlay.Target)
+            .BeforeDamage(() => ShinGetterCombatVfx.PlayDiveStrike(Owner.Creature, cardPlay.Target))
+            .Execute(choiceContext);
 
-        // 一号机：获得 1 腾空
         if (HasForm(base.Owner, ShinGetterForm.Getter1))
-        {
             await PowerCmd.Apply<SGP_Airborne>(choiceContext, base.Owner.Creature, 1m, base.Owner.Creature, this);
-        }
     }
 
     protected override void OnUpgrade()
