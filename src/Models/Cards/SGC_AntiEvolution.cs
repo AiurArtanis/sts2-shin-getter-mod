@@ -12,7 +12,7 @@ using ShinGetterMod.Models.Powers;
 namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
-/// 不进化体 | 能力 | 稀有 | 1费
+/// 不进化体 | 能力 | 罕见 | 1费
 /// 封印敌我全体 1 回合
 /// </summary>
 public sealed class SGC_AntiEvolution : ShinGetterCardBase
@@ -20,7 +20,7 @@ public sealed class SGC_AntiEvolution : ShinGetterCardBase
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new PowerVar<SGP_Seal>(1m) };
 
     public SGC_AntiEvolution()
-        : base(1, CardType.Power, CardRarity.Rare, TargetType.Self)
+        : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
     {
     }
 

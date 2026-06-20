@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
+using MegaCrit.Sts2.Core.Nodes.Vfx;
 using MegaCrit.Sts2.Core.ValueProps;
 using ShinGetterMod.Nodes.Vfx;
 
@@ -18,6 +19,13 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_HurricaneStrike : ShinGetterCardBase
 {
+    protected override IEnumerable<string> ExtraRunAssetPaths => new[]
+    {
+        NDaggerSprayFlurryVfx.scenePath,
+        NDaggerSprayImpactVfx.scenePath,
+    };
+
+    protected override HashSet<CardTag> CanonicalTags => new() { CardTag.Strike };
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new DamageVar(6m, ValueProp.Move) };
 
     public SGC_HurricaneStrike()

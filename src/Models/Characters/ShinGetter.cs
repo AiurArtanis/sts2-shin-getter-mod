@@ -21,7 +21,7 @@ public sealed class ShinGetter : CharacterModel
 	public override CharacterGender Gender => CharacterGender.Masculine;
 	protected override CharacterModel? UnlocksAfterRunAs => null;
 	public override Color NameColor => new Color("CB282B");
-	public override int StartingHp => 80;
+	public override int StartingHp => 72;
 	public override int StartingGold => 99;
 
 	public override CardPoolModel CardPool => ModelDb.CardPool<ShinGetterCardPool>();

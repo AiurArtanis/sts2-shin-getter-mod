@@ -33,17 +33,15 @@ public sealed class SGC_SeizeFuture : ShinGetterCardBase
         List<CardModel> candidates = PileType.Hand.GetPile(Owner).Cards
             .Where(card => card != this && !card.EnergyCost.CostsX)
             .ToList();
+        if (candidates.Count == 0)
+            return;
 
-        IEnumerable<CardModel> selected = candidates;
-        if (!IsUpgraded)
-        {
-            selected = await CardSelectCmd.FromHand(
-                choiceContext,
-                Owner,
-                new CardSelectorPrefs(SelectionScreenPrompt, 1),
-                card => candidates.Contains(card),
-                this);
-        }
+        IEnumerable<CardModel> selected = await CardSelectCmd.FromHand(
+            choiceContext,
+            Owner,
+            new CardSelectorPrefs(SelectionScreenPrompt, 1),
+            card => candidates.Contains(card),
+            this);
 
         foreach (CardModel card in selected)
             card.EnergyCost.AddThisTurnOrUntilPlayed(-1, reduceOnly: true);
@@ -51,6 +49,6 @@ public sealed class SGC_SeizeFuture : ShinGetterCardBase
 
     protected override void OnUpgrade()
     {
-        // Upgrade changes the selection from one card to the entire hand.
+        base.DynamicVars.Block.UpgradeValueBy(3m);
     }
 }

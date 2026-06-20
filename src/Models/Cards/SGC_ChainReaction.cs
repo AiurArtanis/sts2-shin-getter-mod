@@ -12,7 +12,7 @@ using ShinGetterMod.Models.Powers;
 namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
-/// 连锁反应 | 能力 | 罕见 | 2费 | 变形流/进化流
+/// 连锁反应 | 能力 | 稀有 | 2费 | 变形流/进化流
 /// 失去活力时，获得 1 再生和 1 覆甲
 /// </summary>
 public sealed class SGC_ChainReaction : ShinGetterCardBase
@@ -28,7 +28,7 @@ public sealed class SGC_ChainReaction : ShinGetterCardBase
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new PowerVar<SGP_ChainReaction>(1m) };
 
     public SGC_ChainReaction()
-        : base(2, CardType.Power, CardRarity.Uncommon, TargetType.Self)
+        : base(2, CardType.Power, CardRarity.Rare, TargetType.Self)
     {
     }
 

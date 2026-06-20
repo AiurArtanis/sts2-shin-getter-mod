@@ -1,6 +1,5 @@
 #nullable enable
 using System.Collections.Generic;
-using System;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -20,18 +19,11 @@ namespace ShinGetterMod.Models.Powers;
 /// </summary>
 public sealed class SGP_ShinForm : PowerModel
 {
-    private sealed class Data
-    {
-        public decimal PendingPlating;
-    }
-
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Single;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         System.Array.Empty<DynamicVar>();
-
-    protected override object InitInternalData() => new Data();
 
     public override async Task AfterApplied(Creature? applier, CardModel? cardSource)
     {
@@ -61,43 +53,20 @@ public sealed class SGP_ShinForm : PowerModel
         return player.Creature == Owner ? count + 1m : count;
     }
 
-    public override decimal ModifyBlockMultiplicative(
-        Creature target,
-        decimal block,
-        ValueProp props,
-        CardModel? cardSource,
-        CardPlay? cardPlay)
-    {
-        if (target != Owner || cardSource is null)
-            return 1m;
-
-        if (cardPlay is not null)
-            GetInternalData<Data>().PendingPlating = Math.Max(block, 0m);
-
-        return 0m;
-    }
-
     public override async Task AfterBlockGained(
         Creature creature,
         decimal amount,
         ValueProp props,
         CardModel? cardSource)
     {
-        if (creature != Owner || cardSource is null)
-            return;
-
-        var data = GetInternalData<Data>();
-        decimal platingAmount = data.PendingPlating;
-        data.PendingPlating = 0m;
-
-        if (platingAmount <= 0m)
+        if (creature != Owner || amount <= 0m)
             return;
 
         Flash();
         await PowerCmd.Apply<PlatingPower>(
             new ThrowingPlayerChoiceContext(),
             Owner,
-            platingAmount,
+            1m,
             Owner,
             cardSource);
     }

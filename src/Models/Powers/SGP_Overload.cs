@@ -31,7 +31,7 @@ public sealed class SGP_Overload : PowerModel
             return;
 
         Flash();
-        await PlayerCmd.GainEnergy(-energyLoss, player);
+        await PlayerCmd.LoseEnergy(energyLoss, player);
         await PowerCmd.Remove(this);
     }
 }
