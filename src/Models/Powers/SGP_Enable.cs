@@ -12,6 +12,8 @@ public sealed class SGP_Enable : PowerModel
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
+    public void FlashOnPlay() => Flash();
+
     public override bool ShouldTakeExtraTurn(Player player) => player == Owner.Player && Amount > 0;
 
     public override async Task AfterTakingExtraTurn(Player player)

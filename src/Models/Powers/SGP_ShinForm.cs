@@ -11,6 +11,8 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Nodes.Combat;
+using ShinGetterMod.Patches;
 
 namespace ShinGetterMod.Models.Powers;
 
@@ -31,6 +33,8 @@ public sealed class SGP_ShinForm : PowerModel
         {
             await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), Owner, -2m, Owner, null);
             await PowerCmd.Apply<DexterityPower>(new ThrowingPlayerChoiceContext(), Owner, -2m, Owner, null);
+            NShinGetterStaticVisuals.ShowShinDragon(Owner);
+            ShinGetterCardFramePatch.RefreshVisibleCards();
         }
     }
 
@@ -38,6 +42,7 @@ public sealed class SGP_ShinForm : PowerModel
     {
         await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), owner, 2m, owner, null);
         await PowerCmd.Apply<DexterityPower>(new ThrowingPlayerChoiceContext(), owner, 2m, owner, null);
+        ShinGetterCardFramePatch.RefreshVisibleCards();
     }
 
     public override decimal ModifyMaxEnergy(Player player, decimal amount)

@@ -20,6 +20,7 @@ public sealed class SGC_EvolutionEngine : ShinGetterCardBase
     {
         new PowerVar<SGP_Evolution>(2m),
         new PowerVar<SGP_EvolutionEngine>(1m),
+        new EnergyVar("EvolutionEngineEnergy", 1),
     };
 
     public SGC_EvolutionEngine()
@@ -37,5 +38,6 @@ public sealed class SGC_EvolutionEngine : ShinGetterCardBase
     {
         DynamicVars["SGP_Evolution"].UpgradeValueBy(1m);
         DynamicVars["SGP_EvolutionEngine"].UpgradeValueBy(1m);
+        DynamicVars["EvolutionEngineEnergy"].UpgradeValueBy(1m);
     }
 }

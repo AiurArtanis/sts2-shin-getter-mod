@@ -9,6 +9,7 @@ internal static class RichTextWhitePatch
 {
     private static readonly RichTextWhite WhiteEffect = new();
     private static readonly RichTextYellow YellowEffect = new();
+    private static readonly RichTextGetterRay GetterRayEffect = new();
 
     private static void Postfix(MegaRichTextLabel __instance)
     {
@@ -24,6 +25,10 @@ internal static class RichTextWhitePatch
         if (!__instance.CustomEffects.Contains(YellowEffect))
         {
             __instance.CustomEffects.Add(YellowEffect);
+        }
+        if (!__instance.CustomEffects.Contains(GetterRayEffect))
+        {
+            __instance.CustomEffects.Add(GetterRayEffect);
         }
     }
 }

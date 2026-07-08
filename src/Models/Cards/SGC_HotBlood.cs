@@ -14,11 +14,12 @@ namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
 /// 热血 | 攻击 | 罕见 | 3费 | 钢之魂流
-/// 保留。【精神 2】造成 15 伤害，下一次伤害翻倍。消耗
+/// 保留。【精神 3】造成 15 伤害，下一次伤害翻倍。消耗
 /// </summary>
 public sealed class SGC_HotBlood : ShinGetterCardBase
 {
-    public override int SpiritRequirement => 2;
+    public override int SpiritRequirement => IsUpgraded ? 2 : 3;
+    public override int UpgradePreviewSpiritRequirement => 2;
     public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Retain, CardKeyword.Exhaust };
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips => WithContextualHoverTips(new IHoverTip[] { HoverTipFactory.FromPower<SGP_HotBlood>() });
@@ -44,6 +45,5 @@ public sealed class SGC_HotBlood : ShinGetterCardBase
 
     protected override void OnUpgrade()
     {
-        base.DynamicVars.Damage.UpgradeValueBy(5m);
     }
 }

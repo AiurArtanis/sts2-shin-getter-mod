@@ -1,0 +1,8 @@
+{
+  "S_G_E_ADAPTATION.title": "Adaptation",
+  "S_G_E_ADAPTATION.description": "After this card is played, lose [blue]1[/blue] HP, convert 1 stack of a debuff into [blue]1[/blue] [gold]Vigor[/gold]. If you have no debuffs, you still lose HP and gain [gold]Vigor[/gold].",
+  "S_G_E_ADAPTATION.extraCardText": "Lose 1 HP, remove 1 debuff stack, and gain 1 [gold]Vigor[/gold].",
+  "S_G_E_DEVOLUTION.title": "Devolution",
+  "S_G_E_DEVOLUTION.description": "Can only enchant Attack cards. Costs [blue]1[/blue] less. Attack damage is halved.",
+  "S_G_E_DEVOLUTION.extraCardText": "Attack damage is halved."
+}

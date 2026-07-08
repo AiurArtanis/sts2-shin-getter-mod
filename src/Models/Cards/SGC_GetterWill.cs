@@ -18,6 +18,8 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_GetterWill : ShinGetterCardBase
 {
+    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Exhaust };
+
     protected override IEnumerable<DynamicVar> CanonicalVars => System.Array.Empty<DynamicVar>();
 
     public SGC_GetterWill()
@@ -39,6 +41,6 @@ public sealed class SGC_GetterWill : ShinGetterCardBase
 
     protected override void OnUpgrade()
     {
-        AddKeyword(CardKeyword.Innate);
+        RemoveKeyword(CardKeyword.Exhaust);
     }
 }

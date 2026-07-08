@@ -8,12 +8,13 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
 using ShinGetterMod.Models.Powers;
+using ShinGetterMod.Nodes.Vfx;
 
 namespace ShinGetterMod.Models.Cards;
 
 public sealed class SGC_Insight : ShinGetterCardBase
 {
-    public override int SpiritRequirement => 2;
+    public override int SpiritRequirement => 3;
     public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Retain };
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips => WithContextualHoverTips(new IHoverTip[]
@@ -39,6 +40,7 @@ public sealed class SGC_Insight : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        await ShinGetterCombatVfx.PlayNewtypeSense(Owner.Creature);
         await PowerCmd.Apply<SGP_Insight>(choiceContext, Owner.Creature, DynamicVars["SGP_Insight"].BaseValue, Owner.Creature, this);
 
         if (HasForm(Owner, ShinGetterForm.Getter1))

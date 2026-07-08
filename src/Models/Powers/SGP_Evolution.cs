@@ -15,7 +15,7 @@ using MegaCrit.Sts2.Core.Models.Powers;
 namespace ShinGetterMod.Models.Powers;
 
 /// <summary>
-/// 进化。回合结束时，X=min(E,V,R,P)，获得X力量/最大生命/敏捷，各层数减去X。
+/// 进化。回合结束时消耗全部进化，分别将不超过进化层数的活力/再生/覆甲转化为永久成长。
 /// </summary>
 public sealed class SGP_Evolution : PowerModel
 {
@@ -24,6 +24,25 @@ public sealed class SGP_Evolution : PowerModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         System.Array.Empty<DynamicVar>();
+
+    public override async Task AfterPowerAmountChanged(
+        PlayerChoiceContext choiceContext,
+        PowerModel power,
+        decimal amount,
+        Creature? applier,
+        CardModel? cardSource)
+    {
+        if (power != this || amount <= 0m || Owner.IsDead)
+            return;
+
+        await PowerCmd.Apply<SGP_EvolutionMemory>(
+            choiceContext,
+            Owner,
+            amount,
+            Owner,
+            cardSource,
+            silent: true);
+    }
 
     public override async Task BeforeSideTurnEnd(
         PlayerChoiceContext choiceContext,
@@ -40,22 +59,35 @@ public sealed class SGP_Evolution : PowerModel
         int vigorAmount = vigor?.Amount ?? 0;
         int regenAmount = regen?.Amount ?? 0;
         int platingAmount = plating?.Amount ?? 0;
-        int evolutionAmount = Math.Min(Amount, Math.Min(vigorAmount, Math.Min(regenAmount, platingAmount)));
-
-        if (evolutionAmount <= 0)
-            return;
+        int evolutionAmount = Amount;
+        int strengthGain = Math.Min(vigorAmount, evolutionAmount);
+        int maxHpGain = Math.Min(regenAmount, evolutionAmount);
+        int dexterityGain = Math.Min(platingAmount, evolutionAmount);
 
         Flash();
-        await PowerCmd.ModifyAmount(choiceContext, vigor!, -evolutionAmount, null, null);
-        await PowerCmd.ModifyAmount(choiceContext, regen!, -evolutionAmount, null, null);
-        await PowerCmd.ModifyAmount(choiceContext, plating!, -evolutionAmount, null, null);
+        await Cmd.CustomScaledWait(0.08f, 0.14f);
+        await ConsumePower(choiceContext, vigor, strengthGain);
+        await ConsumePower(choiceContext, regen, maxHpGain);
+        await ConsumePower(choiceContext, plating, dexterityGain);
         await PowerCmd.ModifyAmount(choiceContext, this, -evolutionAmount, null, null);
 
-        await PowerCmd.Apply<StrengthPower>(choiceContext, Owner, evolutionAmount, Owner, null);
-        await CreatureCmd.GainMaxHp(Owner, evolutionAmount);
-        await PowerCmd.Apply<DexterityPower>(choiceContext, Owner, evolutionAmount, Owner, null);
+        if (strengthGain > 0)
+            await PowerCmd.Apply<StrengthPower>(choiceContext, Owner, strengthGain, Owner, null);
+        if (maxHpGain > 0)
+            await CreatureCmd.GainMaxHp(Owner, maxHpGain);
+        if (dexterityGain > 0)
+            await PowerCmd.Apply<DexterityPower>(choiceContext, Owner, dexterityGain, Owner, null);
 
-        var engine = Owner.GetPower<SGP_EvolutionEngine>();
-        engine?.MarkPendingEnergyGain();
+        if (strengthGain > 0 || maxHpGain > 0 || dexterityGain > 0)
+        {
+            var engine = Owner.GetPower<SGP_EvolutionEngine>();
+            engine?.MarkPendingEnergyGain();
+        }
+    }
+
+    private static async Task ConsumePower(PlayerChoiceContext choiceContext, PowerModel? power, int amount)
+    {
+        if (power != null && amount > 0)
+            await PowerCmd.ModifyAmount(choiceContext, power, -amount, null, null);
     }
 }

@@ -1,0 +1,17 @@
+{
+  "SHIN_GETTER.title": "Shin Getter",
+  "SHIN_GETTER.description": "A super robot capable of switching between three forms.\nGuided by Getter Rays, it reaches the Spire and heads toward the end of evolution.",
+  "SHIN_GETTER.titleObject": "Shin Getter",
+  "SHIN_GETTER.pronounObject": "him",
+  "SHIN_GETTER.possessiveAdjective": "his",
+  "SHIN_GETTER.pronounPossessive": "his",
+  "SHIN_GETTER.pronounSubject": "he",
+  "SHIN_GETTER.goldMonologue": "[sine]Tch. A good citizen would not need this junk anyway.[/sine]",
+  "SHIN_GETTER.aromaPrinciple": "[sine][red]This is no time to worry about physics.[/red][/sine]",
+  "SHIN_GETTER.cardsModifierTitle": "Shin Getter Cards",
+  "SHIN_GETTER.cardsModifierDescription": "Shin Getter cards can now appear in rewards and shops.",
+  "SHIN_GETTER.eventDeathPrevention": "At least... leave Getter's flame... to the future--",
+  "SHIN_GETTER.unlockText": "Unlock by completing the requirement for {Prerequisite}.",
+  "SHIN_GETTER.banter.alive.endTurnPing": "[sine]Slower than Getter 3.[/sine]",
+  "SHIN_GETTER.banter.dead.endTurnPing": "Now you get to see hell too."
+}

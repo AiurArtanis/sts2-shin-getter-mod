@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,13 +7,14 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 
 namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
 /// 钢之魂 | 技能 | 稀有 | 1费 | 钢之魂流
-/// 随机获 1 张精神指令卡。虚无
+/// 随机打出 1 张精神指令卡。升级后随机获得并打出。
 /// </summary>
 public sealed class SGC_SteelSpirit : ShinGetterCardBase
 {
@@ -26,17 +28,57 @@ public sealed class SGC_SteelSpirit : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        var candidates = Pool.AllCards.OfType<ShinGetterCardBase>().Where(card => card.SpiritRequirement > 0).ToList();
-        if (candidates.Count > 0)
+        CardModel? card = IsUpgraded
+            ? CreateRandomSpiritCommand()
+            : FindSpiritCommandInCombatPiles();
+
+        if (card == null)
+            return;
+
+        card.SetToFreeThisTurn();
+        if (IsUpgraded)
         {
-            var card = CombatState.CreateCard(Owner.RunState.Rng.CombatCardSelection.NextItem(candidates), Owner);
-            card.SetToFreeThisTurn();
-            await CardPileCmd.AddGeneratedCardToCombat(card, PileType.Hand, Owner);
+            CardPileAddResult addResult = await CardPileCmd.AddGeneratedCardToCombat(card, PileType.Hand, Owner);
+            if (!addResult.success)
+                return;
         }
+
+        await CardCmd.AutoPlay(choiceContext, card, null);
     }
 
     protected override void OnUpgrade()
     {
         RemoveKeyword(CardKeyword.Ethereal);
+    }
+
+    private CardModel? FindSpiritCommandInCombatPiles()
+    {
+        foreach (PileType pileType in new[] { PileType.Hand, PileType.Draw, PileType.Discard })
+        {
+            var candidates = pileType.GetPile(Owner).Cards
+                .OfType<ShinGetterCardBase>()
+                .Where(card => card.SpiritRequirement > 0)
+                .Cast<CardModel>()
+                .ToList();
+
+            if (candidates.Count > 0)
+                return Owner.RunState.Rng.CombatCardSelection.NextItem(candidates);
+        }
+
+        return null;
+    }
+
+    private CardModel? CreateRandomSpiritCommand()
+    {
+        var candidates = Pool.AllCards
+            .OfType<ShinGetterCardBase>()
+            .Where(card => card.SpiritRequirement > 0)
+            .ToList();
+
+        ShinGetterCardBase? candidate = Owner.RunState.Rng.CombatCardSelection.NextItem(candidates);
+        if (candidate == null || CombatState == null)
+            return null;
+
+        return CombatState.CreateCard(candidate, Owner);
     }
 }

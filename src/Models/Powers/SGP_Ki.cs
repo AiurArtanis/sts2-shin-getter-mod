@@ -1,8 +1,7 @@
+#nullable enable
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
@@ -10,11 +9,13 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
+using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Models.Relics;
 
 namespace ShinGetterMod.Models.Powers;
 
 /// <summary>
-/// 气力。回合开始获得N活力，玩家回合结束时降低1点，使精神指令卡可以免费打出。
+/// 气力。回合开始获得N活力，最终受到的伤害减少N，每次实际受伤后降低1点。
 /// </summary>
 public sealed class SGP_Ki : PowerModel
 {
@@ -39,9 +40,33 @@ public sealed class SGP_Ki : PowerModel
             null);
     }
 
-    public override async Task AfterSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, IEnumerable<Creature> participants)
+    public override Task BeforeDamageReceived(PlayerChoiceContext choiceContext, Creature target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
-        if (!participants.Contains(Owner) || Amount <= 0)
+        if (target == Owner && amount > 0m && Amount > 0)
+            Flash();
+
+        return Task.CompletedTask;
+    }
+
+    public override decimal ModifyHpLostAfterOstyLate(
+        Creature target,
+        decimal amount,
+        ValueProp props,
+        Creature? dealer,
+        CardModel? cardSource)
+    {
+        if (target == Owner && amount > 0m && Amount > 0)
+            return System.Math.Max(0m, amount - Amount);
+
+        return amount;
+    }
+
+    public override async Task AfterDamageReceived(PlayerChoiceContext choiceContext, Creature target, DamageResult result, ValueProp props, Creature? dealer, CardModel? cardSource)
+    {
+        if (target != Owner || result.UnblockedDamage <= 0 || Amount <= 0)
+            return;
+
+        if (Owner.Player?.GetRelic<SGR_EmperorsFragment>() != null)
             return;
 
         Flash();

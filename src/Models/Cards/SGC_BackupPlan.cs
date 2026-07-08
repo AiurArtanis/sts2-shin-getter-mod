@@ -18,7 +18,10 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_BackupPlan : ShinGetterCardBase
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars => System.Array.Empty<DynamicVar>();
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
+    {
+        new EnergyVar(1),
+    };
 
     public SGC_BackupPlan()
         : base(2, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
@@ -40,7 +43,7 @@ public sealed class SGC_BackupPlan : ShinGetterCardBase
                 await CardPileCmd.Draw(choiceContext, distinctTypes, Owner);
         }
         if (HasForm(Owner, ShinGetterForm.Getter2))
-            await PlayerCmd.GainEnergy(1, Owner);
+            await PlayerCmd.GainEnergy(DynamicVars.Energy.BaseValue, Owner);
     }
 
     protected override void OnUpgrade()

@@ -28,8 +28,10 @@ public sealed class SGC_SpiralDrill : ShinGetterCardBase
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
         if (HasForm(Owner, ShinGetterForm.Getter2))
         {
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 4 && cardPlay.Target.IsAlive; i++)
+            {
                 await CreatureCmd.Damage(choiceContext, cardPlay.Target, DynamicVars.Damage.BaseValue, ValueProp.Move | ValueProp.Unblockable, this);
+            }
         }
         else
         {

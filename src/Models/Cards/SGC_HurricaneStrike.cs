@@ -14,7 +14,7 @@ namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
 /// 飓风打击 | 攻击 | 普通 | 1费 | 二号/过牌
-/// 对所有敌人造成 6 伤害，每命中 1 目标抽 1 张
+/// 对所有敌人造成 5 伤害，每命中 1 目标抽 1 张
 /// 二号机：获得 1 敏捷
 /// </summary>
 public sealed class SGC_HurricaneStrike : ShinGetterCardBase
@@ -26,7 +26,7 @@ public sealed class SGC_HurricaneStrike : ShinGetterCardBase
     };
 
     protected override HashSet<CardTag> CanonicalTags => new() { CardTag.Strike };
-    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new DamageVar(6m, ValueProp.Move) };
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new DamageVar(5m, ValueProp.Move) };
 
     public SGC_HurricaneStrike()
         : base(1, CardType.Attack, CardRarity.Common, TargetType.AllEnemies)

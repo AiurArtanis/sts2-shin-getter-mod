@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
+using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.RelicPools;
@@ -14,6 +16,31 @@ public sealed class ShinGetterRelicPool : RelicPoolModel
 
 	protected override IEnumerable<RelicModel> GenerateAllRelics()
 	{
-		yield return ModelDb.Relic<GetterFurnace>();
+		var relics = new RelicModel[]
+		{
+			ModelDb.Relic<SGR_GetterFurnace>(),
+			ModelDb.Relic<SGR_EmperorsFragment>(),
+			ModelDb.Relic<SGR_BattleInstinct>(),
+			ModelDb.Relic<SGR_AlloyPlate>(),
+			ModelDb.Relic<SGR_ResearchNotes>(),
+			ModelDb.Relic<SGR_MusashiClone>(),
+			ModelDb.Relic<SGR_GoodCitizenCard>(),
+			ModelDb.Relic<SGR_GoNagaiSmile>(),
+			ModelDb.Relic<SGR_KenIshikawaManuscript>(),
+		};
+
+		return relics.Concat(WeightedShinGetterRelics(relics, weight: 2));
+	}
+
+	private static IEnumerable<RelicModel> WeightedShinGetterRelics(IEnumerable<RelicModel> relics, int weight)
+	{
+		foreach (RelicModel relic in relics)
+		{
+			if (relic.Rarity != RelicRarity.Starter && relic.Rarity != RelicRarity.Ancient)
+			{
+				for (int i = 1; i < weight; i++)
+					yield return relic;
+			}
+		}
 	}
 }

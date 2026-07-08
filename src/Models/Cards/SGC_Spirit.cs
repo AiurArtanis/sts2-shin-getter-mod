@@ -16,7 +16,7 @@ namespace ShinGetterMod.Models.Cards;
 public sealed class SGC_Spirit : ShinGetterCardBase
 {
     public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Retain, CardKeyword.Exhaust };
-    public override int SpiritRequirement => 2;
+    public override int SpiritRequirement => 3;
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
         new PowerVar<VigorPower>(5m),

@@ -13,14 +13,14 @@ namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
 /// 战斧乱舞 | 攻击 | 罕见 | 2费 | 一号/输出终端
-/// 获得 3 活力，对所有敌人造成 5 伤害 2 次
+/// 获得 3 活力，对所有敌人造成 3 伤害 2 次
 /// 一号机加成：斩杀时获得 3 活力
 /// </summary>
 public sealed class SGC_TomahawkFury : ShinGetterCardBase
 {
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new DamageVar(5m, ValueProp.Move),
+        new DamageVar(3m, ValueProp.Move),
         new PowerVar<VigorPower>(3m),
     };
 

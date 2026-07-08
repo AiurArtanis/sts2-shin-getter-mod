@@ -13,7 +13,7 @@ namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
 /// 斗志 | 能力 | 罕见 | 2费 | 防杀终端
-/// 保留。【精神 2】被攻击前先对敌人造成 6 伤害
+/// 保留。【精神 2】被攻击前先对敌人造成 5 伤害
 /// </summary>
 public sealed class SGC_FightingSpirit : ShinGetterCardBase
 {
@@ -22,7 +22,7 @@ public sealed class SGC_FightingSpirit : ShinGetterCardBase
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips => WithContextualHoverTips(new IHoverTip[] { HoverTipFactory.FromPower<SGP_FightingSpirit>() });
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new DamageVar(6m, ValueProp.Move) };
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new DamageVar(5m, ValueProp.Move) };
 
     public SGC_FightingSpirit()
         : base(2, CardType.Power, CardRarity.Uncommon, TargetType.Self)

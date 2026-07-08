@@ -6,13 +6,14 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
 /// 专精 | 技能 | 稀有 | 0费 | 变形流
 /// 将随机 1 张专属形态卡加入手牌。这张卡牌在本回合可以免费打出。消耗
-/// 二号机：获得 1 能量，抽 1 张
+/// 二号机：获得 4 再生
 /// </summary>
 public sealed class SGC_Specialization : ShinGetterCardBase
 {
@@ -39,8 +40,7 @@ public sealed class SGC_Specialization : ShinGetterCardBase
 
         if (HasForm(Owner, ShinGetterForm.Getter2))
         {
-            await PlayerCmd.GainEnergy(1, Owner);
-            await CardPileCmd.Draw(choiceContext, 1, Owner);
+            await PowerCmd.Apply<RegenPower>(choiceContext, Owner.Creature, 4m, Owner.Creature, this);
         }
     }
 
@@ -69,7 +69,7 @@ public sealed class SGC_Specialization : ShinGetterCardBase
         {
             ModelDb.Card<SGC_BackupPlan>(),
             ModelDb.Card<SGC_Desperation>(),
-            ModelDb.Card<SGC_GetterDrill>(),
+            ModelDb.Card<SGC_GetterClaw>(),
             ModelDb.Card<SGC_HurricaneStrike>(),
             ModelDb.Card<SGC_Insight>(),
             ModelDb.Card<SGC_Jammer>(),

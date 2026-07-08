@@ -1,4 +1,6 @@
+#nullable enable
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -8,6 +10,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Rooms;
+using ShinGetterMod.Models.Cards;
 
 namespace ShinGetterMod.Models.Powers;
 
@@ -16,26 +19,66 @@ namespace ShinGetterMod.Models.Powers;
 /// </summary>
 public sealed class SGP_InfiniteEvolution : PowerModel
 {
+    private sealed class Data
+    {
+        public SGC_InfiniteEvolution? SourceCard;
+    }
+
+    public enum VictoryGain
+    {
+        Strength,
+        Dexterity,
+        MaxHp,
+    }
+
     public override PowerType Type => PowerType.Buff;
-    public override PowerStackType StackType => (PowerStackType)1;
+    public override PowerStackType StackType => PowerStackType.Single;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         System.Array.Empty<DynamicVar>();
 
+    protected override object InitInternalData() => new Data();
+
+    public override Task AfterApplied(Creature? applier, CardModel? cardSource)
+    {
+        if (cardSource is SGC_InfiniteEvolution source)
+        {
+            GetInternalData<Data>().SourceCard = source.DeckVersion as SGC_InfiniteEvolution ?? source;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public override bool TryModifyPowerAmountReceived(
+        PowerModel canonicalPower,
+        Creature target,
+        decimal amount,
+        Creature? applier,
+        out decimal modifiedAmount)
+    {
+        modifiedAmount = amount;
+        if (target == Owner && canonicalPower is SGP_InfiniteEvolution && amount > 0m)
+        {
+            modifiedAmount = 0m;
+            return true;
+        }
+
+        return false;
+    }
+
     public override async Task AfterCombatVictory(CombatRoom _)
     {
-        if (!base.Owner.IsDead && base.Amount > 0)
+        if (!base.Owner.IsDead && base.Amount > 0 && base.Owner.Player is { } player)
         {
-            // 随机获得力量/敏捷/最大生命 (基于层数)
-            var rng = new System.Random();
-            int choice = rng.Next(3);
-            var ctx = new ThrowingPlayerChoiceContext();
-            if (choice == 0)
-                await PowerCmd.Apply<StrengthPower>(ctx, base.Owner, base.Amount, base.Owner, null);
-            else if (choice == 1)
-                await PowerCmd.Apply<DexterityPower>(ctx, base.Owner, base.Amount, base.Owner, null);
-            else
-                await CreatureCmd.GainMaxHp(base.Owner, (int)base.Amount);
+            VictoryGain gain = (VictoryGain)player.RunState.Rng.CombatCardSelection.NextInt(3);
+            SGC_InfiniteEvolution? sourceCard = GetInternalData<Data>().SourceCard
+                ?? player.Deck.Cards.OfType<SGC_InfiniteEvolution>().FirstOrDefault();
+
+            sourceCard?.RecordVictoryGain(gain);
+            Flash();
+
+            if (gain == VictoryGain.MaxHp)
+                await CreatureCmd.GainMaxHp(base.Owner, 1m);
         }
     }
 }

@@ -42,8 +42,8 @@ internal static class VigorPowerSetAmountPatch
         var chain = owner.GetPower<SGP_ChainReaction>();
         if (chain == null || chain.Amount <= 0) return;
 
-        // 每减少 1 层活力 → 获得 chain.Amount 层再生+覆甲
-        int gain = delta * chain.Amount;
+        // One vigor-loss event triggers once, regardless of how many vigor stacks were lost.
+        int gain = chain.Amount;
         chain.FlashTrigger();
         var ctx = new ThrowingPlayerChoiceContext();
         await PowerCmd.Apply<RegenPower>(ctx, owner, gain, owner, null);

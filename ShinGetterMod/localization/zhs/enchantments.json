@@ -1,0 +1,8 @@
+{
+  "S_G_E_ADAPTATION.title": "适应",
+  "S_G_E_ADAPTATION.description": "打出这张牌后，失去[blue]1[/blue]点生命，将1层负面状态转化为[blue]1[/blue]点[gold]活力[/gold]。没有负面状态时，仍会失去生命并获得[gold]活力[/gold]。",
+  "S_G_E_ADAPTATION.extraCardText": "失去1点生命，移除1层负面状态，获得1点[gold]活力[/gold]。",
+  "S_G_E_DEVOLUTION.title": "退化",
+  "S_G_E_DEVOLUTION.description": "只能附魔攻击牌。耗能降低[blue]1[/blue]，攻击伤害减半。",
+  "S_G_E_DEVOLUTION.extraCardText": "攻击伤害减半。"
+}

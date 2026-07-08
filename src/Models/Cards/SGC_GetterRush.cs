@@ -27,6 +27,7 @@ public sealed class SGC_GetterRush : ShinGetterCardBase
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
         await PowerCmd.Apply<VulnerablePower>(choiceContext, cardPlay.Target, 1m, base.Owner.Creature, this);
         await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
+            .WithNoAttackerAnim()
             .BeforeDamage(() => ShinGetterCombatVfx.PlayRush(Owner.Creature, cardPlay.Target))
             .WithHitFx("vfx/vfx_attack_blunt").Execute(choiceContext);
 

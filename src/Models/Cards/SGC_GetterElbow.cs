@@ -30,7 +30,10 @@ public sealed class SGC_GetterElbow : ShinGetterCardBase
             .Targeting(cardPlay.Target)
             .BeforeDamage(() => ShinGetterCombatVfx.PlayRush(Owner.Creature, cardPlay.Target))
             .Execute(choiceContext);
-        await PowerCmd.Apply<WeakPower>(choiceContext, cardPlay.Target, DynamicVars["WeakPower"].BaseValue, Owner.Creature, this);
+        if (cardPlay.Target.IsAlive)
+        {
+            await PowerCmd.Apply<WeakPower>(choiceContext, cardPlay.Target, DynamicVars["WeakPower"].BaseValue, Owner.Creature, this);
+        }
         if (HasForm(Owner, ShinGetterForm.Getter3))
             await PowerCmd.Apply<PlatingPower>(choiceContext, Owner.Creature, 3m, Owner.Creature, this);
     }

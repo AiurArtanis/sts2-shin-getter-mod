@@ -35,7 +35,10 @@ public sealed class SGC_FinalGetterBeam : ShinGetterCardBase
             .WithAttackerAnim("Cast", 0.5f)
             .BeforeDamage(() => ShinGetterBeamVfx.Play(Owner.Creature, new[] { cardPlay.Target }, ShinGetterBeamStyle.FinalGetterBeam))
             .Execute(choiceContext);
-        await PowerCmd.Apply<ManglePower>(choiceContext, cardPlay.Target, DynamicVars["StrengthLoss"].BaseValue, Owner.Creature, this);
+        if (cardPlay.Target.IsAlive)
+        {
+            await PowerCmd.Apply<ManglePower>(choiceContext, cardPlay.Target, DynamicVars["StrengthLoss"].BaseValue, Owner.Creature, this);
+        }
     }
 
     protected override void OnUpgrade()

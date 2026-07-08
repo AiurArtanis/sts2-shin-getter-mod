@@ -28,7 +28,8 @@ internal static class ShinGetterAncientDialoguePatch
 
             AncientDialogue dialogue = new(Enumerable.Repeat("", lineCount).ToArray())
             {
-                VisitIndex = dialogueIndex
+                VisitIndex = dialogueIndex,
+                EndAttackers = ArchitectAttackers.Player
             };
             dialogues.Add(dialogue);
         }

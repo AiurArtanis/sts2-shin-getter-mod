@@ -200,6 +200,26 @@ internal static partial class ShinGetterCombatVfx
         await Cmd.Wait(0.40f);
     }
 
+    public static async Task PlayNewtypeSense(Creature owner)
+    {
+        NCreature? node = NCombatRoom.Instance?.GetCreatureNode(owner);
+        if (node == null)
+            return;
+
+        Node2D wave = CreateNewtypeSenseWave();
+        wave.GlobalPosition = node.VfxSpawnPosition + Vector2.Up * 118f;
+        NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(wave);
+
+        Tween tween = wave.CreateTween().SetParallel();
+        tween.TweenProperty(wave, "scale", Vector2.One * 1.18f, 0.34f)
+            .From(Vector2.One * 0.68f)
+            .SetEase(Tween.EaseType.Out)
+            .SetTrans(Tween.TransitionType.Back);
+        tween.TweenProperty(wave, "modulate:a", 0f, 0.34f).SetDelay(0.16f);
+        tween.Chain().TweenCallback(Callable.From(wave.QueueFreeSafely));
+        await Cmd.Wait(0.36f);
+    }
+
     public static async Task PlayInsectVirusNightmare(Creature owner)
     {
         if (TestMode.IsOn)
@@ -468,5 +488,46 @@ internal static partial class ShinGetterCombatVfx
             root.AddChild(CreateSlashLine(dir * 54f, dir * 84f, i % 2 == 0 ? gold : white, 4f));
         }
         return root;
+    }
+
+    private static Node2D CreateNewtypeSenseWave()
+    {
+        Node2D root = new();
+        root.AddChild(CreateNewtypeSenseLine(new Color(GetterRay.R, GetterRay.G, GetterRay.B, 0.72f), 9f, Vector2.Zero));
+        root.AddChild(CreateNewtypeSenseLine(new Color(GetterWhite.R, GetterWhite.G, GetterWhite.B, 0.92f), 4.5f, Vector2.Up * 2f));
+        root.AddChild(CreateNewtypeSenseLine(new Color(GetterPink.R, GetterPink.G, GetterPink.B, 0.36f), 3f, Vector2.Down * 8f));
+        root.AddChild(CreateCircle(54f, GetterRay, 3.5f, 0.26f));
+        return root;
+    }
+
+    private static Line2D CreateNewtypeSenseLine(Color color, float width, Vector2 offset)
+    {
+        Line2D line = new()
+        {
+            Width = width,
+            DefaultColor = color,
+            Antialiased = true,
+        };
+
+        Vector2[] points =
+        {
+            new(-130f, 0f),
+            new(-82f, 0f),
+            new(-64f, -10f),
+            new(-46f, 28f),
+            new(-24f, -86f),
+            new(-4f, 44f),
+            new(16f, -12f),
+            new(38f, 0f),
+            new(76f, 0f),
+            new(94f, -48f),
+            new(108f, 20f),
+            new(126f, 0f),
+        };
+
+        foreach (Vector2 point in points)
+            line.AddPoint(point + offset);
+
+        return line;
     }
 }

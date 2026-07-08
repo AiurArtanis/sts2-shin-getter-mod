@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
@@ -25,9 +27,13 @@ public sealed class SGC_GetterMissile : ShinGetterCardBase
         await ShinGetterCombatVfx.PlayBurningGrowl(Owner.Creature);
         for (int i = 0; i < 4; i++)
         {
-            var candidates = CombatState.Creatures.Where(creature => creature.IsAlive).ToList();
+            if (CombatManager.Instance.IsOverOrEnding || !HasLivingEnemyTargets())
+                break;
+
+            var candidates = GetLivingMissileTargets();
             if (candidates.Count == 0)
                 break;
+
             var target = Owner.RunState.Rng.CombatTargets.NextItem(candidates);
             var results = await CreatureCmd.Damage(choiceContext, target, DynamicVars.Damage.BaseValue, ValueProp.Move, this);
             if (target == Owner.Creature && HasForm(Owner, ShinGetterForm.Getter3))
@@ -38,6 +44,12 @@ public sealed class SGC_GetterMissile : ShinGetterCardBase
             }
         }
     }
+
+    private bool HasLivingEnemyTargets() =>
+        CombatState.GetOpponentsOf(Owner.Creature).Any(creature => creature.IsAlive);
+
+    private List<Creature> GetLivingMissileTargets() =>
+        CombatState.Creatures.Where(creature => creature.IsAlive).ToList();
 
     protected override void OnUpgrade()
     {

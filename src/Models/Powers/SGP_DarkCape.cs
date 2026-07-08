@@ -14,7 +14,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 namespace ShinGetterMod.Models.Powers;
 
 /// <summary>
-/// 漆黑披风。回合格挡完全格挡伤害后对所有敌人造成N伤害。
+/// 漆黑披风。回合格挡完全格挡伤害后对所有敌人造成N伤害，自己下回合开始时失去。
 /// </summary>
 public sealed class SGP_DarkCape : PowerModel
 {
@@ -42,10 +42,10 @@ public sealed class SGP_DarkCape : PowerModel
         }
     }
 
-    public override async Task AfterSideTurnEnd(
-        PlayerChoiceContext choiceContext,
+    public override async Task AfterSideTurnStart(
         CombatSide side,
-        IEnumerable<Creature> participants)
+        IReadOnlyList<Creature> participants,
+        ICombatState combatState)
     {
         if (participants.Contains(Owner))
             await PowerCmd.Remove(this);

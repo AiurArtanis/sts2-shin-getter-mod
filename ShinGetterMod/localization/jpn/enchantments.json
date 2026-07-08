@@ -1,0 +1,8 @@
+{
+  "S_G_E_ADAPTATION.title": "適応",
+  "S_G_E_ADAPTATION.description": "このカードをプレイした後、HPを[blue]1[/blue]失い、デバフ1スタックを[blue]1[/blue]の[gold]活力[/gold]に変換する。デバフがない場合でも、HPを失い[gold]活力[/gold]を得る。",
+  "S_G_E_ADAPTATION.extraCardText": "HPを1失い、デバフ1スタックを取り除き、[gold]活力[/gold]を1得る。",
+  "S_G_E_DEVOLUTION.title": "退化",
+  "S_G_E_DEVOLUTION.description": "アタックカードにのみ付与できる。コストが[blue]1[/blue]下がり、アタックダメージが半減する。",
+  "S_G_E_DEVOLUTION.extraCardText": "アタックダメージが半減する。"
+}

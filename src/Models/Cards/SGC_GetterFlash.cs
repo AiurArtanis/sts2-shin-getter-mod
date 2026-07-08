@@ -14,13 +14,13 @@ namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
 /// 盖塔闪光 | 攻击 | 罕见 | 1费 | 一号/输出终端
-/// 造成 8 伤害，本回合名字中有"盖塔"的卡牌费用减 1，消耗
+/// 造成 5 伤害，获得等同于造成伤害的活力，消耗，固有
 /// 一号机加成：获得 8 活力
 /// </summary>
 public sealed class SGC_GetterFlash : ShinGetterCardBase
 {
-    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Exhaust };
-    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new DamageVar(8m, ValueProp.Move) };
+    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Innate, CardKeyword.Exhaust };
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new DamageVar(5m, ValueProp.Move) };
 
     public SGC_GetterFlash()
         : base(1, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
@@ -30,15 +30,18 @@ public sealed class SGC_GetterFlash : ShinGetterCardBase
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
-        foreach (var card in PileType.Hand.GetPile(Owner).Cards.Where(card => card.GetType().Name.StartsWith("SGC_Getter", StringComparison.Ordinal)))
-            card.EnergyCost.AddThisTurnOrUntilPlayed(-1, reduceOnly: true);
-        if (HasForm(Owner, ShinGetterForm.Getter1))
-            await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, 8m, Owner.Creature, this);
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this)
+
+        var attack = await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this)
             .WithNoAttackerAnim()
             .Targeting(cardPlay.Target)
             .BeforeDamage(() => ShinGetterCombatVfx.PlayFlashRush(Owner.Creature, cardPlay.Target))
             .Execute(choiceContext);
+
+        decimal damageDealt = attack.Results.SelectMany(results => results).Sum(result => result.UnblockedDamage);
+        if (damageDealt > 0m)
+            await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, damageDealt, Owner.Creature, this);
+        if (HasForm(Owner, ShinGetterForm.Getter1))
+            await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, 8m, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()

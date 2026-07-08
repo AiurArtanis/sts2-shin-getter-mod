@@ -13,16 +13,15 @@ namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
 /// 绝境 | 能力 | 稀有 | 1费 | 钢之魂流key
-/// 降低生命至 1，战斗结束回复等量 HP，本回合可以免费打出精神指令卡，保留，消耗
+/// 获得 3 气力。降低生命至 1，战斗结束回复等量 HP
 /// 一号机：获 5 攻；二号机：获 2 能量、抽 3；三号机：获 1 缓冲、1 人工制品
 /// </summary>
 public sealed class SGC_Desperation : ShinGetterCardBase
 {
-    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Retain, CardKeyword.Exhaust };
-
     protected override IEnumerable<IHoverTip> ExtraHoverTips => WithContextualHoverTips(new IHoverTip[]
     {
         HoverTipFactory.FromPower<SGP_Desperation>(),
+        HoverTipFactory.FromPower<SGP_Ki>(),
         HoverTipFactory.FromPower<StrengthPower>(),
         HoverTipFactory.FromPower<BufferPower>(),
         HoverTipFactory.FromPower<ArtifactPower>(),
@@ -30,6 +29,7 @@ public sealed class SGC_Desperation : ShinGetterCardBase
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
+        new PowerVar<SGP_Ki>(3m),
         new PowerVar<StrengthPower>(5m),
         new EnergyVar(2),
         new CardsVar(3),
@@ -44,6 +44,13 @@ public sealed class SGC_Desperation : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        await PowerCmd.Apply<SGP_Ki>(
+            choiceContext,
+            Owner.Creature,
+            DynamicVars["SGP_Ki"].BaseValue,
+            Owner.Creature,
+            this);
+
         int hpLost = Math.Max(Owner.Creature.CurrentHp - 1, 0);
         if (hpLost > 0)
         {

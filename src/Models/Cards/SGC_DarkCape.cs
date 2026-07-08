@@ -13,7 +13,7 @@ namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
 /// 漆黑披风 | 技能 | 罕见 | 2费 | 通用/防杀
-/// 获 10 格挡，本回合格挡每次格挡伤害就对所有敌人造成 2 伤害
+/// 获 9 格挡，本回合格挡每次格挡伤害就对所有敌人造成 2 伤害
 /// 一号机加成：获得 1 腾空
 /// </summary>
 public sealed class SGC_DarkCape : ShinGetterCardBase
@@ -25,7 +25,7 @@ public sealed class SGC_DarkCape : ShinGetterCardBase
     });
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] {
-        new BlockVar(10m, ValueProp.Move),
+        new BlockVar(9m, ValueProp.Move),
         new DamageVar(2m, ValueProp.Move)
     };
 
@@ -45,7 +45,7 @@ public sealed class SGC_DarkCape : ShinGetterCardBase
 
     protected override void OnUpgrade()
     {
-        base.DynamicVars.Block.UpgradeValueBy(3m);
-        base.DynamicVars.Damage.UpgradeValueBy(1m);
+        DynamicVars.Block.UpgradeValueBy(2m);
+        DynamicVars.Damage.UpgradeValueBy(1m);
     }
 }

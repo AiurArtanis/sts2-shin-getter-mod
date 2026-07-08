@@ -9,11 +9,14 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Models.Cards;
+using ShinGetterMod.Nodes.Combat;
+using ShinGetterMod.Patches;
 
 namespace ShinGetterMod.Models.Powers;
 
 /// <summary>
-/// 三号机形态。-2力-2敏，获得格挡时获得1覆甲。
+/// 三号机形态。变形时获得1覆甲，-2力-2敏，获得格挡时获得1覆甲。
 /// </summary>
 public sealed class SGP_ShinGetterThree : PowerModel
 {
@@ -29,6 +32,9 @@ public sealed class SGP_ShinGetterThree : PowerModel
         {
             await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), base.Owner, -2m, base.Owner, null);
             await PowerCmd.Apply<DexterityPower>(new ThrowingPlayerChoiceContext(), base.Owner, -2m, base.Owner, null);
+            await PowerCmd.Apply<PlatingPower>(new ThrowingPlayerChoiceContext(), base.Owner, 1m, base.Owner, null);
+            NShinGetterStaticVisuals.ShowForm(base.Owner, ShinGetterForm.Getter3);
+            ShinGetterCardFramePatch.RefreshVisibleCards();
         }
     }
 
@@ -36,6 +42,7 @@ public sealed class SGP_ShinGetterThree : PowerModel
     {
         await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), owner, 2m, owner, null);
         await PowerCmd.Apply<DexterityPower>(new ThrowingPlayerChoiceContext(), owner, 2m, owner, null);
+        ShinGetterCardFramePatch.RefreshVisibleCards();
     }
 
     public override async Task AfterBlockGained(

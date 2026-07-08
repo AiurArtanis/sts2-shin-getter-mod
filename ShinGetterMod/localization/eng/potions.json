@@ -1,0 +1,8 @@
+{
+  "S_G_R_TRANSFORM_POTION.title": "Transformation Lube",
+  "S_G_R_TRANSFORM_POTION.description": "Gain {Stars} 💥, then [gold]Transform[/gold].",
+  "S_G_R_KUSUHA_JUICE.title": "Kusuha Juice",
+  "S_G_R_KUSUHA_JUICE.description": "Gain {WeakPower} [gold]Weak[/gold]. This turn, [gold]Spirit Command cards[/gold] ignore Ki requirements and cost 0.",
+  "S_G_R_GETTER_COLD_BREW.title": "Getter Cold Brew",
+  "S_G_R_GETTER_COLD_BREW.description": "Add 3 cards with \"Getter\" in their name to your hand and give them [gold]Retain[/gold]."
+}

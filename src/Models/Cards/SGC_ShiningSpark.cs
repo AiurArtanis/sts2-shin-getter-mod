@@ -13,7 +13,7 @@ using ShinGetterMod.Nodes.Vfx;
 namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
-/// 闪光火花 | 攻击 | 稀有 | 1费 | 钢之魂流/输出终端/护盾特攻
+/// 闪光爆裂 | 攻击 | 稀有 | 1费 | 钢之魂流/输出终端/护盾特攻
 /// 获得 1 易伤、1 脆弱，造成 10 伤害。每有 1 点气力就对随机敌人造成 5 伤害
 /// </summary>
 public sealed class SGC_ShiningSpark : ShinGetterCardBase

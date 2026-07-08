@@ -14,7 +14,7 @@ public sealed class SGC_GetterChop : ShinGetterCardBase
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new DamageVar(6m, ValueProp.Move), new BlockVar(4m, ValueProp.Move) };
 
     public SGC_GetterChop()
-        : base(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
+        : base(2, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
     {
     }
 
@@ -22,15 +22,23 @@ public sealed class SGC_GetterChop : ShinGetterCardBase
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
 
+        await PlunderShield(cardPlay);
+
+        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+        if (cardPlay.Target.IsAlive)
+        {
+            await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+        }
+    }
+
+    private async Task PlunderShield(CardPlay cardPlay)
+    {
         decimal stolenBlock = Math.Min(cardPlay.Target.Block, DynamicVars.Block.BaseValue);
         if (stolenBlock > 0m)
         {
             await CreatureCmd.LoseBlock(cardPlay.Target, stolenBlock);
             await CreatureCmd.GainBlock(Owner.Creature, stolenBlock, ValueProp.Unpowered, cardPlay);
         }
-
-        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
-        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
     }
 
     protected override void OnUpgrade()

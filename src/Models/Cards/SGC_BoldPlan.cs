@@ -17,7 +17,10 @@ namespace ShinGetterMod.Models.Cards;
 public sealed class SGC_BoldPlan : ShinGetterCardBase
 {
     protected override bool HasEnergyCostX => true;
-    protected override IEnumerable<DynamicVar> CanonicalVars => System.Array.Empty<DynamicVar>();
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
+    {
+        new EnergyVar(1),
+    };
 
     public SGC_BoldPlan()
         : base(-1, CardType.Skill, CardRarity.Rare, TargetType.Self)

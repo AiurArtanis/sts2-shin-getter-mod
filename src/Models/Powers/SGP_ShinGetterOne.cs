@@ -7,6 +7,9 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
+using ShinGetterMod.Models.Cards;
+using ShinGetterMod.Nodes.Combat;
+using ShinGetterMod.Patches;
 
 namespace ShinGetterMod.Models.Powers;
 
@@ -27,6 +30,8 @@ public sealed class SGP_ShinGetterOne : PowerModel
         {
             Flash();
             await PowerCmd.Apply<VigorPower>(new ThrowingPlayerChoiceContext(), base.Owner, 1m, base.Owner, null);
+            NShinGetterStaticVisuals.ShowForm(base.Owner, ShinGetterForm.Getter1);
+            ShinGetterCardFramePatch.RefreshVisibleCards();
         }
     }
 }

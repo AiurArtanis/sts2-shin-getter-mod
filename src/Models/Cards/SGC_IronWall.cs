@@ -12,14 +12,14 @@ namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
 /// 铁壁 | 技能 | 稀有 | 2费 | 钢之魂流
-/// 保留。【精神 2】下回合开始前，受到的所有伤害减 5。消耗
+/// 保留。【精神 2】下回合开始前，受到的所有伤害减 7。消耗
 /// 三号机：受到伤害获得 1 覆甲
 /// </summary>
 public sealed class SGC_IronWall : ShinGetterCardBase
 {
     public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Retain, CardKeyword.Exhaust };
     public override int SpiritRequirement => 2;
-    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new PowerVar<SGP_IronWall>(5m) };
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new PowerVar<SGP_IronWall>(7m) };
 
     public SGC_IronWall()
         : base(2, CardType.Skill, CardRarity.Rare, TargetType.Self)

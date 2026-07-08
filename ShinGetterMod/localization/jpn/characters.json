@@ -1,0 +1,17 @@
+{
+  "SHIN_GETTER.title": "真ゲッター",
+  "SHIN_GETTER.description": "三形態を切り替えられるスーパーロボット。\nゲッター線に導かれ、高塔へ至り、進化の果てへ向かう。",
+  "SHIN_GETTER.titleObject": "真ゲッター",
+  "SHIN_GETTER.pronounObject": "彼",
+  "SHIN_GETTER.possessiveAdjective": "彼の",
+  "SHIN_GETTER.pronounPossessive": "彼の",
+  "SHIN_GETTER.pronounSubject": "彼",
+  "SHIN_GETTER.goldMonologue": "[sine]ちっ、良き市民ならこんな物はいらねえだろ[/sine]",
+  "SHIN_GETTER.aromaPrinciple": "[sine][red]今は物理法則を気にしてる場合じゃねえ[/red][/sine]",
+  "SHIN_GETTER.cardsModifierTitle": "真ゲッターカード",
+  "SHIN_GETTER.cardsModifierDescription": "真ゲッターのカードが報酬とショップに出現するようになる。",
+  "SHIN_GETTER.eventDeathPrevention": "せめて……ゲッターの火種を……未来へ――",
+  "SHIN_GETTER.unlockText": "{Prerequisite} の条件を達成するとアンロック。",
+  "SHIN_GETTER.banter.alive.endTurnPing": "[sine]ゲッター3より遅えな[/sine]",
+  "SHIN_GETTER.banter.dead.endTurnPing": "地獄ってやつを見せてやる"
+}

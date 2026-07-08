@@ -19,6 +19,7 @@ public sealed class SGC_Overload : ShinGetterCardBase
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
         new EnergyVar(3),
+        new EnergyVar("DelayedEnergyLoss", 1),
         new PowerVar<SGP_Overload>(1m),
     };
 

@@ -12,7 +12,7 @@ namespace ShinGetterMod.Models.Cards;
 
 public sealed class SGC_Acceleration : ShinGetterCardBase
 {
-    public override int SpiritRequirement => 2;
+    public override int SpiritRequirement => 3;
     public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Retain };
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips => WithContextualHoverTips(new IHoverTip[] { HoverTipFactory.FromPower<SGP_Acceleration>() });
