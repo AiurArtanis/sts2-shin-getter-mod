@@ -60,7 +60,7 @@ Require-Pattern 'Static visuals only plays action animation on visible Getter On
 $patchPath = 'src\Patches\ShinGetterCreatureAnimationPatch.cs'
 Require-Pattern 'Creature animation patch hooks SetAnimationTrigger' $patchPath 'HarmonyPatch\(typeof\(NCreature\),\s*nameof\(NCreature\.SetAnimationTrigger\)\)'
 Require-Pattern 'Creature animation patch limits to Shin Getter character' $patchPath 'Character\s+is\s+not\s+ShinGetter'
-Require-Pattern 'Creature animation patch forwards Attack and Cast triggers' $patchPath 'trigger\s+is\s+not\s+\("Attack"\s+or\s+"Cast"\)'
+Require-Pattern 'Creature animation patch forwards Attack and Cast triggers' $patchPath 'trigger\s+is\s+not\s+\("Attack"\s+or\s+"Cast"\)|IsShinGetterActionTrigger[\s\S]*"Attack"[\s\S]*"Cast"'
 Require-Pattern 'Creature animation patch plays Getter action animation' $patchPath 'TryPlayGetter(Action)?Animation'
 
 Require-Pattern 'PCK validator checks Getter One attack frames' 'tools\validate-mod-resources.gd' 'getter_one_attack/sprite_000001\.png[\s\S]*getter_one_attack/sprite_000121\.png'

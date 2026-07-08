@@ -16,8 +16,7 @@ internal static class ShinGetterAncientDialoguePatch
 
     private static void Prefix(AncientDialogueSet __instance, string ancientEntry)
     {
-        if (__instance.CharacterDialogues.ContainsKey(ShinGetterKey))
-            return;
+        __instance.CharacterDialogues.Remove(ShinGetterKey);
 
         List<AncientDialogue> dialogues = new();
         for (int dialogueIndex = 0; dialogueIndex < MaxDialoguesToProbe; dialogueIndex++)
@@ -28,7 +27,7 @@ internal static class ShinGetterAncientDialoguePatch
 
             AncientDialogue dialogue = new(Enumerable.Repeat("", lineCount).ToArray())
             {
-                VisitIndex = dialogueIndex,
+                IsRepeating = true,
                 EndAttackers = ArchitectAttackers.Player
             };
             dialogues.Add(dialogue);

@@ -14,9 +14,12 @@ internal static class ShinGetterCreatureAnimationPatch
         if (__instance.Entity?.Player?.Character is not ShinGetter)
             return;
 
-        if (trigger is not ("Attack" or "Cast"))
+        if (!IsShinGetterActionTrigger(trigger))
             return;
 
         NShinGetterStaticVisuals.TryPlayGetterActionAnimation(__instance, trigger);
     }
+
+    private static bool IsShinGetterActionTrigger(string trigger) =>
+        trigger is "Attack" or "HeavyAttack" or "Cast" or "Dash" or "Block" or "Hit" or "Dead";
 }

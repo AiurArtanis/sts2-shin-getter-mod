@@ -19,11 +19,11 @@ public sealed class SGR_TransformPotion : PotionModel
     public override TargetType TargetType => TargetType.Self;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        new DynamicVar[] { new StarsVar(1) };
+        new DynamicVar[] { new EnergyVar(1) };
 
     protected override async Task OnUse(PlayerChoiceContext choiceContext, Creature? target)
     {
-        await PlayerCmd.GainStars(DynamicVars.Stars.BaseValue, Owner);
+        await PlayerCmd.GainEnergy(DynamicVars.Energy.BaseValue, Owner);
         await ShinGetterCardBase.Transform(choiceContext, Owner, null);
     }
 }

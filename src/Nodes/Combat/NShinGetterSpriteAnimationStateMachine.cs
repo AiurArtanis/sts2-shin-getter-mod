@@ -19,6 +19,11 @@ internal static class NShinGetterSpriteAnimationStateMachine
             "Attack" => NShinGetterSpriteSequence.AttackAnimationName,
             "HeavyAttack" => NShinGetterSpriteSequence.HeavyAttackAnimationName,
             "Cast" => NShinGetterSpriteSequence.CastAnimationName,
+            "Dash" => NShinGetterSpriteSequence.DashAnimationName,
+            "Hit" => NShinGetterSpriteSequence.BlockAnimationName,
+            "Block" => NShinGetterSpriteSequence.BlockAnimationName,
+            "Dead" => NShinGetterSpriteSequence.DeathAnimationName,
+            "Death" => NShinGetterSpriteSequence.DeathAnimationName,
             "Idle" => NShinGetterSpriteSequence.IdleAnimationName,
             _ => null,
         };
@@ -27,16 +32,26 @@ internal static class NShinGetterSpriteAnimationStateMachine
             return false;
 
         ensureLoaded(sprite);
-        SpriteFrames? frames = sprite.SpriteFrames;
-        if (frames == null || !frames.HasAnimation(animationName))
-            return false;
-
         State state = States.GetOrCreateValue(sprite);
         EnsureSignalConnected(sprite, state);
+
+        SpriteFrames? frames = sprite.SpriteFrames;
+        if (frames == null || !frames.HasAnimation(animationName))
+        {
+            PlayIdle(sprite, state);
+            return false;
+        }
 
         if (animationName == NShinGetterSpriteSequence.IdleAnimationName)
         {
             PlayIdle(sprite, state);
+            return true;
+        }
+
+        if (animationName == NShinGetterSpriteSequence.DeathAnimationName)
+        {
+            state.ActiveOneShotAnimation = string.Empty;
+            sprite.Play(animationName);
             return true;
         }
 

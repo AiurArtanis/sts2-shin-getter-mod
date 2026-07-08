@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 
@@ -22,7 +23,8 @@ public sealed class SGC_GetterChop : ShinGetterCardBase
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
 
-        await PlunderShield(cardPlay);
+        for (int i = 0; i < 2 && cardPlay.Target.Block > 0m; i++)
+            await PlunderShield(cardPlay);
 
         await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
         if (cardPlay.Target.IsAlive)
@@ -33,7 +35,15 @@ public sealed class SGC_GetterChop : ShinGetterCardBase
 
     private async Task PlunderShield(CardPlay cardPlay)
     {
-        decimal stolenBlock = Math.Min(cardPlay.Target.Block, DynamicVars.Block.BaseValue);
+        decimal plunderLimit = Hook.ModifyBlock(
+            CombatState,
+            Owner.Creature,
+            DynamicVars.Block.BaseValue,
+            DynamicVars.Block.Props,
+            this,
+            cardPlay,
+            out _);
+        decimal stolenBlock = Math.Min(cardPlay.Target.Block, plunderLimit);
         if (stolenBlock > 0m)
         {
             await CreatureCmd.LoseBlock(cardPlay.Target, stolenBlock);

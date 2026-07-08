@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
@@ -71,14 +72,45 @@ public sealed class SGP_InfiniteEvolution : PowerModel
         if (!base.Owner.IsDead && base.Amount > 0 && base.Owner.Player is { } player)
         {
             VictoryGain gain = (VictoryGain)player.RunState.Rng.CombatCardSelection.NextInt(3);
-            SGC_InfiniteEvolution? sourceCard = GetInternalData<Data>().SourceCard
-                ?? player.Deck.Cards.OfType<SGC_InfiniteEvolution>().FirstOrDefault();
+            SGC_InfiniteEvolution? sourceCard = ResolveSourceCard(player);
 
             sourceCard?.RecordVictoryGain(gain);
             Flash();
+            await ApplyVictoryGain(gain, sourceCard);
+        }
+    }
 
-            if (gain == VictoryGain.MaxHp)
+    private SGC_InfiniteEvolution? ResolveSourceCard(Player player)
+    {
+        Data data = GetInternalData<Data>();
+        if (data.SourceCard != null && player.Deck.Cards.Contains(data.SourceCard))
+            return data.SourceCard;
+
+        SGC_InfiniteEvolution? deckSource = player.Deck.Cards
+            .OfType<SGC_InfiniteEvolution>()
+            .FirstOrDefault();
+        if (deckSource != null)
+            data.SourceCard = deckSource;
+
+        return deckSource ?? data.SourceCard;
+    }
+
+    private async Task ApplyVictoryGain(VictoryGain gain, SGC_InfiniteEvolution? sourceCard)
+    {
+        var choiceContext = new ThrowingPlayerChoiceContext();
+        switch (gain)
+        {
+            case VictoryGain.Strength:
+                await PowerCmd.Apply<StrengthPower>(choiceContext, base.Owner, 1m, base.Owner, sourceCard);
+                break;
+            case VictoryGain.Dexterity:
+                await PowerCmd.Apply<DexterityPower>(choiceContext, base.Owner, 1m, base.Owner, sourceCard);
+                break;
+            case VictoryGain.MaxHp:
                 await CreatureCmd.GainMaxHp(base.Owner, 1m);
+                break;
+            default:
+                throw new System.ArgumentOutOfRangeException(nameof(gain), gain, null);
         }
     }
 }

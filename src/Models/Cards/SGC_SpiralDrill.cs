@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -28,10 +29,13 @@ public sealed class SGC_SpiralDrill : ShinGetterCardBase
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
         if (HasForm(Owner, ShinGetterForm.Getter2))
         {
+            const ValueProp damageProps = ValueProp.Move | ValueProp.Unblockable;
             for (int i = 0; i < 4 && cardPlay.Target.IsAlive; i++)
             {
-                await CreatureCmd.Damage(choiceContext, cardPlay.Target, DynamicVars.Damage.BaseValue, ValueProp.Move | ValueProp.Unblockable, this);
+                await CreatureCmd.Damage(choiceContext, cardPlay.Target, DynamicVars.Damage.BaseValue, damageProps, this);
             }
+            if (Owner.Creature.GetPower<SGP_HotBlood>() is { } hotBlood)
+                await hotBlood.ConsumeForCardDamage(choiceContext, this, ValueProp.Move | ValueProp.Unblockable);
         }
         else
         {

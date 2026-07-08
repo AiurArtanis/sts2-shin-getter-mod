@@ -11,21 +11,48 @@ internal static class NShinGetterSpriteSequence
     public const string IdleFrameDirectory = "res://images/characters/shin_getter/forms/getter_one_idle";
     public const string AttackFrameDirectory = "res://images/characters/shin_getter/forms/getter_one_attack";
     public const string CastFrameDirectory = "res://images/characters/shin_getter/forms/getter_one_cast";
+    public const string DeathFrameDirectory = "res://images/characters/shin_getter/forms/getter_one_death";
     public const string GetterTwoIdleFrameDirectory = "res://images/characters/shin_getter/forms/getter_two_idle";
     public const string GetterTwoAttackFrameDirectory = "res://images/characters/shin_getter/forms/getter_two_attack";
+    public const string GetterTwoCastFrameDirectory = "res://images/characters/shin_getter/forms/getter_two_cast";
+    public const string GetterTwoBlockFrameDirectory = "res://images/characters/shin_getter/forms/getter_two_block";
+    public const string GetterTwoDashFrameDirectory = "res://images/characters/shin_getter/forms/getter_two_dash";
     public const string GetterThreeIdleFrameDirectory = "res://images/characters/shin_getter/forms/getter_three_idle";
+    public const string GetterThreeAttackFrameDirectory = "res://images/characters/shin_getter/forms/getter_three_attack";
+    public const string GetterThreeDashFrameDirectory = "res://images/characters/shin_getter/forms/getter_three_dash";
+    public const string GetterThreeCastFrameDirectory = "res://images/characters/shin_getter/forms/getter_three_cast";
+    public const string GetterThreeBlockFrameDirectory = "res://images/characters/shin_getter/forms/getter_three_block";
+    public const string GetterThreeDeathFrameDirectory = "res://images/characters/shin_getter/forms/getter_three_death";
     public const string ShinDragonIdleFrameDirectory = "res://images/characters/shin_getter/forms/shin_getter_dragon_idle";
+    public const string ShinDragonCastFrameDirectory = "res://images/characters/shin_getter/forms/shin_getter_dragon_cast";
+    public const string ShinDragonDashFrameDirectory = "res://images/characters/shin_getter/forms/shin_getter_dragon_dash";
+    public const string ShinDragonDeathFrameDirectory = "res://images/characters/shin_getter/forms/shin_getter_dragon_death";
     public const string IdleAnimationName = "idle";
     public const string AttackAnimationName = "attack";
     public const string HeavyAttackAnimationName = "heavy_attack";
     public const string CastAnimationName = "cast";
+    public const string DashAnimationName = "dash";
+    public const string BlockAnimationName = "block";
+    public const string DeathAnimationName = "death";
     public const int IdleMaxFrames = 24;
     public const int AttackMaxFrames = 40;
     public const int CastMaxFrames = 32;
+    public const int DeathMaxFrames = 48;
     public const int GetterTwoIdleMaxFrames = 24;
     public const int GetterTwoAttackMaxFrames = 40;
+    public const int GetterTwoCastMaxFrames = 32;
+    public const int GetterTwoBlockMaxFrames = 24;
+    public const int GetterTwoDashMaxFrames = 48;
     public const int GetterThreeIdleMaxFrames = 24;
+    public const int GetterThreeAttackMaxFrames = 40;
+    public const int GetterThreeDashMaxFrames = 48;
+    public const int GetterThreeCastMaxFrames = 32;
+    public const int GetterThreeBlockMaxFrames = 24;
+    public const int GetterThreeDeathMaxFrames = 48;
     public const int ShinDragonIdleMaxFrames = 36;
+    public const int ShinDragonCastMaxFrames = 32;
+    public const int ShinDragonDashMaxFrames = 48;
+    public const int ShinDragonDeathMaxFrames = 48;
     public const double IdleFramesPerSecond = 24d;
     public const double ActionFramesPerSecond = 30d;
 
@@ -41,6 +68,7 @@ internal static class NShinGetterSpriteSequence
         LoadPingPongAnimation(frames, IdleAnimationName, IdleFrameDirectory, IdleMaxFrames, IdleFramesPerSecond, loop: true);
         LoadLinearAnimation(frames, AttackAnimationName, AttackFrameDirectory, AttackMaxFrames, ActionFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, CastAnimationName, CastFrameDirectory, CastMaxFrames, ActionFramesPerSecond, loop: false);
+        LoadLinearAnimation(frames, DeathAnimationName, DeathFrameDirectory, DeathMaxFrames, ActionFramesPerSecond, loop: false);
 
         if (!sprite.IsPlaying() && frames.HasAnimation(IdleAnimationName))
             sprite.Play(IdleAnimationName);
@@ -52,6 +80,9 @@ internal static class NShinGetterSpriteSequence
         sprite.SpriteFrames = frames;
         LoadPingPongAnimation(frames, IdleAnimationName, GetterTwoIdleFrameDirectory, GetterTwoIdleMaxFrames, IdleFramesPerSecond, loop: true);
         LoadLinearAnimation(frames, AttackAnimationName, GetterTwoAttackFrameDirectory, GetterTwoAttackMaxFrames, ActionFramesPerSecond, loop: false);
+        LoadLinearAnimation(frames, CastAnimationName, GetterTwoCastFrameDirectory, GetterTwoCastMaxFrames, ActionFramesPerSecond, loop: false);
+        LoadLinearAnimation(frames, BlockAnimationName, GetterTwoBlockFrameDirectory, GetterTwoBlockMaxFrames, ActionFramesPerSecond, loop: false);
+        LoadLinearAnimation(frames, DashAnimationName, GetterTwoDashFrameDirectory, GetterTwoDashMaxFrames, ActionFramesPerSecond, loop: false);
 
         if (!sprite.IsPlaying() && frames.HasAnimation(IdleAnimationName))
             sprite.Play(IdleAnimationName);
@@ -62,6 +93,11 @@ internal static class NShinGetterSpriteSequence
         SpriteFrames frames = sprite.SpriteFrames ?? new SpriteFrames();
         sprite.SpriteFrames = frames;
         LoadPingPongAnimation(frames, IdleAnimationName, GetterThreeIdleFrameDirectory, GetterThreeIdleMaxFrames, IdleFramesPerSecond, loop: true);
+        LoadLinearAnimation(frames, AttackAnimationName, GetterThreeAttackFrameDirectory, GetterThreeAttackMaxFrames, ActionFramesPerSecond, loop: false);
+        LoadLinearAnimation(frames, DashAnimationName, GetterThreeDashFrameDirectory, GetterThreeDashMaxFrames, ActionFramesPerSecond, loop: false);
+        LoadLinearAnimation(frames, CastAnimationName, GetterThreeCastFrameDirectory, GetterThreeCastMaxFrames, ActionFramesPerSecond, loop: false);
+        LoadLinearAnimation(frames, BlockAnimationName, GetterThreeBlockFrameDirectory, GetterThreeBlockMaxFrames, ActionFramesPerSecond, loop: false);
+        LoadLinearAnimation(frames, DeathAnimationName, GetterThreeDeathFrameDirectory, GetterThreeDeathMaxFrames, ActionFramesPerSecond, loop: false);
 
         if (!sprite.IsPlaying() && frames.HasAnimation(IdleAnimationName))
             sprite.Play(IdleAnimationName);
@@ -72,6 +108,9 @@ internal static class NShinGetterSpriteSequence
         SpriteFrames frames = sprite.SpriteFrames ?? new SpriteFrames();
         sprite.SpriteFrames = frames;
         LoadPingPongAnimation(frames, IdleAnimationName, ShinDragonIdleFrameDirectory, ShinDragonIdleMaxFrames, IdleFramesPerSecond, loop: true);
+        LoadLinearAnimation(frames, CastAnimationName, ShinDragonCastFrameDirectory, ShinDragonCastMaxFrames, ActionFramesPerSecond, loop: false);
+        LoadLinearAnimation(frames, DashAnimationName, ShinDragonDashFrameDirectory, ShinDragonDashMaxFrames, ActionFramesPerSecond, loop: false);
+        LoadLinearAnimation(frames, DeathAnimationName, ShinDragonDeathFrameDirectory, ShinDragonDeathMaxFrames, ActionFramesPerSecond, loop: false);
 
         if (!sprite.IsPlaying() && frames.HasAnimation(IdleAnimationName))
             sprite.Play(IdleAnimationName);

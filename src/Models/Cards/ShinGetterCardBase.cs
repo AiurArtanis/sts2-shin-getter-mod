@@ -142,6 +142,41 @@ public abstract class ShinGetterCardBase : CardModel
             ["三号机"] = ShinGetterForm.Getter3,
         };
 
+    private static readonly IReadOnlySet<string> DashAnimationCards =
+        new HashSet<string>(StringComparer.Ordinal)
+        {
+            "SGC_ChangeAttack",
+            "SGC_DiveStrike",
+            "SGC_GetterRush",
+            "SGC_LigerAssault",
+            "SGC_ShiftStrike",
+        };
+
+    private static readonly IReadOnlySet<string> CastAttackAnimationCards =
+        new HashSet<string>(StringComparer.Ordinal)
+        {
+            "SGC_FinalGetterBeam",
+            "SGC_GetterBeam",
+            "SGC_GetterFlash",
+            "SGC_HolyDragonRoar",
+            "SGC_PoseidonThunder",
+            "SGC_ShiningSpark",
+            "SGC_StonerSunshine",
+        };
+
+    private static readonly IReadOnlySet<string> BlockAnimationCards =
+        new HashSet<string>(StringComparer.Ordinal)
+        {
+            "SGC_BlackArmor",
+            "SGC_DarkCape",
+            "SGC_Defend",
+            "SGC_Guts",
+            "SGC_HedgehogTactic",
+            "SGC_IronWall",
+            "SGC_SeizeFuture",
+            "SGC_TacticalRetreat",
+        };
+
     public override CardPoolModel Pool => ModelDb.CardPool<ShinGetterCardPool>();
 
     public virtual ShinGetterForm CardForm => ShinGetterForm.None;
@@ -197,11 +232,23 @@ public abstract class ShinGetterCardBase : CardModel
 
     private string? GetActionAnimationTrigger()
     {
-        if (Type is CardType.Skill or CardType.Power)
-            return "Cast";
+        string cardTypeName = GetType().Name;
+        if (BlockAnimationCards.Contains(cardTypeName))
+            return "Block";
 
         if (Type == CardType.Attack)
-            return Rarity is CardRarity.Rare or CardRarity.Ancient ? "HeavyAttack" : "Attack";
+        {
+            if (DashAnimationCards.Contains(GetType().Name))
+                return "Dash";
+
+            if (CastAttackAnimationCards.Contains(GetType().Name))
+                return "Cast";
+
+            return "Attack";
+        }
+
+        if (Type is CardType.Skill or CardType.Power)
+            return "Cast";
 
         return null;
     }

@@ -65,4 +65,15 @@ public sealed class SGP_HotBlood : PowerModel
             await PowerCmd.Decrement(this);
         }
     }
+
+    public async Task ConsumeForCardDamage(PlayerChoiceContext choiceContext, CardModel card, ValueProp props)
+    {
+        if (Amount <= 0) return;
+        if (card.Owner.Creature != base.Owner) return;
+        if (card.Type != CardType.Attack) return;
+        if (!props.IsPoweredAttack()) return;
+
+        Flash();
+        await PowerCmd.Decrement(this);
+    }
 }

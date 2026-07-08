@@ -34,7 +34,7 @@ public sealed class SGC_GetterNova : ShinGetterCardBase
     {
         await ShinGetterCombatVfx.PlayGetterNova(Owner.Creature, CombatState.GetOpponentsOf(Owner.Creature));
         await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, DynamicVars["VigorPower"].BaseValue, Owner.Creature, this);
-        foreach (var creature in CombatState.Creatures.Where(creature => creature.IsAlive))
+        foreach (var creature in CombatState.GetOpponentsOf(Owner.Creature).Where(creature => creature.IsAlive))
             await PowerCmd.Apply<SGP_Radiation>(choiceContext, creature, DynamicVars["SGP_Radiation"].BaseValue, Owner.Creature, this);
     }
 
