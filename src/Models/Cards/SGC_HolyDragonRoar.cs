@@ -22,7 +22,7 @@ public sealed class SGC_HolyDragonRoar : ShinGetterCardBase
     protected override IEnumerable<DynamicVar> CanonicalVars => System.Array.Empty<DynamicVar>();
 
     public SGC_HolyDragonRoar()
-        : base(0, CardType.Skill, CardRarity.Ancient, TargetType.Self)
+        : base(0, CardType.Attack, CardRarity.Ancient, TargetType.Self)
     {
     }
 

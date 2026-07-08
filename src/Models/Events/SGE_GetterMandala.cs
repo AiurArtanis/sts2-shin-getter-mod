@@ -12,6 +12,7 @@ using MegaCrit.Sts2.Core.Extensions;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Enchantments;
 using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Nodes.Vfx;
@@ -112,6 +113,7 @@ public sealed class SGE_GetterMandala : EventModel
     {
         Player owner = EventOwner;
         CardModel card = owner.RunState.CreateCard<SGC_HolyDragonRoar>(owner);
+        CardCmd.Enchant<Corrupted>(card, 1m);
         CardCmd.PreviewCardPileAdd(await CardPileCmd.Add(card, PileType.Deck), 2f);
         Finish("HOLY_DRAGON");
     }
@@ -130,6 +132,7 @@ public sealed class SGE_GetterMandala : EventModel
     private async Task IgnoreGetterWill()
     {
         Player owner = EventOwner;
+        await CreatureCmd.Heal(owner.Creature, 30m);
         CardModel card = owner.RunState.CreateCard<SGC_InsectVirus>(owner);
         CardCmd.PreviewCardPileAdd(await CardPileCmd.Add(card, PileType.Deck), 2f);
         Finish("IGNORE");

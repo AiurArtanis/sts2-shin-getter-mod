@@ -15,7 +15,7 @@ namespace ShinGetterMod.Models.Cards;
 
 public sealed class SGC_InsectVirus : ShinGetterCardBase
 {
-    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Unplayable };
+    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Eternal, CardKeyword.Unplayable };
     public override bool HasTurnEndInHandEffect => true;
 
     protected override IEnumerable<string> ExtraRunAssetPaths =>
@@ -35,11 +35,10 @@ public sealed class SGC_InsectVirus : ShinGetterCardBase
     protected override async Task OnTurnEndInHand(PlayerChoiceContext choiceContext)
     {
         await ShinGetterCombatVfx.PlayInsectVirusNightmare(Owner.Creature);
-        await PowerCmd.Apply<SGP_Wane>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
+        await PowerCmd.Apply<SGP_Wane>(choiceContext, Owner.Creature, 4m, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
     {
     }
 }
-

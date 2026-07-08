@@ -67,7 +67,7 @@ public abstract class ShinGetterCardBase : CardModel
         new Dictionary<string, string[]>
         {
             ["SGC_Acceleration"] = new[] { "精神" },
-            ["SGC_Annihilation"] = new[] { "放射能" },
+            ["SGC_Annihilation"] = new[] { "放射能", "衰退" },
             ["SGC_AntiEvolution"] = new[] { "封印" },
             ["SGC_Avalanche"] = new[] { "格挡", "覆甲", "三号机" },
             ["SGC_AwakenedSoul"] = new[] { "精神" },

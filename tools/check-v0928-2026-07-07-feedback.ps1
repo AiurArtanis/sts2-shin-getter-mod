@@ -75,8 +75,22 @@ Assert-File "src\Models\Cards\SGC_HolyDragonRoar.cs"
 $holyDragon = Read-RepoFile "src\Models\Cards\SGC_HolyDragonRoar.cs"
 Assert-Contains "Holy Dragon Roar is a Shin Getter card" $holyDragon "class\s+SGC_HolyDragonRoar\s*:\s*ShinGetterCardBase"
 Assert-Contains "Holy Dragon Roar is ancient" $holyDragon "CardRarity\.Ancient"
+Assert-Contains "Holy Dragon Roar can receive Corrupted because it is an attack" $holyDragon "base\(0,\s*CardType\.Attack,\s*CardRarity\.Ancient"
 Assert-Contains "Holy Dragon Roar is currently a placeholder" $holyDragon "Placeholder"
 Assert-Contains "Holy Dragon Roar is intentionally effectless" $holyDragon "Task\.CompletedTask"
+
+$insectVirus = Read-RepoFile "src\Models\Cards\SGC_InsectVirus.cs"
+Assert-Contains "Insect-Human Virus has Eternal keyword" $insectVirus "CardKeyword\.Eternal"
+Assert-Contains "Insect-Human Virus remains unplayable" $insectVirus "CardKeyword\.Unplayable"
+Assert-Contains "Insect-Human Virus applies 4 Wane at turn end" $insectVirus "PowerCmd\.Apply<SGP_Wane>\([^;]*4m"
+
+$annihilation = Read-RepoFile "src\Models\Cards\SGC_Annihilation.cs"
+Assert-Contains "Annihilation base damage is 8" $annihilation "new\s+DamageVar\(8m,\s*ValueProp\.Move\)"
+Assert-Contains "Annihilation has a Wane dynamic variable" $annihilation "new\s+DynamicVar\(""Wane"",\s*1m\)"
+Assert-Contains "Annihilation applies Wane to surviving enemies" $annihilation "PowerCmd\.Apply<SGP_Wane>\([^;]*DynamicVars\[""Wane""\]\.BaseValue"
+Assert-Contains "Annihilation upgrade adds 2 damage" $annihilation "DynamicVars\.Damage\.UpgradeValueBy\(2m\)"
+Assert-Contains "Annihilation upgrade adds 2 Wane" $annihilation "DynamicVars\[""Wane""\]\.UpgradeValueBy\(2m\)"
+Assert-NotContains "Annihilation upgrade no longer adds Retain" $annihilation "AddKeyword\(CardKeyword\.Retain\)"
 
 $cardPool = Read-RepoFile "src\Models\CardPools\ShinGetterCardPool.cs"
 Assert-Contains "Card pool includes Holy Dragon Roar" $cardPool "SGC_HolyDragonRoar"
@@ -88,11 +102,13 @@ Assert-Contains "Getter Mandala has initial option pool" $mandala "BuildOptionPo
 Assert-Contains "Getter Mandala samples three pool options" $mandala "Take\(3\)"
 Assert-Contains "Getter Mandala always has ignore option" $mandala "IGNORE"
 Assert-Contains "Getter Mandala adds Insect Virus on ignore" $mandala "SGC_InsectVirus"
+Assert-Contains "Getter Mandala heals 30 HP on ignore" $mandala "CreatureCmd\.Heal\(owner\.Creature,\s*30m\)"
 Assert-Contains "Getter Mandala can replace Getter Furnace" $mandala "ReplaceGetterFurnace"
 Assert-Contains "Getter Mandala can grant Shin Form" $mandala "SGC_ShinForm"
 Assert-Contains "Getter Mandala applies Devolution enchantment" $mandala "SGE_Devolution"
 Assert-Contains "Getter Mandala applies Adaptation enchantment" $mandala "SGE_Adaptation"
 Assert-Contains "Getter Mandala can grant Holy Dragon Roar" $mandala "SGC_HolyDragonRoar"
+Assert-Contains "Getter Mandala enchants Holy Dragon Roar with Corrupted" $mandala "CardCmd\.Enchant<Corrupted>\(card,\s*1m\)"
 Assert-Contains "Getter Mandala upgrades Getter cards by title" $mandala 'Contains\("盖塔"'
 Assert-Contains "Getter Mandala uses deck enchant selection" $mandala "CardSelectCmd\.FromDeckForEnchantment"
 Assert-Contains "Getter Mandala shows enchant VFX" $mandala "NCardEnchantVfx"
@@ -136,6 +152,29 @@ foreach ($lang in @("zhs", "eng", "jpn")) {
     Assert-JsonKeys "ShinGetterMod\localization\$lang\events.json" $eventKeys
     Assert-JsonKeys "ShinGetterMod\localization\$lang\cards.json" $cardKeys
 }
+
+$zhsCards = Read-RepoFile "ShinGetterMod\localization\zhs\cards.json"
+$engCards = Read-RepoFile "ShinGetterMod\localization\eng\cards.json"
+$jpnCards = Read-RepoFile "ShinGetterMod\localization\jpn\cards.json"
+$zhsEvents = Read-RepoFile "ShinGetterMod\localization\zhs\events.json"
+$engEvents = Read-RepoFile "ShinGetterMod\localization\eng\events.json"
+$jpnEvents = Read-RepoFile "ShinGetterMod\localization\jpn\events.json"
+
+Assert-Contains "ZHS Annihilation mentions Wane amount" $zhsCards 'S_G_C_ANNIHILATION\.description": "[^"]*\{Wane:diff\(\)\}层\[gold\]衰退'
+Assert-Contains "ENG Annihilation mentions Wane amount" $engCards 'S_G_C_ANNIHILATION\.description": "[^"]*\{Wane:diff\(\)\} \[gold\]Wane'
+Assert-Contains "JPN Annihilation mentions Wane amount" $jpnCards 'S_G_C_ANNIHILATION\.description": "[^"]*\[gold\]衰退\[/gold\]を\{Wane:diff\(\)\}'
+Assert-Contains "ZHS Insect-Human Virus mentions Eternal" $zhsCards 'S_G_C_INSECT_VIRUS\.description": "\[gold\]永恒\[/gold\]'
+Assert-Contains "ENG Insect-Human Virus mentions Eternal" $engCards 'S_G_C_INSECT_VIRUS\.description": "\[gold\]Eternal\[/gold\]'
+Assert-Contains "JPN Insect-Human Virus mentions Eternal" $jpnCards 'S_G_C_INSECT_VIRUS\.description": "\[gold\]永劫\[/gold\]'
+Assert-Contains "ZHS Insect-Human Virus mentions 4 Wane" $zhsCards '4层\[gold\]衰退'
+Assert-Contains "ENG Insect-Human Virus mentions 4 Wane" $engCards '4 \[gold\]Wane'
+Assert-Contains "JPN Insect-Human Virus mentions 4 Wane" $jpnCards '\[gold\]衰退\[/gold\]を4'
+Assert-Contains "ZHS Getter Mandala Holy Dragon option mentions Corrupted" $zhsEvents 'options\.HOLY_DRAGON\.description": "[^"]*腐化'
+Assert-Contains "ENG Getter Mandala Holy Dragon option mentions Corrupted" $engEvents 'options\.HOLY_DRAGON\.description": "[^"]*Corrupted'
+Assert-Contains "JPN Getter Mandala Holy Dragon option mentions Corrupted" $jpnEvents 'options\.HOLY_DRAGON\.description": "[^"]*蝕み'
+Assert-Contains "ZHS Getter Mandala ignore option mentions 30 HP heal" $zhsEvents 'options\.IGNORE\.description": "[^"]*回复30点生命'
+Assert-Contains "ENG Getter Mandala ignore option mentions 30 HP heal" $engEvents 'options\.IGNORE\.description": "[^"]*Heal 30 HP'
+Assert-Contains "JPN Getter Mandala ignore option mentions 30 HP heal" $jpnEvents 'options\.IGNORE\.description": "[^"]*HPを30回復'
 
 $q14 = "E:\Obsidian\all-in-one\游戏\杀戮尖塔2\问答\14-V0.9.26-商店流龙马静态图与PCK压缩验证清单.md"
 if (Test-Path -LiteralPath $q14) {
