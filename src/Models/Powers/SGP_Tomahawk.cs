@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;
 using System.Linq;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
@@ -16,11 +17,23 @@ namespace ShinGetterMod.Models.Powers;
 /// </summary>
 public sealed class SGP_Tomahawk : PowerModel
 {
+    private sealed class Data
+    {
+        public List<CardModel> Cards { get; } = new();
+    }
+
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => (PowerStackType)1;
 
     protected override System.Collections.Generic.IEnumerable<DynamicVar> CanonicalVars =>
         System.Array.Empty<DynamicVar>();
+
+    protected override object InitInternalData() => new Data();
+
+    public void QueueReplay(CardModel card)
+    {
+        GetInternalData<Data>().Cards.Add(card);
+    }
 
     public override async Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants, ICombatState combatState)
     {
@@ -28,14 +41,17 @@ public sealed class SGP_Tomahawk : PowerModel
         var player = base.Owner.Player;
         if (player == null || combatState == null) return;
 
+        Data data = GetInternalData<Data>();
+        List<CardModel> cards = data.Cards.ToList();
+        data.Cards.Clear();
+
         Flash();
-        // 创建并自动打出盖塔飞斧
-        for (int i = 0; i < base.Amount; i++)
+        foreach (CardModel card in cards)
         {
-            var card = combatState.CreateCard<Models.Cards.SGC_GetterTomahawk>(player);
-            await MegaCrit.Sts2.Core.Commands.CardCmd.AutoPlay(
+            await CardCmd.AutoPlay(
                 new MegaCrit.Sts2.Core.GameActions.Multiplayer.ThrowingPlayerChoiceContext(),
-                card, null);
+                card,
+                null);
         }
 
         await PowerCmd.Remove(this);

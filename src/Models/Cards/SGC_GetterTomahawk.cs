@@ -34,9 +34,17 @@ public sealed class SGC_GetterTomahawk : ShinGetterCardBase
             .WithHitFx("vfx/vfx_flying_slash").Execute(choiceContext);
 
         if (!cardPlay.IsAutoPlay)
-            await PowerCmd.Apply<SGP_Tomahawk>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
+        {
+            var tomahawkPower = await PowerCmd.Apply<SGP_Tomahawk>(
+                choiceContext,
+                Owner.Creature,
+                1m,
+                Owner.Creature,
+                this);
+            tomahawkPower?.QueueReplay(this);
+        }
 
-        if (!cardPlay.IsAutoPlay && HasForm(Owner, ShinGetterForm.Getter1))
+        if (HasForm(Owner, ShinGetterForm.Getter1))
             await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, 2m, Owner.Creature, this);
     }
 

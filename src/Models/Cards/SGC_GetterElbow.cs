@@ -18,7 +18,7 @@ public sealed class SGC_GetterElbow : ShinGetterCardBase
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new DamageVar(6m, ValueProp.Move), new PowerVar<WeakPower>(1m) };
 
     public SGC_GetterElbow()
-        : base(2, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
+        : base(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
     {
     }
 

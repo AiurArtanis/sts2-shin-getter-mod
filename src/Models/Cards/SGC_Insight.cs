@@ -27,7 +27,7 @@ public sealed class SGC_Insight : ShinGetterCardBase
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new PowerVar<SGP_Insight>(1m),
+        new PowerVar<DexterityPower>(1m),
         new PowerVar<StrengthPower>(1m),
         new EnergyVar(1),
         new PowerVar<ThornsPower>(2m),
@@ -41,7 +41,7 @@ public sealed class SGC_Insight : ShinGetterCardBase
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await ShinGetterCombatVfx.PlayNewtypeSense(Owner.Creature);
-        await PowerCmd.Apply<SGP_Insight>(choiceContext, Owner.Creature, DynamicVars["SGP_Insight"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<SGP_Insight>(choiceContext, Owner.Creature, DynamicVars.Dexterity.BaseValue, Owner.Creature, this);
 
         if (HasForm(Owner, ShinGetterForm.Getter1))
             await PowerCmd.Apply<StrengthPower>(choiceContext, Owner.Creature, DynamicVars["StrengthPower"].BaseValue, Owner.Creature, this);
@@ -53,6 +53,6 @@ public sealed class SGC_Insight : ShinGetterCardBase
 
     protected override void OnUpgrade()
     {
-        DynamicVars["SGP_Insight"].UpgradeValueBy(1m);
+        DynamicVars.Dexterity.UpgradeValueBy(1m);
     }
 }

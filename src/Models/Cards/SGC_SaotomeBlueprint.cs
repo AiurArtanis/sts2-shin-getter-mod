@@ -22,7 +22,7 @@ public sealed class SGC_SaotomeBlueprint : ShinGetterCardBase
         HoverTipFactory.FromPower<SGP_Evolution>(),
     });
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new PowerVar<SGP_Blueprint>(1m) };
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new PowerVar<SGP_Evolution>(1m) };
 
     public SGC_SaotomeBlueprint()
         : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
@@ -31,11 +31,11 @@ public sealed class SGC_SaotomeBlueprint : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<SGP_Blueprint>(choiceContext, Owner.Creature, DynamicVars["SGP_Blueprint"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<SGP_Blueprint>(choiceContext, Owner.Creature, DynamicVars["SGP_Evolution"].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars["SGP_Blueprint"].UpgradeValueBy(1m);
+        DynamicVars["SGP_Evolution"].UpgradeValueBy(1m);
     }
 }

@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using MegaCrit.Sts2.Core.Models.Powers;
 using System.Linq;
+using ShinGetterMod.Models.Powers;
 using ShinGetterMod.Nodes.Vfx;
 
 namespace ShinGetterMod.Models.Cards;
@@ -15,7 +16,7 @@ namespace ShinGetterMod.Models.Cards;
 /// <summary>
 /// 盖塔闪光 | 攻击 | 罕见 | 1费 | 一号/输出终端
 /// 造成 5 伤害，获得等同于造成伤害的活力，消耗，固有
-/// 一号机加成：获得 8 活力
+/// 一号机加成：获得 3 活力和 3 腾空
 /// </summary>
 public sealed class SGC_GetterFlash : ShinGetterCardBase
 {
@@ -41,7 +42,10 @@ public sealed class SGC_GetterFlash : ShinGetterCardBase
         if (damageDealt > 0m)
             await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, damageDealt, Owner.Creature, this);
         if (HasForm(Owner, ShinGetterForm.Getter1))
-            await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, 8m, Owner.Creature, this);
+        {
+            await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, 3m, Owner.Creature, this);
+            await PowerCmd.Apply<SGP_Airborne>(choiceContext, Owner.Creature, 3m, Owner.Creature, this);
+        }
     }
 
     protected override void OnUpgrade()
