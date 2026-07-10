@@ -54,6 +54,7 @@ internal static class NShinGetterSpriteSequence
     public const int ShinDragonDashMaxFrames = 48;
     public const int ShinDragonDeathMaxFrames = 48;
     public const double IdleFramesPerSecond = 24d;
+    public const double AttackFramesPerSecond = 36d;
     public const double ActionFramesPerSecond = 30d;
 
     public const string FrameDirectory = IdleFrameDirectory;
@@ -66,7 +67,7 @@ internal static class NShinGetterSpriteSequence
         SpriteFrames frames = sprite.SpriteFrames ?? new SpriteFrames();
         sprite.SpriteFrames = frames;
         LoadPingPongAnimation(frames, IdleAnimationName, IdleFrameDirectory, IdleMaxFrames, IdleFramesPerSecond, loop: true);
-        LoadLinearAnimation(frames, AttackAnimationName, AttackFrameDirectory, AttackMaxFrames, ActionFramesPerSecond, loop: false);
+        LoadLinearAnimation(frames, AttackAnimationName, AttackFrameDirectory, AttackMaxFrames, AttackFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, CastAnimationName, CastFrameDirectory, CastMaxFrames, ActionFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, DeathAnimationName, DeathFrameDirectory, DeathMaxFrames, ActionFramesPerSecond, loop: false);
 
@@ -79,7 +80,7 @@ internal static class NShinGetterSpriteSequence
         SpriteFrames frames = sprite.SpriteFrames ?? new SpriteFrames();
         sprite.SpriteFrames = frames;
         LoadPingPongAnimation(frames, IdleAnimationName, GetterTwoIdleFrameDirectory, GetterTwoIdleMaxFrames, IdleFramesPerSecond, loop: true);
-        LoadLinearAnimation(frames, AttackAnimationName, GetterTwoAttackFrameDirectory, GetterTwoAttackMaxFrames, ActionFramesPerSecond, loop: false);
+        LoadLinearAnimation(frames, AttackAnimationName, GetterTwoAttackFrameDirectory, GetterTwoAttackMaxFrames, AttackFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, CastAnimationName, GetterTwoCastFrameDirectory, GetterTwoCastMaxFrames, ActionFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, BlockAnimationName, GetterTwoBlockFrameDirectory, GetterTwoBlockMaxFrames, ActionFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, DashAnimationName, GetterTwoDashFrameDirectory, GetterTwoDashMaxFrames, ActionFramesPerSecond, loop: false);
@@ -93,7 +94,7 @@ internal static class NShinGetterSpriteSequence
         SpriteFrames frames = sprite.SpriteFrames ?? new SpriteFrames();
         sprite.SpriteFrames = frames;
         LoadPingPongAnimation(frames, IdleAnimationName, GetterThreeIdleFrameDirectory, GetterThreeIdleMaxFrames, IdleFramesPerSecond, loop: true);
-        LoadLinearAnimation(frames, AttackAnimationName, GetterThreeAttackFrameDirectory, GetterThreeAttackMaxFrames, ActionFramesPerSecond, loop: false);
+        LoadLinearAnimation(frames, AttackAnimationName, GetterThreeAttackFrameDirectory, GetterThreeAttackMaxFrames, AttackFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, DashAnimationName, GetterThreeDashFrameDirectory, GetterThreeDashMaxFrames, ActionFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, CastAnimationName, GetterThreeCastFrameDirectory, GetterThreeCastMaxFrames, ActionFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, BlockAnimationName, GetterThreeBlockFrameDirectory, GetterThreeBlockMaxFrames, ActionFramesPerSecond, loop: false);

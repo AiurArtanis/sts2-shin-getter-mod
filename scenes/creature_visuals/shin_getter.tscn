@@ -15,7 +15,7 @@ self_modulate = Color(1, 1, 1, 0)
 [node name="GetterOne" type="AnimatedSprite2D" parent="Visuals" index="0"]
 unique_name_in_owner = true
 position = Vector2(38, -176)
-scale = Vector2(0.693, 0.693)
+scale = Vector2(0.7623, 0.7623)
 sprite_frames = ExtResource("6_idle_frames")
 animation = &"idle"
 autoplay = "idle"
@@ -36,8 +36,8 @@ metadata/max_frames = 24
 [node name="GetterThree" type="AnimatedSprite2D" parent="Visuals" index="2"]
 unique_name_in_owner = true
 visible = false
-position = Vector2(22, -176)
-scale = Vector2(0.66, 0.66)
+position = Vector2(22, -194)
+scale = Vector2(0.726, 0.726)
 sprite_frames = ExtResource("5_three_idle_frames")
 animation = &"idle"
 autoplay = "idle"

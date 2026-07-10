@@ -48,17 +48,17 @@ public sealed class SGP_Ki : PowerModel
         return Task.CompletedTask;
     }
 
-    public override decimal ModifyHpLostAfterOstyLate(
-        Creature target,
+    public override decimal ModifyDamageAdditive(
+        Creature? target,
         decimal amount,
         ValueProp props,
         Creature? dealer,
         CardModel? cardSource)
     {
         if (target == Owner && amount > 0m && Amount > 0)
-            return System.Math.Max(0m, amount - Amount);
+            return -Amount;
 
-        return amount;
+        return 0m;
     }
 
     public override async Task AfterDamageReceived(PlayerChoiceContext choiceContext, Creature target, DamageResult result, ValueProp props, Creature? dealer, CardModel? cardSource)

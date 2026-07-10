@@ -1,7 +1,8 @@
 #nullable enable
-using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Combat;
@@ -37,10 +38,13 @@ internal static class ShinGetterPowerIconFlashPatch
 internal static class ShinGetterPowerIconTransitionPatch
 {
     private const float TransitionSeconds = 0.28f;
-    private static readonly Dictionary<Creature, Texture2D> RemovedFormIcons = new();
+    private static readonly ConditionalWeakTable<Creature, RemovedFormIconCache> RemovedFormIcons = new();
 
     private static void Postfix(NPower __instance)
     {
+        if (!__instance.IsNodeReady())
+            return;
+
         PowerModel power = __instance.Model;
         if (!IsShinGetterFormPower(power) || !TryConsumeRemovedFormIcon(power, out Texture2D? previousIcon))
             return;
@@ -76,24 +80,44 @@ internal static class ShinGetterPowerIconTransitionPatch
 
     internal static void CacheRemovedFormIcon(PowerModel power)
     {
+        bool canCache = CombatManager.Instance.IsInProgress
+            && !CombatManager.Instance.IsEnding;
+        if (!canCache)
+            return;
+
         if (!IsShinGetterFormPower(power) || power.Owner == null || power.Icon == null)
             return;
 
-        RemovedFormIcons[power.Owner] = power.Icon;
+        RemovedFormIcons.Remove(power.Owner);
+        RemovedFormIcons.Add(power.Owner, new RemovedFormIconCache(power.Icon));
     }
 
     private static bool TryConsumeRemovedFormIcon(PowerModel power, out Texture2D? icon)
     {
         icon = null;
-        if (power.Owner == null || !RemovedFormIcons.TryGetValue(power.Owner, out icon))
+        if (power.Owner == null
+            || !RemovedFormIcons.TryGetValue(power.Owner, out RemovedFormIconCache? cache)
+            || cache == null)
             return false;
 
+        icon = cache.Icon;
         RemovedFormIcons.Remove(power.Owner);
         return true;
     }
 
     private static bool IsShinGetterFormPower(PowerModel power) =>
         power is SGP_ShinGetterOne or SGP_ShinGetterTwo or SGP_ShinGetterThree or SGP_ShinForm;
+
+    private sealed record RemovedFormIconCache(Texture2D Icon);
+}
+
+[HarmonyPatch(typeof(NPowerContainer), "Remove")]
+internal static class ShinGetterPowerContainerRemovePatch
+{
+    private static void Prefix(PowerModel power)
+    {
+        ShinGetterPowerIconTransitionPatch.CacheRemovedFormIcon(power);
+    }
 }
 
 [HarmonyPatch(typeof(NPowerFlashVfx), "StartVfx")]
@@ -121,8 +145,6 @@ internal static class ShinGetterPowerRemovedVfxPatch
 {
     private static bool Prefix(PowerModel power, ref NPowerRemovedVfx? __result)
     {
-        ShinGetterPowerIconTransitionPatch.CacheRemovedFormIcon(power);
-
         if (power.GetType().Namespace != typeof(SGP_Ki).Namespace)
             return true;
 

@@ -105,9 +105,9 @@ Assert-Contains "Infinite Evolution applies victory dexterity immediately" $infi
 Assert-Contains "Infinite Evolution still applies victory max hp immediately" $infiniteEvolution "CreatureCmd\.GainMaxHp"
 
 $scene = Read-RepoFile "scenes\creature_visuals\shin_getter.tscn"
-Assert-Contains "Getter One scale increased by 10 percent" $scene "name=""GetterOne""[\s\S]*scale = Vector2\(0\.693,\s*0\.693\)"
+Assert-Contains "Getter One retains at least the requested scale increase" $scene "name=""GetterOne""[\s\S]*scale = Vector2\(0\.7623,\s*0\.7623\)"
 Assert-Contains "Getter Two scale increased by 10 percent" $scene "name=""GetterTwo""[\s\S]*scale = Vector2\(0\.66,\s*0\.66\)"
-Assert-Contains "Getter Three scale increased by 10 percent" $scene "name=""GetterThree""[\s\S]*scale = Vector2\(0\.66,\s*0\.66\)"
+Assert-Contains "Getter Three retains at least the requested scale increase" $scene "name=""GetterThree""[\s\S]*scale = Vector2\(0\.726,\s*0\.726\)"
 Assert-Contains "Shin Dragon scale increased by 10 percent" $scene "name=""ShinDragon""[\s\S]*scale = Vector2\(0\.693,\s*0\.693\)"
 
 $sequence = Read-RepoFile "src\Nodes\Combat\NShinGetterSpriteSequence.cs"

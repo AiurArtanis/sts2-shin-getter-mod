@@ -1,6 +1,7 @@
 {
   "COLORFUL_PHILOSOPHERS.pages.INITIAL.options.SHIN_GETTER.title": "Cyan",
   "COLORFUL_PHILOSOPHERS.pages.INITIAL.options.SHIN_GETTER.description": "Obtain [blue]{Cards}[/blue] Shin Getter cards.",
+  "S_G_E_GETTER_MANDALA.title": "Getter Mandala",
   "S_G_E_GETTER_MANDALA.pages.INITIAL.description": "For an instant, you glimpse countless Getter evolutions beyond the distant void. Your hand reaches toward...",
   "S_G_E_GETTER_MANDALA.pages.INITIAL.options.SOLAR_BATTLESHIP.title": "A Getter battleship blotting out the sun...",
   "S_G_E_GETTER_MANDALA.pages.INITIAL.options.SOLAR_BATTLESHIP.description": "Replace Getter Furnace with Emperor's Fragment.",
