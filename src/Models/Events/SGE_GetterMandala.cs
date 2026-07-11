@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Extensions;
 using MegaCrit.Sts2.Core.Helpers;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Enchantments;
@@ -38,7 +39,11 @@ public sealed class SGE_GetterMandala : EventModel
             .Take(3)
             .ToList();
 
-        options.Add(new EventOption(this, IgnoreGetterWill, InitialOptionKey("IGNORE")));
+        options.Add(new EventOption(
+            this,
+            IgnoreGetterWill,
+            InitialOptionKey("IGNORE"),
+            HoverTipFactory.FromCard<SGC_InsectVirus>()));
         return options;
     }
 
@@ -58,18 +63,47 @@ public sealed class SGE_GetterMandala : EventModel
         Player owner = EventOwner;
 
         if (owner.GetRelic<SGR_GetterFurnace>() != null)
-            options.Add(new EventOption(this, ReplaceGetterFurnace, InitialOptionKey("SOLAR_BATTLESHIP")));
+        {
+            options.Add(new EventOption(
+                this,
+                ReplaceGetterFurnace,
+                InitialOptionKey("SOLAR_BATTLESHIP"),
+                HoverTipFactory.FromRelic<SGR_GetterFurnace>()
+                    .Concat(HoverTipFactory.FromRelic<SGR_EmperorsFragment>())));
+        }
 
         if (!DeckHasCard<SGC_ShinForm>())
-            options.Add(new EventOption(this, AddShinForm, InitialOptionKey("GETTER_G_FUSION")));
+        {
+            options.Add(new EventOption(
+                this,
+                AddShinForm,
+                InitialOptionKey("GETTER_G_FUSION"),
+                HoverTipFactory.FromCard<SGC_ShinForm>()));
+        }
 
         if (HasEnchantableCard<SGE_Devolution>(card => card.Type == CardType.Attack))
-            options.Add(new EventOption(this, SelectDevolution, InitialOptionKey("PRIMAL_GETTER")));
+        {
+            options.Add(new EventOption(
+                this,
+                SelectDevolution,
+                InitialOptionKey("PRIMAL_GETTER"),
+                HoverTipFactory.FromEnchantment<SGE_Devolution>()));
+        }
 
         if (HasEnchantableCard<SGE_Adaptation>(card => card.Type is CardType.Attack or CardType.Skill or CardType.Power))
-            options.Add(new EventOption(this, SelectAdaptation, InitialOptionKey("FIRST_EVOLUTION")));
+        {
+            options.Add(new EventOption(
+                this,
+                SelectAdaptation,
+                InitialOptionKey("FIRST_EVOLUTION"),
+                HoverTipFactory.FromEnchantment<SGE_Adaptation>()));
+        }
 
-        options.Add(new EventOption(this, AddHolyDragonRoar, InitialOptionKey("HOLY_DRAGON")));
+        options.Add(new EventOption(
+            this,
+            AddHolyDragonRoar,
+            InitialOptionKey("HOLY_DRAGON"),
+            HoverTipFactory.FromCard<SGC_HolyDragonRoar>()));
 
         if (owner.Deck.Cards.Any(card => IsGetterNamedCard(card) && card.IsUpgradable))
             options.Add(new EventOption(this, UpgradeGetterCards, InitialOptionKey("GUARDIAN_GOD")));
@@ -90,7 +124,6 @@ public sealed class SGE_GetterMandala : EventModel
     {
         Player owner = EventOwner;
         CardModel card = owner.RunState.CreateCard<SGC_ShinForm>(owner);
-        CardCmd.Upgrade(card);
         CardCmd.PreviewCardPileAdd(await CardPileCmd.Add(card, PileType.Deck), 2f);
         Finish("GETTER_G_FUSION");
     }

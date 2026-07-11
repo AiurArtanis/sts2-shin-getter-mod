@@ -15,7 +15,9 @@ public sealed class SGE_Devolution : EnchantmentModel
 
     public override bool CanEnchant(CardModel card)
     {
-        return base.CanEnchant(card) && !card.EnergyCost.CostsX;
+        return base.CanEnchant(card)
+            && !card.EnergyCost.CostsX
+            && card.EnergyCost.GetWithModifiers(CostModifiers.None) > 0;
     }
 
     protected override void OnEnchant()

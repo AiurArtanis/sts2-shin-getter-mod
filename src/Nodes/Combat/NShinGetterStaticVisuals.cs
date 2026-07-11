@@ -1,7 +1,9 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Godot;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
@@ -53,7 +55,7 @@ public static class NShinGetterStaticVisuals
         return TryPlayVisibleFormActionAnimation(creatureNode, trigger);
     }
 
-    public static void PlayShinFormTransformVfx(Creature creature)
+    public static async Task PlayShinFormTransformVfx(Creature creature)
     {
         var creatureNode = NCombatRoom.Instance?.GetCreatureNode(creature);
         if (creatureNode == null)
@@ -63,44 +65,49 @@ public static class NShinGetterStaticVisuals
         if (vfxContainer == null)
             return;
 
-        Node2D rayBurst = new()
+        Node2D rayWrap = new()
         {
             GlobalPosition = creatureNode.GlobalPosition + new Vector2(24f, -205f),
             ZIndex = 80,
-            Modulate = new Color(1f, 1f, 1f, 0f),
         };
 
         Color getterRay = new(0.23f, 1f, 0.72f, 0.92f);
-        for (int i = 0; i < 12; i++)
+        Color getterPink = new(1f, 0.24f, 0.62f, 0.88f);
+        for (int i = 0; i < 18; i++)
         {
-            float y = -118f + i * 20f;
+            float y = 176f - i * 20f;
             Line2D line = new()
             {
-                Width = 7f + i % 3,
-                DefaultColor = getterRay,
+                Width = 6f + i % 3,
+                DefaultColor = i % 2 == 0 ? getterRay : getterPink,
                 Antialiased = true,
+                Modulate = new Color(1f, 1f, 1f, 0f),
             };
-            line.AddPoint(new Vector2(-130f, y));
-            line.AddPoint(new Vector2(-68f, y - 22f + i % 4 * 10f));
-            line.AddPoint(new Vector2(0f, y + 18f - i % 5 * 7f));
-            line.AddPoint(new Vector2(72f, y - 16f + i % 3 * 12f));
-            line.AddPoint(new Vector2(138f, y + 4f));
-            rayBurst.AddChild(line);
+            float phase = i % 2 == 0 ? 1f : -1f;
+            line.AddPoint(new Vector2(-150f, y));
+            line.AddPoint(new Vector2(-75f, y + 18f * phase));
+            line.AddPoint(new Vector2(0f, y - 14f * phase));
+            line.AddPoint(new Vector2(75f, y + 18f * phase));
+            line.AddPoint(new Vector2(150f, y));
+            rayWrap.AddChild(line);
+
+            Tween lineTween = line.CreateTween();
+            lineTween.TweenProperty(line, "modulate:a", 1f, 0.08f).SetDelay(i * 0.022f);
         }
 
-        vfxContainer.AddChild(rayBurst);
-        Tween tween = rayBurst.CreateTween().SetParallel();
-        tween.TweenProperty(rayBurst, "modulate:a", 1f, 0.08f);
-        tween.TweenProperty(rayBurst, "scale", new Vector2(1.24f, 1.08f), 0.34f)
+        vfxContainer.AddChild(rayWrap);
+        Tween tween = rayWrap.CreateTween().SetParallel();
+        tween.TweenProperty(rayWrap, "scale", new Vector2(1.16f, 1.05f), 0.52f)
             .SetEase(Tween.EaseType.Out)
             .SetTrans(Tween.TransitionType.Sine);
-        tween.TweenProperty(rayBurst, "rotation_degrees", 6f, 0.34f)
+        tween.TweenProperty(rayWrap, "rotation_degrees", 5f, 0.52f)
             .SetEase(Tween.EaseType.Out)
             .SetTrans(Tween.TransitionType.Sine);
-        tween.TweenProperty(rayBurst, "modulate:a", 0f, 0.18f)
-            .SetDelay(0.22f)
+        tween.TweenProperty(rayWrap, "modulate:a", 0f, 0.16f)
+            .SetDelay(0.52f)
             .SetEase(Tween.EaseType.In);
-        tween.TweenCallback(Callable.From(rayBurst.QueueFree)).SetDelay(0.42f);
+        tween.TweenCallback(Callable.From(rayWrap.QueueFree)).SetDelay(0.70f);
+        await Cmd.CustomScaledWait(0.60f, 0.70f);
     }
 
     private static bool TryGetFormSprites(
@@ -118,7 +125,7 @@ public static class NShinGetterStaticVisuals
         Node2D? getterOneNode = creatureNode.Visuals.GetNodeOrNull<Node2D>("Visuals/GetterOne");
         if (getterOneNode is AnimatedSprite2D getterOneAnimation)
         {
-            NShinGetterSpriteSequence.EnsureLoaded(getterOneAnimation);
+            NShinGetterSpriteSequence.EnsureIdleLoaded(getterOneAnimation);
             if (getterOneAnimation.Visible && !getterOneAnimation.IsPlaying())
                 NShinGetterSpriteAnimationStateMachine.PlayIdle(getterOneAnimation);
         }
@@ -126,25 +133,25 @@ public static class NShinGetterStaticVisuals
         Node2D? getterTwoNode = creatureNode.Visuals.GetNodeOrNull<Node2D>("Visuals/GetterTwo");
         if (getterTwoNode is AnimatedSprite2D getterTwoAnimation)
         {
-            NShinGetterSpriteSequence.EnsureGetterTwoLoaded(getterTwoAnimation);
+            NShinGetterSpriteSequence.EnsureGetterTwoIdleLoaded(getterTwoAnimation);
             if (getterTwoAnimation.Visible && !getterTwoAnimation.IsPlaying())
-                NShinGetterSpriteAnimationStateMachine.PlayIdle(getterTwoAnimation, NShinGetterSpriteSequence.EnsureGetterTwoLoaded);
+                NShinGetterSpriteAnimationStateMachine.PlayIdle(getterTwoAnimation, NShinGetterSpriteSequence.EnsureGetterTwoIdleLoaded);
         }
 
         Node2D? getterThreeNode = creatureNode.Visuals.GetNodeOrNull<Node2D>("Visuals/GetterThree");
         if (getterThreeNode is AnimatedSprite2D getterThreeAnimation)
         {
-            NShinGetterSpriteSequence.EnsureGetterThreeLoaded(getterThreeAnimation);
+            NShinGetterSpriteSequence.EnsureGetterThreeIdleLoaded(getterThreeAnimation);
             if (getterThreeAnimation.Visible && !getterThreeAnimation.IsPlaying())
-                NShinGetterSpriteAnimationStateMachine.PlayIdle(getterThreeAnimation, NShinGetterSpriteSequence.EnsureGetterThreeLoaded);
+                NShinGetterSpriteAnimationStateMachine.PlayIdle(getterThreeAnimation, NShinGetterSpriteSequence.EnsureGetterThreeIdleLoaded);
         }
 
         Node2D? shinDragonNode = creatureNode.Visuals.GetNodeOrNull<Node2D>("Visuals/ShinDragon");
         if (shinDragonNode is AnimatedSprite2D shinDragonAnimation)
         {
-            NShinGetterSpriteSequence.EnsureShinDragonLoaded(shinDragonAnimation);
+            NShinGetterSpriteSequence.EnsureShinDragonIdleLoaded(shinDragonAnimation);
             if (shinDragonAnimation.Visible && !shinDragonAnimation.IsPlaying())
-                NShinGetterSpriteAnimationStateMachine.PlayIdle(shinDragonAnimation, NShinGetterSpriteSequence.EnsureShinDragonLoaded);
+                NShinGetterSpriteAnimationStateMachine.PlayIdle(shinDragonAnimation, NShinGetterSpriteSequence.EnsureShinDragonIdleLoaded);
         }
 
         var getterOne = ToFormVisual(getterOneNode);
@@ -176,6 +183,14 @@ public static class NShinGetterStaticVisuals
                 return true;
 
             return NShinGetterSpriteAnimationStateMachine.TryPlay(animation, "Attack", ensureLoaded);
+        }
+
+        if (trigger == "Attack")
+        {
+            if (NShinGetterSpriteAnimationStateMachine.TryPlay(animation, trigger, ensureLoaded))
+                return true;
+
+            return NShinGetterSpriteAnimationStateMachine.TryPlay(animation, "Cast", ensureLoaded);
         }
 
         return NShinGetterSpriteAnimationStateMachine.TryPlay(animation, trigger, ensureLoaded);
@@ -302,23 +317,23 @@ public static class NShinGetterStaticVisuals
 
         if (animation.Name == "GetterTwo")
         {
-            NShinGetterSpriteAnimationStateMachine.PlayIdle(animation, NShinGetterSpriteSequence.EnsureGetterTwoLoaded);
+            NShinGetterSpriteAnimationStateMachine.PlayIdle(animation, NShinGetterSpriteSequence.EnsureGetterTwoIdleLoaded);
             return;
         }
 
         if (animation.Name == "GetterThree")
         {
-            NShinGetterSpriteAnimationStateMachine.PlayIdle(animation, NShinGetterSpriteSequence.EnsureGetterThreeLoaded);
+            NShinGetterSpriteAnimationStateMachine.PlayIdle(animation, NShinGetterSpriteSequence.EnsureGetterThreeIdleLoaded);
             return;
         }
 
         if (animation.Name == "ShinDragon")
         {
-            NShinGetterSpriteAnimationStateMachine.PlayIdle(animation, NShinGetterSpriteSequence.EnsureShinDragonLoaded);
+            NShinGetterSpriteAnimationStateMachine.PlayIdle(animation, NShinGetterSpriteSequence.EnsureShinDragonIdleLoaded);
             return;
         }
 
-        NShinGetterSpriteAnimationStateMachine.PlayIdle(animation, NShinGetterSpriteSequence.EnsureLoaded);
+        NShinGetterSpriteAnimationStateMachine.PlayIdle(animation, NShinGetterSpriteSequence.EnsureIdleLoaded);
     }
 
     private readonly record struct FormSprites(

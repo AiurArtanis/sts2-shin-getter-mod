@@ -6,7 +6,7 @@
   "S_G_C_GETTER_BEAM.title": "ゲッタービーム",
   "S_G_C_GETTER_BEAM.description": "{CalculatedDamage:diff()}ダメージを与え、[gold]衰退[/gold]を{Wane:diff()}付与する。\n[red]真ゲッター1[/red]：この戦闘で得た[gold]活力[/gold]の合計に等しい追加ダメージを与える。",
   "S_G_C_GETTER_LAUNCH.title": "ゲッター出撃",
-  "S_G_C_GETTER_LAUNCH.description": "[gold]気力[/gold]を1得て、[gold]変形[/gold]する。",
+  "S_G_C_GETTER_LAUNCH.description": "[gold]気力[/gold]を2得て、[gold]変形[/gold]する。",
   "S_G_C_DIVE_STRIKE.title": "ダイブストライク",
   "S_G_C_DIVE_STRIKE.description": "{CalculatedDamage:diff()}ダメージを与える。[gold]空中[/gold]なら、このダメージは2倍になる。\n[red]真ゲッター1[/red]：[gold]空中[/gold]を1得る。",
   "S_G_C_HURRICANE_STRIKE.title": "ハリケーンストライク",
@@ -26,7 +26,7 @@
   "S_G_C_GETTER_RUSH.title": "ゲッターラッシュ",
   "S_G_C_GETTER_RUSH.description": "[gold]弱体[/gold]を{VulnerablePower:diff()}付与し、{Damage:diff()}ダメージを与える。\n[yellow]真ゲッター3[/yellow]：[gold]プレート[/gold]を1回発動する。",
   "S_G_C_MELTDOWN.title": "メルトダウン",
-  "S_G_C_MELTDOWN.description": "[gold]放射能[/gold]を{Cards:diff()}枚手札に加える。",
+  "S_G_C_MELTDOWN.description": "[gold]放射能[/gold]を{Cards:diff()}枚手札に加える。\n[gold]廃棄[/gold]。",
   "S_G_C_KI.title": "気合",
   "S_G_C_KI.description": "[gold]気力[/gold]を{SGP_Ki:diff()}、[gold]活力[/gold]を{VigorPower:diff()}得る。",
   "S_G_C_INDOMITABLE.title": "不屈",
@@ -75,7 +75,7 @@
   "S_G_C_DARK_CAPE.title": "漆黒のマント",
   "S_G_C_DARK_CAPE.description": "{Block:diff()}[gold]ブロック[/gold]を得る。このターン、[gold]ブロック[/gold]でダメージを完全に防ぐたび、敵全体に{Damage:diff()}ダメージを与える。\n[red]真ゲッター1[/red]：[gold]空中[/gold]を3得る。",
   "S_G_C_BACKUP_PLAN.title": "予備プラン",
-  "S_G_C_BACKUP_PLAN.description": "手札を好きな枚数廃棄する。廃棄したカードタイプ1種類につきカードを1枚引く。\n[white]真ゲッター2[/white]：{Energy:energyIcons()}を得る。",
+  "S_G_C_BACKUP_PLAN.description": "{Block:diff()}ブロックを得る。\n手札を好きな枚数廃棄する。廃棄したカードタイプ1種類につきカードを1枚引く。\n[white]真ゲッター2[/white]：{Energy:energyIcons()}を得る。",
   "S_G_C_GRAPPLE.title": "グラップル",
   "S_G_C_GRAPPLE.description": "[gold]脱力[/gold]を{WeakPower:diff()}付与する。このターン、多段攻撃のヒット回数が{SGP_Grapple:diff()}回減る。\n[yellow]真ゲッター3[/yellow]：敵は[gold]筋力[/gold]を{StrengthPower:diff()}失う。",
   "S_G_C_JAMMER.title": "ジャマー",
@@ -114,7 +114,7 @@
   "S_G_C_GETTER_WILL.description": "山札からパワーカードを1枚選び、手札に加える。廃棄。\n[red]真ゲッター1[/red]：このターン、そのカードのコストは0になる。",
   "S_G_C_GETTER_WILL.selectionScreenPrompt": "手札に加えるパワーカードを1枚選ぶ。",
   "S_G_C_SPECIALIZATION.title": "特化",
-  "S_G_C_SPECIALIZATION.description": "現在の形態の[gold]形態専用カード[/gold]をランダムに1枚得る。そのカードはこのターンコスト0。\n[white]真ゲッター2[/white]：[gold]再生[/gold]を4得る。",
+  "S_G_C_SPECIALIZATION.description": "{Block:diff()}ブロックを得る。\n現在の形態の[gold]形態専用カード[/gold]をランダムに1枚得る。そのカードはこのターンコスト0。\n[white]真ゲッター2[/white]：[gold]再生[/gold]を4得る。",
   "S_G_C_IRON_WALL.title": "鉄壁",
   "S_G_C_IRON_WALL.description": "次のターン開始時まで、受けるダメージを{SGP_IronWall:diff()}減らす。\n[yellow]真ゲッター3[/yellow]：ダメージを受けた時、[gold]プレート[/gold]を1得る。",
   "S_G_C_GUTS.title": "底力",
@@ -146,5 +146,5 @@
   "S_G_C_INFINITE_EVOLUTION.title": "無限進化",
   "S_G_C_INFINITE_EVOLUTION.description": "戦闘勝利後、[gold]筋力[/gold]、[gold]敏捷[/gold]、最大HPのいずれかをランダムに1永久に得る。",
   "S_G_C_HOLY_DRAGON_ROAR.title": "聖龍咆哮",
-  "S_G_C_HOLY_DRAGON_ROAR.description": "プレースホルダーカード。効果なし。"
+  "S_G_C_HOLY_DRAGON_ROAR.description": "敵全体に{Damage:diff()}ダメージを与え、[gold]スタン[/gold]させる。手札の[gold]ゲッターカード[/gold]をすべて廃棄する。\n[gold]廃棄[/gold]。"
 }

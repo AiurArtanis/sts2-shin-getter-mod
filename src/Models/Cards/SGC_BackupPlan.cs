@@ -13,13 +13,14 @@ namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
 /// 备用方案 | 技能 | 罕见 | 2费 | 二号/过牌/烧牌
-/// 消耗任意张手牌，每消耗一种类型的卡牌抽 1 张牌
+/// 获得 5 格挡；消耗任意张手牌，每消耗一种类型的卡牌抽 1 张牌
 /// 二号机加成：获得 1 能量
 /// </summary>
 public sealed class SGC_BackupPlan : ShinGetterCardBase
 {
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
+        new BlockVar(5m, ValueProp.Move),
         new EnergyVar(1),
     };
 
@@ -30,6 +31,8 @@ public sealed class SGC_BackupPlan : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
+
         var hand = PileType.Hand.GetPile(Owner).Cards.Where(card => card != this).ToList();
         if (hand.Count > 0)
         {

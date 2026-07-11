@@ -35,7 +35,7 @@ public sealed class SGC_GetterFlash : ShinGetterCardBase
         var attack = await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this)
             .WithNoAttackerAnim()
             .Targeting(cardPlay.Target)
-            .BeforeDamage(() => ShinGetterCombatVfx.PlayFlashRush(Owner.Creature, cardPlay.Target))
+            .BeforeDamage(() => PlayMovementVfx(() => ShinGetterCombatVfx.PlayFlashRush(Owner.Creature, cardPlay.Target)))
             .Execute(choiceContext);
 
         decimal damageDealt = attack.Results.SelectMany(results => results).Sum(result => result.UnblockedDamage);

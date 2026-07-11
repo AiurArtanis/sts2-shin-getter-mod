@@ -1,0 +1,20 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[sub_resource type="Shader" id="Shader_shin_getter_transition"]
+code = "shader_type canvas_item;
+
+uniform float threshold : hint_range(0.0, 1.0);
+
+void fragment() {
+    float third = min(floor(UV.y * 3.0), 2.0);
+    float band_x = mod(third, 2.0) < 1.0 ? UV.x : 1.0 - UV.x;
+    float progress = clamp(threshold * 1.3 - third * 0.15, 0.0, 1.0);
+    COLOR.a = smoothstep(progress - 0.025, progress + 0.025, band_x);
+    COLOR.a = 1.0 - COLOR.a;
+}
+"
+
+[resource]
+resource_local_to_scene = true
+shader = SubResource("Shader_shin_getter_transition")
+shader_parameter/threshold = 0.0

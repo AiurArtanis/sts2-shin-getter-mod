@@ -64,12 +64,18 @@ internal static class NShinGetterSpriteSequence
 
     public static void EnsureLoaded(AnimatedSprite2D sprite)
     {
-        SpriteFrames frames = sprite.SpriteFrames ?? new SpriteFrames();
-        sprite.SpriteFrames = frames;
-        LoadPingPongAnimation(frames, IdleAnimationName, IdleFrameDirectory, IdleMaxFrames, IdleFramesPerSecond, loop: true);
+        EnsureIdleLoaded(sprite);
+        SpriteFrames frames = sprite.SpriteFrames;
         LoadLinearAnimation(frames, AttackAnimationName, AttackFrameDirectory, AttackMaxFrames, AttackFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, CastAnimationName, CastFrameDirectory, CastMaxFrames, ActionFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, DeathAnimationName, DeathFrameDirectory, DeathMaxFrames, ActionFramesPerSecond, loop: false);
+    }
+
+    public static void EnsureIdleLoaded(AnimatedSprite2D sprite)
+    {
+        SpriteFrames frames = sprite.SpriteFrames ?? new SpriteFrames();
+        sprite.SpriteFrames = frames;
+        LoadPingPongAnimation(frames, IdleAnimationName, IdleFrameDirectory, IdleMaxFrames, IdleFramesPerSecond, loop: true);
 
         if (!sprite.IsPlaying() && frames.HasAnimation(IdleAnimationName))
             sprite.Play(IdleAnimationName);
@@ -77,13 +83,19 @@ internal static class NShinGetterSpriteSequence
 
     public static void EnsureGetterTwoLoaded(AnimatedSprite2D sprite)
     {
-        SpriteFrames frames = sprite.SpriteFrames ?? new SpriteFrames();
-        sprite.SpriteFrames = frames;
-        LoadPingPongAnimation(frames, IdleAnimationName, GetterTwoIdleFrameDirectory, GetterTwoIdleMaxFrames, IdleFramesPerSecond, loop: true);
+        EnsureGetterTwoIdleLoaded(sprite);
+        SpriteFrames frames = sprite.SpriteFrames;
         LoadLinearAnimation(frames, AttackAnimationName, GetterTwoAttackFrameDirectory, GetterTwoAttackMaxFrames, AttackFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, CastAnimationName, GetterTwoCastFrameDirectory, GetterTwoCastMaxFrames, ActionFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, BlockAnimationName, GetterTwoBlockFrameDirectory, GetterTwoBlockMaxFrames, ActionFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, DashAnimationName, GetterTwoDashFrameDirectory, GetterTwoDashMaxFrames, ActionFramesPerSecond, loop: false);
+    }
+
+    public static void EnsureGetterTwoIdleLoaded(AnimatedSprite2D sprite)
+    {
+        SpriteFrames frames = sprite.SpriteFrames ?? new SpriteFrames();
+        sprite.SpriteFrames = frames;
+        LoadPingPongAnimation(frames, IdleAnimationName, GetterTwoIdleFrameDirectory, GetterTwoIdleMaxFrames, IdleFramesPerSecond, loop: true);
 
         if (!sprite.IsPlaying() && frames.HasAnimation(IdleAnimationName))
             sprite.Play(IdleAnimationName);
@@ -91,14 +103,20 @@ internal static class NShinGetterSpriteSequence
 
     public static void EnsureGetterThreeLoaded(AnimatedSprite2D sprite)
     {
-        SpriteFrames frames = sprite.SpriteFrames ?? new SpriteFrames();
-        sprite.SpriteFrames = frames;
-        LoadPingPongAnimation(frames, IdleAnimationName, GetterThreeIdleFrameDirectory, GetterThreeIdleMaxFrames, IdleFramesPerSecond, loop: true);
+        EnsureGetterThreeIdleLoaded(sprite);
+        SpriteFrames frames = sprite.SpriteFrames;
         LoadLinearAnimation(frames, AttackAnimationName, GetterThreeAttackFrameDirectory, GetterThreeAttackMaxFrames, AttackFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, DashAnimationName, GetterThreeDashFrameDirectory, GetterThreeDashMaxFrames, ActionFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, CastAnimationName, GetterThreeCastFrameDirectory, GetterThreeCastMaxFrames, ActionFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, BlockAnimationName, GetterThreeBlockFrameDirectory, GetterThreeBlockMaxFrames, ActionFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, DeathAnimationName, GetterThreeDeathFrameDirectory, GetterThreeDeathMaxFrames, ActionFramesPerSecond, loop: false);
+    }
+
+    public static void EnsureGetterThreeIdleLoaded(AnimatedSprite2D sprite)
+    {
+        SpriteFrames frames = sprite.SpriteFrames ?? new SpriteFrames();
+        sprite.SpriteFrames = frames;
+        LoadPingPongAnimation(frames, IdleAnimationName, GetterThreeIdleFrameDirectory, GetterThreeIdleMaxFrames, IdleFramesPerSecond, loop: true);
 
         if (!sprite.IsPlaying() && frames.HasAnimation(IdleAnimationName))
             sprite.Play(IdleAnimationName);
@@ -106,12 +124,18 @@ internal static class NShinGetterSpriteSequence
 
     public static void EnsureShinDragonLoaded(AnimatedSprite2D sprite)
     {
-        SpriteFrames frames = sprite.SpriteFrames ?? new SpriteFrames();
-        sprite.SpriteFrames = frames;
-        LoadPingPongAnimation(frames, IdleAnimationName, ShinDragonIdleFrameDirectory, ShinDragonIdleMaxFrames, IdleFramesPerSecond, loop: true);
+        EnsureShinDragonIdleLoaded(sprite);
+        SpriteFrames frames = sprite.SpriteFrames;
         LoadLinearAnimation(frames, CastAnimationName, ShinDragonCastFrameDirectory, ShinDragonCastMaxFrames, ActionFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, DashAnimationName, ShinDragonDashFrameDirectory, ShinDragonDashMaxFrames, ActionFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, DeathAnimationName, ShinDragonDeathFrameDirectory, ShinDragonDeathMaxFrames, ActionFramesPerSecond, loop: false);
+    }
+
+    public static void EnsureShinDragonIdleLoaded(AnimatedSprite2D sprite)
+    {
+        SpriteFrames frames = sprite.SpriteFrames ?? new SpriteFrames();
+        sprite.SpriteFrames = frames;
+        LoadPingPongAnimation(frames, IdleAnimationName, ShinDragonIdleFrameDirectory, ShinDragonIdleMaxFrames, IdleFramesPerSecond, loop: true);
 
         if (!sprite.IsPlaying() && frames.HasAnimation(IdleAnimationName))
             sprite.Play(IdleAnimationName);

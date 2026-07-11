@@ -13,7 +13,7 @@ namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
 /// 盖塔出击 | 技能 | 初始 | 1费 | 初始
-/// 获得 1 气力，变形
+/// 获得 2 气力，变形
 /// </summary>
 public sealed class SGC_GetterLaunch : ShinGetterCardBase
 {
@@ -26,8 +26,8 @@ public sealed class SGC_GetterLaunch : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // 获得 1 气力
-        await PowerCmd.Apply<SGP_Ki>(choiceContext, base.Owner.Creature, 1m, base.Owner.Creature, this);
+        // 获得 2 气力
+        await PowerCmd.Apply<SGP_Ki>(choiceContext, base.Owner.Creature, 2m, base.Owner.Creature, this);
 
         // 变形到下一形态
         await Transform(choiceContext, base.Owner, this);

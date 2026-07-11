@@ -65,6 +65,7 @@
   "S_G_P_DARK_CAPE.description": "This turn, whenever Block fully blocks damage, deal {Amount} damage to ALL enemies.",
   "S_G_P_ENABLE.title": "Enable",
   "S_G_P_ENABLE.description": "After the current turn ends, gain {Amount} extra turn(s).",
+  "S_G_P_FINAL_GETTER_BEAM_STRENGTH_DOWN.title": "Strength Down",
   "S_G_P_KUSUHA_JUICE.title": "Kusuha Juice",
   "S_G_P_KUSUHA_JUICE.description": "This turn, Spirit Command cards ignore Ki requirements and cost 0."
 }

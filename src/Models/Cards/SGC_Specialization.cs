@@ -7,18 +7,19 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
+using MegaCrit.Sts2.Core.ValueProps;
 
 namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
 /// 专精 | 技能 | 稀有 | 0费 | 变形流
-/// 将随机 1 张专属形态卡加入手牌。这张卡牌在本回合可以免费打出。消耗
+/// 获得 6 格挡，将随机 1 张专属形态卡加入手牌。这张卡牌在本回合可以免费打出。消耗
 /// 二号机：获得 4 再生
 /// </summary>
 public sealed class SGC_Specialization : ShinGetterCardBase
 {
     public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Exhaust };
-    protected override IEnumerable<DynamicVar> CanonicalVars => System.Array.Empty<DynamicVar>();
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new BlockVar(6m, ValueProp.Move) };
 
     public SGC_Specialization()
         : base(0, CardType.Skill, CardRarity.Rare, TargetType.Self)
@@ -27,6 +28,8 @@ public sealed class SGC_Specialization : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
+
         foreach (ShinGetterForm form in GetCurrentForms(Owner))
         {
             CardModel[] candidates = GetFormCards(form);
@@ -46,6 +49,7 @@ public sealed class SGC_Specialization : ShinGetterCardBase
 
     protected override void OnUpgrade()
     {
+        DynamicVars.Block.UpgradeValueBy(2m);
         RemoveKeyword(CardKeyword.Exhaust);
     }
 

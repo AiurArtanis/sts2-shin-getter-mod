@@ -1,0 +1,7 @@
+[gd_resource type="AtlasTexture" load_steps=2 format=3]
+
+[ext_resource type="Texture2D" path="res://images/atlases/power_atlas.sprites/mangle_power.tres" id="1_mangle"]
+
+[resource]
+atlas = ExtResource("1_mangle")
+region = Rect2(0, 0, 64, 64)

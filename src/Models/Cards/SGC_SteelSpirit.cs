@@ -48,7 +48,6 @@ public sealed class SGC_SteelSpirit : ShinGetterCardBase
 
     protected override void OnUpgrade()
     {
-        RemoveKeyword(CardKeyword.Ethereal);
     }
 
     private CardModel? FindSpiritCommandInCombatPiles()

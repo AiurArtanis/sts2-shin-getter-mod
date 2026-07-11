@@ -35,11 +35,11 @@ public sealed class SGC_ShiningSpark : ShinGetterCardBase
 		await PowerCmd.Apply<VulnerablePower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
 		await PowerCmd.Apply<FrailPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
 		await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
-			.BeforeDamage(async () =>
+			.BeforeDamage(() => PlayMovementVfx(async () =>
 			{
 				await ShinGetterCombatVfx.PlayWhiteFlash(Owner.Creature);
 				await ShinGetterCombatVfx.PlayRush(Owner.Creature, cardPlay.Target, whiteFlash: true);
-			})
+			}))
 			.WithHitFx("vfx/vfx_starry_impact").Execute(choiceContext);
 		int ki = Owner.Creature.GetPower<SGP_Ki>()?.Amount ?? 0;
 		if (ki > 0)

@@ -65,6 +65,7 @@
   "S_G_P_DARK_CAPE.description": "本回合每次用格挡完全抵挡伤害后，对所有敌人造成{Amount}点伤害。",
   "S_G_P_ENABLE.title": "再动",
   "S_G_P_ENABLE.description": "当前回合结束后，获得{Amount}个额外回合。",
+  "S_G_P_FINAL_GETTER_BEAM_STRENGTH_DOWN.title": "力量下降",
   "S_G_P_KUSUHA_JUICE.title": "楠叶汁",
   "S_G_P_KUSUHA_JUICE.description": "本回合精神指令卡无视气力要求，耗能变为0"
 }

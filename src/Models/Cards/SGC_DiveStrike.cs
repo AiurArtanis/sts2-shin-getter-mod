@@ -41,7 +41,7 @@ public sealed class SGC_DiveStrike : ShinGetterCardBase
         await DamageCmd.Attack(DynamicVars.CalculatedDamage).FromCard(this)
             .WithNoAttackerAnim()
             .Targeting(cardPlay.Target)
-            .BeforeDamage(() => ShinGetterCombatVfx.PlayDiveStrike(Owner.Creature, cardPlay.Target))
+            .BeforeDamage(() => PlayMovementVfx(() => ShinGetterCombatVfx.PlayDiveStrike(Owner.Creature, cardPlay.Target)))
             .Execute(choiceContext);
 
         if (HasForm(base.Owner, ShinGetterForm.Getter1))

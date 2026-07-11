@@ -65,6 +65,7 @@
   "S_G_P_DARK_CAPE.description": "このターン、ブロックでダメージを完全に防ぐたび、敵全体に{Amount}ダメージを与える。",
   "S_G_P_ENABLE.title": "再動",
   "S_G_P_ENABLE.description": "現在のターン終了後、追加ターンを{Amount}得る。",
+  "S_G_P_FINAL_GETTER_BEAM_STRENGTH_DOWN.title": "筋力低下",
   "S_G_P_KUSUHA_JUICE.title": "クスハ汁",
   "S_G_P_KUSUHA_JUICE.description": "このターン、精神コマンドカードは気力条件を無視し、コストが0になる。"
 }

@@ -40,7 +40,7 @@ public sealed class SGC_HedgehogTactic : ShinGetterCardBase
 
     protected override void OnUpgrade()
     {
-        base.DynamicVars.Block.UpgradeValueBy(1m);
+        base.DynamicVars.Block.UpgradeValueBy(2m);
         DynamicVars["VigorPower"].UpgradeValueBy(1m);
     }
 }

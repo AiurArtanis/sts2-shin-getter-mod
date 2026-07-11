@@ -160,7 +160,6 @@ public abstract class ShinGetterCardBase : CardModel
             "SGC_FinalGetterBeam",
             "SGC_GetterBeam",
             "SGC_GetterFlash",
-            "SGC_HolyDragonRoar",
             "SGC_PoseidonThunder",
             "SGC_ShiningSpark",
             "SGC_StonerSunshine",
@@ -177,7 +176,20 @@ public abstract class ShinGetterCardBase : CardModel
             "SGC_GetterTomahawk",
             "SGC_HotBlood",
             "SGC_HurricaneStrike",
+            "SGC_HolyDragonRoar",
             "SGC_StarSlash",
+        };
+
+    private static readonly IReadOnlySet<string> MovementVfxTimingCards =
+        new HashSet<string>(StringComparer.Ordinal)
+        {
+            "SGC_DiveStrike",
+            "SGC_ExpansionStrike",
+            "SGC_GetterElbow",
+            "SGC_GetterFlash",
+            "SGC_GetterRush",
+            "SGC_ShiningSpark",
+            "SGC_TacticalRetreat",
         };
 
     private static readonly IReadOnlySet<string> BlockAnimationCards =
@@ -236,14 +248,23 @@ public abstract class ShinGetterCardBase : CardModel
         if (Owner?.Creature is not { } creature)
             return Task.CompletedTask;
 
+        if (MovementVfxTimingCards.Contains(GetType().Name))
+            return Task.CompletedTask;
+
         string? animationTrigger = GetActionAnimationTrigger();
         if (animationTrigger != null)
             NShinGetterStaticVisuals.TryPlayCreatureActionAnimation(creature, animationTrigger);
 
-        if (this is SGC_ShinForm)
-            NShinGetterStaticVisuals.PlayShinFormTransformVfx(creature);
-
         return Task.CompletedTask;
+    }
+
+    protected Task PlayMovementVfx(Func<Task> vfx)
+    {
+        string? animationTrigger = GetActionAnimationTrigger();
+        if (animationTrigger != null)
+            NShinGetterStaticVisuals.TryPlayCreatureActionAnimation(Owner.Creature, animationTrigger);
+
+        return vfx();
     }
 
     public override async Task BeforeCardPlayed(CardPlay cardPlay)
@@ -494,7 +515,9 @@ public abstract class ShinGetterCardBase : CardModel
     /// </summary>
     private static async Task TriggerShinFormTransform(PlayerChoiceContext choiceContext, Creature creature, CardModel? cardSource)
     {
-        // 真化形态只触发一次“发生了变形”的事件，不切换或重复施加形态入场效果。
+        await PowerCmd.Apply<VigorPower>(choiceContext, creature, 1m, creature, cardSource);
+        await PowerCmd.Apply<RegenPower>(choiceContext, creature, 1m, creature, cardSource);
+        await PowerCmd.Apply<PlatingPower>(choiceContext, creature, 1m, creature, cardSource);
         await NotifyTransform(creature);
     }
 

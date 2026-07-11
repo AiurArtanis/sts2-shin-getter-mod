@@ -6,7 +6,7 @@
   "S_G_C_GETTER_BEAM.title": "Getter Beam",
   "S_G_C_GETTER_BEAM.description": "Deal {CalculatedDamage:diff()} damage. Apply {Wane:diff()} [gold]Wane[/gold].\n[red]Shin Getter 1[/red]: Deal additional damage equal to the total [gold]Vigor[/gold] gained this combat.",
   "S_G_C_GETTER_LAUNCH.title": "Getter Launch",
-  "S_G_C_GETTER_LAUNCH.description": "Gain 1 [gold]Ki[/gold]. [gold]Transform[/gold].",
+  "S_G_C_GETTER_LAUNCH.description": "Gain 2 [gold]Ki[/gold]. [gold]Transform[/gold].",
   "S_G_C_DIVE_STRIKE.title": "Dive Strike",
   "S_G_C_DIVE_STRIKE.description": "Deal {CalculatedDamage:diff()} damage. If you are [gold]Airborne[/gold], double this damage.\n[red]Shin Getter 1[/red]: Gain 1 [gold]Airborne[/gold].",
   "S_G_C_HURRICANE_STRIKE.title": "Hurricane Strike",
@@ -26,7 +26,7 @@
   "S_G_C_GETTER_RUSH.title": "Getter Rush",
   "S_G_C_GETTER_RUSH.description": "Apply {VulnerablePower:diff()} [gold]Vulnerable[/gold]. Deal {Damage:diff()} damage.\n[yellow]Shin Getter 3[/yellow]: Trigger [gold]Plating[/gold] 1 time.",
   "S_G_C_MELTDOWN.title": "Meltdown",
-  "S_G_C_MELTDOWN.description": "Add {Cards:diff()} [gold]Radiated[/gold] cards to your hand.",
+  "S_G_C_MELTDOWN.description": "Add {Cards:diff()} [gold]Radiated[/gold] cards to your hand.\n[gold]Exhaust[/gold].",
   "S_G_C_KI.title": "Spirit",
   "S_G_C_KI.description": "Gain {SGP_Ki:diff()} [gold]Ki[/gold] and {VigorPower:diff()} [gold]Vigor[/gold].",
   "S_G_C_INDOMITABLE.title": "Persist",
@@ -75,7 +75,7 @@
   "S_G_C_DARK_CAPE.title": "Black Cape",
   "S_G_C_DARK_CAPE.description": "Gain {Block:diff()} [gold]Block[/gold]. This turn, whenever [gold]Block[/gold] fully blocks damage, deal {Damage:diff()} damage to ALL enemies.\n[red]Shin Getter 1[/red]: Gain 3 [gold]Airborne[/gold].",
   "S_G_C_BACKUP_PLAN.title": "Backup Plan",
-  "S_G_C_BACKUP_PLAN.description": "Exhaust any number of cards in your hand. For each card type Exhausted, draw 1 card.\n[white]Shin Getter 2[/white]: Gain {Energy:energyIcons()}.",
+  "S_G_C_BACKUP_PLAN.description": "Gain {Block:diff()} Block.\nExhaust any number of cards in your hand. For each card type Exhausted, draw 1 card.\n[white]Shin Getter 2[/white]: Gain {Energy:energyIcons()}.",
   "S_G_C_GRAPPLE.title": "Grapple",
   "S_G_C_GRAPPLE.description": "Apply {WeakPower:diff()} [gold]Weak[/gold]. Multi-hit attacks hit {SGP_Grapple:diff()} fewer time(s) this turn.\n[yellow]Shin Getter 3[/yellow]: The enemy loses {StrengthPower:diff()} [gold]Strength[/gold].",
   "S_G_C_JAMMER.title": "Jammer",
@@ -114,7 +114,7 @@
   "S_G_C_GETTER_WILL.description": "Choose 1 Power card from your draw pile and add it to your hand. Exhaust.\n[red]Shin Getter 1[/red]: It costs 0 this turn.",
   "S_G_C_GETTER_WILL.selectionScreenPrompt": "Choose 1 Power card to add to your hand.",
   "S_G_C_SPECIALIZATION.title": "Specialization",
-  "S_G_C_SPECIALIZATION.description": "Add a random [gold]form-exclusive card[/gold] for your current form to your hand. It costs 0 this turn.\n[white]Shin Getter 2[/white]: Gain 4 [gold]Regen[/gold].",
+  "S_G_C_SPECIALIZATION.description": "Gain {Block:diff()} Block.\nAdd a random [gold]form-exclusive card[/gold] for your current form to your hand. It costs 0 this turn.\n[white]Shin Getter 2[/white]: Gain 4 [gold]Regen[/gold].",
   "S_G_C_IRON_WALL.title": "Wall",
   "S_G_C_IRON_WALL.description": "Until the start of next turn, reduce damage taken by {SGP_IronWall:diff()}.\n[yellow]Shin Getter 3[/yellow]: Whenever you take damage, gain 1 [gold]Plating[/gold].",
   "S_G_C_GUTS.title": "Prevail",
@@ -146,5 +146,5 @@
   "S_G_C_INFINITE_EVOLUTION.title": "Infinite Evolution",
   "S_G_C_INFINITE_EVOLUTION.description": "After winning combat, randomly gain 1 permanent [gold]Strength[/gold], [gold]Dexterity[/gold], or Max HP.",
   "S_G_C_HOLY_DRAGON_ROAR.title": "Holy Dragon Roar",
-  "S_G_C_HOLY_DRAGON_ROAR.description": "Placeholder card. No effect."
+  "S_G_C_HOLY_DRAGON_ROAR.description": "Deal {Damage:diff()} damage to ALL enemies and [gold]Stun[/gold] them. Exhaust all [gold]Getter cards[/gold] in your hand.\n[gold]Exhaust[/gold]."
 }

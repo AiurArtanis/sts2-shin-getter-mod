@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using ShinGetterMod.Models.Powers;
+using ShinGetterMod.Nodes.Combat;
 using ShinGetterMod.Patches;
 
 namespace ShinGetterMod.Models.Cards;
@@ -34,7 +35,7 @@ public sealed class SGC_ShinForm : ShinGetterCardBase
     protected override IEnumerable<DynamicVar> CanonicalVars => System.Array.Empty<DynamicVar>();
 
     public SGC_ShinForm()
-        : base(4, CardType.Skill, CardRarity.Ancient, TargetType.Self)
+        : base(4, CardType.Power, CardRarity.Ancient, TargetType.Self)
     {
     }
 
@@ -60,6 +61,8 @@ public sealed class SGC_ShinForm : ShinGetterCardBase
             seal.FlashBlockedTransform();
             return;
         }
+
+        await NShinGetterStaticVisuals.PlayShinFormTransformVfx(creature);
 
         ShinGetterCardFramePatch.BeginFormTransitionToShinDragon();
         try

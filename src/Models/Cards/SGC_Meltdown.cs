@@ -11,10 +11,11 @@ namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
 /// 熔毁 | 技能 | 普通 | 1费 | 进化流
-/// 将 2 张「放射能」加入手牌
+/// 将 2 张「放射能」加入手牌。消耗
 /// </summary>
 public sealed class SGC_Meltdown : ShinGetterCardBase
 {
+    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Exhaust };
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new CardsVar(2) };
 
     public SGC_Meltdown()

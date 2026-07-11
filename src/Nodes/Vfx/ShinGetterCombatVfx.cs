@@ -249,6 +249,58 @@ internal static partial class ShinGetterCombatVfx
         await Cmd.Wait(0.18f);
     }
 
+    public static async Task PlayRisingDrill(Creature target)
+    {
+        NCreature? targetNode = NCombatRoom.Instance?.GetCreatureNode(target);
+        if (targetNode == null)
+            return;
+
+        Node2D drill = new()
+        {
+            GlobalPosition = targetNode.VfxSpawnPosition + Vector2.Down * 145f,
+            Modulate = new Color(1f, 1f, 1f, 0.92f),
+        };
+        for (int ring = 0; ring < 4; ring++)
+        {
+            Line2D spiral = new()
+            {
+                Width = 7f - ring,
+                DefaultColor = ring % 2 == 0 ? GetterRay : GetterWhite,
+                Antialiased = true,
+            };
+            for (int index = 0; index < 42; index++)
+            {
+                float t = index / 41f;
+                float angle = t * Mathf.Tau * 3.2f + ring * 0.72f;
+                float radius = Mathf.Lerp(54f, 18f, t);
+                spiral.AddPoint(Vector2.Right.Rotated(angle) * radius + Vector2.Up * (t * 230f));
+            }
+            drill.AddChild(spiral);
+        }
+
+        NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(drill);
+        Tween tween = drill.CreateTween().SetParallel();
+        tween.TweenProperty(drill, "global_position", targetNode.VfxSpawnPosition + Vector2.Up * 125f, 0.34f)
+            .SetEase(Tween.EaseType.Out)
+            .SetTrans(Tween.TransitionType.Cubic);
+        tween.TweenProperty(drill, "rotation", Mathf.Pi * 0.8f, 0.34f).AsRelative();
+        tween.TweenProperty(drill, "modulate:a", 0f, 0.14f).SetDelay(0.25f);
+        tween.TweenCallback(Callable.From(drill.QueueFreeSafely)).SetDelay(0.40f);
+        NGame.Instance?.ScreenShake(ShakeStrength.Medium, ShakeDuration.Short);
+        await Cmd.Wait(0.36f);
+    }
+
+    public static Task PlayHolyDragonRoar(Creature creature) =>
+        PlayForbiddenIncantationAura(
+            creature,
+            GetterRay,
+            duration: 0.72f,
+            radius: 520f,
+            ringCount: 4,
+            rayCount: 32,
+            shakeStrength: ShakeStrength.Strong,
+            withLightning: true);
+
     private static async Task PlayForbiddenIncantationAura(Creature creature, Color color, float duration, float radius, int ringCount, int rayCount, ShakeStrength shakeStrength, bool withLightning = false)
     {
         NCreature? node = NCombatRoom.Instance?.GetCreatureNode(creature);
@@ -590,4 +642,3 @@ internal static partial class ShinGetterCombatVfx
             yield return Vector2.Right.Rotated(Mathf.Tau * i / count) * radius;
     }
 }
-

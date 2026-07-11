@@ -45,7 +45,9 @@ public sealed class SGE_Adaptation : EnchantmentModel
     private async Task DecrementFirstDebuff()
     {
         PowerModel? debuff = Card.Owner.Creature.Powers
-            .FirstOrDefault(power => power.TypeForCurrentAmount == PowerType.Debuff);
+            .FirstOrDefault(power => power.TypeForCurrentAmount == PowerType.Debuff
+                && power.StackType == PowerStackType.Counter
+                && power.Amount > 0);
 
         if (debuff != null)
             await PowerCmd.Decrement(debuff);

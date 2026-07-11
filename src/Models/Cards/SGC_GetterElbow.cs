@@ -28,7 +28,7 @@ public sealed class SGC_GetterElbow : ShinGetterCardBase
         await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this)
             .WithNoAttackerAnim()
             .Targeting(cardPlay.Target)
-            .BeforeDamage(() => ShinGetterCombatVfx.PlayRush(Owner.Creature, cardPlay.Target))
+            .BeforeDamage(() => PlayMovementVfx(() => ShinGetterCombatVfx.PlayRush(Owner.Creature, cardPlay.Target)))
             .Execute(choiceContext);
         if (cardPlay.Target.IsAlive)
         {
