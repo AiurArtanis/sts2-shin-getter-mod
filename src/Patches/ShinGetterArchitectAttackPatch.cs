@@ -26,6 +26,9 @@ internal static class ShinGetterArchitectAttackPatch
     private static readonly AccessTools.FieldRef<TheArchitect, int> ScoreRef =
         AccessTools.FieldRefAccess<TheArchitect, int>("_score");
 
+    private static readonly AccessTools.FieldRef<TheArchitect, NSpeechBubbleVfx?> SpeechBubbleRef =
+        AccessTools.FieldRefAccess<TheArchitect, NSpeechBubbleVfx?>("_speechBubble");
+
     private static bool Prefix(TheArchitect __instance, ArchitectAttackers attackers, ref Task<bool> __result)
     {
         Player? player = __instance.Owner;
@@ -39,12 +42,22 @@ internal static class ShinGetterArchitectAttackPatch
         if (architect == null)
             return true;
 
-        __result = PlayGetterArchitectAttack(player, architect, ScoreRef(__instance));
+        __result = PlayGetterArchitectAttack(__instance, player, architect, ScoreRef(__instance));
         return false;
     }
 
-    private static async Task<bool> PlayGetterArchitectAttack(Player player, Creature architect, int score)
+    private static async Task<bool> PlayGetterArchitectAttack(
+        TheArchitect architectEvent,
+        Player player,
+        Creature architect,
+        int score)
     {
+        if (SpeechBubbleRef(architectEvent) is { } speechBubble)
+        {
+            await speechBubble.AnimOut();
+            SpeechBubbleRef(architectEvent) = null;
+        }
+
         Creature owner = player.Creature;
         int[] damageParts = DivideInOrder(Math.Max(3, score));
 

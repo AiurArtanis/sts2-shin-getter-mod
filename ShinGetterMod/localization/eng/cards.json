@@ -12,7 +12,7 @@
   "S_G_C_HURRICANE_STRIKE.title": "Hurricane Strike",
   "S_G_C_HURRICANE_STRIKE.description": "Deal {Damage:diff()} damage to ALL enemies. Draw 1 card for each target hit.\n[white]Shin Getter 2[/white]: Gain 1 [gold]Dexterity[/gold].",
   "S_G_C_GETTER_CHOP.title": "Getter Chop",
-  "S_G_C_GETTER_CHOP.description": "Steal {Block:diff()} [gold]Block[/gold] from the enemy. Deal {Damage:diff()} damage 2 times.",
+  "S_G_C_GETTER_CHOP.description": "Steal {Block:diff()} [gold]Block[/gold] from the enemy 2 times. Deal {Damage:diff()} damage 2 times.",
   "S_G_C_GETTER_ELBOW.title": "Getter Elbow",
   "S_G_C_GETTER_ELBOW.description": "Deal {Damage:diff()} damage. Apply {WeakPower:diff()} [gold]Weak[/gold].\n[yellow]Shin Getter 3[/yellow]: Gain 3 [gold]Plating[/gold].",
   "S_G_C_SHIFT_STRIKE.title": "Shift Strike",
@@ -48,7 +48,7 @@
   "S_G_C_TOMAHAWK_FURY.title": "Tomahawk Fury",
   "S_G_C_TOMAHAWK_FURY.description": "Gain {VigorPower:diff()} [gold]Vigor[/gold]. Deal {Damage:diff()} damage to ALL enemies 2 times.\n[red]Shin Getter 1[/red]: When this kills an enemy, gain 3 [gold]Vigor[/gold].",
   "S_G_C_GETTER_FLASH.title": "Getter Flash",
-  "S_G_C_GETTER_FLASH.description": "Deal {Damage:diff()} damage. Gain [gold]Vigor[/gold] equal to the damage dealt.\n[red]Shin Getter 1[/red]: Gain 3 [gold]Vigor[/gold] and 3 [gold]Airborne[/gold].",
+  "S_G_C_GETTER_FLASH.description": "Deal {Damage:diff()} damage. Gain [gold]Vigor[/gold] equal to the damage dealt.\n[red]Shin Getter 1[/red]: Gain 2 [gold]Vigor[/gold] and 2 [gold]Airborne[/gold].",
   "S_G_C_GETTER_RAY_OVERFLOW.title": "Getter Ray Burst",
   "S_G_C_GETTER_RAY_OVERFLOW.description": "For this combat, all Getter cards cost {SGP_GetterRayOverflow:diff()} less.",
   "S_G_C_TORNADO_DRILL.title": "Tornado Drill",
@@ -87,7 +87,7 @@
   "S_G_C_INSIGHT.title": "Foresight",
   "S_G_C_INSIGHT.description": "At the start of your turn, if an enemy intends to attack, gain {DexterityPower:diff()} [gold]Dexterity[/gold] this turn.\n[red]Shin Getter 1[/red]: Gain {StrengthPower:diff()} [gold]Strength[/gold].\n[white]Shin Getter 2[/white]: Gain {Energy:energyIcons()}.\n[yellow]Shin Getter 3[/yellow]: Gain {ThornsPower:diff()} [gold]Thorns[/gold].",
   "S_G_C_CHOSEN_ONE.title": "Chosen One",
-  "S_G_C_CHOSEN_ONE.description": "Every 3 [gold]Transforms[/gold], gain {SGP_ChosenOne:diff()} [gold]Ki[/gold].",
+  "S_G_C_CHOSEN_ONE.description": "Whenever you [gold]Transform[/gold], gain {SGP_ChosenOne:diff()} [gold]Ki[/gold] and {Block:diff()} Block.",
   "S_G_C_SAOTOME_BLUEPRINT.title": "Saotome Blueprint",
   "S_G_C_SAOTOME_BLUEPRINT.description": "Whenever you lose HP, gain {SGP_Evolution:diff()} [getter_ray]Evolution[/getter_ray].",
   "S_G_C_WARRIOR_MEDAL.title": "Warrior Medal",
@@ -114,7 +114,7 @@
   "S_G_C_GETTER_WILL.description": "Choose 1 Power card from your draw pile and add it to your hand. Exhaust.\n[red]Shin Getter 1[/red]: It costs 0 this turn.",
   "S_G_C_GETTER_WILL.selectionScreenPrompt": "Choose 1 Power card to add to your hand.",
   "S_G_C_SPECIALIZATION.title": "Specialization",
-  "S_G_C_SPECIALIZATION.description": "Gain {Block:diff()} Block.\nAdd a random [gold]form-exclusive card[/gold] for your current form to your hand. It costs 0 this turn.\n[white]Shin Getter 2[/white]: Gain 4 [gold]Regen[/gold].",
+  "S_G_C_SPECIALIZATION.description": "Gain {Block:diff()} Block.\nAdd {Cards:diff()} random [gold]form-exclusive card(s)[/gold] for your current form to your hand. They cost 0 this turn.\n[white]Shin Getter 2[/white]: Gain 4 [gold]Regen[/gold].",
   "S_G_C_IRON_WALL.title": "Wall",
   "S_G_C_IRON_WALL.description": "Until the start of next turn, reduce damage taken by {SGP_IronWall:diff()}.\n[yellow]Shin Getter 3[/yellow]: Whenever you take damage, gain 1 [gold]Plating[/gold].",
   "S_G_C_GUTS.title": "Prevail",
@@ -146,5 +146,5 @@
   "S_G_C_INFINITE_EVOLUTION.title": "Infinite Evolution",
   "S_G_C_INFINITE_EVOLUTION.description": "After winning combat, randomly gain 1 permanent [gold]Strength[/gold], [gold]Dexterity[/gold], or Max HP.",
   "S_G_C_HOLY_DRAGON_ROAR.title": "Holy Dragon Roar",
-  "S_G_C_HOLY_DRAGON_ROAR.description": "Deal {Damage:diff()} damage to ALL enemies and [gold]Stun[/gold] them. Exhaust all [gold]Getter cards[/gold] in your hand.\n[gold]Exhaust[/gold]."
+  "S_G_C_HOLY_DRAGON_ROAR.description": "Deal {Damage:diff()} damage to ALL enemies and [gold]Stun[/gold] them. Exhaust all [gold]Getter cards[/gold] in your hand. Deal {BurnDamage:diff()} additional damage for each card Exhausted this way."
 }

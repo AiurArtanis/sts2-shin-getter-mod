@@ -35,7 +35,11 @@ public sealed class SGC_HolyDragonRoar : ShinGetterCardBase
         WithContextualHoverTips(new IHoverTip[] { StunIntent.GetStaticHoverTip() });
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        new DynamicVar[] { new DamageVar(20m, ValueProp.Move) };
+        new DynamicVar[]
+        {
+            new DamageVar(15m, ValueProp.Move),
+            new IntVar("BurnDamage", 5m),
+        };
 
     public SGC_HolyDragonRoar()
         : base(3, CardType.Attack, CardRarity.Ancient, TargetType.AllEnemies)
@@ -47,7 +51,15 @@ public sealed class SGC_HolyDragonRoar : ShinGetterCardBase
         var combatState = CombatState
             ?? throw new InvalidOperationException("Holy Dragon Roar requires an active combat state.");
 
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this)
+        List<CardModel> getterCards = PileType.Hand.GetPile(Owner).Cards
+            .Where(card => card != this && IsGetterCard(card))
+            .ToList();
+        foreach (CardModel card in getterCards)
+            await CardCmd.Exhaust(choiceContext, card);
+
+        decimal totalDamage = DynamicVars.Damage.BaseValue
+            + getterCards.Count * DynamicVars["BurnDamage"].BaseValue;
+        await DamageCmd.Attack(totalDamage).FromCard(this)
             .TargetingAllOpponents(combatState)
             .BeforeDamage(() => ShinGetterCombatVfx.PlayHolyDragonRoar(Owner.Creature))
             .WithHitFx("vfx/vfx_starry_impact")
@@ -56,16 +68,12 @@ public sealed class SGC_HolyDragonRoar : ShinGetterCardBase
         foreach (var enemy in combatState.GetOpponentsOf(Owner.Creature).Where(enemy => enemy.IsAlive))
             await CreatureCmd.Stun(enemy);
 
-        List<CardModel> getterCards = PileType.Hand.GetPile(Owner).Cards
-            .Where(card => card != this && IsGetterCard(card))
-            .ToList();
-        foreach (CardModel card in getterCards)
-            await CardCmd.Exhaust(choiceContext, card);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(10m);
+        DynamicVars.Damage.UpgradeValueBy(5m);
+        DynamicVars["BurnDamage"].UpgradeValueBy(3m);
     }
 
     private static bool IsGetterCard(CardModel card) =>

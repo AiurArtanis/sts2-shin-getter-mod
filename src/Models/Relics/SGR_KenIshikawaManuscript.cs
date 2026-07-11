@@ -16,7 +16,7 @@ public sealed class SGR_KenIshikawaManuscript : ShinGetterRelicBase
     public override bool HasUponPickupEffect => true;
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
-        HoverTipFactory.FromCardWithCardHoverTips<SGC_InfiniteEvolution>();
+        new[] { HoverTipFactory.FromCard<SGC_InfiniteEvolution>() };
 
     public override async Task AfterObtained()
     {

@@ -6,6 +6,8 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Nodes.Vfx.Cards;
 using MegaCrit.Sts2.Core.Nodes.Vfx;
 using ShinGetterMod.Models.Powers;
@@ -15,6 +17,7 @@ namespace ShinGetterMod.Models.Cards;
 
 public sealed class SGC_InsectVirus : ShinGetterCardBase
 {
+    public override CardPoolModel VisualCardPool => ModelDb.CardPool<CurseCardPool>();
     public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Eternal, CardKeyword.Unplayable };
     public override bool HasTurnEndInHandEffect => true;
 

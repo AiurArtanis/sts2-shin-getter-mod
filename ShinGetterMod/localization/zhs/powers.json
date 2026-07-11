@@ -34,7 +34,7 @@
   "S_G_P_ACCELERATION.title": "加速",
   "S_G_P_ACCELERATION.description": "每回合获得{Amount}点能量并额外抽{Amount}张牌。",
   "S_G_P_CHOSEN_ONE.title": "天选之子",
-  "S_G_P_CHOSEN_ONE.description": "每变形3次，获得{Amount}点气力。",
+  "S_G_P_CHOSEN_ONE.description": "每次变形时，获得{Amount}点气力和{Block}点格挡。",
   "S_G_P_WARRIOR_MEDAL.title": "战士奖章",
   "S_G_P_WARRIOR_MEDAL.description": "回合开始时，每有1点气力，获得{Amount}层再生和覆甲。",
   "S_G_P_GRAPPLE.title": "擒拿",

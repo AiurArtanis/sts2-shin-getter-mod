@@ -34,7 +34,7 @@
   "S_G_P_ACCELERATION.title": "Accel",
   "S_G_P_ACCELERATION.description": "Gain {Amount} Energy and draw {Amount} additional card(s) each turn.",
   "S_G_P_CHOSEN_ONE.title": "Chosen One",
-  "S_G_P_CHOSEN_ONE.description": "Every 3 Transforms, gain {Amount} Ki.",
+  "S_G_P_CHOSEN_ONE.description": "Whenever you Transform, gain {Amount} Ki and {Block} Block.",
   "S_G_P_WARRIOR_MEDAL.title": "Warrior Medal",
   "S_G_P_WARRIOR_MEDAL.description": "At the start of your turn, for each Ki, gain {Amount} Regen and Plating.",
   "S_G_P_GRAPPLE.title": "Grapple",

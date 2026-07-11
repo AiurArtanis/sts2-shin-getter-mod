@@ -12,7 +12,7 @@
   "S_G_C_HURRICANE_STRIKE.title": "飓风打击",
   "S_G_C_HURRICANE_STRIKE.description": "对所有敌人造成{Damage:diff()}点伤害，每命中1个目标抽1张牌。\n[white]二号机[/white]：获得1点[gold]敏捷[/gold]。",
   "S_G_C_GETTER_CHOP.title": "盖塔手刀",
-  "S_G_C_GETTER_CHOP.description": "掠夺敌方{Block:diff()}点[gold]格挡[/gold]，造成{Damage:diff()}点伤害2次。",
+  "S_G_C_GETTER_CHOP.description": "掠夺敌方{Block:diff()}点[gold]格挡[/gold]2次，造成{Damage:diff()}点伤害2次。",
   "S_G_C_GETTER_ELBOW.title": "盖塔肘击",
   "S_G_C_GETTER_ELBOW.description": "造成{Damage:diff()}点伤害，给予{WeakPower:diff()}层[gold]虚弱[/gold]。\n[yellow]三号机[/yellow]：获得3层[gold]覆甲[/gold]。",
   "S_G_C_SHIFT_STRIKE.title": "换挡打击",
@@ -48,7 +48,7 @@
   "S_G_C_TOMAHAWK_FURY.title": "战斧乱舞",
   "S_G_C_TOMAHAWK_FURY.description": "获得{VigorPower:diff()}点[gold]活力[/gold]，对所有敌人造成{Damage:diff()}点伤害2次。\n[red]一号机[/red]：斩杀时获得3点[gold]活力[/gold]。",
   "S_G_C_GETTER_FLASH.title": "盖塔一闪",
-  "S_G_C_GETTER_FLASH.description": "造成{Damage:diff()}点伤害，获得等同于造成伤害的[gold]活力[/gold]。\n[red]一号机[/red]：获得3点[gold]活力[/gold]和3层[gold]腾空[/gold]。",
+  "S_G_C_GETTER_FLASH.description": "造成{Damage:diff()}点伤害，获得等同于造成伤害的[gold]活力[/gold]。\n[red]一号机[/red]：获得2点[gold]活力[/gold]和2层[gold]腾空[/gold]。",
   "S_G_C_GETTER_RAY_OVERFLOW.title": "盖塔射线爆发",
   "S_G_C_GETTER_RAY_OVERFLOW.description": "本场战斗中，所有盖塔卡牌耗能降低{SGP_GetterRayOverflow:diff()}。",
   "S_G_C_TORNADO_DRILL.title": "龙卷钻头",
@@ -87,7 +87,7 @@
   "S_G_C_INSIGHT.title": "识破",
   "S_G_C_INSIGHT.description": "若回合开始时受到攻击意图，本回合获得{DexterityPower:diff()}点[gold]敏捷[/gold]。\n[red]一号机[/red]：获得{StrengthPower:diff()}点[gold]力量[/gold]。\n[white]二号机[/white]：获得{Energy:energyIcons()}。\n[yellow]三号机[/yellow]：获得{ThornsPower:diff()}点[gold]荆棘[/gold]。",
   "S_G_C_CHOSEN_ONE.title": "天选之子",
-  "S_G_C_CHOSEN_ONE.description": "每[gold]变形[/gold]3次，获得{SGP_ChosenOne:diff()}点[gold]气力[/gold]。",
+  "S_G_C_CHOSEN_ONE.description": "每次[gold]变形[/gold]时，获得{SGP_ChosenOne:diff()}点[gold]气力[/gold]和{Block:diff()}点格挡。",
   "S_G_C_SAOTOME_BLUEPRINT.title": "早乙女蓝图",
   "S_G_C_SAOTOME_BLUEPRINT.description": "失去生命时，获得{SGP_Evolution:diff()}层[getter_ray]进化[/getter_ray]。",
   "S_G_C_WARRIOR_MEDAL.title": "战士奖章",
@@ -114,7 +114,7 @@
   "S_G_C_GETTER_WILL.description": "选择抽牌堆中的1张能力牌加入手牌。消耗。\n[red]一号机[/red]：该牌本回合耗能为0。",
 	"S_G_C_GETTER_WILL.selectionScreenPrompt": "选择 1 张能力卡加入手牌。",
   "S_G_C_SPECIALIZATION.title": "专精",
-  "S_G_C_SPECIALIZATION.description": "获得{Block:diff()}点格挡。\n随机获得1张当前形态的[gold]专属形态卡[/gold]，该牌本回合耗能为0。\n[white]二号机[/white]：获得4层[gold]再生[/gold]。",
+  "S_G_C_SPECIALIZATION.description": "获得{Block:diff()}点格挡。\n随机获得{Cards:diff()}张当前形态的[gold]专属形态卡[/gold]，这些牌本回合耗能为0。\n[white]二号机[/white]：获得4层[gold]再生[/gold]。",
   "S_G_C_IRON_WALL.title": "铁壁",
   "S_G_C_IRON_WALL.description": "下回合开始前，受到的伤害减少{SGP_IronWall:diff()}点。\n[yellow]三号机[/yellow]：受伤时获得1层[gold]覆甲[/gold]。",
   "S_G_C_GUTS.title": "底力",
@@ -146,5 +146,5 @@
   "S_G_C_INFINITE_EVOLUTION.title": "无限进化",
   "S_G_C_INFINITE_EVOLUTION.description": "战斗胜利后，随机获得1点永久[gold]力量[/gold]、[gold]敏捷[/gold]或最大生命。",
   "S_G_C_HOLY_DRAGON_ROAR.title": "圣龙咆哮",
-  "S_G_C_HOLY_DRAGON_ROAR.description": "对所有敌人造成{Damage:diff()}点伤害并使其[gold]击晕[/gold]。消耗手牌中所有[gold]盖塔卡牌[/gold]。\n[gold]消耗[/gold]。"
+  "S_G_C_HOLY_DRAGON_ROAR.description": "对所有敌人造成{Damage:diff()}点伤害并使其[gold]击晕[/gold]。消耗手牌中所有[gold]盖塔卡牌[/gold]，每消耗1张额外造成{BurnDamage:diff()}点伤害。"
 }

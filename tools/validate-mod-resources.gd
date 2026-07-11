@@ -2,7 +2,10 @@ extends SceneTree
 
 const REQUIRED_RESOURCES := {
 	"res://materials/cards/frames/card_frame_shin_getter_mat.tres": false,
+	"res://materials/transitions/shin_getter_transition_mat.tres": false,
 	"res://shaders/shin_getter_hsv.gdshader": false,
+	"res://animations/character_select/shin_getter/character_select_shin_getter_bg.png": false,
+	"res://audio/sfx/characters/shin_getter/shin_getter_select.wav": false,
 	"res://images/atlases/ui_atlas.sprites/card/energy_shin_getter.tres": false,
 	"res://images/packed/sprite_fonts/shin_getter_energy_icon.png": false,
 	"res://images/atlases/card_atlas.sprites/shin_getter/s_g_c_ki.tres": false,
@@ -88,6 +91,7 @@ const REQUIRED_RESOURCES := {
 	"res://images/characters/shin_getter/merchant/s_g_o_merchant_ryoma_citizen.png": false,
 	"res://images/characters/shin_getter/merchant/s_g_o_merchant_ryoma_normal.png": false,
 	"res://scenes/creature_visuals/shin_getter.tscn": true,
+	"res://scenes/screens/char_select/char_select_bg_shin_getter.tscn": false,
 	"res://scenes/creature_visuals/shin_getter_one_idle_frames.tres": false,
 	"res://scenes/creature_visuals/shin_getter_three_idle_frames.tres": false,
 	"res://scenes/creature_visuals/shin_getter_dragon_idle_frames.tres": false,

@@ -12,7 +12,7 @@
   "S_G_C_HURRICANE_STRIKE.title": "ハリケーンストライク",
   "S_G_C_HURRICANE_STRIKE.description": "敵全体に{Damage:diff()}ダメージを与える。命中した対象1体につきカードを1枚引く。\n[white]真ゲッター2[/white]：[gold]敏捷[/gold]を1得る。",
   "S_G_C_GETTER_CHOP.title": "ゲッターチョップ",
-  "S_G_C_GETTER_CHOP.description": "敵から{Block:diff()}[gold]ブロック[/gold]を奪い、{Damage:diff()}ダメージを2回与える。",
+  "S_G_C_GETTER_CHOP.description": "敵から{Block:diff()}[gold]ブロック[/gold]を2回奪い、{Damage:diff()}ダメージを2回与える。",
   "S_G_C_GETTER_ELBOW.title": "ゲッターエルボー",
   "S_G_C_GETTER_ELBOW.description": "{Damage:diff()}ダメージを与え、[gold]脱力[/gold]を{WeakPower:diff()}付与する。\n[yellow]真ゲッター3[/yellow]：[gold]プレート[/gold]を3得る。",
   "S_G_C_SHIFT_STRIKE.title": "シフトストライク",
@@ -48,7 +48,7 @@
   "S_G_C_TOMAHAWK_FURY.title": "トマホーク乱舞",
   "S_G_C_TOMAHAWK_FURY.description": "[gold]活力[/gold]を{VigorPower:diff()}得る。敵全体に{Damage:diff()}ダメージを2回与える。\n[red]真ゲッター1[/red]：これで敵を倒した時、[gold]活力[/gold]を3得る。",
   "S_G_C_GETTER_FLASH.title": "ゲッター一閃",
-  "S_G_C_GETTER_FLASH.description": "{Damage:diff()}ダメージを与える。与えたダメージに等しい[gold]活力[/gold]を得る。\n[red]真ゲッター1[/red]：[gold]活力[/gold]を3、[gold]空中[/gold]を3得る。",
+  "S_G_C_GETTER_FLASH.description": "{Damage:diff()}ダメージを与える。与えたダメージに等しい[gold]活力[/gold]を得る。\n[red]真ゲッター1[/red]：[gold]活力[/gold]を2、[gold]空中[/gold]を2得る。",
   "S_G_C_GETTER_RAY_OVERFLOW.title": "ゲッター線バースト",
   "S_G_C_GETTER_RAY_OVERFLOW.description": "この戦闘中、すべてのゲッターカードのコストを{SGP_GetterRayOverflow:diff()}減らす。",
   "S_G_C_TORNADO_DRILL.title": "トルネードドリル",
@@ -87,7 +87,7 @@
   "S_G_C_INSIGHT.title": "見切り",
   "S_G_C_INSIGHT.description": "ターン開始時、敵がアタックを意図しているなら、このターン[gold]敏捷[/gold]を{DexterityPower:diff()}得る。\n[red]真ゲッター1[/red]：[gold]筋力[/gold]を{StrengthPower:diff()}得る。\n[white]真ゲッター2[/white]：{Energy:energyIcons()}を得る。\n[yellow]真ゲッター3[/yellow]：[gold]トゲ[/gold]を{ThornsPower:diff()}得る。",
   "S_G_C_CHOSEN_ONE.title": "選ばれし者",
-  "S_G_C_CHOSEN_ONE.description": "[gold]変形[/gold]3回ごとに、[gold]気力[/gold]を{SGP_ChosenOne:diff()}得る。",
+  "S_G_C_CHOSEN_ONE.description": "[gold]変形[/gold]するたび、[gold]気力[/gold]を{SGP_ChosenOne:diff()}、ブロックを{Block:diff()}得る。",
   "S_G_C_SAOTOME_BLUEPRINT.title": "早乙女の設計図",
   "S_G_C_SAOTOME_BLUEPRINT.description": "HPを失う時、[getter_ray]進化[/getter_ray]を{SGP_Evolution:diff()}得る。",
   "S_G_C_WARRIOR_MEDAL.title": "戦士の勲章",
@@ -114,7 +114,7 @@
   "S_G_C_GETTER_WILL.description": "山札からパワーカードを1枚選び、手札に加える。廃棄。\n[red]真ゲッター1[/red]：このターン、そのカードのコストは0になる。",
   "S_G_C_GETTER_WILL.selectionScreenPrompt": "手札に加えるパワーカードを1枚選ぶ。",
   "S_G_C_SPECIALIZATION.title": "特化",
-  "S_G_C_SPECIALIZATION.description": "{Block:diff()}ブロックを得る。\n現在の形態の[gold]形態専用カード[/gold]をランダムに1枚得る。そのカードはこのターンコスト0。\n[white]真ゲッター2[/white]：[gold]再生[/gold]を4得る。",
+  "S_G_C_SPECIALIZATION.description": "{Block:diff()}ブロックを得る。\n現在の形態の[gold]形態専用カード[/gold]をランダムに{Cards:diff()}枚得る。それらのカードはこのターンコスト0。\n[white]真ゲッター2[/white]：[gold]再生[/gold]を4得る。",
   "S_G_C_IRON_WALL.title": "鉄壁",
   "S_G_C_IRON_WALL.description": "次のターン開始時まで、受けるダメージを{SGP_IronWall:diff()}減らす。\n[yellow]真ゲッター3[/yellow]：ダメージを受けた時、[gold]プレート[/gold]を1得る。",
   "S_G_C_GUTS.title": "底力",
@@ -146,5 +146,5 @@
   "S_G_C_INFINITE_EVOLUTION.title": "無限進化",
   "S_G_C_INFINITE_EVOLUTION.description": "戦闘勝利後、[gold]筋力[/gold]、[gold]敏捷[/gold]、最大HPのいずれかをランダムに1永久に得る。",
   "S_G_C_HOLY_DRAGON_ROAR.title": "聖龍咆哮",
-  "S_G_C_HOLY_DRAGON_ROAR.description": "敵全体に{Damage:diff()}ダメージを与え、[gold]スタン[/gold]させる。手札の[gold]ゲッターカード[/gold]をすべて廃棄する。\n[gold]廃棄[/gold]。"
+  "S_G_C_HOLY_DRAGON_ROAR.description": "敵全体に{Damage:diff()}ダメージを与え、[gold]スタン[/gold]させる。手札の[gold]ゲッターカード[/gold]をすべて廃棄し、廃棄したカード1枚につき追加で{BurnDamage:diff()}ダメージを与える。"
 }

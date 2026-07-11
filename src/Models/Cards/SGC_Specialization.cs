@@ -19,7 +19,11 @@ namespace ShinGetterMod.Models.Cards;
 public sealed class SGC_Specialization : ShinGetterCardBase
 {
     public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Exhaust };
-    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new BlockVar(6m, ValueProp.Move) };
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
+    {
+        new BlockVar(6m, ValueProp.Move),
+        new IntVar("Cards", 1m),
+    };
 
     public SGC_Specialization()
         : base(0, CardType.Skill, CardRarity.Rare, TargetType.Self)
@@ -33,7 +37,7 @@ public sealed class SGC_Specialization : ShinGetterCardBase
         foreach (ShinGetterForm form in GetCurrentForms(Owner))
         {
             CardModel[] candidates = GetFormCards(form);
-            if (candidates.Length > 0)
+            for (int i = 0; i < DynamicVars["Cards"].IntValue && candidates.Length > 0; i++)
             {
                 var card = CombatState.CreateCard(Owner.RunState.Rng.CombatCardSelection.NextItem(candidates), Owner);
                 card.SetToFreeThisTurn();
@@ -50,7 +54,7 @@ public sealed class SGC_Specialization : ShinGetterCardBase
     protected override void OnUpgrade()
     {
         DynamicVars.Block.UpgradeValueBy(2m);
-        RemoveKeyword(CardKeyword.Exhaust);
+        DynamicVars["Cards"].UpgradeValueBy(1m);
     }
 
     private static CardModel[] GetFormCards(ShinGetterForm form) => form switch
@@ -61,7 +65,6 @@ public sealed class SGC_Specialization : ShinGetterCardBase
             ModelDb.Card<SGC_DarkCape>(),
             ModelDb.Card<SGC_Desperation>(),
             ModelDb.Card<SGC_DiveStrike>(),
-            ModelDb.Card<SGC_GetterBeam>(),
             ModelDb.Card<SGC_GetterFlash>(),
             ModelDb.Card<SGC_GetterTomahawk>(),
             ModelDb.Card<SGC_GetterWill>(),

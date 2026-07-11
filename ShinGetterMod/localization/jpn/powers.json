@@ -34,7 +34,7 @@
   "S_G_P_ACCELERATION.title": "加速",
   "S_G_P_ACCELERATION.description": "毎ターン、エナジーを{Amount}得て追加でカードを{Amount}枚引く。",
   "S_G_P_CHOSEN_ONE.title": "選ばれし者",
-  "S_G_P_CHOSEN_ONE.description": "変形3回ごとに、気力を{Amount}得る。",
+  "S_G_P_CHOSEN_ONE.description": "変形するたび、気力を{Amount}、ブロックを{Block}得る。",
   "S_G_P_WARRIOR_MEDAL.title": "戦士の勲章",
   "S_G_P_WARRIOR_MEDAL.description": "ターン開始時、気力1につき再生とプレートを{Amount}得る。",
   "S_G_P_GRAPPLE.title": "グラップル",

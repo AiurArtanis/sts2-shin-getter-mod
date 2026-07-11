@@ -8,8 +8,6 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Rooms;
 using ShinGetterMod.Models.Cards;
 
@@ -67,16 +65,19 @@ public sealed class SGP_InfiniteEvolution : PowerModel
         return false;
     }
 
-    public override async Task AfterCombatVictory(CombatRoom _)
+    public override async Task AfterCombatEnd(CombatRoom _)
     {
         if (!base.Owner.IsDead && base.Amount > 0 && base.Owner.Player is { } player)
         {
             VictoryGain gain = (VictoryGain)player.RunState.Rng.CombatCardSelection.NextInt(3);
             SGC_InfiniteEvolution? sourceCard = ResolveSourceCard(player);
+            if (sourceCard == null)
+                return;
 
-            sourceCard?.RecordVictoryGain(gain);
+            sourceCard.RecordVictoryGain(gain);
             Flash();
-            await ApplyVictoryGain(gain, sourceCard);
+            if (gain == VictoryGain.MaxHp)
+                await CreatureCmd.GainMaxHp(base.Owner, 1m);
         }
     }
 
@@ -93,24 +94,5 @@ public sealed class SGP_InfiniteEvolution : PowerModel
             data.SourceCard = deckSource;
 
         return deckSource ?? data.SourceCard;
-    }
-
-    private async Task ApplyVictoryGain(VictoryGain gain, SGC_InfiniteEvolution? sourceCard)
-    {
-        var choiceContext = new ThrowingPlayerChoiceContext();
-        switch (gain)
-        {
-            case VictoryGain.Strength:
-                await PowerCmd.Apply<StrengthPower>(choiceContext, base.Owner, 1m, base.Owner, sourceCard);
-                break;
-            case VictoryGain.Dexterity:
-                await PowerCmd.Apply<DexterityPower>(choiceContext, base.Owner, 1m, base.Owner, sourceCard);
-                break;
-            case VictoryGain.MaxHp:
-                await CreatureCmd.GainMaxHp(base.Owner, 1m);
-                break;
-            default:
-                throw new System.ArgumentOutOfRangeException(nameof(gain), gain, null);
-        }
     }
 }

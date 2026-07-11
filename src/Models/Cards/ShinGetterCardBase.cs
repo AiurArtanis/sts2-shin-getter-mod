@@ -147,21 +147,24 @@ public abstract class ShinGetterCardBase : CardModel
     private static readonly IReadOnlySet<string> DashAnimationCards =
         new HashSet<string>(StringComparer.Ordinal)
         {
-            "SGC_ChangeAttack",
+            "SGC_Acceleration",
             "SGC_DiveStrike",
+            "SGC_Enable",
+            "SGC_GetterElbow",
+            "SGC_GetterFlash",
             "SGC_GetterRush",
             "SGC_LigerAssault",
-            "SGC_ShiftStrike",
+            "SGC_ShiningSpark",
         };
 
     private static readonly IReadOnlySet<string> CastAttackAnimationCards =
         new HashSet<string>(StringComparer.Ordinal)
         {
+            "SGC_Annihilation",
             "SGC_FinalGetterBeam",
             "SGC_GetterBeam",
-            "SGC_GetterFlash",
+            "SGC_HolyDragonRoar",
             "SGC_PoseidonThunder",
-            "SGC_ShiningSpark",
             "SGC_StonerSunshine",
         };
 
@@ -290,11 +293,11 @@ public abstract class ShinGetterCardBase : CardModel
         if (BlockAnimationCards.Contains(cardTypeName))
             return "Block";
 
+        if (DashAnimationCards.Contains(cardTypeName))
+            return "Dash";
+
         if (Type == CardType.Attack)
         {
-            if (DashAnimationCards.Contains(GetType().Name))
-                return "Dash";
-
             if (CastAttackAnimationCards.Contains(GetType().Name))
                 return "Cast";
 
