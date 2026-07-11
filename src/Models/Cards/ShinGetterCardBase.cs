@@ -27,6 +27,8 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public abstract class ShinGetterCardBase : CardModel
 {
+    private const float OrdinaryAttackEffectDelaySeconds = 0.5f;
+
     private static readonly IReadOnlyDictionary<string, Func<CardModel, IHoverTip>> TermTips =
         new Dictionary<string, Func<CardModel, IHoverTip>>
         {
@@ -164,6 +166,20 @@ public abstract class ShinGetterCardBase : CardModel
             "SGC_StonerSunshine",
         };
 
+    private static readonly IReadOnlySet<string> AttackTimingHandledByVfxCards =
+        new HashSet<string>(StringComparer.Ordinal)
+        {
+            "SGC_Annihilation",
+            "SGC_Avalanche",
+            "SGC_ExpansionStrike",
+            "SGC_GetterElbow",
+            "SGC_GetterMissile",
+            "SGC_GetterTomahawk",
+            "SGC_HotBlood",
+            "SGC_HurricaneStrike",
+            "SGC_StarSlash",
+        };
+
     private static readonly IReadOnlySet<string> BlockAnimationCards =
         new HashSet<string>(StringComparer.Ordinal)
         {
@@ -228,6 +244,23 @@ public abstract class ShinGetterCardBase : CardModel
             NShinGetterStaticVisuals.PlayShinFormTransformVfx(creature);
 
         return Task.CompletedTask;
+    }
+
+    public override async Task BeforeCardPlayed(CardPlay cardPlay)
+    {
+        await base.BeforeCardPlayed(cardPlay);
+
+        if (!ReferenceEquals(cardPlay.Card, this)
+            || cardPlay.PlayIndex != 0
+            || GetActionAnimationTrigger() != "Attack"
+            || AttackTimingHandledByVfxCards.Contains(GetType().Name))
+        {
+            return;
+        }
+
+        await Cmd.CustomScaledWait(
+            OrdinaryAttackEffectDelaySeconds,
+            OrdinaryAttackEffectDelaySeconds);
     }
 
     private string? GetActionAnimationTrigger()
