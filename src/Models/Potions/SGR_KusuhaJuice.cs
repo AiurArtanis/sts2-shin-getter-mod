@@ -21,12 +21,17 @@ public sealed class SGR_KusuhaJuice : PotionModel
     public override TargetType TargetType => TargetType.Self;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        new DynamicVar[] { new PowerVar<WeakPower>(2m) };
+        new DynamicVar[]
+        {
+            new PowerVar<WeakPower>(2m),
+            new PowerVar<VulnerablePower>(2m),
+        };
 
     public override IEnumerable<IHoverTip> ExtraHoverTips =>
         new IHoverTip[]
         {
             HoverTipFactory.FromPower<WeakPower>(),
+            HoverTipFactory.FromPower<VulnerablePower>(),
             HoverTipFactory.FromPower<SGP_KusuhaJuice>(),
         };
 
@@ -36,6 +41,12 @@ public sealed class SGR_KusuhaJuice : PotionModel
             choiceContext,
             Owner.Creature,
             DynamicVars["WeakPower"].BaseValue,
+            Owner.Creature,
+            null);
+        await PowerCmd.Apply<VulnerablePower>(
+            choiceContext,
+            Owner.Creature,
+            DynamicVars["VulnerablePower"].BaseValue,
             Owner.Creature,
             null);
         await PowerCmd.Apply<SGP_KusuhaJuice>(

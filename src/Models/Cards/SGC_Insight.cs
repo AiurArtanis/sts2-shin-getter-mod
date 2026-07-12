@@ -27,7 +27,7 @@ public sealed class SGC_Insight : ShinGetterCardBase
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new PowerVar<DexterityPower>(1m),
+        new PowerVar<DexterityPower>(2m),
         new PowerVar<StrengthPower>(1m),
         new EnergyVar(1),
         new PowerVar<ThornsPower>(2m),

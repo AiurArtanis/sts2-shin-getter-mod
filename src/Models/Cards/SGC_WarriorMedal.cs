@@ -13,7 +13,7 @@ namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
 /// 战士奖章 | 能力 | 罕见 | 2费 | 钢之魂流/进化流
-/// 回合开始时每有 1 气力，获得 1 再生，1 覆甲
+/// 回合开始时固定获得 1 再生、1 覆甲
 /// </summary>
 public sealed class SGC_WarriorMedal : ShinGetterCardBase
 {

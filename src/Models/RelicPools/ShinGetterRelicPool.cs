@@ -27,6 +27,7 @@ public sealed class ShinGetterRelicPool : RelicPoolModel
 			ModelDb.Relic<SGR_GoodCitizenCard>(),
 			ModelDb.Relic<SGR_GoNagaiSmile>(),
 			ModelDb.Relic<SGR_KenIshikawaManuscript>(),
+			ModelDb.Relic<SGR_YummyCookie>(),
 		};
 
 		return relics.Concat(WeightedShinGetterRelics(relics, weight: 2));

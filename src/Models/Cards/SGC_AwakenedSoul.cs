@@ -13,12 +13,12 @@ namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
 /// 觉醒之魂 | 能力 | 稀有 | 3费 | 钢之魂流/输出Key牌
-/// 保留。【精神 4】回合开始获得 8 活力
+/// 保留。【精神 4】回合开始获得 6 活力，升级后 9
 /// </summary>
 public sealed class SGC_AwakenedSoul : ShinGetterCardBase
 {
     public override int SpiritRequirement => 4;
-    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new PowerVar<SGP_AwakenedSoul>(8m) };
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new PowerVar<SGP_AwakenedSoul>(6m) };
     public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Retain };
 
     public SGC_AwakenedSoul()
@@ -34,6 +34,6 @@ public sealed class SGC_AwakenedSoul : ShinGetterCardBase
 
     protected override void OnUpgrade()
     {
-        DynamicVars["SGP_AwakenedSoul"].UpgradeValueBy(4m);
+        DynamicVars["SGP_AwakenedSoul"].UpgradeValueBy(3m);
     }
 }

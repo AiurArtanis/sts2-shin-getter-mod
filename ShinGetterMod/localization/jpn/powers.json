@@ -36,7 +36,7 @@
   "S_G_P_CHOSEN_ONE.title": "選ばれし者",
   "S_G_P_CHOSEN_ONE.description": "変形するたび、気力を{Amount}、ブロックを{Block}得る。",
   "S_G_P_WARRIOR_MEDAL.title": "戦士の勲章",
-  "S_G_P_WARRIOR_MEDAL.description": "ターン開始時、気力1につき再生とプレートを{Amount}得る。",
+  "S_G_P_WARRIOR_MEDAL.description": "ターン開始時、再生とプレートを{Amount}得る。",
   "S_G_P_GRAPPLE.title": "グラップル",
   "S_G_P_GRAPPLE.description": "このターンにプレイする多段攻撃のヒット回数が{Amount}回減る。",
   "S_G_P_HOT_BLOOD.title": "熱血",

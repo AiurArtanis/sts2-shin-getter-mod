@@ -17,7 +17,8 @@ namespace ShinGetterMod.Models.Cards;
 public sealed class SGC_Jammer : ShinGetterCardBase
 {
     public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Ethereal };
-    protected override IEnumerable<DynamicVar> CanonicalVars => System.Array.Empty<DynamicVar>();
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new DynamicVar[] { new BlockVar(10m, ValueProp.Move) };
 
     public SGC_Jammer()
         : base(2, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
@@ -26,6 +27,7 @@ public sealed class SGC_Jammer : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
         await PowerCmd.Apply<SGP_Shade>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
         for (int i = 0; i < 3 && !HasForm(Owner, ShinGetterForm.Getter2); i++)
             await Transform(choiceContext, Owner, this);

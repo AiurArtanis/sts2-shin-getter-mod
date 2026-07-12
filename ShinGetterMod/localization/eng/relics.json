@@ -25,5 +25,9 @@
   "S_G_R_GO_NAGAI_SMILE.flavor": "A rough-lined smile sits in the corner like a signature. The next panel is probably an explosion.",
   "S_G_R_KEN_ISHIKAWA_MANUSCRIPT.title": "Ken Ishikawa Manuscript",
   "S_G_R_KEN_ISHIKAWA_MANUSCRIPT.description": "On pickup, add 1 [gold]Infinite Evolution[/gold] to your deck.",
-  "S_G_R_KEN_ISHIKAWA_MANUSCRIPT.flavor": "The end of the storyboard is not an ending, but something far larger."
+  "S_G_R_KEN_ISHIKAWA_MANUSCRIPT.flavor": "The end of the storyboard is not an ending, but something far larger.",
+  "S_G_R_YUMMY_COOKIE.title": "Yummy Cookie - Shin Getter",
+  "S_G_R_YUMMY_COOKIE.description": "Upon pickup, [gold]Upgrade[/gold] [blue]{Cards}[/blue] {Cards:plural:card|cards}.",
+  "S_G_R_YUMMY_COOKIE.eventDescription": "[gold]Upgrade[/gold] [blue]{Cards}[/blue] {Cards:plural:card|cards}.",
+  "S_G_R_YUMMY_COOKIE.flavor": "Baked in Getter Rays, it makes evolution smell unexpectedly delicious."
 }

@@ -22,6 +22,8 @@ public sealed class SGR_EmperorsFragment : ShinGetterRelicBase
     public override async Task BeforeCombatStart()
     {
         Flash();
+        await PowerCmd.Apply<SGP_ShinGetterOne>(
+            new ThrowingPlayerChoiceContext(), Owner.Creature, 1m, Owner.Creature, null);
         await PowerCmd.Apply<SGP_Ki>(
             new ThrowingPlayerChoiceContext(), Owner.Creature,
             DynamicVars["SGP_Ki"].BaseValue, Owner.Creature, null);

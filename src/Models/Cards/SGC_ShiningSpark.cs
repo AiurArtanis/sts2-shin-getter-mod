@@ -8,13 +8,14 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using MegaCrit.Sts2.Core.Models.Powers;
 using ShinGetterMod.Models.Powers;
+using ShinGetterMod.Nodes.Combat;
 using ShinGetterMod.Nodes.Vfx;
 
 namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
-/// 闪光爆裂 | 攻击 | 稀有 | 1费 | 钢之魂流/输出终端/护盾特攻
-/// 获得 1 易伤、1 脆弱，造成 10 伤害。每有 1 点气力就对随机敌人造成 5 伤害
+/// 闪光爆裂 | 攻击 | 稀有 | 2费 | 钢之魂流/输出终端/护盾特攻
+/// 获得 2 易伤、2 脆弱，造成 10 伤害。每有 1 点气力就对随机敌人造成 5 伤害
 /// </summary>
 public sealed class SGC_ShiningSpark : ShinGetterCardBase
 {
@@ -25,15 +26,15 @@ public sealed class SGC_ShiningSpark : ShinGetterCardBase
 	};
 
 	public SGC_ShiningSpark()
-		: base(1, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)
+		: base(2, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)
 	{
 	}
 
 	protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
 	{
 		ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
-		await PowerCmd.Apply<VulnerablePower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
-		await PowerCmd.Apply<FrailPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
+		await PowerCmd.Apply<VulnerablePower>(choiceContext, Owner.Creature, 2m, Owner.Creature, this);
+		await PowerCmd.Apply<FrailPower>(choiceContext, Owner.Creature, 2m, Owner.Creature, this);
 		await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
 			.BeforeDamage(() => PlayMovementVfx(async () =>
 			{
@@ -46,6 +47,7 @@ public sealed class SGC_ShiningSpark : ShinGetterCardBase
 		{
 			await DamageCmd.Attack(DynamicVars["KiDamage"].BaseValue).WithHitCount(ki).FromCard(this)
 				.TargetingRandomOpponents(CombatState)
+				.BeforeDamage(() => NShinGetterStaticVisuals.PlayShiningSparkFollowup(Owner.Creature, ki))
 				.WithHitFx("vfx/vfx_attack_lightning").Execute(choiceContext);
 		}
 	}

@@ -25,5 +25,9 @@
   "S_G_R_GO_NAGAI_SMILE.flavor": "荒い線の笑顔がサインのように隅に置かれている。次のコマでは爆発していそうだ。",
   "S_G_R_KEN_ISHIKAWA_MANUSCRIPT.title": "石川賢の原稿",
   "S_G_R_KEN_ISHIKAWA_MANUSCRIPT.description": "拾得時、[gold]無限進化[/gold]を1枚デッキに加える。",
-  "S_G_R_KEN_ISHIKAWA_MANUSCRIPT.flavor": "絵コンテの果てにあるのは結末ではなく、さらに巨大な何かだ。"
+  "S_G_R_KEN_ISHIKAWA_MANUSCRIPT.flavor": "絵コンテの果てにあるのは結末ではなく、さらに巨大な何かだ。",
+  "S_G_R_YUMMY_COOKIE.title": "おいしいクッキー・真ゲッター",
+  "S_G_R_YUMMY_COOKIE.description": "取得時、カードを[blue]{Cards}[/blue]枚[gold]アップグレード[/gold]する。",
+  "S_G_R_YUMMY_COOKIE.eventDescription": "カードを[blue]{Cards}[/blue]枚[gold]アップグレード[/gold]する。",
+  "S_G_R_YUMMY_COOKIE.flavor": "ゲッター線で焼き上げた香りは、進化さえ少しおいしそうに思わせる。"
 }

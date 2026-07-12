@@ -55,6 +55,28 @@ public static class NShinGetterStaticVisuals
         return TryPlayVisibleFormActionAnimation(creatureNode, trigger);
     }
 
+    public static async Task PlayShiningSparkFollowup(Creature creature, int hitCount)
+    {
+        var creatureNode = NCombatRoom.Instance?.GetCreatureNode(creature);
+        if (creatureNode == null)
+            return;
+
+        foreach (var formAnimation in GetFormAnimations(creatureNode))
+        {
+            AnimatedSprite2D sprite = formAnimation.Sprite;
+            if (!sprite.Visible || sprite.Modulate.A <= 0.01f)
+                continue;
+
+            float previousSpeed = sprite.SpeedScale;
+            sprite.SpeedScale = Mathf.Clamp(1.5f + hitCount * 0.12f, 1.5f, 3f);
+            TryPlayVisibleActionAnimation(sprite, "Attack", formAnimation.EnsureLoaded);
+            await Cmd.CustomScaledWait(0.12f, 0.18f);
+            if (GodotObject.IsInstanceValid(sprite))
+                sprite.SpeedScale = previousSpeed;
+            return;
+        }
+    }
+
     public static async Task PlayShinFormTransformVfx(Creature creature)
     {
         var creatureNode = NCombatRoom.Instance?.GetCreatureNode(creature);
@@ -71,43 +93,95 @@ public static class NShinGetterStaticVisuals
             ZIndex = 80,
         };
 
-        Color getterRay = new(0.23f, 1f, 0.72f, 0.92f);
-        Color getterPink = new(1f, 0.24f, 0.62f, 0.88f);
-        for (int i = 0; i < 18; i++)
-        {
-            float y = 176f - i * 20f;
-            Line2D line = new()
-            {
-                Width = 6f + i % 3,
-                DefaultColor = i % 2 == 0 ? getterRay : getterPink,
-                Antialiased = true,
-                Modulate = new Color(1f, 1f, 1f, 0f),
-            };
-            float phase = i % 2 == 0 ? 1f : -1f;
-            line.AddPoint(new Vector2(-150f, y));
-            line.AddPoint(new Vector2(-75f, y + 18f * phase));
-            line.AddPoint(new Vector2(0f, y - 14f * phase));
-            line.AddPoint(new Vector2(75f, y + 18f * phase));
-            line.AddPoint(new Vector2(150f, y));
-            rayWrap.AddChild(line);
+        vfxContainer.AddChild(rayWrap);
+        Color getterRay = new(0.29f, 1f, 0.77f, 0.96f);
+        Color getterRayGlow = new(0.76f, 1f, 0.94f, 0.98f);
+        for (int i = 0; i < 12; i++)
+            CreateRisingRayRing(rayWrap, i, i % 3 == 0 ? getterRayGlow : getterRay);
 
-            Tween lineTween = line.CreateTween();
-            lineTween.TweenProperty(line, "modulate:a", 1f, 0.08f).SetDelay(i * 0.022f);
+        Sprite2D? silhouette = CreateGetterRaySilhouette(creatureNode, vfxContainer, getterRayGlow);
+        if (silhouette != null)
+        {
+            Tween silhouetteTween = silhouette.CreateTween();
+            silhouetteTween.TweenProperty(silhouette, "self_modulate:a", 0.96f, 0.22f).SetDelay(0.58f);
+            silhouetteTween.TweenProperty(silhouette, "self_modulate:a", 0f, 0.24f).SetDelay(0.16f);
+            silhouetteTween.TweenCallback(Callable.From(silhouette.QueueFree));
         }
 
-        vfxContainer.AddChild(rayWrap);
-        Tween tween = rayWrap.CreateTween().SetParallel();
-        tween.TweenProperty(rayWrap, "scale", new Vector2(1.16f, 1.05f), 0.52f)
+        Tween cleanup = rayWrap.CreateTween();
+        cleanup.TweenInterval(1.12f);
+        cleanup.TweenProperty(rayWrap, "modulate:a", 0f, 0.16f);
+        cleanup.TweenCallback(Callable.From(rayWrap.QueueFree));
+        await Cmd.CustomScaledWait(0.74f, 0.82f);
+    }
+
+    private static void CreateRisingRayRing(Node2D parent, int index, Color color)
+    {
+        Line2D ring = new()
+        {
+            Width = 6f + index % 3 * 1.5f,
+            DefaultColor = color,
+            Antialiased = true,
+            Position = new Vector2(0f, 188f),
+            Scale = new Vector2(0.62f, 0.52f),
+            Modulate = new Color(1f, 1f, 1f, 0f),
+        };
+
+        const int segments = 44;
+        for (int point = 0; point <= segments; point++)
+        {
+            float angle = point / (float)segments * Mathf.Tau;
+            float radiusWave = 1f + Mathf.Sin(angle * 3f + index * 0.65f) * 0.07f;
+            ring.AddPoint(new Vector2(
+                Mathf.Cos(angle) * 168f * radiusWave,
+                Mathf.Sin(angle) * 42f));
+        }
+        parent.AddChild(ring);
+
+        float delay = index * 0.045f;
+        Tween movement = ring.CreateTween().SetParallel();
+        movement.TweenProperty(ring, "position:y", -188f, 0.72f)
+            .SetDelay(delay)
             .SetEase(Tween.EaseType.Out)
             .SetTrans(Tween.TransitionType.Sine);
-        tween.TweenProperty(rayWrap, "rotation_degrees", 5f, 0.52f)
-            .SetEase(Tween.EaseType.Out)
-            .SetTrans(Tween.TransitionType.Sine);
-        tween.TweenProperty(rayWrap, "modulate:a", 0f, 0.16f)
-            .SetDelay(0.52f)
-            .SetEase(Tween.EaseType.In);
-        tween.TweenCallback(Callable.From(rayWrap.QueueFree)).SetDelay(0.70f);
-        await Cmd.CustomScaledWait(0.60f, 0.70f);
+        movement.TweenProperty(ring, "scale", new Vector2(1.08f, 0.9f), 0.72f)
+            .SetDelay(delay)
+            .SetEase(Tween.EaseType.Out);
+        movement.TweenProperty(ring, "modulate:a", 1f, 0.1f).SetDelay(delay);
+        movement.TweenProperty(ring, "modulate:a", 0f, 0.18f).SetDelay(delay + 0.58f);
+    }
+
+    private static Sprite2D? CreateGetterRaySilhouette(
+        NCreature creatureNode,
+        Node vfxContainer,
+        Color color)
+    {
+        foreach (var formAnimation in GetFormAnimations(creatureNode))
+        {
+            AnimatedSprite2D source = formAnimation.Sprite;
+            if (!source.Visible || source.Modulate.A <= 0.01f)
+                continue;
+
+            Texture2D? texture = source.SpriteFrames?.GetFrameTexture(source.Animation, source.Frame);
+            if (texture == null)
+                return null;
+
+            Sprite2D silhouette = new()
+            {
+                Texture = texture,
+                Centered = source.Centered,
+                Offset = source.Offset,
+                FlipH = source.FlipH,
+                FlipV = source.FlipV,
+                ZIndex = 81,
+                SelfModulate = new Color(color, 0f),
+            };
+            vfxContainer.AddChild(silhouette);
+            silhouette.GlobalTransform = source.GlobalTransform;
+            return silhouette;
+        }
+
+        return null;
     }
 
     private static bool TryGetFormSprites(

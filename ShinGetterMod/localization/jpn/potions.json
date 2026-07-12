@@ -2,7 +2,7 @@
   "S_G_R_TRANSFORM_POTION.title": "変形潤滑油",
   "S_G_R_TRANSFORM_POTION.description": "{Energy} エナジーを得て、[gold]変形[/gold]する。",
   "S_G_R_KUSUHA_JUICE.title": "クスハ汁",
-  "S_G_R_KUSUHA_JUICE.description": "[gold]脱力[/gold]を{WeakPower}得る。このターン、[gold]精神コマンドカード[/gold]は気力条件を無視し、コストが0になる。",
+  "S_G_R_KUSUHA_JUICE.description": "[gold]脱力[/gold]を{WeakPower}、[gold]弱体[/gold]を{VulnerablePower}得る。このターン、[gold]精神コマンドカード[/gold]は気力条件を無視し、コストが0になる。",
   "S_G_R_GETTER_COLD_BREW.title": "ゲッターコールドブリュー",
   "S_G_R_GETTER_COLD_BREW.description": "名前に「ゲッター」を含むカードを3枚手札に加え、それらに[gold]保留[/gold]を与える。"
 }

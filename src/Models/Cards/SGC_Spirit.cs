@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,6 +7,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using ShinGetterMod.Nodes.Vfx;
 
@@ -32,18 +32,25 @@ public sealed class SGC_Spirit : ShinGetterCardBase
     {
         await ShinGetterCombatVfx.PlaySpiritAura(Owner.Creature);
         await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, DynamicVars["VigorPower"].BaseValue, Owner.Creature, this);
-        int max = Math.Min(DynamicVars.Cards.IntValue, PileType.Hand.GetPile(Owner).Cards.Count(card => card != this));
+        int max = System.Math.Min(DynamicVars.Cards.IntValue, PileType.Hand.GetPile(Owner).Cards.Count(card => card != this));
         if (max > 0)
         {
             var selected = await CardSelectCmd.FromHand(choiceContext, Owner,
                 new CardSelectorPrefs(SelectionScreenPrompt, 0, max), card => card != this, this);
             foreach (var card in selected.ToList())
-                await CardCmd.TransformTo<SGC_Ki>(card);
+                await CardCmd.Transform(card, CreateKiCard());
         }
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Cards.UpgradeValueBy(1m);
+    }
+
+    private CardModel CreateKiCard()
+    {
+        CardModel ki = Owner.RunState.CreateCard<SGC_Ki>(Owner);
+        if (IsUpgraded)
+            CardCmd.Upgrade(ki);
+        return ki;
     }
 }

@@ -13,7 +13,7 @@ using ShinGetterMod.Models.Powers;
 namespace ShinGetterMod.Models.Powers;
 
 /// <summary>
-/// 战士奖章。回合开始每1气力获再生+覆甲。
+/// 战士奖章。回合开始获得固定层数的再生与覆甲。
 /// </summary>
 public sealed class SGP_WarriorMedal : PowerModel
 {
@@ -28,9 +28,8 @@ public sealed class SGP_WarriorMedal : PowerModel
         if (player != Owner.Player)
             return;
 
-        int ki = player.Creature.GetPower<SGP_Ki>()?.Amount ?? 0;
-        if (ki <= 0 || base.Amount <= 0) return;
-        int gain = ki * base.Amount;
+        if (base.Amount <= 0) return;
+        int gain = base.Amount;
         Flash();
         var ctx = new ThrowingPlayerChoiceContext();
         await PowerCmd.Apply<RegenPower>(ctx, player.Creature, gain, player.Creature, null);

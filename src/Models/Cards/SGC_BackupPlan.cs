@@ -37,7 +37,7 @@ public sealed class SGC_BackupPlan : ShinGetterCardBase
         if (hand.Count > 0)
         {
             var selected = (await CardSelectCmd.FromHand(choiceContext, Owner,
-                new CardSelectorPrefs(CardSelectorPrefs.ExhaustSelectionPrompt, 0, hand.Count),
+                new CardSelectorPrefs(SelectionScreenPrompt, 0, hand.Count),
                 card => card != this, this)).ToList();
             int distinctTypes = selected.Select(card => card.Type).Distinct().Count();
             foreach (var card in selected)

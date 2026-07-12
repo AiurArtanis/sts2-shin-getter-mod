@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 
@@ -21,6 +22,16 @@ public sealed class SGP_ChosenOne : PowerModel
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new DynamicVar[] { new BlockVar(0m, ValueProp.Unpowered) };
+
+    public override LocString Description
+    {
+        get
+        {
+            LocString description = base.Description;
+            description.Add("Block", DynamicVars.Block.BaseValue);
+            return description;
+        }
+    }
 
     public void AddBlockPerTransform(decimal block)
     {

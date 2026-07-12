@@ -36,7 +36,7 @@
   "S_G_P_CHOSEN_ONE.title": "天选之子",
   "S_G_P_CHOSEN_ONE.description": "每次变形时，获得{Amount}点气力和{Block}点格挡。",
   "S_G_P_WARRIOR_MEDAL.title": "战士奖章",
-  "S_G_P_WARRIOR_MEDAL.description": "回合开始时，每有1点气力，获得{Amount}层再生和覆甲。",
+  "S_G_P_WARRIOR_MEDAL.description": "回合开始时，获得{Amount}层再生和覆甲。",
   "S_G_P_GRAPPLE.title": "擒拿",
   "S_G_P_GRAPPLE.description": "本回合打出的多段攻击减少{Amount}次攻击次数。",
   "S_G_P_HOT_BLOOD.title": "热血",

@@ -24,7 +24,7 @@ public sealed class SGC_GetterBeam : ShinGetterCardBase
     protected override IEnumerable<IHoverTip> ExtraHoverTips => WithContextualHoverTips(new IHoverTip[] { HoverTipFactory.FromPower<SGP_Wane>() });
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new CalculationBaseVar(7m),
+        new CalculationBaseVar(8m),
         new ExtraDamageVar(1m),
         new CalculatedDamageVar(ValueProp.Move).WithMultiplier(GetGetterBeamBonus),
         new DynamicVar("Wane", 1m),
@@ -64,7 +64,7 @@ public sealed class SGC_GetterBeam : ShinGetterCardBase
     private static decimal GetGetterBeamBonus(CardModel card, Creature? _) =>
         IsInForm(card.Owner, ShinGetterForm.Getter1)
             ? CombatManager.Instance.History.Entries.OfType<PowerReceivedEntry>()
-                .Where(entry => entry.Actor == card.Owner.Creature && entry.Power is VigorPower && entry.Amount > 0)
+                .Where(entry => entry.Actor == card.Owner.Creature && entry.Power is SGP_Ki && entry.Amount > 0)
                 .Sum(entry => entry.Amount)
             : 0m;
 }

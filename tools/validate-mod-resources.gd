@@ -13,6 +13,7 @@ const REQUIRED_RESOURCES := {
 	"res://images/atlases/power_atlas.sprites/s_g_p_evolution.tres": false,
 	"res://images/atlases/power_atlas.sprites/s_g_p_evolution_engine.tres": false,
 	"res://images/atlases/power_atlas.sprites/s_g_p_enable.tres": false,
+	"res://images/atlases/power_atlas.sprites/s_g_p_hurricane_temporary_dexterity.tres": false,
 	"res://images/atlases/power_atlas.sprites/s_g_p_kusuha_juice.tres": false,
 	"res://images/enchantments/s_g_e_adaptation.png": false,
 	"res://images/enchantments/s_g_e_devolution.png": false,
@@ -30,6 +31,7 @@ const REQUIRED_RESOURCES := {
 	"res://images/atlases/relic_atlas.sprites/s_g_r_good_citizen_card.tres": false,
 	"res://images/atlases/relic_atlas.sprites/s_g_r_go_nagai_smile.tres": false,
 	"res://images/atlases/relic_atlas.sprites/s_g_r_ken_ishikawa_manuscript.tres": false,
+	"res://images/atlases/relic_atlas.sprites/s_g_r_yummy_cookie.tres": false,
 	"res://images/atlases/relic_outline_atlas.sprites/s_g_r_getter_furnace.tres": false,
 	"res://images/atlases/relic_outline_atlas.sprites/s_g_r_emperors_fragment.tres": false,
 	"res://images/atlases/relic_outline_atlas.sprites/s_g_r_battle_instinct.tres": false,
@@ -39,6 +41,8 @@ const REQUIRED_RESOURCES := {
 	"res://images/atlases/relic_outline_atlas.sprites/s_g_r_good_citizen_card.tres": false,
 	"res://images/atlases/relic_outline_atlas.sprites/s_g_r_go_nagai_smile.tres": false,
 	"res://images/atlases/relic_outline_atlas.sprites/s_g_r_ken_ishikawa_manuscript.tres": false,
+	"res://images/atlases/relic_outline_atlas.sprites/s_g_r_yummy_cookie.tres": false,
+	"res://images/relics/s_g_r_yummy_cookie.png": false,
 	"res://images/atlases/potion_atlas.sprites/s_g_r_transform_potion.tres": false,
 	"res://images/atlases/potion_atlas.sprites/s_g_r_kusuha_juice.tres": false,
 	"res://images/atlases/potion_atlas.sprites/s_g_r_getter_cold_brew.tres": false,
@@ -91,7 +95,6 @@ const REQUIRED_RESOURCES := {
 	"res://images/characters/shin_getter/merchant/s_g_o_merchant_ryoma_citizen.png": false,
 	"res://images/characters/shin_getter/merchant/s_g_o_merchant_ryoma_normal.png": false,
 	"res://scenes/creature_visuals/shin_getter.tscn": true,
-	"res://scenes/screens/char_select/char_select_bg_shin_getter.tscn": false,
 	"res://scenes/creature_visuals/shin_getter_one_idle_frames.tres": false,
 	"res://scenes/creature_visuals/shin_getter_three_idle_frames.tres": false,
 	"res://scenes/creature_visuals/shin_getter_dragon_idle_frames.tres": false,
@@ -103,6 +106,8 @@ const REQUIRED_RESOURCES := {
 }
 
 const EXISTS_ONLY_RESOURCES := [
+	# This scene references the mod DLL, which is loaded only during the later game-load validation.
+	"res://scenes/screens/char_select/char_select_bg_shin_getter.tscn",
 ]
 
 const FORBIDDEN_RESOURCES := [

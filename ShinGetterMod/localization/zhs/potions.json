@@ -2,7 +2,7 @@
   "S_G_R_TRANSFORM_POTION.title": "变形润滑油",
   "S_G_R_TRANSFORM_POTION.description": "获得 {Energy} 点能量，并[gold]变形[/gold]。",
   "S_G_R_KUSUHA_JUICE.title": "楠叶汁",
-  "S_G_R_KUSUHA_JUICE.description": "获得 {WeakPower} 层[gold]虚弱[/gold]。本回合的[gold]精神指令卡[/gold]无视气力要求，耗能变为 0。",
+  "S_G_R_KUSUHA_JUICE.description": "获得 {WeakPower} 层[gold]虚弱[/gold]和 {VulnerablePower} 层[gold]易伤[/gold]。本回合的[gold]精神指令卡[/gold]无视气力要求，耗能变为 0。",
   "S_G_R_GETTER_COLD_BREW.title": "盖塔冷萃",
   "S_G_R_GETTER_COLD_BREW.description": "将 3 张名字含有“盖塔”的卡牌加入手牌，并使其获得[gold]保留[/gold]。"
 }

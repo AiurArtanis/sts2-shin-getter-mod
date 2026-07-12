@@ -46,6 +46,6 @@ public sealed class SGC_Ki : ShinGetterCardBase
 
     protected override void OnUpgrade()
     {
-        EnergyCost.UpgradeBy(-1);
+        DynamicVars["VigorPower"].UpgradeValueBy(1m);
     }
 }

@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Nodes.Vfx;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Models.Powers;
 using ShinGetterMod.Nodes.Vfx;
 
 namespace ShinGetterMod.Models.Cards;
@@ -15,7 +16,7 @@ namespace ShinGetterMod.Models.Cards;
 /// <summary>
 /// 飓风打击 | 攻击 | 普通 | 1费 | 二号/过牌
 /// 对所有敌人造成 5 伤害，每命中 1 目标抽 1 张
-/// 二号机：获得 1 敏捷
+/// 二号机：本回合获得 2 敏捷
 /// </summary>
 public sealed class SGC_HurricaneStrike : ShinGetterCardBase
 {
@@ -46,7 +47,8 @@ public sealed class SGC_HurricaneStrike : ShinGetterCardBase
             await CardPileCmd.Draw(choiceContext, targetCount, Owner);
 
         if (HasForm(Owner, ShinGetterForm.Getter2))
-            await PowerCmd.Apply<DexterityPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
+            await PowerCmd.Apply<SGP_HurricaneTemporaryDexterity>(
+                choiceContext, Owner.Creature, 2m, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
