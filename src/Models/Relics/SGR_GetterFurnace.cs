@@ -5,6 +5,8 @@ using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Saves.Runs;
+using ShinGetterMod.Audio;
 using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Relics;
@@ -14,6 +16,8 @@ namespace ShinGetterMod.Models.Relics;
 /// </summary>
 public sealed class SGR_GetterFurnace : ShinGetterRelicBase
 {
+	private int _playedVoiceMask;
+
     public override RelicRarity Rarity => RelicRarity.Starter;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
@@ -22,9 +26,21 @@ public sealed class SGR_GetterFurnace : ShinGetterRelicBase
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
         new IHoverTip[] { HoverTipFactory.FromPower<SGP_Ki>() };
 
+    [SavedProperty(SerializationCondition.SaveIfNotTypeDefault)]
+    public int PlayedVoiceMask
+    {
+        get => _playedVoiceMask;
+        set
+        {
+            AssertMutable();
+            _playedVoiceMask = value;
+        }
+    }
+
     public override async Task BeforeCombatStart()
     {
         Flash();
+        ShinGetterVoiceService.PlayCombatStart(Owner);
         await PowerCmd.Apply<SGP_ShinGetterOne>(
             new ThrowingPlayerChoiceContext(), Owner.Creature, 1m, Owner.Creature, null);
         await PowerCmd.Apply<SGP_Ki>(

@@ -105,7 +105,7 @@ internal static class ShinGetterTouchOfOrobasPatchHelpers
         if (getterFurnace == null)
             return;
 
-        await RelicCmd.Replace(getterFurnace, ModelDb.Relic<SGR_EmperorsFragment>().ToMutable());
+        await RelicCmd.Replace(getterFurnace, SGR_EmperorsFragment.CreateFrom(getterFurnace));
     }
 }
 

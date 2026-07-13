@@ -13,6 +13,7 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
+using ShinGetterMod.Audio;
 using ShinGetterMod.Models.CardPools;
 using ShinGetterMod.Models.Characters;
 using ShinGetterMod.Models.Powers;
@@ -191,6 +192,7 @@ public abstract class ShinGetterCardBase : CardModel
             "SGC_GetterElbow",
             "SGC_GetterFlash",
             "SGC_GetterRush",
+            "SGC_HolyDragonRoar",
             "SGC_ShiningSpark",
             "SGC_TacticalRetreat",
         };
@@ -246,27 +248,11 @@ public abstract class ShinGetterCardBase : CardModel
     protected IEnumerable<IHoverTip> WithContextualHoverTips(IEnumerable<IHoverTip> tips) =>
         IHoverTip.RemoveDupes(tips.Concat(ContextualHoverTips));
 
-    public override Task OnEnqueuePlayVfx(Creature? target)
-    {
-        if (Owner?.Creature is not { } creature)
-            return Task.CompletedTask;
-
-        if (MovementVfxTimingCards.Contains(GetType().Name))
-            return Task.CompletedTask;
-
-        string? animationTrigger = GetActionAnimationTrigger();
-        if (animationTrigger != null)
-            NShinGetterStaticVisuals.TryPlayCreatureActionAnimation(creature, animationTrigger);
-
-        return Task.CompletedTask;
-    }
+    public override Task OnEnqueuePlayVfx(Creature? target) => Task.CompletedTask;
 
     protected Task PlayMovementVfx(Func<Task> vfx)
     {
-        string? animationTrigger = GetActionAnimationTrigger();
-        if (animationTrigger != null)
-            NShinGetterStaticVisuals.TryPlayCreatureActionAnimation(Owner.Creature, animationTrigger);
-
+        PlayCardVoiceAndAnimation();
         return vfx();
     }
 
@@ -275,8 +261,15 @@ public abstract class ShinGetterCardBase : CardModel
         await base.BeforeCardPlayed(cardPlay);
 
         if (!ReferenceEquals(cardPlay.Card, this)
-            || cardPlay.PlayIndex != 0
-            || GetActionAnimationTrigger() != "Attack"
+            || cardPlay.PlayIndex != 0)
+        {
+            return;
+        }
+
+        if (!MovementVfxTimingCards.Contains(GetType().Name))
+            PlayCardVoiceAndAnimation();
+
+        if (GetActionAnimationTrigger() != "Attack"
             || AttackTimingHandledByVfxCards.Contains(GetType().Name))
         {
             return;
@@ -285,6 +278,18 @@ public abstract class ShinGetterCardBase : CardModel
         await Cmd.CustomScaledWait(
             OrdinaryAttackEffectDelaySeconds,
             OrdinaryAttackEffectDelaySeconds);
+    }
+
+    private void PlayCardVoiceAndAnimation()
+    {
+        if (Owner?.Creature is not { } creature)
+            return;
+
+        ShinGetterVoiceService.TryPlayCardVoice(this);
+
+        string? animationTrigger = GetActionAnimationTrigger();
+        if (animationTrigger != null)
+            NShinGetterStaticVisuals.TryPlayCreatureActionAnimation(creature, animationTrigger);
     }
 
     private string? GetActionAnimationTrigger()
@@ -471,6 +476,7 @@ public abstract class ShinGetterCardBase : CardModel
         }
 
         var creature = player.Creature;
+        ShinGetterVoiceService.PlayTransform(player, next);
         ShinGetterCardFramePatch.BeginFormTransition(next);
         try
         {
@@ -518,6 +524,9 @@ public abstract class ShinGetterCardBase : CardModel
     /// </summary>
     private static async Task TriggerShinFormTransform(PlayerChoiceContext choiceContext, Creature creature, CardModel? cardSource)
     {
+        if (creature.Player is { } player)
+            ShinGetterVoiceService.PlayTransform(player, ShinGetterForm.None);
+
         await PowerCmd.Apply<VigorPower>(choiceContext, creature, 1m, creature, cardSource);
         await PowerCmd.Apply<RegenPower>(choiceContext, creature, 1m, creature, cardSource);
         await PowerCmd.Apply<PlatingPower>(choiceContext, creature, 1m, creature, cardSource);

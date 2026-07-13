@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using ShinGetterMod.Models.Powers;
+using ShinGetterMod.Audio;
 using ShinGetterMod.Nodes.Combat;
 using ShinGetterMod.Patches;
 
@@ -62,6 +63,7 @@ public sealed class SGC_ShinForm : ShinGetterCardBase
             return;
         }
 
+        ShinGetterVoiceService.PlayShinDragonTransform(Owner);
         await NShinGetterStaticVisuals.PlayShinFormTransformVfx(creature);
 
         ShinGetterCardFramePatch.BeginFormTransitionToShinDragon();

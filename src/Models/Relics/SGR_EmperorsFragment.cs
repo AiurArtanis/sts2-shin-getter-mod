@@ -5,12 +5,16 @@ using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Saves.Runs;
 using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Relics;
 
 public sealed class SGR_EmperorsFragment : ShinGetterRelicBase
 {
+    private int _playedVoiceMask;
+
     public override RelicRarity Rarity => RelicRarity.Ancient;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
@@ -18,6 +22,24 @@ public sealed class SGR_EmperorsFragment : ShinGetterRelicBase
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
         new IHoverTip[] { HoverTipFactory.FromPower<SGP_Ki>() };
+
+    [SavedProperty(SerializationCondition.SaveIfNotTypeDefault)]
+    public int PlayedVoiceMask
+    {
+        get => _playedVoiceMask;
+        set
+        {
+            AssertMutable();
+            _playedVoiceMask = value;
+        }
+    }
+
+    internal static SGR_EmperorsFragment CreateFrom(SGR_GetterFurnace getterFurnace)
+    {
+        var fragment = (SGR_EmperorsFragment)ModelDb.Relic<SGR_EmperorsFragment>().ToMutable();
+        fragment.PlayedVoiceMask = getterFurnace.PlayedVoiceMask;
+        return fragment;
+    }
 
     public override async Task BeforeCombatStart()
     {

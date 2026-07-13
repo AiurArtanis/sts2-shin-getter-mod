@@ -115,7 +115,7 @@ public sealed class SGE_GetterMandala : EventModel
     {
         SGR_GetterFurnace? getterFurnace = EventOwner.GetRelic<SGR_GetterFurnace>();
         if (getterFurnace != null)
-            await RelicCmd.Replace(getterFurnace, ModelDb.Relic<SGR_EmperorsFragment>().ToMutable());
+            await RelicCmd.Replace(getterFurnace, SGR_EmperorsFragment.CreateFrom(getterFurnace));
 
         Finish("SOLAR_BATTLESHIP");
     }

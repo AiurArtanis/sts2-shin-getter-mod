@@ -62,7 +62,7 @@ public sealed class ShinGetter : CharacterModel
 	public override Color RemoteTargetingLineOutline => new Color("801212FF");
 
 	public override string CharacterSelectSfx =>
-		"res://audio/sfx/characters/shin_getter/shin_getter_select.wav";
+		"res://audio/sfx/characters/shin_getter/voices/transform.wav";
 	public override string CharacterTransitionSfx => "event:/sfx/ui/wipe_ironclad";
 
 	public override List<string> GetArchitectAttackVfx()
