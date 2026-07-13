@@ -89,7 +89,7 @@ public static class NShinGetterStaticVisuals
 
         Node2D rayWrap = new()
         {
-            GlobalPosition = creatureNode.GlobalPosition + new Vector2(24f, -205f),
+            GlobalPosition = creatureNode.GlobalPosition + new Vector2(-16f, -205f),
             ZIndex = 80,
         };
 

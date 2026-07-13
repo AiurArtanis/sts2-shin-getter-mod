@@ -27,8 +27,7 @@ internal static class ShinGetterAncientDialoguePatch
 
             AncientDialogue dialogue = new(Enumerable.Repeat("", lineCount).ToArray())
             {
-                IsRepeating = HasRepeatingSuffix(ancientEntry, dialogueIndex),
-                VisitIndex = HasRepeatingSuffix(ancientEntry, dialogueIndex) ? null : dialogueIndex,
+                IsRepeating = true,
                 EndAttackers = ancientEntry == "THE_ARCHITECT"
                     ? ArchitectAttackers.Player
                     : ArchitectAttackers.None
@@ -61,10 +60,4 @@ internal static class ShinGetterAncientDialoguePatch
         || LocString.Exists("ancients", baseKey + "r.ancient")
         || LocString.Exists("ancients", baseKey + "r.char");
 
-    private static bool HasRepeatingSuffix(string ancientEntry, int dialogueIndex)
-    {
-        string baseKey = $"{ancientEntry}.talk.{ShinGetterKey}.{dialogueIndex}-0r";
-        return LocString.Exists("ancients", baseKey + ".ancient")
-            || LocString.Exists("ancients", baseKey + ".char");
-    }
 }

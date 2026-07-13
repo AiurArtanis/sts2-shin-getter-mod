@@ -1,6 +1,6 @@
 {
   "S_G_R_TRANSFORM_POTION.title": "Transformation Lube",
-  "S_G_R_TRANSFORM_POTION.description": "Gain {Energy} energy, then [gold]Transform[/gold].",
+  "S_G_R_TRANSFORM_POTION.description": "Gain {Energy:energyIcons()}, then [gold]Transform[/gold].",
   "S_G_R_KUSUHA_JUICE.title": "Kusuha Juice",
   "S_G_R_KUSUHA_JUICE.description": "Gain {WeakPower} [gold]Weak[/gold] and {VulnerablePower} [gold]Vulnerable[/gold]. This turn, [gold]Spirit Command cards[/gold] ignore Ki requirements and cost 0.",
   "S_G_R_GETTER_COLD_BREW.title": "Getter Cold Brew",

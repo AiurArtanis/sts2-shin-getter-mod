@@ -21,8 +21,6 @@ internal static class ShinGetterBeamVfx
 {
     private static readonly Color GetterPink = new(1f, 0.19f, 0.62f, 1f);
     private static readonly Color GetterWhite = new(1f, 0.94f, 1f, 1f);
-    private static readonly Color GetterRay = new("4BFEC4");
-    private static readonly Color GetterRayGlow = new("A8FFE9");
 
     public static async Task Play(Creature owner, IEnumerable<Creature> targets, ShinGetterBeamStyle style)
     {
@@ -35,6 +33,8 @@ internal static class ShinGetterBeamVfx
         {
             ApplyBeamSkin(beam, style);
             NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(beam);
+            if (style == ShinGetterBeamStyle.FinalGetterBeam)
+                AddCenterGetterBeam(owner, livingTargets.Last());
             await Cmd.Wait(NHyperbeamVfx.hyperbeamAnticipationDuration);
         }
 
@@ -53,12 +53,9 @@ internal static class ShinGetterBeamVfx
     {
         if (style == ShinGetterBeamStyle.FinalGetterBeam)
         {
-            RemapBlueToGetterRay(beam);
+            RemapBlueToGetterPink(beam);
             if (beam.GetNodeOrNull<Line2D>("laser/vfx_hyperbeam_laser_line") is { } line)
-            {
                 line.Width *= 1.3f;
-                AddCenterGetterBeam(line);
-            }
             return;
         }
 
@@ -76,7 +73,7 @@ internal static class ShinGetterBeamVfx
     private static void ApplyImpactSkin(Node2D impact, ShinGetterBeamStyle style)
     {
         if (style == ShinGetterBeamStyle.FinalGetterBeam)
-            RemapBlueToGetterRay(impact);
+            RemapBlueToGetterPink(impact);
         else
             TintCanvasItems(impact, GetterPink, GetterWhite);
 
@@ -85,37 +82,38 @@ internal static class ShinGetterBeamVfx
             : new Vector2(1.15f, 1.15f);
     }
 
-    private static void RemapBlueToGetterRay(Node node)
+    private static void RemapBlueToGetterPink(Node node)
     {
         foreach (Node child in node.GetChildren())
-            RemapBlueToGetterRay(child);
+            RemapBlueToGetterPink(child);
 
         if (node is not CanvasItem canvasItem)
             return;
 
-        canvasItem.SelfModulate = RemapBlueColor(canvasItem.SelfModulate);
-        canvasItem.Modulate = RemapBlueColor(canvasItem.Modulate);
-        RemapShaderPalette(canvasItem);
+        canvasItem.SelfModulate = RemapBlueToGetterPink(canvasItem.SelfModulate);
+        canvasItem.Modulate = RemapBlueToGetterPink(canvasItem.Modulate);
+        RemapShaderPalette(canvasItem, RemapBlueToGetterPink);
 
         if (node is Line2D line)
         {
-            line.DefaultColor = RemapBlueColor(line.DefaultColor);
-            Gradient? gradient = DuplicateRemappedGradient(line.GetGradient(), RemapBlueColor);
+            line.DefaultColor = RemapBlueToGetterPink(line.DefaultColor);
+            Gradient? gradient = DuplicateRemappedGradient(line.GetGradient(), RemapBlueToGetterPink);
             if (gradient != null)
                 line.SetGradient(gradient);
         }
     }
 
-    private static Color RemapBlueColor(Color color)
+    private static Color RemapBlueToGetterPink(Color color)
     {
         if (color.S < 0.08f || color.H < 0.5f || color.H > 0.72f)
             return color;
 
-        float hue = GetterRay.H + (color.H - 0.58f) * 0.32f;
-        return Color.FromHsv(hue, color.S, color.V, color.A);
+        float hue = GetterPink.H + (color.H - 0.58f) * 0.12f;
+        float saturation = Mathf.Clamp(color.S * 0.9f, 0.35f, 0.96f);
+        return Color.FromHsv(hue, saturation, color.V, color.A);
     }
 
-    private static void RemapShaderPalette(CanvasItem canvasItem)
+    private static void RemapShaderPalette(CanvasItem canvasItem, System.Func<Color, Color> remap)
     {
         if (canvasItem.Material is not ShaderMaterial sourceMaterial)
             return;
@@ -127,7 +125,7 @@ internal static class ShinGetterBeamVfx
             return;
         }
 
-        Gradient? gradient = DuplicateRemappedGradient(sourceLut.Gradient, RemapBlueColor);
+        Gradient? gradient = DuplicateRemappedGradient(sourceLut.Gradient, remap);
         if (gradient == null)
             return;
 
@@ -149,43 +147,73 @@ internal static class ShinGetterBeamVfx
         return gradient;
     }
 
-    private static void AddCenterGetterBeam(Line2D source)
+    private static void AddCenterGetterBeam(Creature owner, Creature target)
     {
-        Node? parent = source.GetParent();
-        if (parent == null)
+        NHyperbeamVfx? template = NHyperbeamVfx.Create(owner, target);
+        if (template == null)
             return;
 
-        Line2D center = new()
+        Node2D center = new()
         {
             Name = "shin_getter_center_getter_beam",
-            Width = Mathf.Max(54f, source.Width * 0.13f),
-            DefaultColor = GetterWhite,
-            Antialiased = true,
-            ZIndex = source.ZIndex + 3,
-            Transform = source.Transform,
-            Texture = source.Texture,
-            TextureMode = source.TextureMode,
-            JointMode = source.JointMode,
-            BeginCapMode = source.BeginCapMode,
-            EndCapMode = source.EndCapMode,
+            Position = template.Position,
+            Rotation = template.Rotation,
+            Scale = new Vector2(1f, 0.35f),
+            ZIndex = 8,
         };
 
-        for (int i = 0; i < source.GetPointCount(); i++)
-            center.AddPoint(source.GetPointPosition(i));
+        // Keep the complete Hyperbeam visual tree without running a second copy of its SFX and shake sequence.
+        while (template.GetChildCount() > 0)
+        {
+            Node child = template.GetChild(0);
+            template.RemoveChild(child);
+            center.AddChild(child);
+        }
+        template.Free();
 
-        Gradient? gradient = DuplicateRemappedGradient(source.GetGradient(), RemapBlueToGetterPink);
-        if (gradient != null)
-            center.SetGradient(gradient);
-        parent.AddChild(center);
+        ApplyBeamSkin(center, ShinGetterBeamStyle.GetterBeam);
+        Node? vfxContainer = NCombatRoom.Instance?.CombatVfxContainer;
+        if (vfxContainer == null)
+        {
+            center.Free();
+            return;
+        }
+
+        center.GetNodeOrNull<Node2D>("laser")?.Hide();
+        vfxContainer.AddChildSafely(center);
+        _ = TaskHelper.RunSafely(PlayCenterGetterBeamSequence(center));
     }
 
-    private static Color RemapBlueToGetterPink(Color color)
+    private static async Task PlayCenterGetterBeamSequence(Node2D center)
     {
-        if (color.S < 0.08f)
-            return color;
+        RestartParticles(center.GetNodeOrNull<Node>("anticipation"));
+        await Cmd.Wait(NHyperbeamVfx.hyperbeamAnticipationDuration);
+        if (!GodotObject.IsInstanceValid(center))
+            return;
 
-        float saturation = Mathf.Clamp(color.S * 0.72f, 0.2f, 0.82f);
-        return Color.FromHsv(GetterPink.H, saturation, color.V, color.A);
+        Node2D? laser = center.GetNodeOrNull<Node2D>("laser");
+        laser?.Show();
+        RestartParticles(laser);
+        await Cmd.Wait(NHyperbeamVfx.hyperbeamLaserDuration);
+        if (!GodotObject.IsInstanceValid(center))
+            return;
+
+        laser?.Hide();
+        RestartParticles(center.GetNodeOrNull<Node>("end"));
+        await Cmd.Wait(2f);
+        if (GodotObject.IsInstanceValid(center))
+            center.QueueFreeSafely();
+    }
+
+    private static void RestartParticles(Node? root)
+    {
+        if (root == null)
+            return;
+
+        if (root is GpuParticles2D particles)
+            particles.Restart();
+        foreach (Node child in root.GetChildren())
+            RestartParticles(child);
     }
 
     private static void TintCanvasItems(Node node, Color primary, Color secondary)

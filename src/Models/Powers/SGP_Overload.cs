@@ -21,7 +21,7 @@ public sealed class SGP_Overload : PowerModel
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         System.Array.Empty<DynamicVar>();
 
-    public override async Task AfterEnergyReset(Player player)
+    public override async Task AfterEnergyResetLate(Player player)
     {
         if (player != Owner.Player)
             return;

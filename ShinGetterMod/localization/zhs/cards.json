@@ -65,7 +65,7 @@
   "S_G_C_SEIZE_FUTURE.description": "获得{Block:diff()}点[gold]格挡[/gold]。令1张手牌本回合耗能降低1。",
 	"S_G_C_SEIZE_FUTURE.selectionScreenPrompt": "选择 1 张本回合能量消耗降低 1 的手牌。",
   "S_G_C_SPIRIT.title": "气魄",
-  "S_G_C_SPIRIT.description": "获得{VigorPower:diff()}点[gold]活力[/gold]，令{Cards:diff()}张手牌变为[gold]气势[/gold]。",
+  "S_G_C_SPIRIT.description": "获得{VigorPower:diff()}点[gold]活力[/gold]，令{Cards:diff()}张手牌变为[gold]气势{IfUpgraded:show:+}[/gold]。",
 	"S_G_C_SPIRIT.selectionScreenPrompt": "选择要变成气势的手牌。",
   "S_G_C_PARTS_SWAP.title": "部件更换",
   "S_G_C_PARTS_SWAP.description": "选择至多{Cards:diff()}张手牌，与消耗堆中的卡牌交换。",
@@ -147,5 +147,5 @@
   "S_G_C_INFINITE_EVOLUTION.title": "无限进化",
   "S_G_C_INFINITE_EVOLUTION.description": "战斗胜利后，随机获得1点永久[gold]力量[/gold]、[gold]敏捷[/gold]或最大生命。",
   "S_G_C_HOLY_DRAGON_ROAR.title": "圣龙咆哮",
-  "S_G_C_HOLY_DRAGON_ROAR.description": "消耗手牌中所有[gold]盖塔卡牌[/gold]。对所有敌人造成{Damage:diff()}点基础伤害，并为每张消耗的牌叠加{BurnDamage:diff()}点伤害；合计为1次伤害。随后使其[gold]击晕[/gold]。"
+  "S_G_C_HOLY_DRAGON_ROAR.description": "消耗手牌中所有[gold]盖塔卡牌[/gold]。对所有敌人造成{Damage:diff()}点基础伤害，每张消耗的牌叠加{BurnDamage:diff()}点伤害。\n[gold]击晕[/gold]所有敌人。"
 }

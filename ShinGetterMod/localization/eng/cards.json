@@ -65,7 +65,7 @@
   "S_G_C_SEIZE_FUTURE.description": "Gain {Block:diff()} [gold]Block[/gold]. Reduce the cost of 1 card in your hand by 1 this turn.",
   "S_G_C_SEIZE_FUTURE.selectionScreenPrompt": "Choose 1 card to cost 1 less this turn.",
   "S_G_C_SPIRIT.title": "Drive",
-  "S_G_C_SPIRIT.description": "Gain {VigorPower:diff()} [gold]Vigor[/gold]. Transform {Cards:diff()} card(s) in your hand into [gold]Spirit[/gold].",
+  "S_G_C_SPIRIT.description": "Gain {VigorPower:diff()} [gold]Vigor[/gold]. Transform {Cards:diff()} card(s) in your hand into [gold]Spirit{IfUpgraded:show:+}[/gold].",
   "S_G_C_SPIRIT.selectionScreenPrompt": "Choose cards to transform into Spirit.",
   "S_G_C_PARTS_SWAP.title": "Parts Swap",
   "S_G_C_PARTS_SWAP.description": "Choose up to {Cards:diff()} cards in your hand and swap them with cards in your Exhaust pile.",
@@ -147,5 +147,5 @@
   "S_G_C_INFINITE_EVOLUTION.title": "Infinite Evolution",
   "S_G_C_INFINITE_EVOLUTION.description": "After winning combat, randomly gain 1 permanent [gold]Strength[/gold], [gold]Dexterity[/gold], or Max HP.",
   "S_G_C_HOLY_DRAGON_ROAR.title": "Holy Dragon Roar",
-  "S_G_C_HOLY_DRAGON_ROAR.description": "Exhaust all [gold]Getter cards[/gold] in your hand. Deal {Damage:diff()} base damage plus {BurnDamage:diff()} damage for each card Exhausted this way to ALL enemies as a single hit, then [gold]Stun[/gold] them."
+  "S_G_C_HOLY_DRAGON_ROAR.description": "Exhaust all [gold]Getter cards[/gold] in your hand. Deal {Damage:diff()} base damage to ALL enemies. Each card Exhausted adds {BurnDamage:diff()} damage.\n[gold]Stun[/gold] ALL enemies."
 }

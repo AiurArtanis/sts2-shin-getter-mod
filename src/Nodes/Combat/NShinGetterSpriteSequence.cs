@@ -11,12 +11,15 @@ internal static class NShinGetterSpriteSequence
     public const string IdleFrameDirectory = "res://images/characters/shin_getter/forms/getter_one_idle";
     public const string AttackFrameDirectory = "res://images/characters/shin_getter/forms/getter_one_attack";
     public const string CastFrameDirectory = "res://images/characters/shin_getter/forms/getter_one_cast";
+    public const string GetterOneBlockFrameDirectory = "res://images/characters/shin_getter/forms/getter_one_block";
+    public const string GetterOneDashFrameDirectory = "res://images/characters/shin_getter/forms/getter_one_dash";
     public const string DeathFrameDirectory = "res://images/characters/shin_getter/forms/getter_one_death";
     public const string GetterTwoIdleFrameDirectory = "res://images/characters/shin_getter/forms/getter_two_idle";
     public const string GetterTwoAttackFrameDirectory = "res://images/characters/shin_getter/forms/getter_two_attack";
     public const string GetterTwoCastFrameDirectory = "res://images/characters/shin_getter/forms/getter_two_cast";
     public const string GetterTwoBlockFrameDirectory = "res://images/characters/shin_getter/forms/getter_two_block";
     public const string GetterTwoDashFrameDirectory = "res://images/characters/shin_getter/forms/getter_two_dash";
+    public const string GetterTwoDeathFrameDirectory = "res://images/characters/shin_getter/forms/getter_two_death";
     public const string GetterThreeIdleFrameDirectory = "res://images/characters/shin_getter/forms/getter_three_idle";
     public const string GetterThreeAttackFrameDirectory = "res://images/characters/shin_getter/forms/getter_three_attack";
     public const string GetterThreeDashFrameDirectory = "res://images/characters/shin_getter/forms/getter_three_dash";
@@ -24,7 +27,9 @@ internal static class NShinGetterSpriteSequence
     public const string GetterThreeBlockFrameDirectory = "res://images/characters/shin_getter/forms/getter_three_block";
     public const string GetterThreeDeathFrameDirectory = "res://images/characters/shin_getter/forms/getter_three_death";
     public const string ShinDragonIdleFrameDirectory = "res://images/characters/shin_getter/forms/shin_getter_dragon_idle";
+    public const string ShinDragonAttackFrameDirectory = "res://images/characters/shin_getter/forms/shin_getter_dragon_attack";
     public const string ShinDragonCastFrameDirectory = "res://images/characters/shin_getter/forms/shin_getter_dragon_cast";
+    public const string ShinDragonBlockFrameDirectory = "res://images/characters/shin_getter/forms/shin_getter_dragon_block";
     public const string ShinDragonDashFrameDirectory = "res://images/characters/shin_getter/forms/shin_getter_dragon_dash";
     public const string ShinDragonDeathFrameDirectory = "res://images/characters/shin_getter/forms/shin_getter_dragon_death";
     public const string IdleAnimationName = "idle";
@@ -37,12 +42,15 @@ internal static class NShinGetterSpriteSequence
     public const int IdleMaxFrames = 24;
     public const int AttackMaxFrames = 40;
     public const int CastMaxFrames = 32;
+    public const int GetterOneBlockMaxFrames = 24;
+    public const int GetterOneDashMaxFrames = 48;
     public const int DeathMaxFrames = 48;
     public const int GetterTwoIdleMaxFrames = 24;
     public const int GetterTwoAttackMaxFrames = 40;
     public const int GetterTwoCastMaxFrames = 32;
     public const int GetterTwoBlockMaxFrames = 24;
     public const int GetterTwoDashMaxFrames = 48;
+    public const int GetterTwoDeathMaxFrames = 48;
     public const int GetterThreeIdleMaxFrames = 24;
     public const int GetterThreeAttackMaxFrames = 40;
     public const int GetterThreeDashMaxFrames = 48;
@@ -50,7 +58,9 @@ internal static class NShinGetterSpriteSequence
     public const int GetterThreeBlockMaxFrames = 24;
     public const int GetterThreeDeathMaxFrames = 48;
     public const int ShinDragonIdleMaxFrames = 36;
+    public const int ShinDragonAttackMaxFrames = 60;
     public const int ShinDragonCastMaxFrames = 32;
+    public const int ShinDragonBlockMaxFrames = 121;
     public const int ShinDragonDashMaxFrames = 48;
     public const int ShinDragonDeathMaxFrames = 48;
     public const double IdleFramesPerSecond = 24d;
@@ -68,6 +78,8 @@ internal static class NShinGetterSpriteSequence
         SpriteFrames frames = sprite.SpriteFrames;
         LoadLinearAnimation(frames, AttackAnimationName, AttackFrameDirectory, AttackMaxFrames, AttackFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, CastAnimationName, CastFrameDirectory, CastMaxFrames, ActionFramesPerSecond, loop: false);
+        LoadLinearAnimation(frames, BlockAnimationName, GetterOneBlockFrameDirectory, GetterOneBlockMaxFrames, ActionFramesPerSecond, loop: false);
+        LoadLinearAnimation(frames, DashAnimationName, GetterOneDashFrameDirectory, GetterOneDashMaxFrames, ActionFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, DeathAnimationName, DeathFrameDirectory, DeathMaxFrames, ActionFramesPerSecond, loop: false);
     }
 
@@ -89,6 +101,7 @@ internal static class NShinGetterSpriteSequence
         LoadLinearAnimation(frames, CastAnimationName, GetterTwoCastFrameDirectory, GetterTwoCastMaxFrames, ActionFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, BlockAnimationName, GetterTwoBlockFrameDirectory, GetterTwoBlockMaxFrames, ActionFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, DashAnimationName, GetterTwoDashFrameDirectory, GetterTwoDashMaxFrames, ActionFramesPerSecond, loop: false);
+        LoadLinearAnimation(frames, DeathAnimationName, GetterTwoDeathFrameDirectory, GetterTwoDeathMaxFrames, ActionFramesPerSecond, loop: false);
     }
 
     public static void EnsureGetterTwoIdleLoaded(AnimatedSprite2D sprite)
@@ -126,7 +139,9 @@ internal static class NShinGetterSpriteSequence
     {
         EnsureShinDragonIdleLoaded(sprite);
         SpriteFrames frames = sprite.SpriteFrames;
+        LoadLinearAnimation(frames, AttackAnimationName, ShinDragonAttackFrameDirectory, ShinDragonAttackMaxFrames, AttackFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, CastAnimationName, ShinDragonCastFrameDirectory, ShinDragonCastMaxFrames, ActionFramesPerSecond, loop: false);
+        LoadLinearAnimation(frames, BlockAnimationName, ShinDragonBlockFrameDirectory, ShinDragonBlockMaxFrames, ActionFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, DashAnimationName, ShinDragonDashFrameDirectory, ShinDragonDashMaxFrames, ActionFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, DeathAnimationName, ShinDragonDeathFrameDirectory, ShinDragonDeathMaxFrames, ActionFramesPerSecond, loop: false);
     }

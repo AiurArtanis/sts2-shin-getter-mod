@@ -65,7 +65,7 @@
   "S_G_C_SEIZE_FUTURE.description": "{Block:diff()}[gold]ブロック[/gold]を得る。手札1枚のこのターン中のコストを1減らす。",
   "S_G_C_SEIZE_FUTURE.selectionScreenPrompt": "このターン中コストが1減る手札を1枚選ぶ。",
   "S_G_C_SPIRIT.title": "気迫",
-  "S_G_C_SPIRIT.description": "[gold]活力[/gold]を{VigorPower:diff()}得る。手札のカード{Cards:diff()}枚を[gold]気合[/gold]に変える。",
+  "S_G_C_SPIRIT.description": "[gold]活力[/gold]を{VigorPower:diff()}得る。手札のカード{Cards:diff()}枚を[gold]気合{IfUpgraded:show:+}[/gold]に変える。",
   "S_G_C_SPIRIT.selectionScreenPrompt": "気合に変える手札を選ぶ。",
   "S_G_C_PARTS_SWAP.title": "パーツ交換",
   "S_G_C_PARTS_SWAP.description": "手札から最大{Cards:diff()}枚を選び、廃棄パイルのカードと交換する。",
@@ -147,5 +147,5 @@
   "S_G_C_INFINITE_EVOLUTION.title": "無限進化",
   "S_G_C_INFINITE_EVOLUTION.description": "戦闘勝利後、[gold]筋力[/gold]、[gold]敏捷[/gold]、最大HPのいずれかをランダムに1永久に得る。",
   "S_G_C_HOLY_DRAGON_ROAR.title": "聖龍咆哮",
-  "S_G_C_HOLY_DRAGON_ROAR.description": "手札の[gold]ゲッターカード[/gold]をすべて廃棄する。敵全体に{Damage:diff()}の基本ダメージと、廃棄したカード1枚につき{BurnDamage:diff()}の追加ダメージを合算して1回で与え、その後[gold]スタン[/gold]させる。"
+  "S_G_C_HOLY_DRAGON_ROAR.description": "手札の[gold]ゲッターカード[/gold]をすべて廃棄する。すべての敵に{Damage:diff()}の基本ダメージを与え、廃棄したカード1枚につき{BurnDamage:diff()}ダメージを加算する。\nすべての敵を[gold]スタン[/gold]させる。"
 }

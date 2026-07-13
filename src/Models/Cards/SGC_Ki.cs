@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
@@ -39,7 +40,7 @@ public sealed class SGC_Ki : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await ShinGetterCombatVfx.PlayKiAura(Owner.Creature);
+        _ = TaskHelper.RunSafely(ShinGetterCombatVfx.PlayKiAura(Owner.Creature));
         await PowerCmd.Apply<SGP_Ki>(choiceContext, Owner.Creature, DynamicVars["SGP_Ki"].BaseValue, Owner.Creature, this);
         await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, DynamicVars["VigorPower"].BaseValue, Owner.Creature, this);
     }

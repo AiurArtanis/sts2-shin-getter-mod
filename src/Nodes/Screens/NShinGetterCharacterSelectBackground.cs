@@ -11,6 +11,7 @@ public partial class NShinGetterCharacterSelectBackground : Control
     public override void _Ready()
     {
         MouseFilter = MouseFilterEnum.Ignore;
+        SetAnchorsPreset(Control.LayoutPreset.TopLeft);
         FitToGameViewport();
     }
 
