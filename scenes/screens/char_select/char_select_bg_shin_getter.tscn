@@ -1,14 +1,16 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=2 format=3]
 
 [ext_resource type="Texture2D" path="res://animations/character_select/shin_getter/character_select_shin_getter_bg.png" id="1_bg"]
-[ext_resource type="Script" path="res://src/Nodes/Screens/NShinGetterCharacterSelectBackground.cs" id="2_fitter"]
 
 [node name="ShinGetterBg" type="Control"]
-layout_mode = 0
-anchors_preset = 0
-script = ExtResource("2_fitter")
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="Background" type="TextureRect" parent="."]
+[node name="Portrait" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

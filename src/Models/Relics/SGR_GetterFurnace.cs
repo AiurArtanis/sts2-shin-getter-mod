@@ -6,7 +6,6 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Saves.Runs;
-using ShinGetterMod.Audio;
 using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Relics;
@@ -40,7 +39,6 @@ public sealed class SGR_GetterFurnace : ShinGetterRelicBase
     public override async Task BeforeCombatStart()
     {
         Flash();
-        ShinGetterVoiceService.PlayCombatStart(Owner);
         await PowerCmd.Apply<SGP_ShinGetterOne>(
             new ThrowingPlayerChoiceContext(), Owner.Creature, 1m, Owner.Creature, null);
         await PowerCmd.Apply<SGP_Ki>(
