@@ -48,7 +48,7 @@ public sealed class SGC_Spirit : ShinGetterCardBase
 
     private CardModel CreateKiCard()
     {
-        CardModel ki = Owner.RunState.CreateCard<SGC_Ki>(Owner);
+        CardModel ki = CardScope.CreateCard<SGC_Ki>(Owner);
         if (IsUpgraded)
             CardCmd.Upgrade(ki);
         return ki;

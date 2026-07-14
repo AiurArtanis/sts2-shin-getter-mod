@@ -174,17 +174,17 @@ public sealed class SGE_GetterMandala : EventModel
     private async Task SelectAndEnchant<T>(Func<CardModel, bool> cardFilter, string pageName)
         where T : EnchantmentModel
     {
-        var prefs = new CardSelectorPrefs(CardSelectorPrefs.EnchantSelectionPrompt, 1);
+        var prefs = new CardSelectorPrefs(CardSelectorPrefs.EnchantSelectionPrompt, 0, 3);
         EnchantmentModel enchantment = ModelDb.Enchantment<T>();
         Player owner = EventOwner;
-        CardModel? card = (await CardSelectCmd.FromDeckForEnchantment(
+        IEnumerable<CardModel> cards = await CardSelectCmd.FromDeckForEnchantment(
             owner,
             enchantment,
             1,
             card => card != null && cardFilter(card),
-            prefs)).FirstOrDefault();
+            prefs);
 
-        if (card != null)
+        foreach (CardModel card in cards)
             await ApplyEnchantment<T>(card, 1);
 
         Finish(pageName);

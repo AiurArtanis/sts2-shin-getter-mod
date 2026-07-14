@@ -55,8 +55,10 @@ public sealed class SGC_HolyDragonRoar : ShinGetterCardBase
         var combatState = CombatState
             ?? throw new InvalidOperationException("Holy Dragon Roar requires an active combat state.");
 
-        List<CardModel> getterCards = PileType.Hand.GetPile(Owner).Cards
-            .Where(card => card != this && card is ShinGetterCardBase)
+        List<CardModel> getterCards = new[] { PileType.Draw, PileType.Hand, PileType.Discard }
+            .SelectMany(pileType => pileType.GetPile(Owner).Cards)
+            .Where(card => card != this
+                && card.GetType().Name.Contains("Getter", StringComparison.Ordinal))
             .ToList();
         foreach (CardModel card in getterCards)
             await CardCmd.Exhaust(choiceContext, card);
@@ -67,7 +69,7 @@ public sealed class SGC_HolyDragonRoar : ShinGetterCardBase
         await DamageCmd.Attack(totalDamage).FromCard(this)
             .TargetingAllOpponents(combatState)
             .WithNoAttackerAnim()
-            .BeforeDamage(() => ShinGetterCombatVfx.PlayHolyDragonRoar(Owner.Creature))
+            .BeforeDamage(() => ShinGetterCombatVfx.PlayHolyDragonRoarAtScreenCenter(Owner.Creature))
             .WithHitFx("vfx/vfx_starry_impact")
             .Execute(choiceContext);
 

@@ -7,6 +7,8 @@ namespace ShinGetterMod.Nodes.Combat;
 
 internal static class NShinGetterSpriteAnimationStateMachine
 {
+    internal const float ShinDragonBlockScale = 0.75f;
+
     private static readonly ConditionalWeakTable<AnimatedSprite2D, State> States = new();
 
     public static bool TryPlay(AnimatedSprite2D sprite, string trigger) =>
@@ -50,14 +52,27 @@ internal static class NShinGetterSpriteAnimationStateMachine
 
         if (animationName == NShinGetterSpriteSequence.DeathAnimationName)
         {
+            RestoreOneShotScale(sprite, state);
             state.ActiveOneShotAnimation = string.Empty;
+            state.NextActionSpeedScale = 1f;
+            sprite.SpeedScale = 1f;
             sprite.Play(animationName);
             return true;
         }
 
+        RestoreOneShotScale(sprite, state);
+        ApplyOneShotScale(sprite, state, animationName);
         state.ActiveOneShotAnimation = animationName;
+        sprite.SpeedScale = state.NextActionSpeedScale;
+        state.NextActionSpeedScale = 1f;
         sprite.Play(animationName);
         return true;
+    }
+
+    public static void QueueNextActionSpeed(AnimatedSprite2D sprite, float speedScale)
+    {
+        State state = States.GetOrCreateValue(sprite);
+        state.NextActionSpeedScale = Math.Max(1f, speedScale);
     }
 
     public static void PlayIdle(AnimatedSprite2D sprite) =>
@@ -97,6 +112,7 @@ internal static class NShinGetterSpriteAnimationStateMachine
 
     private static void PlayIdle(AnimatedSprite2D sprite, State state)
     {
+        RestoreOneShotScale(sprite, state);
         state.ActiveOneShotAnimation = string.Empty;
         if (sprite.SpriteFrames?.HasAnimation(NShinGetterSpriteSequence.IdleAnimationName) == true)
         {
@@ -106,9 +122,34 @@ internal static class NShinGetterSpriteAnimationStateMachine
         }
     }
 
+    private static void ApplyOneShotScale(AnimatedSprite2D sprite, State state, string animationName)
+    {
+        if (sprite.Name != "ShinDragon"
+            || animationName != NShinGetterSpriteSequence.BlockAnimationName)
+        {
+            return;
+        }
+
+        state.ScaleBeforeOneShot = sprite.Scale;
+        state.HasTemporaryScale = true;
+        sprite.Scale *= ShinDragonBlockScale;
+    }
+
+    private static void RestoreOneShotScale(AnimatedSprite2D sprite, State state)
+    {
+        if (!state.HasTemporaryScale)
+            return;
+
+        sprite.Scale = state.ScaleBeforeOneShot;
+        state.HasTemporaryScale = false;
+    }
+
     private sealed class State
     {
         public bool SignalConnected;
         public string ActiveOneShotAnimation = string.Empty;
+        public float NextActionSpeedScale = 1f;
+        public bool HasTemporaryScale;
+        public Vector2 ScaleBeforeOneShot;
     }
 }

@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Godot;
 using MegaCrit.Sts2.Core.Commands;
@@ -46,7 +47,11 @@ internal enum ShinGetterVoiceCue
 internal static class ShinGetterVoiceService
 {
     private const string AudioRoot = "res://audio/sfx/characters/shin_getter/voices/";
+    private const float ShiningSparkIntroDurationSeconds = 1.578667f;
+    private const float ShiningSparkFollowUpDurationSeconds = 1.728f;
     internal const string TransformSfxPath = AudioRoot + "transform.wav";
+
+    private static readonly ConditionalWeakTable<Player, ShiningSparkVoiceState> ShiningSparkVoiceStates = new();
 
     private sealed record VoiceLine(
         ShinGetterVoiceCue Cue,
@@ -192,7 +197,6 @@ internal static class ShinGetterVoiceService
             SGC_Spirit or SGC_SuperKi or SGC_AwakenedSoul or SGC_GetterNova or SGC_GetterRayOverflow => Lines[ShinGetterVoiceCue.Roar],
             SGC_Desperation => Lines[ShinGetterVoiceCue.StayToTheEnd],
             SGC_StarSlash => Lines[ShinGetterVoiceCue.StarSlash],
-            SGC_ShiningSpark => Lines[ShinGetterVoiceCue.ShiningSpark],
             SGC_StonerSunshine => Lines[ShinGetterVoiceCue.GetterShine],
             SGC_HotBlood or SGC_FightingSpirit => Lines[ShinGetterVoiceCue.HotBlood],
             SGC_Avalanche => Lines[ShinGetterVoiceCue.Avalanche],
@@ -245,6 +249,53 @@ internal static class ShinGetterVoiceService
         TryPlayOneTime(player, Lines[ShinGetterVoiceCue.ChangeGetterOneSwitchOn]);
     }
 
+    internal static void ResetCombatVoiceHistory(Player player)
+    {
+        foreach (Player runPlayer in player.RunState.Players)
+        {
+            if (runPlayer.Character is not ShinGetter)
+                continue;
+
+            SetPlayedVoiceMask(runPlayer, 0);
+            ShiningSparkVoiceStates.GetOrCreateValue(runPlayer).ShouldPlayFollowUp = false;
+        }
+    }
+
+    internal static async Task PlayShiningSparkIntro(Player player)
+    {
+        ShiningSparkVoiceState state = ShiningSparkVoiceStates.GetOrCreateValue(player);
+        state.ShouldPlayFollowUp = false;
+
+        VoiceLine line = Lines[ShinGetterVoiceCue.ShiningSpark];
+        if (!TryClaimVoiceCue(player, line.Cue)
+            || !TryPlayAudio(AudioRoot + line.AudioFile))
+        {
+            return;
+        }
+
+        PlaySubtitle(player, line.LocalizationKey);
+        state.ShouldPlayFollowUp = true;
+        await Cmd.Wait(ShiningSparkIntroDurationSeconds);
+    }
+
+    internal static async Task PlayShiningSparkFollowUp(Player player)
+    {
+        ShiningSparkVoiceState state = ShiningSparkVoiceStates.GetOrCreateValue(player);
+        if (!state.ShouldPlayFollowUp)
+            return;
+
+        state.ShouldPlayFollowUp = false;
+        VoiceLine line = Lines[ShinGetterVoiceCue.ShiningSpark];
+        if (line.FollowUpAudioFile == null
+            || !TryPlayAudio(AudioRoot + line.FollowUpAudioFile))
+        {
+            return;
+        }
+
+        PlaySubtitle(player, line.FollowUpLocalizationKey);
+        await Cmd.Wait(ShiningSparkFollowUpDurationSeconds);
+    }
+
     internal static void PlayAudio(string path, float volume = 1f)
     {
         TryPlayAudio(path, volume);
@@ -283,9 +334,6 @@ internal static class ShinGetterVoiceService
             return false;
 
         PlaySubtitle(player, line.LocalizationKey);
-
-        if (line.FollowUpAudioFile != null)
-            TaskHelper.RunSafely(PlayFollowUp(player, line));
 
         return true;
     }
@@ -349,13 +397,6 @@ internal static class ShinGetterVoiceService
             fragment.PlayedVoiceMask = playedMask;
     }
 
-    private static async Task PlayFollowUp(Player player, VoiceLine line)
-    {
-        await Cmd.Wait(0.2f);
-        if (TryPlayAudio(AudioRoot + line.FollowUpAudioFile))
-            PlaySubtitle(player, line.FollowUpLocalizationKey);
-    }
-
     private static void PlaySubtitle(Player player, string? localizationKey)
     {
         if (localizationKey == null)
@@ -365,5 +406,10 @@ internal static class ShinGetterVoiceService
             new LocString("characters", localizationKey),
             player.Creature,
             player.Character.SpeechBubbleColor);
+    }
+
+    private sealed class ShiningSparkVoiceState
+    {
+        public bool ShouldPlayFollowUp;
     }
 }

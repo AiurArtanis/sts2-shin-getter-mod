@@ -27,7 +27,7 @@ public sealed class SGC_GetterBeam : ShinGetterCardBase
         new CalculationBaseVar(8m),
         new ExtraDamageVar(1m),
         new CalculatedDamageVar(ValueProp.Move).WithMultiplier(GetGetterBeamBonus),
-        new DynamicVar("Wane", 1m),
+        new DynamicVar("Wane", 2m),
     };
 
     public SGC_GetterBeam()
@@ -58,7 +58,7 @@ public sealed class SGC_GetterBeam : ShinGetterCardBase
     protected override void OnUpgrade()
     {
         DynamicVars.CalculationBase.UpgradeValueBy(2m);
-        DynamicVars["Wane"].UpgradeValueBy(2m);
+        DynamicVars["Wane"].UpgradeValueBy(1m);
     }
 
     private static decimal GetGetterBeamBonus(CardModel card, Creature? _) =>

@@ -32,6 +32,7 @@ public sealed class SGC_GetterClaw : ShinGetterCardBase
             .FromCard(this)
             .Targeting(cardPlay.Target)
             .WithHitCount(hitCount)
+            .AfterAttackerAnim(AccelerateFollowupAnimations(hitCount))
             .WithHitFx("vfx/vfx_attack_slash")
             .Execute(choiceContext);
     }

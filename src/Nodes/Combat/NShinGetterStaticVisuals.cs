@@ -55,7 +55,26 @@ public static class NShinGetterStaticVisuals
         return TryPlayVisibleFormActionAnimation(creatureNode, trigger);
     }
 
-    public static async Task PlayShiningSparkFollowup(Creature creature, int hitCount)
+    public static bool QueueNextActionSpeed(Creature creature, float speedScale)
+    {
+        var creatureNode = NCombatRoom.Instance?.GetCreatureNode(creature);
+        if (creatureNode == null)
+            return false;
+
+        foreach (var formAnimation in GetFormAnimations(creatureNode))
+        {
+            AnimatedSprite2D sprite = formAnimation.Sprite;
+            if (!sprite.Visible || sprite.Modulate.A <= 0.01f)
+                continue;
+
+            NShinGetterSpriteAnimationStateMachine.QueueNextActionSpeed(sprite, speedScale);
+            return true;
+        }
+
+        return false;
+    }
+
+    public static async Task PlayAcceleratedFollowupAnimation(Creature creature, float speedScale)
     {
         var creatureNode = NCombatRoom.Instance?.GetCreatureNode(creature);
         if (creatureNode == null)
@@ -67,12 +86,9 @@ public static class NShinGetterStaticVisuals
             if (!sprite.Visible || sprite.Modulate.A <= 0.01f)
                 continue;
 
-            float previousSpeed = sprite.SpeedScale;
-            sprite.SpeedScale = Mathf.Clamp(1.5f + hitCount * 0.12f, 1.5f, 3f);
+            NShinGetterSpriteAnimationStateMachine.QueueNextActionSpeed(sprite, speedScale);
             TryPlayVisibleActionAnimation(sprite, "Attack", formAnimation.EnsureLoaded);
             await Cmd.CustomScaledWait(0.12f, 0.18f);
-            if (GodotObject.IsInstanceValid(sprite))
-                sprite.SpeedScale = previousSpeed;
             return;
         }
     }

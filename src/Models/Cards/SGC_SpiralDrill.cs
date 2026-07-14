@@ -33,6 +33,8 @@ public sealed class SGC_SpiralDrill : ShinGetterCardBase
             for (int i = 0; i < 4 && cardPlay.Target.IsAlive; i++)
             {
                 await CreatureCmd.Damage(choiceContext, cardPlay.Target, DynamicVars.Damage.BaseValue, damageProps, this);
+                if (i < 3 && cardPlay.Target.IsAlive)
+                    await PlayAcceleratedFollowupAnimation();
             }
             if (Owner.Creature.GetPower<SGP_HotBlood>() is { } hotBlood)
                 await hotBlood.ConsumeForCardDamage(choiceContext, this, ValueProp.Move | ValueProp.Unblockable);
@@ -40,7 +42,9 @@ public sealed class SGC_SpiralDrill : ShinGetterCardBase
         else
         {
             await DamageCmd.Attack(DynamicVars.Damage.BaseValue).WithHitCount(4).FromCard(this)
-                .Targeting(cardPlay.Target).WithHitFx("vfx/vfx_heavy_blunt").Execute(choiceContext);
+                .Targeting(cardPlay.Target)
+                .AfterAttackerAnim(AccelerateFollowupAnimations(4))
+                .WithHitFx("vfx/vfx_heavy_blunt").Execute(choiceContext);
         }
     }
 

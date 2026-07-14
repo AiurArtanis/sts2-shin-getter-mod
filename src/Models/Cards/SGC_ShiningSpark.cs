@@ -7,8 +7,8 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using MegaCrit.Sts2.Core.Models.Powers;
+using ShinGetterMod.Audio;
 using ShinGetterMod.Models.Powers;
-using ShinGetterMod.Nodes.Combat;
 using ShinGetterMod.Nodes.Vfx;
 
 namespace ShinGetterMod.Models.Cards;
@@ -21,8 +21,8 @@ public sealed class SGC_ShiningSpark : ShinGetterCardBase
 {
 	protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
 	{
-		new DamageVar(10m, ValueProp.Move),
-		new DynamicVar("KiDamage", 5m),
+		new DamageVar(11m, ValueProp.Move),
+		new DynamicVar("KiDamage", 6m),
 	};
 
 	public SGC_ShiningSpark()
@@ -36,25 +36,31 @@ public sealed class SGC_ShiningSpark : ShinGetterCardBase
 		await PowerCmd.Apply<VulnerablePower>(choiceContext, Owner.Creature, 2m, Owner.Creature, this);
 		await PowerCmd.Apply<FrailPower>(choiceContext, Owner.Creature, 2m, Owner.Creature, this);
 		await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
-			.BeforeDamage(() => PlayMovementVfx(async () =>
+			.WithNoAttackerAnim()
+			.BeforeDamage(async () =>
 			{
-				await ShinGetterCombatVfx.PlayWhiteFlash(Owner.Creature);
-				await ShinGetterCombatVfx.PlayRush(Owner.Creature, cardPlay.Target, whiteFlash: true);
-			}))
+				await Task.WhenAll(
+					ShinGetterCombatVfx.PlayWhiteFlash(Owner.Creature),
+					ShinGetterVoiceService.PlayShiningSparkIntro(Owner));
+				await Cmd.Wait(0.2f);
+				await Task.WhenAll(
+					PlayMovementVfx(() => ShinGetterCombatVfx.PlayRush(Owner.Creature, cardPlay.Target, whiteFlash: true)),
+					ShinGetterVoiceService.PlayShiningSparkFollowUp(Owner));
+			})
 			.WithHitFx("vfx/vfx_starry_impact").Execute(choiceContext);
 		int ki = Owner.Creature.GetPower<SGP_Ki>()?.Amount ?? 0;
 		if (ki > 0)
 		{
 			await DamageCmd.Attack(DynamicVars["KiDamage"].BaseValue).WithHitCount(ki).FromCard(this)
 				.TargetingRandomOpponents(CombatState)
-				.BeforeDamage(() => NShinGetterStaticVisuals.PlayShiningSparkFollowup(Owner.Creature, ki))
+				.AfterAttackerAnim(AccelerateFollowupAnimations(ki))
 				.WithHitFx("vfx/vfx_attack_lightning").Execute(choiceContext);
 		}
 	}
 
 	protected override void OnUpgrade()
 	{
-		base.DynamicVars.Damage.UpgradeValueBy(4m);
+		base.DynamicVars.Damage.UpgradeValueBy(3m);
 		DynamicVars["KiDamage"].UpgradeValueBy(3m);
 	}
 }

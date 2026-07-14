@@ -23,6 +23,7 @@ namespace ShinGetterMod.Nodes.Vfx;
 internal static partial class ShinGetterCombatVfx
 {
     private const string VineShamblerVinesScenePath = "res://scenes/vfx/monsters/vine_shambler_vines/vine_shambler_vines_vfx.tscn";
+    private const string AwakenedSoulFlashTexturePath = "res://images/powers/s_g_p_awakened_soul.png";
 
     public static async Task PlayDiveStrike(Creature owner, Creature target)
     {
@@ -190,7 +191,15 @@ internal static partial class ShinGetterCombatVfx
         if (node == null)
             return;
 
-        Node2D sign = CreateNewtypeSign();
+        Texture2D? texture = ResourceLoader.Load<Texture2D>(AwakenedSoulFlashTexturePath);
+        if (texture == null)
+            return;
+
+        Sprite2D sign = new()
+        {
+            Texture = texture,
+            Centered = true,
+        };
         sign.GlobalPosition = node.VfxSpawnPosition + Vector2.Up * 128f;
         NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(sign);
         Tween tween = sign.CreateTween().SetParallel();
@@ -472,24 +481,6 @@ internal static partial class ShinGetterCombatVfx
         spark.Position = Vector2.Right.Rotated(angle) * distance;
         return spark;
     }
-    private static Node2D CreateNewtypeSign()
-    {
-        Node2D root = new();
-        Color gold = new(1f, 0.84f, 0.12f, 1f);
-        Color white = new(1f, 1f, 0.82f, 1f);
-        root.AddChild(CreateSlashLine(new Vector2(-54f, -22f), new Vector2(0f, -68f), gold, 8f));
-        root.AddChild(CreateSlashLine(new Vector2(0f, -68f), new Vector2(54f, -22f), gold, 8f));
-        root.AddChild(CreateSlashLine(new Vector2(-38f, -4f), new Vector2(0f, -38f), white, 4f));
-        root.AddChild(CreateSlashLine(new Vector2(0f, -38f), new Vector2(38f, -4f), white, 4f));
-        root.AddChild(CreateCircle(46f, gold, 4f, 0.58f));
-        for (int i = 0; i < 8; i++)
-        {
-            Vector2 dir = Vector2.Right.Rotated(Mathf.Tau * i / 8f);
-            root.AddChild(CreateSlashLine(dir * 54f, dir * 84f, i % 2 == 0 ? gold : white, 4f));
-        }
-        return root;
-    }
-
     private static Node2D CreateNewtypeSenseWave()
     {
         Node2D root = new();

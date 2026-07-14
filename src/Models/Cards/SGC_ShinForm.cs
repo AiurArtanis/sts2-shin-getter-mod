@@ -63,7 +63,6 @@ public sealed class SGC_ShinForm : ShinGetterCardBase
             return;
         }
 
-        ShinGetterVoiceService.PlayShinDragonTransform(Owner);
         await NShinGetterStaticVisuals.PlayShinFormTransformVfx(creature);
 
         ShinGetterCardFramePatch.BeginFormTransitionToShinDragon();
@@ -82,6 +81,7 @@ public sealed class SGC_ShinForm : ShinGetterCardBase
 
             // 变形为真化形态
             await PowerCmd.Apply<SGP_ShinForm>(choiceContext, creature, 1m, creature, this);
+            ShinGetterVoiceService.PlayShinDragonTransform(Owner);
         }
         finally
         {

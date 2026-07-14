@@ -36,6 +36,8 @@ internal static class ShinGetterCardFramePatch
     private static PendingFrameForm? PendingTransitionForm;
     private static int DefaultTintOverrideDepth;
 
+    internal static bool IsFormTransitionActive => _formTransitionDepth > 0;
+
     private enum PendingFrameForm
     {
         Getter1,

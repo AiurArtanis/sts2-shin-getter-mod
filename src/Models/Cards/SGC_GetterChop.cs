@@ -29,6 +29,7 @@ public sealed class SGC_GetterChop : ShinGetterCardBase
         await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
         if (cardPlay.Target.IsAlive)
         {
+            await QueueAcceleratedFollowupAnimation();
             await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
         }
     }

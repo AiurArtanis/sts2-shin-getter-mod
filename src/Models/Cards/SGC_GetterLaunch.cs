@@ -13,11 +13,14 @@ namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
 /// 盖塔出击 | 技能 | 初始 | 1费 | 初始
-/// 获得 2 气力，变形
+/// 获得 1 气力，变形
 /// </summary>
 public sealed class SGC_GetterLaunch : ShinGetterCardBase
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars => System.Array.Empty<DynamicVar>();
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
+    {
+        new PowerVar<SGP_Ki>(1m),
+    };
 
     public SGC_GetterLaunch()
         : base(1, CardType.Skill, CardRarity.Basic, TargetType.Self)
@@ -26,8 +29,12 @@ public sealed class SGC_GetterLaunch : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // 获得 2 气力
-        await PowerCmd.Apply<SGP_Ki>(choiceContext, base.Owner.Creature, 2m, base.Owner.Creature, this);
+        await PowerCmd.Apply<SGP_Ki>(
+            choiceContext,
+            base.Owner.Creature,
+            DynamicVars["SGP_Ki"].BaseValue,
+            base.Owner.Creature,
+            this);
 
         // 变形到下一形态
         await Transform(choiceContext, base.Owner, this);
@@ -35,6 +42,6 @@ public sealed class SGC_GetterLaunch : ShinGetterCardBase
 
     protected override void OnUpgrade()
     {
-        base.EnergyCost.UpgradeBy(-1);
+        DynamicVars["SGP_Ki"].UpgradeValueBy(1m);
     }
 }

@@ -290,29 +290,60 @@ internal static partial class ShinGetterCombatVfx
         await Cmd.Wait(0.36f);
     }
 
-    public static Task PlayHolyDragonRoar(Creature creature) =>
-        PlayForbiddenIncantationAura(
-            creature,
+    public static Task PlayHolyDragonRoarAtScreenCenter(Creature creature)
+    {
+        const float scaleMultiplier = 1.3f;
+        NGame? game = NGame.Instance;
+        if (game == null)
+            return Task.CompletedTask;
+
+        VfxCmd.PlayOnCreatureCenter(creature, "vfx/vfx_scream");
+        return PlayForbiddenIncantationAuraAtPosition(
+            game.GetViewportRect().Size * 0.5f,
             GetterRay,
             duration: 0.72f,
             radius: 520f,
             ringCount: 4,
             rayCount: 32,
             shakeStrength: ShakeStrength.Strong,
-            withLightning: true);
+            withLightning: true,
+            scaleMultiplier: scaleMultiplier);
+    }
 
-    private static async Task PlayForbiddenIncantationAura(Creature creature, Color color, float duration, float radius, int ringCount, int rayCount, ShakeStrength shakeStrength, bool withLightning = false)
+    private static Task PlayForbiddenIncantationAura(Creature creature, Color color, float duration, float radius, int ringCount, int rayCount, ShakeStrength shakeStrength, bool withLightning = false)
     {
         NCreature? node = NCombatRoom.Instance?.GetCreatureNode(creature);
         if (node == null)
-            return;
+            return Task.CompletedTask;
 
         VfxCmd.PlayOnCreatureCenter(creature, "vfx/vfx_scream");
+        return PlayForbiddenIncantationAuraAtPosition(
+            node.VfxSpawnPosition,
+            color,
+            duration,
+            radius,
+            ringCount,
+            rayCount,
+            shakeStrength,
+            withLightning);
+    }
+
+    private static async Task PlayForbiddenIncantationAuraAtPosition(
+        Vector2 position,
+        Color color,
+        float duration,
+        float radius,
+        int ringCount,
+        int rayCount,
+        ShakeStrength shakeStrength,
+        bool withLightning = false,
+        float scaleMultiplier = 1f)
+    {
         NGame.Instance?.ScreenShake(shakeStrength, ShakeDuration.Short);
         Node2D root = new()
         {
-            GlobalPosition = node.VfxSpawnPosition,
-            Scale = Vector2.One * 0.62f,
+            GlobalPosition = position,
+            Scale = Vector2.One * 0.62f * scaleMultiplier,
         };
 
         for (int i = 0; i < ringCount; i++)
@@ -334,7 +365,7 @@ internal static partial class ShinGetterCombatVfx
 
         NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(root);
         Tween tween = root.CreateTween().SetParallel();
-        tween.TweenProperty(root, "scale", Vector2.One * (1.12f + ringCount * 0.12f), duration).SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Cubic);
+        tween.TweenProperty(root, "scale", Vector2.One * (1.12f + ringCount * 0.12f) * scaleMultiplier, duration).SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Cubic);
         tween.TweenProperty(root, "modulate:a", 0f, duration).SetEase(Tween.EaseType.In);
         tween.Chain().TweenCallback(Callable.From(root.QueueFreeSafely));
         await Cmd.Wait(duration);

@@ -42,6 +42,9 @@ public sealed class SGC_GetterMissile : ShinGetterCardBase
                 if (damageTaken > 0)
                     await CreatureCmd.GainBlock(Owner.Creature, damageTaken, ValueProp.Unpowered, cardPlay);
             }
+
+            if (i < 3 && HasLivingEnemyTargets())
+                await PlayAcceleratedFollowupAnimation();
         }
     }
 

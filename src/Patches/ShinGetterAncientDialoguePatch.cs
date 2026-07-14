@@ -4,13 +4,14 @@ using System.Linq;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Ancients;
 using MegaCrit.Sts2.Core.Localization;
+using MegaCrit.Sts2.Core.Models;
 
 namespace ShinGetterMod.Patches;
 
 [HarmonyPatch(typeof(AncientDialogueSet), nameof(AncientDialogueSet.PopulateLocKeys))]
 internal static class ShinGetterAncientDialoguePatch
 {
-    private const string ShinGetterKey = "SHIN_GETTER";
+    internal const string ShinGetterKey = "SHIN_GETTER";
     private const int MaxDialoguesToProbe = 8;
     private const int MaxLinesToProbe = 8;
 
@@ -27,7 +28,7 @@ internal static class ShinGetterAncientDialoguePatch
 
             AncientDialogue dialogue = new(Enumerable.Repeat("", lineCount).ToArray())
             {
-                IsRepeating = true,
+                VisitIndex = dialogueIndex,
                 EndAttackers = ancientEntry == "THE_ARCHITECT"
                     ? ArchitectAttackers.Player
                     : ArchitectAttackers.None
@@ -36,7 +37,10 @@ internal static class ShinGetterAncientDialoguePatch
         }
 
         if (dialogues.Count > 0)
+        {
+            dialogues[^1].IsRepeating = true;
             __instance.CharacterDialogues[ShinGetterKey] = dialogues;
+        }
     }
 
     private static int CountLines(string ancientEntry, int dialogueIndex)
@@ -60,4 +64,30 @@ internal static class ShinGetterAncientDialoguePatch
         || LocString.Exists("ancients", baseKey + "r.ancient")
         || LocString.Exists("ancients", baseKey + "r.char");
 
+}
+
+[HarmonyPatch(typeof(AncientDialogueSet), nameof(AncientDialogueSet.GetValidDialogues))]
+internal static class ShinGetterAncientDialogueFallbackPatch
+{
+    private static void Postfix(
+        AncientDialogueSet __instance,
+        ModelId characterId,
+        int charVisits,
+        ref IEnumerable<AncientDialogue> __result)
+    {
+        List<AncientDialogue> validDialogues = __result.ToList();
+        if (validDialogues.Count > 0
+            || characterId.Entry != ShinGetterAncientDialoguePatch.ShinGetterKey
+            || !__instance.CharacterDialogues.TryGetValue(characterId.Entry, out IReadOnlyList<AncientDialogue>? dialogues))
+        {
+            __result = validDialogues;
+            return;
+        }
+
+        AncientDialogue? fallback = dialogues.LastOrDefault(dialogue =>
+            dialogue.IsRepeating
+            && (!dialogue.VisitIndex.HasValue || charVisits >= dialogue.VisitIndex.Value));
+        if (fallback != null)
+            __result = new[] { fallback };
+    }
 }

@@ -29,6 +29,8 @@ namespace ShinGetterMod.Models.Cards;
 public abstract class ShinGetterCardBase : CardModel
 {
     private const float OrdinaryAttackEffectDelaySeconds = 0.5f;
+    private const float DashChargeDelaySeconds = 0.8f;
+    private const float AcceleratedFollowupSpeedScale = 2f;
 
     private static readonly IReadOnlyDictionary<string, Func<CardModel, IHoverTip>> TermTips =
         new Dictionary<string, Func<CardModel, IHoverTip>>
@@ -57,7 +59,7 @@ public abstract class ShinGetterCardBase : CardModel
             ["二号机"] = _ => HoverTipFactory.FromPower<SGP_ShinGetterTwo>(),
             ["三号机"] = _ => HoverTipFactory.FromPower<SGP_ShinGetterThree>(),
             ["真化形态"] = _ => HoverTipFactory.FromPower<SGP_ShinForm>(),
-            ["气势"] = _ => HoverTipFactory.FromCard<SGC_Ki>(),
+            ["气势"] = card => HoverTipFactory.FromCard<SGC_Ki>(card is SGC_Spirit && card.IsUpgraded),
             ["放射能"] = _ => HoverTipFactory.FromCard<SGC_Radiated>(),
             ["变形"] = _ => CustomTip("SHIN_GETTER_TRANSFORM"),
             ["精神"] = _ => CustomTip("SHIN_GETTER_SPIRIT_COMMAND"),
@@ -76,7 +78,7 @@ public abstract class ShinGetterCardBase : CardModel
             ["SGC_AwakenedSoul"] = new[] { "精神" },
             ["SGC_BackupPlan"] = new[] { "二号机", "能量" },
             ["SGC_BlackArmor"] = new[] { "格挡", "一号机", "易伤", "虚弱", "脆弱" },
-            ["SGC_BoldPlan"] = new[] { "辐射", "气力", "能量" },
+            ["SGC_BoldPlan"] = new[] { "辐射", "气力", "二号机" },
             ["SGC_ChainReaction"] = new[] { "活力", "再生", "覆甲" },
             ["SGC_ChangeAttack"] = new[] { "变形" },
             ["SGC_ShiftStrike"] = new[] { "变形", "活力", "再生", "覆甲" },
@@ -250,11 +252,41 @@ public abstract class ShinGetterCardBase : CardModel
 
     public override Task OnEnqueuePlayVfx(Creature? target) => Task.CompletedTask;
 
-    protected Task PlayMovementVfx(Func<Task> vfx)
+    protected async Task PlayMovementVfx(Func<Task> vfx)
     {
         PlayCardVoiceAndAnimation();
-        return vfx();
+        await WaitForDashCharge();
+        await vfx();
     }
+
+    protected Task WaitForDashCharge()
+    {
+        return GetActionAnimationTrigger() == "Dash"
+            ? Cmd.CustomScaledWait(DashChargeDelaySeconds, DashChargeDelaySeconds)
+            : Task.CompletedTask;
+    }
+
+    protected Func<Task> AccelerateFollowupAnimations(int hitCount)
+    {
+        int completedHitCount = 0;
+        return () =>
+        {
+            completedHitCount++;
+            if (completedHitCount < hitCount)
+                NShinGetterStaticVisuals.QueueNextActionSpeed(Owner.Creature, AcceleratedFollowupSpeedScale);
+
+            return Task.CompletedTask;
+        };
+    }
+
+    protected Task QueueAcceleratedFollowupAnimation()
+    {
+        NShinGetterStaticVisuals.QueueNextActionSpeed(Owner.Creature, AcceleratedFollowupSpeedScale);
+        return Task.CompletedTask;
+    }
+
+    protected Task PlayAcceleratedFollowupAnimation() =>
+        NShinGetterStaticVisuals.PlayAcceleratedFollowupAnimation(Owner.Creature, AcceleratedFollowupSpeedScale);
 
     public override async Task BeforeCardPlayed(CardPlay cardPlay)
     {
@@ -476,7 +508,6 @@ public abstract class ShinGetterCardBase : CardModel
         }
 
         var creature = player.Creature;
-        ShinGetterVoiceService.PlayTransform(player, next);
         ShinGetterCardFramePatch.BeginFormTransition(next);
         try
         {
@@ -499,6 +530,8 @@ public abstract class ShinGetterCardBase : CardModel
 
             if (!alreadyInTargetForm)
                 await ApplyFormPower(choiceContext, creature, next, player, cardSource);
+
+            ShinGetterVoiceService.PlayTransform(player, next);
         }
         finally
         {
@@ -524,12 +557,11 @@ public abstract class ShinGetterCardBase : CardModel
     /// </summary>
     private static async Task TriggerShinFormTransform(PlayerChoiceContext choiceContext, Creature creature, CardModel? cardSource)
     {
-        if (creature.Player is { } player)
-            ShinGetterVoiceService.PlayTransform(player, ShinGetterForm.None);
-
         await PowerCmd.Apply<VigorPower>(choiceContext, creature, 1m, creature, cardSource);
         await PowerCmd.Apply<RegenPower>(choiceContext, creature, 1m, creature, cardSource);
         await PowerCmd.Apply<PlatingPower>(choiceContext, creature, 1m, creature, cardSource);
+        if (creature.Player is { } player)
+            ShinGetterVoiceService.PlayTransform(player, ShinGetterForm.None);
         await NotifyTransform(creature);
     }
 

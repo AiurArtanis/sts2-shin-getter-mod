@@ -66,6 +66,9 @@ internal static class NShinGetterSpriteSequence
     public const double IdleFramesPerSecond = 24d;
     public const double AttackFramesPerSecond = 36d;
     public const double ActionFramesPerSecond = 30d;
+    public const double GetterOneBlockFramesPerSecond = 45d;
+    public const double ShinDragonAttackFramesPerSecond = 54d;
+    public const double ShinDragonBlockFramesPerSecond = 60d;
 
     public const string FrameDirectory = IdleFrameDirectory;
     public const string AnimationName = IdleAnimationName;
@@ -78,7 +81,7 @@ internal static class NShinGetterSpriteSequence
         SpriteFrames frames = sprite.SpriteFrames;
         LoadLinearAnimation(frames, AttackAnimationName, AttackFrameDirectory, AttackMaxFrames, AttackFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, CastAnimationName, CastFrameDirectory, CastMaxFrames, ActionFramesPerSecond, loop: false);
-        LoadLinearAnimation(frames, BlockAnimationName, GetterOneBlockFrameDirectory, GetterOneBlockMaxFrames, ActionFramesPerSecond, loop: false);
+        LoadLinearAnimation(frames, BlockAnimationName, GetterOneBlockFrameDirectory, GetterOneBlockMaxFrames, GetterOneBlockFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, DashAnimationName, GetterOneDashFrameDirectory, GetterOneDashMaxFrames, ActionFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, DeathAnimationName, DeathFrameDirectory, DeathMaxFrames, ActionFramesPerSecond, loop: false);
     }
@@ -139,9 +142,9 @@ internal static class NShinGetterSpriteSequence
     {
         EnsureShinDragonIdleLoaded(sprite);
         SpriteFrames frames = sprite.SpriteFrames;
-        LoadLinearAnimation(frames, AttackAnimationName, ShinDragonAttackFrameDirectory, ShinDragonAttackMaxFrames, AttackFramesPerSecond, loop: false);
+        LoadLinearAnimation(frames, AttackAnimationName, ShinDragonAttackFrameDirectory, ShinDragonAttackMaxFrames, ShinDragonAttackFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, CastAnimationName, ShinDragonCastFrameDirectory, ShinDragonCastMaxFrames, ActionFramesPerSecond, loop: false);
-        LoadLinearAnimation(frames, BlockAnimationName, ShinDragonBlockFrameDirectory, ShinDragonBlockMaxFrames, ActionFramesPerSecond, loop: false);
+        LoadLinearAnimation(frames, BlockAnimationName, ShinDragonBlockFrameDirectory, ShinDragonBlockMaxFrames, ShinDragonBlockFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, DashAnimationName, ShinDragonDashFrameDirectory, ShinDragonDashMaxFrames, ActionFramesPerSecond, loop: false);
         LoadLinearAnimation(frames, DeathAnimationName, ShinDragonDeathFrameDirectory, ShinDragonDeathMaxFrames, ActionFramesPerSecond, loop: false);
     }
