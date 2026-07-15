@@ -244,6 +244,7 @@ internal static partial class ShinGetterCombatVfx
         Vector2 center = targetPositions.Aggregate(Vector2.Zero, (sum, pos) => sum + pos) / targetPositions.Count;
         NCombatRoom.Instance?.RadialBlur(VfxPosition.Right);
         NGame.Instance?.DoHitStop(ShakeStrength.Strong, ShakeDuration.Normal);
+        NGame.Instance?.ScreenShake(ShakeStrength.TooMuch, ShakeDuration.Normal);
         NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(NBigSlashVfx.Create(center, facingRight: true, GetterRay));
         NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(NBigSlashImpactVfx.Create(center, 0f, GetterRay));
         await Cmd.Wait(0.18f);

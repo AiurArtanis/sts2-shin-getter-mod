@@ -52,6 +52,7 @@ $isMutable = $abstractModelType.GetProperty(
     [Reflection.BindingFlags]"Instance,Public,NonPublic")
 
 $expectedMask = 4194305
+$expectedCombatStartVoiceCount = 7
 $relicTypeNames = @(
     "ShinGetterMod.Models.Relics.SGR_GetterFurnace",
     "ShinGetterMod.Models.Relics.SGR_EmperorsFragment"
@@ -64,15 +65,24 @@ foreach ($relicTypeName in $relicTypeNames) {
     $maskField = $relicType.GetField(
         "_playedVoiceMask",
         [Reflection.BindingFlags]"Instance,NonPublic")
+    $combatStartCountField = $relicType.GetField(
+        "_combatStartVoiceCount",
+        [Reflection.BindingFlags]"Instance,NonPublic")
     $source = [Activator]::CreateInstance($relicType)
     $maskField.SetValue($source, $expectedMask)
+    $combatStartCountField.SetValue($source, $expectedCombatStartVoiceCount)
 
     $saved = $fromInternal.Invoke($null, @($source, $null))
-    if ($null -eq $saved -or $saved.ints.Count -ne 1) {
-        throw "$relicTypeName did not serialize PlayedVoiceMask as one int property."
+    if ($null -eq $saved -or $saved.ints.Count -ne 2) {
+        throw "$relicTypeName did not serialize both voice int properties."
     }
-    if ($saved.ints[0].name -ne "PlayedVoiceMask" -or $saved.ints[0].value -ne $expectedMask) {
+    $savedMask = $saved.ints | Where-Object name -eq "PlayedVoiceMask" | Select-Object -First 1
+    $savedCombatStartCount = $saved.ints | Where-Object name -eq "CombatStartVoiceCount" | Select-Object -First 1
+    if ($null -eq $savedMask -or $savedMask.value -ne $expectedMask) {
         throw "$relicTypeName serialized an unexpected voice mask value."
+    }
+    if ($null -eq $savedCombatStartCount -or $savedCombatStartCount.value -ne $expectedCombatStartVoiceCount) {
+        throw "$relicTypeName serialized an unexpected combat-start voice count."
     }
 
     $restored = [Activator]::CreateInstance($relicType)
@@ -81,6 +91,9 @@ foreach ($relicTypeName in $relicTypeNames) {
     if ($maskField.GetValue($restored) -ne $expectedMask) {
         throw "$relicTypeName failed the PlayedVoiceMask save round-trip."
     }
+    if ($combatStartCountField.GetValue($restored) -ne $expectedCombatStartVoiceCount) {
+        throw "$relicTypeName failed the CombatStartVoiceCount save round-trip."
+    }
 }
 
-Write-Host "PASSED v0.9.37 voice SavedProperty round-trip checks."
+Write-Host "PASSED voice SavedProperty round-trip checks."

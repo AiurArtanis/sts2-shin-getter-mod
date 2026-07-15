@@ -32,7 +32,11 @@ internal static class ShinGetterCombatStartVoicePatch
                 ShinGetterVoiceService.ResetCombatVoiceHistory(player);
             }
 
-            ShinGetterVoiceService.PlayCombatStart(player);
+            if (!resetState.HasPlayedCombatStartVoice)
+            {
+                resetState.HasPlayedCombatStartVoice = true;
+                ShinGetterVoiceService.PlayCombatStart(player);
+            }
             break;
         }
     }
@@ -40,5 +44,6 @@ internal static class ShinGetterCombatStartVoicePatch
     private sealed class CombatVoiceResetState
     {
         public bool HasResetVoiceHistory;
+        public bool HasPlayedCombatStartVoice;
     }
 }

@@ -75,19 +75,28 @@ internal static class ShinGetterAncientDialogueFallbackPatch
         int charVisits,
         ref IEnumerable<AncientDialogue> __result)
     {
-        List<AncientDialogue> validDialogues = __result.ToList();
-        if (validDialogues.Count > 0
-            || characterId.Entry != ShinGetterAncientDialoguePatch.ShinGetterKey
-            || !__instance.CharacterDialogues.TryGetValue(characterId.Entry, out IReadOnlyList<AncientDialogue>? dialogues))
+        if (characterId.Entry != ShinGetterAncientDialoguePatch.ShinGetterKey
+            || !__instance.CharacterDialogues.TryGetValue(characterId.Entry, out IReadOnlyList<AncientDialogue>? dialogues)
+            || dialogues.Count == 0)
         {
-            __result = validDialogues;
             return;
         }
 
-        AncientDialogue? fallback = dialogues.LastOrDefault(dialogue =>
+        List<AncientDialogue> exactVisit = dialogues
+            .Where(dialogue => dialogue.VisitIndex == charVisits)
+            .ToList();
+        if (exactVisit.Count > 0)
+        {
+            __result = exactVisit;
+            return;
+        }
+
+        List<AncientDialogue> repeating = dialogues.Where(dialogue =>
             dialogue.IsRepeating
-            && (!dialogue.VisitIndex.HasValue || charVisits >= dialogue.VisitIndex.Value));
-        if (fallback != null)
-            __result = new[] { fallback };
+            && (!dialogue.VisitIndex.HasValue || charVisits >= dialogue.VisitIndex.Value))
+            .ToList();
+        __result = repeating.Count > 0
+            ? repeating
+            : new[] { dialogues[charVisits % dialogues.Count] };
     }
 }

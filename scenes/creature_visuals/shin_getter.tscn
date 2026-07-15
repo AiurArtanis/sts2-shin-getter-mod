@@ -25,7 +25,7 @@ metadata/max_frames = 24
 [node name="GetterTwo" type="AnimatedSprite2D" parent="Visuals" index="1"]
 unique_name_in_owner = true
 visible = false
-position = Vector2(34, -221.76)
+position = Vector2(34, -210.672)
 scale = Vector2(0.627, 0.627)
 sprite_frames = ExtResource("7_two_idle_frames")
 animation = &"idle"
@@ -47,8 +47,8 @@ metadata/max_frames = 24
 [node name="ShinDragon" type="AnimatedSprite2D" parent="Visuals" index="3"]
 unique_name_in_owner = true
 visible = false
-position = Vector2(0, -212.52)
-scale = Vector2(0.693, 0.693)
+position = Vector2(0, -218.8956)
+scale = Vector2(0.72765, 0.72765)
 sprite_frames = ExtResource("8_dragon_idle_frames")
 animation = &"idle"
 autoplay = "idle"

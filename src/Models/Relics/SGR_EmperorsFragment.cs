@@ -1,12 +1,16 @@
+#nullable enable
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Saves.Runs;
+using ShinGetterMod.Audio;
 using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Relics;
@@ -14,6 +18,7 @@ namespace ShinGetterMod.Models.Relics;
 public sealed class SGR_EmperorsFragment : ShinGetterRelicBase
 {
     private int _playedVoiceMask;
+    private int _combatStartVoiceCount;
 
     public override RelicRarity Rarity => RelicRarity.Ancient;
 
@@ -34,10 +39,22 @@ public sealed class SGR_EmperorsFragment : ShinGetterRelicBase
         }
     }
 
+    [SavedProperty(SerializationCondition.SaveIfNotTypeDefault)]
+    public int CombatStartVoiceCount
+    {
+        get => _combatStartVoiceCount;
+        set
+        {
+            AssertMutable();
+            _combatStartVoiceCount = value;
+        }
+    }
+
     internal static SGR_EmperorsFragment CreateFrom(SGR_GetterFurnace getterFurnace)
     {
         var fragment = (SGR_EmperorsFragment)ModelDb.Relic<SGR_EmperorsFragment>().ToMutable();
         fragment.PlayedVoiceMask = getterFurnace.PlayedVoiceMask;
+        fragment.CombatStartVoiceCount = getterFurnace.CombatStartVoiceCount;
         return fragment;
     }
 
@@ -50,4 +67,13 @@ public sealed class SGR_EmperorsFragment : ShinGetterRelicBase
             new ThrowingPlayerChoiceContext(), Owner.Creature,
             DynamicVars["SGP_Ki"].BaseValue, Owner.Creature, null);
     }
+
+    public override Task AfterCardChangedPiles(CardModel card, PileType oldPileType, AbstractModel? clonedBy)
+    {
+        ShinGetterExecutionMusicService.TryStart(Owner, card);
+        return Task.CompletedTask;
+    }
+
+    public override Task AfterCombatEnd(CombatRoom room) =>
+        ShinGetterExecutionMusicService.StopAndRestore(room.CombatState);
 }

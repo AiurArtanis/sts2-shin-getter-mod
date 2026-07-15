@@ -511,6 +511,8 @@ public abstract class ShinGetterCardBase : CardModel
         ShinGetterCardFramePatch.BeginFormTransition(next);
         try
         {
+            ShinGetterVoiceService.PlayTransform(player, next);
+
             if (creature.GetPower<SGP_ShinForm>() is { } shinForm)
                 await PowerCmd.Remove(shinForm);
             if (next != ShinGetterForm.Getter1 && creature.GetPower<SGP_ShinGetterOne>() is { } one)
@@ -530,8 +532,6 @@ public abstract class ShinGetterCardBase : CardModel
 
             if (!alreadyInTargetForm)
                 await ApplyFormPower(choiceContext, creature, next, player, cardSource);
-
-            ShinGetterVoiceService.PlayTransform(player, next);
         }
         finally
         {
@@ -557,11 +557,12 @@ public abstract class ShinGetterCardBase : CardModel
     /// </summary>
     private static async Task TriggerShinFormTransform(PlayerChoiceContext choiceContext, Creature creature, CardModel? cardSource)
     {
+        if (creature.Player is { } player)
+            ShinGetterVoiceService.PlayTransform(player, ShinGetterForm.None);
+
         await PowerCmd.Apply<VigorPower>(choiceContext, creature, 1m, creature, cardSource);
         await PowerCmd.Apply<RegenPower>(choiceContext, creature, 1m, creature, cardSource);
         await PowerCmd.Apply<PlatingPower>(choiceContext, creature, 1m, creature, cardSource);
-        if (creature.Player is { } player)
-            ShinGetterVoiceService.PlayTransform(player, ShinGetterForm.None);
         await NotifyTransform(creature);
     }
 

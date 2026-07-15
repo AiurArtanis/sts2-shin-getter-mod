@@ -42,6 +42,7 @@ internal enum ShinGetterVoiceCue
     Supersonic = 21,
     DrillHurricane = 22,
     DrillArm = 23,
+    SwitchOn = 24,
 }
 
 internal static class ShinGetterVoiceService
@@ -59,7 +60,8 @@ internal static class ShinGetterVoiceService
         string? LocalizationKey,
         ShinGetterForm RequiredForm = ShinGetterForm.None,
         string? FollowUpAudioFile = null,
-        string? FollowUpLocalizationKey = null);
+        string? FollowUpLocalizationKey = null,
+        bool StartAtCardPlay = false);
 
     private static readonly IReadOnlyDictionary<ShinGetterVoiceCue, VoiceLine> Lines =
         new Dictionary<ShinGetterVoiceCue, VoiceLine>
@@ -71,6 +73,10 @@ internal static class ShinGetterVoiceService
             [ShinGetterVoiceCue.ChangeGetterOneSwitchOn] = new(
                 ShinGetterVoiceCue.ChangeGetterOneSwitchOn,
                 "change_getter_1_switch_on.wav",
+                null),
+            [ShinGetterVoiceCue.SwitchOn] = new(
+                ShinGetterVoiceCue.SwitchOn,
+                "switch_on.wav",
                 null),
             [ShinGetterVoiceCue.ChangeGetterTwo] = new(
                 ShinGetterVoiceCue.ChangeGetterTwo,
@@ -88,12 +94,14 @@ internal static class ShinGetterVoiceService
                 ShinGetterVoiceCue.CombineBlind,
                 "ryoma_combine_blind.wav",
                 "SHIN_GETTER.voice.combineBlind",
-                ShinGetterForm.Getter1),
+                ShinGetterForm.Getter1,
+                StartAtCardPlay: true),
             [ShinGetterVoiceCue.GetterBeam] = new(
                 ShinGetterVoiceCue.GetterBeam,
                 "ryoma_getter_beam.wav",
                 "SHIN_GETTER.voice.getterBeam",
-                ShinGetterForm.Getter1),
+                ShinGetterForm.Getter1,
+                StartAtCardPlay: true),
             [ShinGetterVoiceCue.GetterTomahawk] = new(
                 ShinGetterVoiceCue.GetterTomahawk,
                 "ryoma_getter_tomahawk.wav",
@@ -108,22 +116,26 @@ internal static class ShinGetterVoiceService
                 ShinGetterVoiceCue.ReturnTheFavor,
                 "ryoma_return_the_favor.wav",
                 "SHIN_GETTER.voice.returnTheFavor",
-                ShinGetterForm.Getter1),
+                ShinGetterForm.Getter1,
+                StartAtCardPlay: true),
             [ShinGetterVoiceCue.Roar] = new(
                 ShinGetterVoiceCue.Roar,
                 "ryoma_roar.wav",
                 "SHIN_GETTER.voice.roar",
-                ShinGetterForm.Getter1),
+                ShinGetterForm.Getter1,
+                StartAtCardPlay: true),
             [ShinGetterVoiceCue.StayToTheEnd] = new(
                 ShinGetterVoiceCue.StayToTheEnd,
                 "ryoma_stay_to_the_end.wav",
                 "SHIN_GETTER.voice.stayToTheEnd",
-                ShinGetterForm.Getter1),
+                ShinGetterForm.Getter1,
+                StartAtCardPlay: true),
             [ShinGetterVoiceCue.StarSlash] = new(
                 ShinGetterVoiceCue.StarSlash,
                 "ryoma_star_slash.wav",
                 "SHIN_GETTER.voice.starSlash",
-                ShinGetterForm.Getter1),
+                ShinGetterForm.Getter1,
+                StartAtCardPlay: true),
             [ShinGetterVoiceCue.ShiningSpark] = new(
                 ShinGetterVoiceCue.ShiningSpark,
                 "ryoma_shining.wav",
@@ -134,32 +146,38 @@ internal static class ShinGetterVoiceService
                 ShinGetterVoiceCue.GetterShine,
                 "ryoma_getter_shine.wav",
                 "SHIN_GETTER.voice.getterShine",
-                ShinGetterForm.Getter1),
+                ShinGetterForm.Getter1,
+                StartAtCardPlay: true),
             [ShinGetterVoiceCue.HotBlood] = new(
                 ShinGetterVoiceCue.HotBlood,
                 "hot_blood.wav",
                 "SHIN_GETTER.voice.hotBlood",
-                ShinGetterForm.Getter1),
+                ShinGetterForm.Getter1,
+                StartAtCardPlay: true),
             [ShinGetterVoiceCue.Avalanche] = new(
                 ShinGetterVoiceCue.Avalanche,
                 "musashi_avalanche.wav",
                 "SHIN_GETTER.voice.avalanche",
-                ShinGetterForm.Getter3),
+                ShinGetterForm.Getter3,
+                StartAtCardPlay: true),
             [ShinGetterVoiceCue.GetterElectric] = new(
                 ShinGetterVoiceCue.GetterElectric,
                 "musashi_getter_electric.wav",
                 "SHIN_GETTER.voice.getterElectric",
-                ShinGetterForm.Getter3),
+                ShinGetterForm.Getter3,
+                StartAtCardPlay: true),
             [ShinGetterVoiceCue.GetterPower] = new(
                 ShinGetterVoiceCue.GetterPower,
                 "musashi_getter_power.wav",
                 "SHIN_GETTER.voice.getterPower",
-                ShinGetterForm.Getter3),
+                ShinGetterForm.Getter3,
+                StartAtCardPlay: true),
             [ShinGetterVoiceCue.FireNow] = new(
                 ShinGetterVoiceCue.FireNow,
                 "musashi_fire_now.wav",
                 "SHIN_GETTER.voice.fireNow",
-                ShinGetterForm.Getter3),
+                ShinGetterForm.Getter3,
+                StartAtCardPlay: true),
             [ShinGetterVoiceCue.GetterDrill] = new(
                 ShinGetterVoiceCue.GetterDrill,
                 "hayato_getter_drill.wav",
@@ -179,15 +197,39 @@ internal static class ShinGetterVoiceService
                 ShinGetterVoiceCue.DrillArm,
                 "hayato_drill_arm.wav",
                 "SHIN_GETTER.voice.drillArm",
-                ShinGetterForm.Getter2),
+                ShinGetterForm.Getter2,
+                StartAtCardPlay: true),
         };
 
     internal static void TryPlayCardVoice(CardModel card)
     {
+        TryPlayCardVoice(card, requireCardPlayStart: false);
+    }
+
+    internal static void TryPlayCardVoiceAtCardPlayStart(CardModel card)
+    {
+        TryPlayCardVoice(card, requireCardPlayStart: true);
+    }
+
+    private static void TryPlayCardVoice(CardModel card, bool requireCardPlayStart)
+    {
         if (card.Owner is not { Character: ShinGetter } player)
             return;
 
-        VoiceLine? line = card switch
+        VoiceLine? line = ResolveCardVoice(card);
+        if (line == null || (requireCardPlayStart && !line.StartAtCardPlay))
+            return;
+
+        if (line.RequiredForm != ShinGetterForm.None
+            && !ShinGetterCardBase.IsInForm(player, line.RequiredForm))
+        {
+            return;
+        }
+
+        TryPlayOneTime(player, line);
+    }
+
+    private static VoiceLine? ResolveCardVoice(CardModel card) => card switch
         {
             SGC_TripleUnity => Lines[ShinGetterVoiceCue.CombineBlind],
             SGC_GetterBeam or SGC_FinalGetterBeam => Lines[ShinGetterVoiceCue.GetterBeam],
@@ -209,18 +251,6 @@ internal static class ShinGetterVoiceService
             SGC_GetterClaw => Lines[ShinGetterVoiceCue.DrillArm],
             _ => null,
         };
-
-        if (line == null)
-            return;
-
-        if (line.RequiredForm != ShinGetterForm.None
-            && !ShinGetterCardBase.IsInForm(player, line.RequiredForm))
-        {
-            return;
-        }
-
-        TryPlayOneTime(player, line);
-    }
 
     internal static void PlayTransform(Player player, ShinGetterForm targetForm)
     {
@@ -246,7 +276,12 @@ internal static class ShinGetterVoiceService
 
     internal static void PlayCombatStart(Player player)
     {
-        TryPlayOneTime(player, Lines[ShinGetterVoiceCue.ChangeGetterOneSwitchOn]);
+        int combatStartVoiceCount = GetCombatStartVoiceCount(player);
+        ShinGetterVoiceCue cue = combatStartVoiceCount == 0
+            ? ShinGetterVoiceCue.ChangeGetterOneSwitchOn
+            : ShinGetterVoiceCue.SwitchOn;
+        TryPlayOneTime(player, Lines[cue]);
+        SetCombatStartVoiceCount(player, combatStartVoiceCount + 1);
     }
 
     internal static void ResetCombatVoiceHistory(Player player)
@@ -395,6 +430,39 @@ internal static class ShinGetterVoiceService
         SGR_EmperorsFragment? fragment = player.GetRelic<SGR_EmperorsFragment>();
         if (fragment != null)
             fragment.PlayedVoiceMask = playedMask;
+    }
+
+    private static int GetCombatStartVoiceCount(Player player)
+    {
+        int combatStartVoiceCount = 0;
+        foreach (Player runPlayer in player.RunState.Players)
+        {
+            if (runPlayer.Character is not ShinGetter)
+                continue;
+
+            combatStartVoiceCount = Math.Max(
+                combatStartVoiceCount,
+                runPlayer.GetRelic<SGR_GetterFurnace>()?.CombatStartVoiceCount
+                    ?? runPlayer.GetRelic<SGR_EmperorsFragment>()?.CombatStartVoiceCount
+                    ?? 0);
+        }
+
+        return combatStartVoiceCount;
+    }
+
+    private static void SetCombatStartVoiceCount(Player player, int combatStartVoiceCount)
+    {
+        foreach (Player runPlayer in player.RunState.Players)
+        {
+            if (runPlayer.Character is not ShinGetter)
+                continue;
+
+            if (runPlayer.GetRelic<SGR_GetterFurnace>() is { } furnace)
+                furnace.CombatStartVoiceCount = combatStartVoiceCount;
+
+            if (runPlayer.GetRelic<SGR_EmperorsFragment>() is { } fragment)
+                fragment.CombatStartVoiceCount = combatStartVoiceCount;
+        }
     }
 
     private static void PlaySubtitle(Player player, string? localizationKey)

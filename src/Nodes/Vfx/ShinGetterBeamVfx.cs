@@ -57,7 +57,7 @@ internal static class ShinGetterBeamVfx
             TintCanvasItems(beam, GetterRay, GetterWhite);
             if (beam.GetNodeOrNull<Line2D>("laser/vfx_hyperbeam_laser_line") is { } line)
             {
-                line.Width *= 1.3f;
+                line.Width *= 1.43f;
                 line.DefaultColor = GetterRay;
                 line.SelfModulate = GetterRay;
             }
@@ -163,7 +163,7 @@ internal static class ShinGetterBeamVfx
             Name = "shin_getter_center_getter_beam",
             Position = template.Position,
             Rotation = template.Rotation,
-            Scale = new Vector2(1f, 0.35f),
+            Scale = new Vector2(1f, 0.70f),
             ZIndex = 8,
         };
 

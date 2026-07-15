@@ -68,6 +68,8 @@ public sealed class SGC_ShinForm : ShinGetterCardBase
         ShinGetterCardFramePatch.BeginFormTransitionToShinDragon();
         try
         {
+            ShinGetterVoiceService.PlayShinDragonTransform(Owner);
+
             // 移除当前所有形态
             var one = creature.GetPower<SGP_ShinGetterOne>();
             var two = creature.GetPower<SGP_ShinGetterTwo>();
@@ -81,7 +83,6 @@ public sealed class SGC_ShinForm : ShinGetterCardBase
 
             // 变形为真化形态
             await PowerCmd.Apply<SGP_ShinForm>(choiceContext, creature, 1m, creature, this);
-            ShinGetterVoiceService.PlayShinDragonTransform(Owner);
         }
         finally
         {

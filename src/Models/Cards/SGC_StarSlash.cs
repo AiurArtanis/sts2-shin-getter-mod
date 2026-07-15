@@ -3,15 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
-using MegaCrit.Sts2.Core.Combat;
-using MegaCrit.Sts2.Core.Combat.History.Entries;
-using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
 using ShinGetterMod.Nodes.Vfx;
 
@@ -19,15 +17,16 @@ namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
 /// 斩星斧 | 攻击 | 稀有 | 3费 | 烧牌/输出终端
-/// 消耗抽牌堆 1 张卡，将数值叠加在此卡上，共造成 20 点伤害
-/// 一号机：额外造成本场战斗获得的活力值
+/// 消耗抽牌堆 1 张卡，将数值叠加在此卡上，共造成 25 点伤害
+/// 一号机：每消耗 1 张牌获得 5 活力
 /// </summary>
 public sealed class SGC_StarSlash : ShinGetterCardBase
 {
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new DamageVar(20m, ValueProp.Move),
+        new DamageVar(25m, ValueProp.Move),
         new CardsVar(1),
+        new DynamicVar("Vigor", 5m),
     };
 
     public SGC_StarSlash()
@@ -42,16 +41,20 @@ public sealed class SGC_StarSlash : ShinGetterCardBase
             new CardSelectorPrefs(CardSelectorPrefs.ExhaustSelectionPrompt, DynamicVars.Cards.IntValue))).ToList();
         decimal stackedValue = selected.Sum(SumOriginalCardValues);
         foreach (var card in selected)
-            await CardCmd.Exhaust(choiceContext, card);
-
-        decimal vigorGained = 0m;
-        if (HasForm(Owner, ShinGetterForm.Getter1))
         {
-            vigorGained = CombatManager.Instance.History.Entries.OfType<PowerReceivedEntry>()
-                .Where(entry => entry.Actor == Owner.Creature && entry.Power is VigorPower && entry.Amount > 0)
-                .Sum(entry => entry.Amount);
+            await CardCmd.Exhaust(choiceContext, card);
+            if (HasForm(Owner, ShinGetterForm.Getter1))
+            {
+                await PowerCmd.Apply<VigorPower>(
+                    choiceContext,
+                    Owner.Creature,
+                    DynamicVars["Vigor"].BaseValue,
+                    Owner.Creature,
+                    this);
+            }
         }
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue + stackedValue + vigorGained).FromCard(this)
+
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue + stackedValue).FromCard(this)
             .Targeting(cardPlay.Target)
             .BeforeDamage(() => ShinGetterCombatVfx.PlayHeavyCleave(Owner.Creature, new[] { cardPlay.Target }))
             .WithHitFx("vfx/vfx_giant_horizontal_slash").Execute(choiceContext);
