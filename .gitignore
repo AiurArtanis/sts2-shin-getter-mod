@@ -27,3 +27,7 @@ tmp/
 # Local export credentials and logs
 export_credentials.cfg
 *.log
+
+# Local development checks and planning notes
+/tools/*.ps1
+/docs/
