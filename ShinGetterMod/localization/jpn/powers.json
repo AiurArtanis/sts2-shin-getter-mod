@@ -42,7 +42,7 @@
   "S_G_P_HOT_BLOOD.title": "熱血",
   "S_G_P_HOT_BLOOD.description": "次にプレイするアタックカードのダメージは2倍になる。",
   "S_G_P_GETTER_RAY_OVERFLOW.title": "ゲッター線バースト",
-  "S_G_P_GETTER_RAY_OVERFLOW.description": "名前に「ゲッター」を含むカードのコストが1減る。",
+  "S_G_P_GETTER_RAY_OVERFLOW.description": "名前に「ゲッター」を含むカードのコストが{Amount}減る。そのようなカードをプレイするたび、[cyan]進化[/cyan]を{Amount}得る。",
   "S_G_P_DESPERATION.title": "窮地",
   "S_G_P_DESPERATION.description": "戦闘終了時、HPを{Amount}回復する。",
   "S_G_P_BLUEPRINT.title": "設計図",

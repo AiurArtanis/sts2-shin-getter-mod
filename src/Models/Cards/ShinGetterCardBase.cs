@@ -126,7 +126,7 @@ public abstract class ShinGetterCardBase : CardModel
             ["SGC_SaotomeBlueprint"] = new[] { "进化" },
             ["SGC_SeizeFuture"] = new[] { "格挡" },
             ["SGC_ShedLoad"] = new[] { "气力", "敏捷", "再生", "二号机" },
-            ["SGC_ShinForm"] = new[] { "真盖塔龙" },
+            ["SGC_ShinForm"] = new[] { "真盖塔龙", "进化" },
             ["SGC_Specialization"] = new[] { "专属形态卡", "二号机" },
             ["SGC_SpiralDrill"] = new[] { "二号机", "格挡" },
             ["SGC_Spirit"] = new[] { "精神", "气势" },

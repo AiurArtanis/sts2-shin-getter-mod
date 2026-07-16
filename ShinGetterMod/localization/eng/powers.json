@@ -42,7 +42,7 @@
   "S_G_P_HOT_BLOOD.title": "Valor",
   "S_G_P_HOT_BLOOD.description": "The next Attack card you play deals double damage.",
   "S_G_P_GETTER_RAY_OVERFLOW.title": "Getter Ray Burst",
-  "S_G_P_GETTER_RAY_OVERFLOW.description": "Cards with Getter in their name cost 1 less.",
+  "S_G_P_GETTER_RAY_OVERFLOW.description": "Cards with Getter in their name cost {Amount} less. Whenever you play one, gain {Amount} [cyan]Evolution[/cyan].",
   "S_G_P_DESPERATION.title": "Desperation",
   "S_G_P_DESPERATION.description": "At the end of combat, heal {Amount} HP.",
   "S_G_P_BLUEPRINT.title": "Blueprint",

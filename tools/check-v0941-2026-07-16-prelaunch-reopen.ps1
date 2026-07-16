@@ -107,14 +107,18 @@ Assert-Contains 'Getter Ray Burst recognizes Getter anywhere in a card class nam
 Assert-Contains 'Getter Ray Burst shares its Getter predicate between cost and play triggers' $rayPower 'TryModifyEnergyCostInCombat[\s\S]{0,220}IsGetterCard\(card\)[\s\S]{0,620}AfterCardPlayed[\s\S]{0,300}!IsGetterCard\(card\)'
 Assert-NotContains 'Getter Ray Burst no longer relies on the SGC_Getter prefix' $rayPower 'StartsWith\("SGC_Getter"'
 Assert-Contains 'Getter Ray Burst grants Evolution equal to its amount' $rayPower 'Apply<SGP_Evolution>[\s\S]{0,160}Amount'
+Assert-Contains 'Shin Form registers the Evolution hover tip across languages' $cardBase '"SGC_ShinForm"\]\s*=\s*new\[\]\s*\{\s*"真盖塔龙",\s*"进化"\s*\}'
 
 foreach ($language in @('zhs', 'eng', 'jpn')) {
     $cards = Read-Json "ShinGetterMod\localization\$language\cards.json"
+    $powers = Read-Json "ShinGetterMod\localization\$language\powers.json"
     $tips = Read-Json "ShinGetterMod\localization\$language\static_hover_tips.json"
     Assert-JsonContains "$language Poseidon Thunder describes Frail" $cards 'S_G_C_POSEIDON_THUNDER.description' '\{FrailPower:diff\(\)\}'
     Assert-JsonContains "$language Getter Ray Burst describes Evolution" $cards 'S_G_C_GETTER_RAY_OVERFLOW.description' '\[cyan\].+\[/cyan\]'
     Assert-JsonContains "$language Getter Will describes Evolution" $cards 'S_G_C_GETTER_WILL.description' '\[cyan\].+\[/cyan\]'
     Assert-JsonContains "$language Desperation describes Evolution" $cards 'S_G_C_DESPERATION.description' '\[cyan\].+\[/cyan\]'
+    Assert-JsonContains "$language Getter Ray Burst power scales both effects with its amount" $powers 'S_G_P_GETTER_RAY_OVERFLOW.description' '\{Amount\}[\s\S]*\{Amount\}'
+    Assert-JsonContains "$language Getter Ray Burst power describes Evolution" $powers 'S_G_P_GETTER_RAY_OVERFLOW.description' '\[cyan\].+\[/cyan\]'
     Assert-JsonNotContains "$language Meltdown no longer repeats Exhaust" $cards 'S_G_C_MELTDOWN.description' '消耗|Exhaust|廃棄'
     Assert-JsonContains "$language stacking hover title exists" $tips 'SHIN_GETTER_STACK.title' '.+'
     Assert-JsonContains "$language stacking hover explains the 50 cap" $tips 'SHIN_GETTER_STACK.description' '50'
@@ -139,6 +143,7 @@ Assert-Contains 'English exports strip the Shin Getter card id prefix' $exporter
 $resourceValidator = Read-RepoFile 'tools\validate-mod-resources.gd'
 foreach ($language in @('eng', 'jpn', 'zhs')) {
     Assert-Contains "$language card localization is verified in the exported PCK" $resourceValidator ([regex]::Escape("res://ShinGetterMod/localization/$language/cards.json"))
+    Assert-Contains "$language power localization is verified in the exported PCK" $resourceValidator ([regex]::Escape("res://ShinGetterMod/localization/$language/powers.json"))
     Assert-Contains "$language stacking tips are verified in the exported PCK" $resourceValidator ([regex]::Escape("res://ShinGetterMod/localization/$language/static_hover_tips.json"))
 }
 

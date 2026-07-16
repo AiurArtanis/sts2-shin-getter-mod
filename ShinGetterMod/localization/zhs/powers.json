@@ -42,7 +42,7 @@
   "S_G_P_HOT_BLOOD.title": "热血",
   "S_G_P_HOT_BLOOD.description": "打出的下一张攻击牌伤害翻倍。",
   "S_G_P_GETTER_RAY_OVERFLOW.title": "盖塔射线爆发",
-  "S_G_P_GETTER_RAY_OVERFLOW.description": "名称中含有“盖塔”的卡牌耗能降低 1。",
+  "S_G_P_GETTER_RAY_OVERFLOW.description": "名称中含有“盖塔”的卡牌耗能降低{Amount}。每打出一张这样的卡牌，获得{Amount}层[cyan]进化[/cyan]。",
   "S_G_P_DESPERATION.title": "绝境",
   "S_G_P_DESPERATION.description": "战斗结束时回复{Amount}点生命。",
   "S_G_P_BLUEPRINT.title": "蓝图",
