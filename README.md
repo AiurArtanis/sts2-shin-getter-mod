@@ -1,35 +1,99 @@
-# sts2-shin-getter-mod
+# 真盖塔模组
 
-《杀戮尖塔 2》真盖塔角色模组，当前处于开发阶段。
+[English](README_EN.md) | [日本語](README_JP.md)
 
-## 本地依赖
+![真盖塔模组角色选择界面](animations/character_select/shin_getter/character_select_shin_getter_bg.png)
 
-以下文件不会提交到版本库，需要从本机游戏环境恢复：
+**让真盖塔穿越时空登上高塔。** 这是一个为《杀戮尖塔 2》制作的玩法型角色 Mod，以四种盖塔形态、战斗中变形和多套相互咬合的构筑体系，重现真盖塔不断突破极限的战斗节奏。
+
+> 当前版本 `v0.9.41` · 最低游戏版本 `0.106.1` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+
+## 为什么值得玩
+
+- **四种形态，一套角色。** 在一号机、二号机、三号机与真盖塔龙之间切换，让形态选择成为每回合决策的一部分。
+- **不止一条构筑路线。** 变形、气力、活力、再生、覆甲、进化与辐射等机制可以独立成型，也能交叉组合。
+- **从卡牌到演出都围绕真盖塔打造。** 包含定制卡框、角色动画、VFX、语音、处刑曲和角色选择画面。
+- **融入高塔，而不是停留在换皮。** 除完整卡池外，还包含专属遗物、药水、附魔、事件和先古对话。
+
+## 内容一览
+
+`v0.9.41` 当前注册内容包括：
+
+- **72 张卡牌**，覆盖四种形态与多套核心机制
+- **10 个遗物**、**3 瓶药水**、**2 个附魔**
+- **1 个专属事件**与专属先古对话
+- 中、英、日三语本地化
+- DLL、PCK 与 JSON 组合加载的完整角色 Mod
+
+## 代表性卡面
+
+<p align="center">
+  <img src="images/packed/card_single/shin_getter/s_g_c_shin_form_card.png" width="30%" alt="真形态卡牌成品图" />
+  <img src="images/packed/card_single/shin_getter/s_g_c_stoner_sunshine_card.png" width="30%" alt="闪光爆裂卡牌成品图" />
+  <img src="images/packed/card_single/shin_getter/s_g_c_saint_dragon_roar_card.png" width="30%" alt="圣龙咆哮卡牌成品图" />
+</p>
+
+## 当前状态
+
+本项目仍处于**公开发布前开发阶段**。版本号、数值、内容数量以及与游戏后续版本的兼容性仍可能调整，目前不提供稳定安装包或存档兼容承诺。希望参与测试或研究实现的开发者可以从源码构建。
+
+## 从源码构建
+
+### 环境要求
+
+- 《杀戮尖塔 2》`0.106.1` 或更高版本
+- Godot `4.5.1 Mono`
+- .NET SDK `9`
+- 本机可供 Godot 加载验证的游戏工程目录
+
+以下依赖来自本地游戏或开发环境，不纳入版本管理：
 
 - `lib/sts2.dll`
 - `lib/0Harmony.dll`
-- `addons/` 下由游戏或编辑器提供的 FMOD、Spine、Sentry 等插件
+- `addons/` 中由游戏或编辑器提供的 FMOD、Spine、Sentry 等插件
 
-## 构建
-
-项目使用 Godot 4.5.1 Mono 和 .NET 9：
+准备依赖后，编译 C# 项目：
 
 ```powershell
-dotnet build .\ShinGetterMod.csproj
+dotnet build .\ShinGetterMod.csproj -c Debug
 ```
 
-构建后的 DLL、PDB 和导出的 PCK 位于 `build/`，该目录不纳入版本管理。
+编译后的 DLL 与 PDB 会复制到被忽略的 `build/` 目录。
 
-## 构建并部署测试包
+### 构建、验证并部署测试包
 
-本机开发环境可用脚本自动编译 DLL、通过 Godot 命令行导出 PCK，并将 DLL、PCK、JSON 部署到测试目录：
+仓库提供的 Godot/PowerShell 构建脚本会依次编译 DLL、导出 PCK、验证资源、复制 DLL/PCK/JSON，并进行一次无界面的游戏加载验证：
 
 ```powershell
-.\build-and-deploy.ps1
+.\build-and-deploy.ps1 `
+  -Configuration Debug `
+  -GodotExe "D:\Godot\Godot_v4.5.1-stable_mono_win64_console.exe" `
+  -GameProject "D:\Games\SlayTheSpire2" `
+  -DeployDirectory "D:\Games\SlayTheSpire2\mods\ShinGetterMod"
 ```
 
-默认测试目录为 `E:\Work\Godot\Godot_v4.5.1-stable_mono_win64\mods\ShinGetterMod`。Godot 导出日志写入 `build/godot-export.log`；路径不同时可通过脚本参数覆盖。
+路径应替换为你的本机环境。脚本成功后，部署目录会包含：
 
-## 项目资料
+- `ShinGetterMod.dll`
+- `ShinGetterMod.pck`
+- `ShinGetterMod.json`
 
-设计文档、开发文档及卡牌/状态看板存放在作者的 Obsidian 库中，不随代码仓库发布。
+## 项目结构
+
+- `src/`：卡牌、能力、遗物、药水、附魔、事件、补丁与运行时代码
+- `scenes/`、`animations/`、`images/`、`materials/`、`shaders/`、`audio/`：Godot 场景与视听资源
+- `ShinGetterMod/`：模组数据与本地化资源
+- `tools/validate-mod-resources.gd`：导出包资源完整性检查
+- `ShinGetterMod.json`：模组清单、版本与最低游戏版本
+
+## 参与开发与反馈
+
+公开发布前，仓库仍以集中开发和测试为主。提交问题时，请尽量附上游戏版本、Mod 版本、复现步骤和相关日志；提交代码前，请保持改动范围明确，并至少运行对应的 C# 构建。涉及 Godot 资源的改动应再通过完整的构建、资源验证与加载验证。
+
+请勿提交本地游戏依赖、`addons/`、`build/` 产物或个人测试脚本。
+
+## 许可与素材说明
+
+本项目是非官方同人 Mod，与《杀戮尖塔 2》及“真盖塔”相关的名称、角色和原作素材归各自权利人所有。
+
+仓库目前尚未附带开源许可证。在正式开放再分发与贡献前，将补齐代码许可证、第三方素材归属及使用边界；在此之前，请勿默认仓库内容已获得复制、修改或再分发授权。
