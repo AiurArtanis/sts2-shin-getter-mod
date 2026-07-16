@@ -4,7 +4,6 @@ using System.Linq;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Ancients;
 using MegaCrit.Sts2.Core.Localization;
-using MegaCrit.Sts2.Core.Models;
 
 namespace ShinGetterMod.Patches;
 
@@ -63,40 +62,4 @@ internal static class ShinGetterAncientDialoguePatch
         || LocString.Exists("ancients", baseKey + ".char")
         || LocString.Exists("ancients", baseKey + "r.ancient")
         || LocString.Exists("ancients", baseKey + "r.char");
-
-}
-
-[HarmonyPatch(typeof(AncientDialogueSet), nameof(AncientDialogueSet.GetValidDialogues))]
-internal static class ShinGetterAncientDialogueFallbackPatch
-{
-    private static void Postfix(
-        AncientDialogueSet __instance,
-        ModelId characterId,
-        int charVisits,
-        ref IEnumerable<AncientDialogue> __result)
-    {
-        if (characterId.Entry != ShinGetterAncientDialoguePatch.ShinGetterKey
-            || !__instance.CharacterDialogues.TryGetValue(characterId.Entry, out IReadOnlyList<AncientDialogue>? dialogues)
-            || dialogues.Count == 0)
-        {
-            return;
-        }
-
-        List<AncientDialogue> exactVisit = dialogues
-            .Where(dialogue => dialogue.VisitIndex == charVisits)
-            .ToList();
-        if (exactVisit.Count > 0)
-        {
-            __result = exactVisit;
-            return;
-        }
-
-        List<AncientDialogue> repeating = dialogues.Where(dialogue =>
-            dialogue.IsRepeating
-            && (!dialogue.VisitIndex.HasValue || charVisits >= dialogue.VisitIndex.Value))
-            .ToList();
-        __result = repeating.Count > 0
-            ? repeating
-            : new[] { dialogues[charVisits % dialogues.Count] };
-    }
 }

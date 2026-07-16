@@ -43,15 +43,15 @@ internal static partial class ShinGetterCombatVfx
 
         AddDiveTrail(ownerCenter, targetCenter, GetterRay);
         Tween tween = ownerNode.CreateTween();
-        tween.TweenProperty(ownerNode, "global_position", apex, 0.32f).SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Cubic);
-        tween.TweenProperty(ownerNode, "global_position", hitPosition, 0.07f).SetEase(Tween.EaseType.In).SetTrans(Tween.TransitionType.Cubic);
-        await Cmd.Wait(0.40f);
+        tween.TweenProperty(ownerNode, "global_position", apex, 0.56f).SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Cubic);
+        tween.TweenProperty(ownerNode, "global_position", hitPosition, 0.18f).SetEase(Tween.EaseType.In).SetTrans(Tween.TransitionType.Cubic);
+        await Cmd.Wait(0.75f);
         AddFlash(targetCenter, GetterRay, 130f, 0.18f);
         target.GetVfxContainer()?.AddChildSafely(NLineBurstVfx.Create(target));
         NGame.Instance?.ScreenShake(ShakeStrength.Medium, ShakeDuration.Short);
         Tween returnTween = ownerNode.CreateTween();
-        returnTween.TweenProperty(ownerNode, "global_position", origin, 0.13f).SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Back);
-        await Cmd.Wait(0.14f);
+        returnTween.TweenProperty(ownerNode, "global_position", origin, 0.20f).SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Back);
+        await Cmd.Wait(0.21f);
     }
 
     public static async Task PlayFlashRush(Creature owner, Creature target)

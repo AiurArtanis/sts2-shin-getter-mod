@@ -66,6 +66,7 @@ public abstract class ShinGetterCardBase : CardModel
             ["精神指令卡"] = _ => CustomTip("SHIN_GETTER_SPIRIT_COMMAND"),
             ["专属形态卡"] = _ => CustomTip("SHIN_GETTER_FORM_CARD"),
             ["真盖塔龙"] = _ => HoverTipFactory.FromPower<SGP_ShinForm>(),
+            ["叠加"] = _ => CustomTip("SHIN_GETTER_STACK"),
         };
 
     private static readonly IReadOnlyDictionary<string, string[]> CardDescriptionTerms =
@@ -85,7 +86,7 @@ public abstract class ShinGetterCardBase : CardModel
             ["SGC_ChosenOne"] = new[] { "变形", "气力" },
             ["SGC_DarkCape"] = new[] { "格挡", "一号机", "腾空" },
             ["SGC_Defend"] = new[] { "格挡" },
-            ["SGC_Desperation"] = new[] { "精神指令卡", "力量", "缓冲", "人工制品" },
+            ["SGC_Desperation"] = new[] { "精神指令卡", "进化", "力量", "缓冲", "人工制品" },
             ["SGC_DiveStrike"] = new[] { "腾空", "一号机" },
             ["SGC_Enable"] = new[] { "精神" },
             ["SGC_EvolutionEngine"] = new[] { "进化", "能量" },
@@ -102,8 +103,9 @@ public abstract class ShinGetterCardBase : CardModel
             ["SGC_GetterNova"] = new[] { "活力", "辐射" },
             ["SGC_GetterFlash"] = new[] { "活力", "腾空", "一号机" },
             ["SGC_GetterRush"] = new[] { "易伤", "覆甲", "三号机" },
+            ["SGC_GetterRayOverflow"] = new[] { "进化" },
             ["SGC_GetterTomahawk"] = new[] { "一号机", "活力" },
-            ["SGC_GetterWill"] = new[] { "一号机" },
+            ["SGC_GetterWill"] = new[] { "一号机", "进化" },
             ["SGC_Grapple"] = new[] { "虚弱", "三号机", "力量" },
             ["SGC_Guts"] = new[] { "精神", "格挡" },
             ["SGC_HedgehogTactic"] = new[] { "格挡", "活力" },
@@ -128,7 +130,7 @@ public abstract class ShinGetterCardBase : CardModel
             ["SGC_Specialization"] = new[] { "专属形态卡", "二号机" },
             ["SGC_SpiralDrill"] = new[] { "二号机", "格挡" },
             ["SGC_Spirit"] = new[] { "精神", "气势" },
-            ["SGC_StarSlash"] = new[] { "一号机", "活力" },
+            ["SGC_StarSlash"] = new[] { "叠加", "一号机", "活力" },
             ["SGC_SteelSpirit"] = new[] { "精神指令卡" },
             ["SGC_StonerSunshine"] = new[] { "衰退", "活力" },
             ["SGC_SuperKi"] = new[] { "活力", "气势" },
@@ -151,7 +153,6 @@ public abstract class ShinGetterCardBase : CardModel
         new HashSet<string>(StringComparer.Ordinal)
         {
             "SGC_Acceleration",
-            "SGC_DiveStrike",
             "SGC_Enable",
             "SGC_GetterElbow",
             "SGC_GetterFlash",
@@ -210,6 +211,12 @@ public abstract class ShinGetterCardBase : CardModel
             "SGC_IronWall",
             "SGC_SeizeFuture",
             "SGC_TacticalRetreat",
+        };
+
+    private static readonly IReadOnlySet<string> DeferredCardVoiceCards =
+        new HashSet<string>(StringComparer.Ordinal)
+        {
+            "SGC_StarSlash",
         };
 
     public override CardPoolModel Pool => ModelDb.CardPool<ShinGetterCardPool>();
@@ -317,7 +324,8 @@ public abstract class ShinGetterCardBase : CardModel
         if (Owner?.Creature is not { } creature)
             return;
 
-        ShinGetterVoiceService.TryPlayCardVoice(this);
+        if (!DeferredCardVoiceCards.Contains(GetType().Name))
+            ShinGetterVoiceService.TryPlayCardVoice(this);
 
         string? animationTrigger = GetActionAnimationTrigger();
         if (animationTrigger != null)

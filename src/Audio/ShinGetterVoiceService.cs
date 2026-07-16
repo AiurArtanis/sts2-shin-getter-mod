@@ -134,8 +134,7 @@ internal static class ShinGetterVoiceService
                 ShinGetterVoiceCue.StarSlash,
                 "ryoma_star_slash.wav",
                 "SHIN_GETTER.voice.starSlash",
-                ShinGetterForm.Getter1,
-                StartAtCardPlay: true),
+                ShinGetterForm.Getter1),
             [ShinGetterVoiceCue.ShiningSpark] = new(
                 ShinGetterVoiceCue.ShiningSpark,
                 "ryoma_shining.wav",

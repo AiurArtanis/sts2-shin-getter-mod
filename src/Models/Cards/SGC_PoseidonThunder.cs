@@ -15,12 +15,19 @@ namespace ShinGetterMod.Models.Cards;
 
 public sealed class SGC_PoseidonThunder : ShinGetterCardBase
 {
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => WithContextualHoverTips(new IHoverTip[] { HoverTipFactory.FromPower<VulnerablePower>(), HoverTipFactory.FromPower<WeakPower>() });
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => WithContextualHoverTips(new IHoverTip[]
+    {
+        HoverTipFactory.FromPower<VulnerablePower>(),
+        HoverTipFactory.FromPower<WeakPower>(),
+        HoverTipFactory.FromPower<FrailPower>(),
+    });
+
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
         new DamageVar(10m, ValueProp.Move),
         new PowerVar<VulnerablePower>(1m),
         new PowerVar<WeakPower>(1m),
+        new PowerVar<FrailPower>(1m),
     };
 
     public SGC_PoseidonThunder()
@@ -31,6 +38,7 @@ public sealed class SGC_PoseidonThunder : ShinGetterCardBase
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this)
+            .WithNoAttackerAnim()
             .TargetingAllOpponents(CombatState)
             .BeforeDamage(() => ShinGetterCombatVfx.PlayThunderField(Owner.Creature, CombatState.GetOpponentsOf(Owner.Creature)))
             .WithHitFx("vfx/vfx_attack_lightning").Execute(choiceContext);
@@ -41,6 +49,8 @@ public sealed class SGC_PoseidonThunder : ShinGetterCardBase
                 choiceContext, enemy, DynamicVars["VulnerablePower"].BaseValue, Owner.Creature, this);
             await PowerCmd.Apply<WeakPower>(
                 choiceContext, enemy, DynamicVars["WeakPower"].BaseValue, Owner.Creature, this);
+            await PowerCmd.Apply<FrailPower>(
+                choiceContext, enemy, DynamicVars["FrailPower"].BaseValue, Owner.Creature, this);
         }
     }
 
@@ -48,5 +58,6 @@ public sealed class SGC_PoseidonThunder : ShinGetterCardBase
     {
         DynamicVars["VulnerablePower"].UpgradeValueBy(2m);
         DynamicVars["WeakPower"].UpgradeValueBy(2m);
+        DynamicVars["FrailPower"].UpgradeValueBy(2m);
     }
 }

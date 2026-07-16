@@ -6,5 +6,7 @@
   "SHIN_GETTER_FORM_CARD.title": "专属形态卡",
   "SHIN_GETTER_FORM_CARD.description": "具有当前形态专属效果的卡牌。",
   "SHIN_GETTER_INFINITE_EVOLUTION_TOTAL.title": "无限进化累计",
-  "SHIN_GETTER_INFINITE_EVOLUTION_TOTAL.description": "本局游戏累计增长力量：{Strength}；敏捷：{Dexterity}；最大生命：{MaxHp}。"
+  "SHIN_GETTER_INFINITE_EVOLUTION_TOTAL.description": "本局游戏累计增长力量：{Strength}；敏捷：{Dexterity}；最大生命：{MaxHp}。",
+  "SHIN_GETTER_STACK.title": "叠加",
+  "SHIN_GETTER_STACK.description": "将所选卡牌卡面上的数值累加到本牌伤害，叠加总值最多为50。"
 }

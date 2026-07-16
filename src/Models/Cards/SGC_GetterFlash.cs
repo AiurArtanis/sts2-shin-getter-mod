@@ -8,7 +8,9 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using MegaCrit.Sts2.Core.Models.Powers;
 using System.Linq;
+using ShinGetterMod.Audio;
 using ShinGetterMod.Models.Powers;
+using ShinGetterMod.Nodes.Combat;
 using ShinGetterMod.Nodes.Vfx;
 
 namespace ShinGetterMod.Models.Cards;
@@ -35,7 +37,14 @@ public sealed class SGC_GetterFlash : ShinGetterCardBase
         var attack = await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this)
             .WithNoAttackerAnim()
             .Targeting(cardPlay.Target)
-            .BeforeDamage(() => PlayMovementVfx(() => ShinGetterCombatVfx.PlayFlashRush(Owner.Creature, cardPlay.Target)))
+            .BeforeDamage(async () =>
+            {
+                ShinGetterVoiceService.TryPlayCardVoice(this);
+                await ShinGetterCombatVfx.PlayFlashRush(Owner.Creature, cardPlay.Target);
+                NShinGetterStaticVisuals.QueueNextActionSpeed(Owner.Creature, 1.75f);
+                NShinGetterStaticVisuals.TryPlayCreatureActionAnimation(Owner.Creature, "Attack");
+                await Cmd.CustomScaledWait(0.18f, 0.22f);
+            })
             .Execute(choiceContext);
 
         decimal damageDealt = attack.Results.SelectMany(results => results).Sum(result => result.UnblockedDamage);

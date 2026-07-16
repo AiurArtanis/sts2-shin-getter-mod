@@ -17,7 +17,7 @@ namespace ShinGetterMod.Nodes.Vfx;
 
 internal static partial class ShinGetterCombatVfx
 {
-    private static readonly Color GetterRay = new(0.294f, 0.996f, 0.768f, 1f);
+    private static readonly Color GetterRay = new(0.266667f, 0.988235f, 0.772549f, 1f);
     private static readonly Color GetterPink = new(1f, 0.18f, 0.58f, 1f);
     private static readonly Color GetterWhite = new(1f, 0.95f, 1f, 1f);
     private static readonly Color RushLine = new(0.92f, 0.92f, 0.88f, 1f);

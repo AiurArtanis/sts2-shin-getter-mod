@@ -1,6 +1,9 @@
+using System.Collections.Generic;
+using System.Linq;
 using Godot;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
+using MegaCrit.Sts2.Core.Unlocks;
 using ShinGetterMod.Models.Cards;
 
 namespace ShinGetterMod.Models.CardPools;
@@ -91,5 +94,12 @@ public sealed class ShinGetterCardPool : CardPoolModel
 			ModelDb.Card<SGC_InsectVirus>(),
 			ModelDb.Card<SGC_InfiniteEvolution>(),
 		};
+	}
+
+	protected override IEnumerable<CardModel> FilterThroughEpochs(
+		UnlockState unlockState,
+		IEnumerable<CardModel> cards)
+	{
+		return cards.Where(card => card is not SGC_InsectVirus);
 	}
 }

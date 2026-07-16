@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
+using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Saves.Runs;
 
 namespace ShinGetterMod.Models.Relics;
@@ -38,6 +39,12 @@ public sealed class SGR_BattleInstinct : ShinGetterRelicBase
     }
 
     public override Task BeforeCombatStart()
+    {
+        TriggeredThisCombat = false;
+        return Task.CompletedTask;
+    }
+
+    public override Task AfterCombatEnd(CombatRoom _)
     {
         TriggeredThisCombat = false;
         return Task.CompletedTask;

@@ -17,7 +17,8 @@ namespace ShinGetterMod.Audio;
 internal static class ShinGetterExecutionMusicService
 {
     private const string ExecutionMusicPath = "res://audio/music/shin_getter/execution_theme.mp3";
-    private const float FadeDurationSeconds = 1f;
+    private const float FadeInDurationSeconds = 1f;
+    private const float CombatEndFadeOutDurationSeconds = 3f;
     private const float SilentVolumeDb = -80f;
 
     private static readonly ConditionalWeakTable<CombatState, ExecutionMusicState> States = new();
@@ -59,23 +60,17 @@ internal static class ShinGetterExecutionMusicService
             return;
         }
 
+        state.CurrentBgmVolume = 0f;
+        NAudioManager.Instance?.SetBgmVol(0f);
+
         Tween tween = player.CreateTween();
         state.FadeTween = tween;
-        tween.SetParallel();
-        tween.TweenMethod(
-            Callable.From<float>(volume =>
-            {
-                state.CurrentBgmVolume = volume;
-                NAudioManager.Instance?.SetBgmVol(volume);
-            }),
-            state.CurrentBgmVolume,
-            restoredBgmVolume,
-            FadeDurationSeconds);
-        tween.TweenProperty(player, "volume_db", SilentVolumeDb, FadeDurationSeconds);
+        tween.TweenProperty(player, "volume_db", SilentVolumeDb, CombatEndFadeOutDurationSeconds);
 
         await player.ToSignal(tween, Tween.SignalName.Finished);
         if (GodotObject.IsInstanceValid(player))
             player.QueueFree();
+        NAudioManager.Instance?.SetBgmVol(restoredBgmVolume);
     }
 
     private static void StartPlayback(ExecutionMusicState state)
@@ -119,12 +114,12 @@ internal static class ShinGetterExecutionMusicService
             }),
             configuredBgmVolume,
             0f,
-            FadeDurationSeconds);
+            FadeInDurationSeconds);
         tween.TweenProperty(
             player,
             "volume_db",
             Mathf.LinearToDb(executionMusicVolume),
-            FadeDurationSeconds);
+            FadeInDurationSeconds);
     }
 
     private sealed class ExecutionMusicState

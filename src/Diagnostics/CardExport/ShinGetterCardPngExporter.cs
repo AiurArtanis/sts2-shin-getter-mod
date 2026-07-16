@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Godot;
@@ -34,6 +35,7 @@ public static class ShinGetterCardPngExporter
     private const int FramesAfterSaveBeforeTeardown = 1;
     private const int FramesAfterTeardown = 2;
     private const int FramesBetweenCards = 1;
+    private const string ShinGetterCardIdPrefix = "S_G_C_";
 
     public static void BeginExport(ShinGetterCardPngExportRequest request, Action<string>? log = null)
     {
@@ -174,6 +176,8 @@ public static class ShinGetterCardPngExporter
 
         var scale = Mathf.Max(0.25f, request.Scale);
         var cards = SelectCards(request);
+        var sequenceById = BuildCardSequenceMap(request.CharacterFilter);
+        var localizedTitles = LoadLocalizedCardTitles(request.NameFormat);
         log?.Invoke(
             $"Exporting {cards.Count} base card(s) from {request.CharacterFilter} to {outputPath}.");
 
@@ -188,7 +192,15 @@ public static class ShinGetterCardPngExporter
 
             log?.Invoke($"Rendering {exportedBase + 1}/{cards.Count}: {canonical.Id.Entry}");
 
-            var baseFileName = SanitizeFilePart(canonical.Id.Entry) + "_base.png";
+            int sequence = sequenceById.TryGetValue(canonical.Id, out int mappedSequence)
+                ? mappedSequence
+                : exportedBase + 1;
+            var baseFileName = BuildExportFileName(
+                canonical,
+                sequence,
+                isUpgraded: false,
+                request.NameFormat,
+                localizedTitles);
             var basePath = Path.Combine(outputPath, baseFileName);
             if (await TryCaptureAsync(tree, canonical, basePath, scale, log, baseFileName))
             {
@@ -207,7 +219,12 @@ public static class ShinGetterCardPngExporter
             {
                 var upgraded = canonical.ToMutable();
                 upgraded.UpgradeInternal();
-                var upgradedFileName = SanitizeFilePart(canonical.Id.Entry) + "_upgraded.png";
+                var upgradedFileName = BuildExportFileName(
+                    canonical,
+                    sequence,
+                    isUpgraded: true,
+                    request.NameFormat,
+                    localizedTitles);
                 var upgradedPath = Path.Combine(outputPath, upgradedFileName);
 
                 if (await TryCaptureAsync(tree, upgraded, upgradedPath, scale, log, upgradedFileName))
@@ -250,6 +267,82 @@ public static class ShinGetterCardPngExporter
             .Select(c => c.CardPool)
             .ToHashSet();
         return ModelDb.AllCards.Where(c => !characterPools.Contains(c.Pool));
+    }
+
+    private static Dictionary<ModelId, int> BuildCardSequenceMap(string characterFilter)
+    {
+        return GetScopedCards(characterFilter)
+            .Distinct()
+            .Select((card, index) => new { card.Id, Sequence = index + 1 })
+            .ToDictionary(item => item.Id, item => item.Sequence);
+    }
+
+    private static IReadOnlyDictionary<string, string> LoadLocalizedCardTitles(
+        ShinGetterCardExportNameFormat nameFormat)
+    {
+        string? language = nameFormat switch
+        {
+            ShinGetterCardExportNameFormat.Zhs => "zhs",
+            ShinGetterCardExportNameFormat.Jpn => "jpn",
+            _ => null,
+        };
+        if (language == null)
+            return new Dictionary<string, string>(StringComparer.Ordinal);
+
+        string path = $"res://ShinGetterMod/localization/{language}/cards.json";
+        string json = Godot.FileAccess.GetFileAsString(path);
+        if (string.IsNullOrWhiteSpace(json))
+            throw new InvalidOperationException($"Could not read card localization file '{path}'.");
+
+        using JsonDocument document = JsonDocument.Parse(json);
+        return document.RootElement
+            .EnumerateObject()
+            .Where(property => property.Name.EndsWith(".title", StringComparison.Ordinal))
+            .Where(property => property.Value.ValueKind == JsonValueKind.String)
+            .ToDictionary(
+                property => property.Name,
+                property => property.Value.GetString() ?? string.Empty,
+                StringComparer.Ordinal);
+    }
+
+    private static string BuildExportFileName(
+        CardModel card,
+        int sequence,
+        bool isUpgraded,
+        ShinGetterCardExportNameFormat nameFormat,
+        IReadOnlyDictionary<string, string> localizedTitles)
+    {
+        string entry = card.Id.Entry;
+        string stem;
+        string variantSuffix;
+
+        switch (nameFormat)
+        {
+            case ShinGetterCardExportNameFormat.Zhs:
+            case ShinGetterCardExportNameFormat.Jpn:
+                string titleKey = entry + ".title";
+                if (!localizedTitles.TryGetValue(titleKey, out string? localizedTitle)
+                    || string.IsNullOrWhiteSpace(localizedTitle))
+                {
+                    throw new InvalidOperationException($"Missing localized card title '{titleKey}'.");
+                }
+
+                stem = localizedTitle;
+                variantSuffix = isUpgraded ? "+" : string.Empty;
+                break;
+            case ShinGetterCardExportNameFormat.Eng:
+                stem = entry.StartsWith(ShinGetterCardIdPrefix, StringComparison.Ordinal)
+                    ? entry[ShinGetterCardIdPrefix.Length..]
+                    : entry;
+                variantSuffix = isUpgraded ? "_upgraded" : "_base";
+                break;
+            default:
+                stem = entry;
+                variantSuffix = isUpgraded ? "_upgraded" : "_base";
+                break;
+        }
+
+        return $"{sequence:D3}-{SanitizeFilePart(stem)}{variantSuffix}.png";
     }
 
     private static bool MatchesIdFilter(CardModel card, string? idFilterPattern)

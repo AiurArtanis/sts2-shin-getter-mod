@@ -23,7 +23,12 @@ public sealed class SGC_GetterRayOverflow : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<SGP_GetterRayOverflow>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
+        await PowerCmd.Apply<SGP_GetterRayOverflow>(
+            choiceContext,
+            Owner.Creature,
+            DynamicVars["SGP_GetterRayOverflow"].BaseValue,
+            Owner.Creature,
+            this);
     }
 
     protected override void OnUpgrade()

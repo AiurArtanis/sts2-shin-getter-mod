@@ -47,7 +47,7 @@ metadata/max_frames = 24
 [node name="ShinDragon" type="AnimatedSprite2D" parent="Visuals" index="3"]
 unique_name_in_owner = true
 visible = false
-position = Vector2(0, -218.8956)
+position = Vector2(0, -229.8404)
 scale = Vector2(0.72765, 0.72765)
 sprite_frames = ExtResource("8_dragon_idle_frames")
 animation = &"idle"

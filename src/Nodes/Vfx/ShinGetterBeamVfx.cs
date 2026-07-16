@@ -19,7 +19,7 @@ internal enum ShinGetterBeamStyle
 
 internal static class ShinGetterBeamVfx
 {
-    private static readonly Color GetterRay = new(0.294f, 0.996f, 0.768f, 1f);
+    private static readonly Color GetterRay = new(0.266667f, 0.988235f, 0.772549f, 1f);
     private static readonly Color GetterPink = new(1f, 0.19f, 0.62f, 1f);
     private static readonly Color GetterWhite = new(1f, 0.94f, 1f, 1f);
 
@@ -54,7 +54,7 @@ internal static class ShinGetterBeamVfx
     {
         if (style == ShinGetterBeamStyle.FinalGetterBeam)
         {
-            TintCanvasItems(beam, GetterRay, GetterWhite);
+            TintCanvasItems(beam, GetterRay, GetterRay);
             if (beam.GetNodeOrNull<Line2D>("laser/vfx_hyperbeam_laser_line") is { } line)
             {
                 line.Width *= 1.43f;
@@ -78,7 +78,7 @@ internal static class ShinGetterBeamVfx
     private static void ApplyImpactSkin(Node2D impact, ShinGetterBeamStyle style)
     {
         if (style == ShinGetterBeamStyle.FinalGetterBeam)
-            TintCanvasItems(impact, GetterRay, GetterWhite);
+            TintCanvasItems(impact, GetterRay, GetterRay);
         else
             TintCanvasItems(impact, GetterPink, GetterWhite);
 
@@ -163,7 +163,7 @@ internal static class ShinGetterBeamVfx
             Name = "shin_getter_center_getter_beam",
             Position = template.Position,
             Rotation = template.Rotation,
-            Scale = new Vector2(1f, 0.70f),
+            Scale = new Vector2(1f, 1.40f),
             ZIndex = 8,
         };
 

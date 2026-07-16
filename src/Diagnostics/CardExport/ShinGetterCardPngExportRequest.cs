@@ -1,6 +1,14 @@
 #nullable enable
 namespace ShinGetterMod.Diagnostics.CardExport;
 
+public enum ShinGetterCardExportNameFormat
+{
+    Default,
+    Zhs,
+    Jpn,
+    Eng,
+}
+
 public readonly struct ShinGetterCardPngExportRequest
 {
     public string CharacterFilter { get; init; }
@@ -10,6 +18,7 @@ public readonly struct ShinGetterCardPngExportRequest
     public bool IncludeCardsHiddenFromLibrary { get; init; }
     public string? IdFilterPattern { get; init; }
     public int MaxBaseCards { get; init; }
+    public ShinGetterCardExportNameFormat NameFormat { get; init; }
 
     public static ShinGetterCardPngExportRequest CreateDefault(string characterFilter, string outputDirectory)
     {
@@ -21,6 +30,7 @@ public readonly struct ShinGetterCardPngExportRequest
             IncludeUpgradedVariants = true,
             IncludeCardsHiddenFromLibrary = false,
             MaxBaseCards = 0,
+            NameFormat = ShinGetterCardExportNameFormat.Default,
         };
     }
 }

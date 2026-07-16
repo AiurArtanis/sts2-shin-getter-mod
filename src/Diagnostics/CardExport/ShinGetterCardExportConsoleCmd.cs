@@ -14,11 +14,11 @@ namespace ShinGetterMod.Diagnostics.CardExport;
 public sealed class ShinGetterCardExportConsoleCmd : AbstractConsoleCmd
 {
     private const string Usage =
-        "export_cards \"SHIN_GETTER\" \"-\" \"-\" true 1 0";
+        "export_cards \"SHIN_GETTER\" \"-\" \"-\" true 1 0 -";
 
     public override string CmdName => "export_cards";
     public override string Args =>
-        "\"character\" \"outputDir\" \"idFilter\" <includeUpgrades:true|false> <scale> <maxBaseCards>";
+        "\"character\" \"outputDir\" \"idFilter\" <includeUpgrades:true|false> <scale> <maxBaseCards> <nameFormat:-|zhs|jpn|eng>";
     public override string Description => "Exports card PNG files for a character or non-character card pool.";
     public override bool IsNetworked => false;
 
@@ -60,6 +60,11 @@ public sealed class ShinGetterCardExportConsoleCmd : AbstractConsoleCmd
             return CompleteArgument(new[] { "true", "false" }, args.Take(args.Length - 1).ToArray(), args[^1]);
         }
 
+        if (args.Length == 7)
+        {
+            return CompleteArgument(new[] { "-", "zhs", "jpn", "eng" }, args.Take(args.Length - 1).ToArray(), args[^1]);
+        }
+
         return base.GetArgumentCompletions(player, args);
     }
 
@@ -74,7 +79,7 @@ public sealed class ShinGetterCardExportConsoleCmd : AbstractConsoleCmd
         if (!TryParseQuotedCommandArgs(args, out var tokens, out error))
             return false;
 
-        if (tokens.Count != 6)
+        if (tokens.Count != 7)
         {
             error = "Usage: " + Usage;
             return false;
@@ -122,6 +127,12 @@ public sealed class ShinGetterCardExportConsoleCmd : AbstractConsoleCmd
             return false;
         }
 
+        if (!TryParseNameFormat(tokens[6].Value, out var nameFormat))
+        {
+            error = $"Invalid nameFormat value '{tokens[6].Value}'. Use -, zhs, jpn, or eng.";
+            return false;
+        }
+
         request = new()
         {
             CharacterFilter = characterFilter,
@@ -131,8 +142,33 @@ public sealed class ShinGetterCardExportConsoleCmd : AbstractConsoleCmd
             IncludeCardsHiddenFromLibrary = false,
             Scale = scale,
             MaxBaseCards = maxBaseCards,
+            NameFormat = nameFormat,
         };
         return true;
+    }
+
+    private static bool TryParseNameFormat(
+        string raw,
+        out ShinGetterCardExportNameFormat nameFormat)
+    {
+        switch (raw.Trim().ToLowerInvariant())
+        {
+            case "-":
+                nameFormat = ShinGetterCardExportNameFormat.Default;
+                return true;
+            case "zhs":
+                nameFormat = ShinGetterCardExportNameFormat.Zhs;
+                return true;
+            case "jpn":
+                nameFormat = ShinGetterCardExportNameFormat.Jpn;
+                return true;
+            case "eng":
+                nameFormat = ShinGetterCardExportNameFormat.Eng;
+                return true;
+            default:
+                nameFormat = default;
+                return false;
+        }
     }
 
     private static bool TryParseQuotedCommandArgs(
