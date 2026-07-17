@@ -24,7 +24,7 @@ public sealed class SGC_PoseidonThunder : ShinGetterCardBase
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new DamageVar(10m, ValueProp.Move),
+        new DamageVar(8m, ValueProp.Move),
         new PowerVar<VulnerablePower>(1m),
         new PowerVar<WeakPower>(1m),
         new PowerVar<FrailPower>(1m),

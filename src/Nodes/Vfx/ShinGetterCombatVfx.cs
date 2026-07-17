@@ -29,6 +29,8 @@ internal static partial class ShinGetterCombatVfx
     private static readonly Color SolarGold = new(1f, 0.68f, 0.06f, 1f);
     private static readonly Color SolarOrange = new(1f, 0.28f, 0.02f, 1f);
     private static readonly Color SolarRed = new(0.95f, 0.08f, 0.01f, 1f);
+    private static readonly Color ThunderBlue = new(0.08f, 0.52f, 1f, 1f);
+    private static readonly Color ThunderCyan = new(0.18f, 0.94f, 1f, 1f);
 
     public static Task PlayKiAura(Creature creature) => PlayForbiddenIncantationAura(creature, KiYellow, 0.42f, 118f, 1, 8, ShakeStrength.Weak);
 
@@ -134,28 +136,40 @@ internal static partial class ShinGetterCombatVfx
 
     public static async Task PlayThunderField(Creature owner, IEnumerable<Creature> targets)
     {
-        NCreature? ownerNode = NCombatRoom.Instance?.GetCreatureNode(owner);
-        if (ownerNode == null)
+        NCombatRoom? combatRoom = NCombatRoom.Instance;
+        Control? container = combatRoom?.CombatVfxContainer;
+        if (combatRoom == null || container == null)
             return;
 
-        Node2D root = new();
-        Vector2 source = ownerNode.VfxSpawnPosition + Vector2.Up * 15f;
-        foreach (Creature target in targets.Where(target => target.IsAlive))
-        {
-            NCreature? targetNode = NCombatRoom.Instance?.GetCreatureNode(target);
-            if (targetNode == null)
-                continue;
+        List<Creature> livingTargets = targets.Where(target => target.IsAlive).ToList();
+        Vector2 size = container.Size;
+        if (size.X < 100f || size.Y < 100f)
+            size = combatRoom.GetViewportRect().Size;
 
-            root.AddChild(CreateCrackLine(source, targetNode.VfxSpawnPosition, GetterRay));
-            root.AddChild(CreateCrackLine(source + Vector2.Up * 26f, targetNode.VfxSpawnPosition + Vector2.Right * 34f, GetterWhite));
+        Node2D root = CreateFullscreenThunderNet(size);
+        root.Name = "shin_getter_poseidon_thunder_net";
+        root.Modulate = new Color(1f, 1f, 1f, 0f);
+        container.AddChildSafely(root);
+
+        Tween thunderTween = root.CreateTween();
+        thunderTween.TweenProperty(root, "modulate:a", 1f, 0.05f);
+        thunderTween.TweenProperty(root, "modulate:a", 0.32f, 0.07f);
+        thunderTween.TweenProperty(root, "modulate:a", 1f, 0.05f);
+        thunderTween.TweenInterval(0.08f);
+        thunderTween.TweenProperty(root, "modulate:a", 0f, 0.26f)
+            .SetEase(Tween.EaseType.In)
+            .SetTrans(Tween.TransitionType.Cubic);
+        thunderTween.TweenCallback(Callable.From(root.QueueFreeSafely));
+
+        await Cmd.Wait(0.16f);
+        foreach (Creature target in livingTargets)
+        {
+            if (combatRoom.GetCreatureNode(target) is { } targetNode)
+                AddFlash(targetNode.VfxSpawnPosition, ThunderCyan, 155f, 0.22f);
         }
 
-        NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(root);
-        Tween tween = root.CreateTween();
-        tween.TweenProperty(root, "modulate:a", 0f, 0.32f).SetDelay(0.12f);
-        tween.TweenCallback(Callable.From(root.QueueFreeSafely));
-        NGame.Instance?.ScreenShake(ShakeStrength.Medium, ShakeDuration.Short);
-        await Cmd.Wait(0.18f);
+        NGame.Instance?.ScreenShake(ShakeStrength.Strong, ShakeDuration.Normal);
+        await Cmd.Wait(0.22f);
     }
 
     public static async Task PlayEnergyBall(Creature owner, IEnumerable<Creature> targets)
@@ -644,6 +658,95 @@ internal static partial class ShinGetterCombatVfx
         }
         line.AddPoint(to);
         return line;
+    }
+
+    private static Node2D CreateFullscreenThunderNet(Vector2 size)
+    {
+        Node2D root = new();
+        Polygon2D wash = new()
+        {
+            Color = new Color(0.05f, 0.45f, 0.86f, 0.13f),
+            Polygon = new[]
+            {
+                Vector2.Zero,
+                new Vector2(size.X, 0f),
+                size,
+                new Vector2(0f, size.Y),
+            },
+        };
+        root.AddChild(wash);
+
+        (Vector2 From, Vector2 To)[] paths =
+        {
+            (new Vector2(-0.08f, 0.12f), new Vector2(1.08f, 0.72f)),
+            (new Vector2(-0.08f, 0.44f), new Vector2(1.08f, 0.18f)),
+            (new Vector2(-0.08f, 0.78f), new Vector2(1.08f, 0.48f)),
+            (new Vector2(-0.05f, 0.96f), new Vector2(1.05f, 0.62f)),
+            (new Vector2(0.08f, -0.08f), new Vector2(0.34f, 1.08f)),
+            (new Vector2(0.38f, -0.08f), new Vector2(0.64f, 1.08f)),
+            (new Vector2(0.74f, -0.08f), new Vector2(0.92f, 1.08f)),
+            (new Vector2(0.12f, 1.08f), new Vector2(0.94f, -0.08f)),
+        };
+
+        for (int index = 0; index < paths.Length; index++)
+        {
+            (Vector2 fromRatio, Vector2 toRatio) = paths[index];
+            Vector2 from = new(fromRatio.X * size.X, fromRatio.Y * size.Y);
+            Vector2 to = new(toRatio.X * size.X, toRatio.Y * size.Y);
+            root.AddChild(CreateScreenLightningBolt(from, to, index, 10f + index % 3 * 2f));
+        }
+
+        return root;
+    }
+
+    private static Node2D CreateScreenLightningBolt(Vector2 from, Vector2 to, int seed, float width)
+    {
+        Node2D bolt = new();
+        Vector2 delta = to - from;
+        Vector2 direction = delta.Normalized();
+        Vector2 normal = new(-direction.Y, direction.X);
+        const int segmentCount = 14;
+        var points = new Vector2[segmentCount + 1];
+        for (int index = 0; index <= segmentCount; index++)
+        {
+            float t = index / (float)segmentCount;
+            float taper = Mathf.Sin(t * Mathf.Pi);
+            float offset = Mathf.Sin(seed * 2.73f + index * 4.19f) * (44f + seed % 3 * 9f) * taper;
+            points[index] = from.Lerp(to, t) + normal * offset;
+        }
+
+        Line2D glow = new()
+        {
+            Width = width * 2.8f,
+            DefaultColor = new Color(ThunderBlue.R, ThunderBlue.G, ThunderBlue.B, 0.30f),
+            Antialiased = true,
+        };
+        Line2D core = new()
+        {
+            Width = width,
+            DefaultColor = new Color(ThunderCyan.R, ThunderCyan.G, ThunderCyan.B, 0.92f),
+            Antialiased = true,
+        };
+        foreach (Vector2 point in points)
+        {
+            glow.AddPoint(point);
+            core.AddPoint(point);
+        }
+        bolt.AddChild(glow);
+        bolt.AddChild(core);
+
+        for (int index = 3; index < segmentCount; index += 4)
+        {
+            float branchSide = ((index + seed) & 1) == 0 ? 1f : -1f;
+            Vector2 branchEnd = points[index]
+                + direction * (100f + seed % 4 * 18f)
+                + normal * branchSide * (86f + index * 3f);
+            Line2D branch = CreateCrackLine(points[index], branchEnd, ThunderCyan);
+            branch.Width = width * 0.52f;
+            bolt.AddChild(branch);
+        }
+
+        return bolt;
     }
 
     private static Node2D CreateTomahawkNode()

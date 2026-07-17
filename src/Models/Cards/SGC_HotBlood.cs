@@ -20,7 +20,7 @@ public sealed class SGC_HotBlood : ShinGetterCardBase
 {
     public override int SpiritRequirement => IsUpgraded ? 2 : 4;
     public override int UpgradePreviewSpiritRequirement => 2;
-    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Retain, CardKeyword.Exhaust };
+    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Exhaust };
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips => WithContextualHoverTips(new IHoverTip[] { HoverTipFactory.FromPower<SGP_HotBlood>() });
 

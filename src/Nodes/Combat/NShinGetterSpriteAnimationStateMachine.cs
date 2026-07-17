@@ -72,7 +72,7 @@ internal static class NShinGetterSpriteAnimationStateMachine
     public static void QueueNextActionSpeed(AnimatedSprite2D sprite, float speedScale)
     {
         State state = States.GetOrCreateValue(sprite);
-        state.NextActionSpeedScale = Math.Max(1f, speedScale);
+        state.NextActionSpeedScale = Math.Max(0.05f, speedScale);
     }
 
     public static void PlayIdle(AnimatedSprite2D sprite) =>

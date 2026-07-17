@@ -19,7 +19,7 @@ internal enum ShinGetterBeamStyle
 
 internal static class ShinGetterBeamVfx
 {
-    private static readonly Color GetterRay = new(0.266667f, 0.988235f, 0.772549f, 1f);
+    private static readonly Color GetterRay = new(0.109804f, 0.752941f, 0.6f, 1f);
     private static readonly Color GetterPink = new(1f, 0.19f, 0.62f, 1f);
     private static readonly Color GetterWhite = new(1f, 0.94f, 1f, 1f);
 

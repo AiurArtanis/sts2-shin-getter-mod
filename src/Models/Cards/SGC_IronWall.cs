@@ -17,7 +17,7 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_IronWall : ShinGetterCardBase
 {
-    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Retain, CardKeyword.Exhaust };
+    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Exhaust };
     public override int SpiritRequirement => 2;
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new PowerVar<SGP_IronWall>(7m) };
 

@@ -14,8 +14,8 @@ self_modulate = Color(1, 1, 1, 0)
 
 [node name="GetterOne" type="AnimatedSprite2D" parent="Visuals" index="0"]
 unique_name_in_owner = true
-position = Vector2(38, -220)
-scale = Vector2(0.7623, 0.7623)
+position = Vector2(38, -231)
+scale = Vector2(0.800415, 0.800415)
 sprite_frames = ExtResource("6_idle_frames")
 animation = &"idle"
 autoplay = "idle"
@@ -47,8 +47,8 @@ metadata/max_frames = 24
 [node name="ShinDragon" type="AnimatedSprite2D" parent="Visuals" index="3"]
 unique_name_in_owner = true
 visible = false
-position = Vector2(0, -229.8404)
-scale = Vector2(0.72765, 0.72765)
+position = Vector2(0, -241.3324)
+scale = Vector2(0.7640325, 0.7640325)
 sprite_frames = ExtResource("8_dragon_idle_frames")
 animation = &"idle"
 autoplay = "idle"

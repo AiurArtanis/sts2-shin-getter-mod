@@ -19,7 +19,6 @@ public sealed class SGC_AwakenedSoul : ShinGetterCardBase
 {
     public override int SpiritRequirement => 4;
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new PowerVar<SGP_AwakenedSoul>(6m) };
-    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Retain };
 
     public SGC_AwakenedSoul()
         : base(3, CardType.Power, CardRarity.Rare, TargetType.Self)

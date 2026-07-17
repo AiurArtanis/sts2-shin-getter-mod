@@ -17,6 +17,7 @@ using MegaCrit.Sts2.Core.Nodes.Vfx;
 using MegaCrit.Sts2.Core.Nodes.Vfx.Cards;
 using MegaCrit.Sts2.Core.Nodes.Vfx.Utilities;
 using MegaCrit.Sts2.Core.TestSupport;
+using ShinGetterMod.Nodes.Combat;
 
 namespace ShinGetterMod.Nodes.Vfx;
 
@@ -41,17 +42,35 @@ internal static partial class ShinGetterCombatVfx
         Vector2 apex = origin + Vector2.Up * 300f + direction * 24f;
         Vector2 hitPosition = origin + (targetCenter - ownerCenter) - direction * 92f + Vector2.Up * 22f;
 
-        AddDiveTrail(ownerCenter, targetCenter, GetterRay);
-        Tween tween = ownerNode.CreateTween();
-        tween.TweenProperty(ownerNode, "global_position", apex, 0.56f).SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Cubic);
-        tween.TweenProperty(ownerNode, "global_position", hitPosition, 0.18f).SetEase(Tween.EaseType.In).SetTrans(Tween.TransitionType.Cubic);
-        await Cmd.Wait(0.75f);
-        AddFlash(targetCenter, GetterRay, 130f, 0.18f);
-        target.GetVfxContainer()?.AddChildSafely(NLineBurstVfx.Create(target));
-        NGame.Instance?.ScreenShake(ShakeStrength.Medium, ShakeDuration.Short);
-        Tween returnTween = ownerNode.CreateTween();
-        returnTween.TweenProperty(ownerNode, "global_position", origin, 0.20f).SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Back);
-        await Cmd.Wait(0.21f);
+        Tween ascentTween = ownerNode.CreateTween();
+        ascentTween.TweenProperty(ownerNode, "global_position", apex, 0.56f)
+            .SetEase(Tween.EaseType.Out)
+            .SetTrans(Tween.TransitionType.Cubic);
+
+        await NShinGetterStaticVisuals.PlayPhasedCreatureActionAnimation(
+            owner,
+            "Attack",
+            1f,
+            2f,
+            async () =>
+            {
+                AddDiveTrail(ownerCenter, targetCenter, GetterRay);
+                Tween diveTween = ownerNode.CreateTween();
+                diveTween.TweenProperty(ownerNode, "global_position", hitPosition, 0.10f)
+                    .SetEase(Tween.EaseType.In)
+                    .SetTrans(Tween.TransitionType.Cubic);
+                await Cmd.Wait(0.11f);
+
+                AddFlash(targetCenter, GetterRay, 130f, 0.18f);
+                target.GetVfxContainer()?.AddChildSafely(NLineBurstVfx.Create(target));
+                NGame.Instance?.ScreenShake(ShakeStrength.Medium, ShakeDuration.Short);
+
+                Tween returnTween = ownerNode.CreateTween();
+                returnTween.TweenProperty(ownerNode, "global_position", origin, 0.20f)
+                    .SetEase(Tween.EaseType.Out)
+                    .SetTrans(Tween.TransitionType.Back);
+                await Cmd.Wait(0.21f);
+            });
     }
 
     public static async Task PlayFlashRush(Creature owner, Creature target)
@@ -80,22 +99,30 @@ internal static partial class ShinGetterCombatVfx
         await Cmd.Wait(0.04f);
     }
 
-    public static async Task PlayTacticalRetreat(Creature owner)
+    public static async Task PlayTacticalRetreat(Creature owner, Func<Task> transform)
     {
         NCreature? ownerNode = NCombatRoom.Instance?.GetCreatureNode(owner);
         if (ownerNode == null)
             return;
 
         Vector2 origin = ownerNode.GlobalPosition;
+        Vector2 originCenter = ownerNode.VfxSpawnPosition;
         Vector2 retreatDirection = owner.IsEnemy ? Vector2.Right : Vector2.Left;
         Vector2 offscreen = origin + retreatDirection * 980f;
-        AddAfterimageLines(ownerNode.VfxSpawnPosition, ownerNode.VfxSpawnPosition + retreatDirection * 520f, RushLine, 6, 18f);
+        AddAfterimageLines(originCenter, originCenter + retreatDirection * 520f, RushLine, 6, 18f);
 
         Tween tween = ownerNode.CreateTween();
         tween.TweenProperty(ownerNode, "global_position", offscreen, 0.16f).SetEase(Tween.EaseType.In).SetTrans(Tween.TransitionType.Cubic);
         tween.TweenInterval(0.10f);
-        tween.TweenProperty(ownerNode, "global_position", origin, 0.10f).SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Cubic);
-        await Cmd.Wait(0.38f);
+        await Cmd.Wait(0.27f);
+
+        await transform();
+        AddAfterimageLines(originCenter + retreatDirection * 520f, originCenter, GetterRay, 6, 18f);
+        Tween returnTween = ownerNode.CreateTween();
+        returnTween.TweenProperty(ownerNode, "global_position", origin, 0.36f)
+            .SetEase(Tween.EaseType.Out)
+            .SetTrans(Tween.TransitionType.Cubic);
+        await Cmd.Wait(0.37f);
     }
 
     public static async Task PlayDaggerSpray(Creature owner, IEnumerable<Creature> targets)

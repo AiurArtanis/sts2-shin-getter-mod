@@ -6,7 +6,7 @@
 
 **Shin Getter has crossed space and time to climb the Spire.** This gameplay character mod for *Slay the Spire 2* brings four Getter forms, mid-combat transformations, and several interlocking deck archetypes together to recreate Shin Getter's escalating combat rhythm.
 
-> Current version `v0.9.41` · Minimum game version `0.106.1` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> Current version `v0.9.42` · Minimum game version `0.106.1` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
 ## Why play it?
 
@@ -17,7 +17,7 @@
 
 ## What's included
 
-The content currently registered in `v0.9.41` includes:
+The content currently registered in `v0.9.42` includes:
 
 - **72 cards** spanning four forms and several core mechanics
 - **10 relics**, **3 potions**, and **2 enchantments**
@@ -60,23 +60,21 @@ dotnet build .\ShinGetterMod.csproj -c Debug
 
 The compiled DLL and PDB are copied into the ignored `build/` directory.
 
-### Build, validate, and deploy a test package
+### Export a test package
 
-The included Godot/PowerShell pipeline compiles the DLL, exports the PCK, validates resources, copies the DLL/PCK/JSON artifacts, and performs a headless game-load check:
+Export the PCK with Godot's `Windows Desktop` preset:
 
 ```powershell
-.\build-and-deploy.ps1 `
-  -Configuration Debug `
-  -GodotExe "D:\Godot\Godot_v4.5.1-stable_mono_win64_console.exe" `
-  -GameProject "D:\Games\SlayTheSpire2" `
-  -DeployDirectory "D:\Games\SlayTheSpire2\mods\ShinGetterMod"
+godot --headless --quit --path . --export-pack "Windows Desktop" .\build\ShinGetterMod.pck
 ```
 
-Replace the paths with locations from your environment. A successful run deploys:
+Place these files together in your local game's Mod directory:
 
 - `ShinGetterMod.dll`
 - `ShinGetterMod.pck`
 - `ShinGetterMod.json`
+
+Godot resource changes should also run `tools/validate-mod-resources.gd` from the local game project and pass one headless load check. Personal deployment scripts and machine-specific paths are not tracked by this repository.
 
 ## Repository layout
 

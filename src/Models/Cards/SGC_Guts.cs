@@ -15,7 +15,7 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_Guts : ShinGetterCardBase
 {
-    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Retain, CardKeyword.Exhaust };
+    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Exhaust };
     public override int SpiritRequirement => 1;
     protected override IEnumerable<DynamicVar> CanonicalVars => System.Array.Empty<DynamicVar>();
 

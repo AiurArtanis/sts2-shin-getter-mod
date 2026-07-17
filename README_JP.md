@@ -6,7 +6,7 @@
 
 **時空を越えた真ゲッターが塔へ挑む。** 本作は『Slay the Spire 2』向けのプレイアブルキャラクターMODです。4つのゲッター形態、戦闘中の変形、複数のデッキアーキタイプを組み合わせ、限界を超え続ける真ゲッターらしい戦闘テンポを再現します。
 
-> 現在のバージョン `v0.9.41` · 最低ゲームバージョン `0.106.1` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> 現在のバージョン `v0.9.42` · 最低ゲームバージョン `0.106.1` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
 ## 注目ポイント
 
@@ -17,7 +17,7 @@
 
 ## 収録内容
 
-`v0.9.41` で現在登録されている内容：
+`v0.9.42` で現在登録されている内容：
 
 - 4形態と複数の主要メカニクスを扱う**カード72枚**
 - **レリック10個**、**ポーション3個**、**エンチャント2個**
@@ -60,23 +60,21 @@ dotnet build .\ShinGetterMod.csproj -c Debug
 
 ビルドされたDLLとPDBは、Git管理対象外の `build/` ディレクトリへコピーされます。
 
-### テストパッケージのビルド、検証、配置
+### テストパッケージのエクスポート
 
-同梱のGodot/PowerShellパイプラインは、DLLのコンパイル、PCKのエクスポート、リソース検証、DLL/PCK/JSONの配置、ヘッドレスでのゲーム読み込み確認を順に実行します。
+Godotの `Windows Desktop` プリセットでPCKをエクスポートします。
 
 ```powershell
-.\build-and-deploy.ps1 `
-  -Configuration Debug `
-  -GodotExe "D:\Godot\Godot_v4.5.1-stable_mono_win64_console.exe" `
-  -GameProject "D:\Games\SlayTheSpire2" `
-  -DeployDirectory "D:\Games\SlayTheSpire2\mods\ShinGetterMod"
+godot --headless --quit --path . --export-pack "Windows Desktop" .\build\ShinGetterMod.pck
 ```
 
-各パスは手元の環境に合わせて変更してください。正常に完了すると、配置先に次のファイルが生成されます。
+次のファイルをローカルゲームの同じModディレクトリへ配置します。
 
 - `ShinGetterMod.dll`
 - `ShinGetterMod.pck`
 - `ShinGetterMod.json`
+
+Godotリソースを変更した場合は、ローカルゲームプロジェクトから `tools/validate-mod-resources.gd` を実行し、ヘッドレス読み込み確認も行ってください。個人用の配置スクリプトや環境固有のパス設定はリポジトリで管理しません。
 
 ## リポジトリ構成
 

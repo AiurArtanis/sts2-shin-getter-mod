@@ -1,7 +1,6 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=2 format=3]
 
 [ext_resource type="Texture2D" path="res://animations/character_select/shin_getter/character_select_shin_getter_bg.png" id="1_bg"]
-[ext_resource type="Script" path="res://src/Nodes/Screens/NShinGetterCharacterSelectBackground.cs" id="2_layout"]
 
 [node name="ShinGetterBg" type="Control"]
 layout_mode = 3
@@ -11,7 +10,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-script = ExtResource("2_layout")
+metadata/shin_getter_full_bleed = true
 
 [node name="Portrait" type="TextureRect" parent="."]
 layout_mode = 1

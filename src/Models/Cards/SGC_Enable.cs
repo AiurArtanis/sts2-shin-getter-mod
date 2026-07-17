@@ -18,7 +18,6 @@ public sealed class SGC_Enable : ShinGetterCardBase
 {
     public override int SpiritRequirement => IsUpgraded ? 4 : 6;
     public override int UpgradePreviewSpiritRequirement => 4;
-    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Retain };
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new PowerVar<SGP_Enable>(1m) };
 
     public SGC_Enable()

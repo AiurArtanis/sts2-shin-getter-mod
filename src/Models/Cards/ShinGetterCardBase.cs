@@ -197,6 +197,7 @@ public abstract class ShinGetterCardBase : CardModel
             "SGC_GetterRush",
             "SGC_HolyDragonRoar",
             "SGC_ShiningSpark",
+            "SGC_StarSlash",
             "SGC_TacticalRetreat",
         };
 

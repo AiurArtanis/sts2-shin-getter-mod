@@ -74,6 +74,52 @@ public static class NShinGetterStaticVisuals
         return false;
     }
 
+    public static async Task PlayPhasedCreatureActionAnimation(
+        Creature creature,
+        string trigger,
+        float firstHalfSpeedScale,
+        float secondHalfSpeedScale,
+        Func<Task> onSecondHalf,
+        float fallbackFirstHalfDuration = 0.56f)
+    {
+        var creatureNode = NCombatRoom.Instance?.GetCreatureNode(creature);
+        if (creatureNode == null || !TryGetVisibleFormAnimation(creatureNode, out FormAnimation formAnimation))
+        {
+            await Cmd.CustomScaledWait(fallbackFirstHalfDuration, fallbackFirstHalfDuration);
+            await onSecondHalf();
+            return;
+        }
+
+        AnimatedSprite2D sprite = formAnimation.Sprite;
+        NShinGetterSpriteAnimationStateMachine.QueueNextActionSpeed(sprite, firstHalfSpeedScale);
+        if (!TryPlayVisibleActionAnimation(sprite, trigger, formAnimation.EnsureLoaded))
+        {
+            await Cmd.CustomScaledWait(fallbackFirstHalfDuration, fallbackFirstHalfDuration);
+            await onSecondHalf();
+            return;
+        }
+
+        StringName animation = sprite.Animation;
+        SpriteFrames? frames = sprite.SpriteFrames;
+        int frameCount = frames?.GetFrameCount(animation) ?? 0;
+        double framesPerSecond = frames?.GetAnimationSpeed(animation) ?? 0d;
+        int secondHalfFrame = Math.Max(1, frameCount / 2);
+        float firstHalfDuration = frameCount > 1 && framesPerSecond > 0d
+            ? (float)(secondHalfFrame / framesPerSecond / Math.Max(0.05f, firstHalfSpeedScale))
+            : fallbackFirstHalfDuration;
+
+        await Cmd.CustomScaledWait(firstHalfDuration, firstHalfDuration);
+        if (GodotObject.IsInstanceValid(sprite)
+            && sprite.Animation == animation
+            && frameCount > 1)
+        {
+            sprite.Frame = Math.Max(sprite.Frame, Math.Min(secondHalfFrame, frameCount - 1));
+            sprite.SpeedScale = Math.Max(0.05f, secondHalfSpeedScale);
+        }
+
+        await onSecondHalf();
+    }
+
     public static async Task PlayAcceleratedFollowupAnimation(Creature creature, float speedScale)
     {
         var creatureNode = NCombatRoom.Instance?.GetCreatureNode(creature);
@@ -294,6 +340,21 @@ public static class NShinGetterStaticVisuals
                 return true;
         }
 
+        return false;
+    }
+
+    private static bool TryGetVisibleFormAnimation(NCreature creatureNode, out FormAnimation visibleAnimation)
+    {
+        foreach (FormAnimation formAnimation in GetFormAnimations(creatureNode))
+        {
+            if (!formAnimation.Sprite.Visible || formAnimation.Sprite.Modulate.A <= 0.01f)
+                continue;
+
+            visibleAnimation = formAnimation;
+            return true;
+        }
+
+        visibleAnimation = default;
         return false;
     }
 

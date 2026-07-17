@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Audio;
 using ShinGetterMod.Models.Powers;
 using ShinGetterMod.Nodes.Vfx;
 
@@ -41,7 +42,11 @@ public sealed class SGC_DiveStrike : ShinGetterCardBase
         await DamageCmd.Attack(DynamicVars.CalculatedDamage).FromCard(this)
             .WithNoAttackerAnim()
             .Targeting(cardPlay.Target)
-            .BeforeDamage(() => PlayMovementVfx(() => ShinGetterCombatVfx.PlayDiveStrike(Owner.Creature, cardPlay.Target)))
+            .BeforeDamage(async () =>
+            {
+                ShinGetterVoiceService.TryPlayCardVoice(this);
+                await ShinGetterCombatVfx.PlayDiveStrike(Owner.Creature, cardPlay.Target);
+            })
             .Execute(choiceContext);
 
         if (HasForm(base.Owner, ShinGetterForm.Getter1))

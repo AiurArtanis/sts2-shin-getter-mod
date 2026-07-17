@@ -40,10 +40,13 @@ public sealed class SGC_GetterFlash : ShinGetterCardBase
             .BeforeDamage(async () =>
             {
                 ShinGetterVoiceService.TryPlayCardVoice(this);
-                await ShinGetterCombatVfx.PlayFlashRush(Owner.Creature, cardPlay.Target);
-                NShinGetterStaticVisuals.QueueNextActionSpeed(Owner.Creature, 1.75f);
-                NShinGetterStaticVisuals.TryPlayCreatureActionAnimation(Owner.Creature, "Attack");
-                await Cmd.CustomScaledWait(0.18f, 0.22f);
+                await NShinGetterStaticVisuals.PlayPhasedCreatureActionAnimation(
+                    Owner.Creature,
+                    "Attack",
+                    0.75f,
+                    2f,
+                    () => ShinGetterCombatVfx.PlayFlashRush(Owner.Creature, cardPlay.Target),
+                    0.74f);
             })
             .Execute(choiceContext);
 

@@ -6,7 +6,7 @@
 
 **让真盖塔穿越时空登上高塔。** 这是一个为《杀戮尖塔 2》制作的玩法型角色 Mod，以四种盖塔形态、战斗中变形和多套相互咬合的构筑体系，重现真盖塔不断突破极限的战斗节奏。
 
-> 当前版本 `v0.9.41` · 最低游戏版本 `0.106.1` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> 当前版本 `v0.9.42` · 最低游戏版本 `0.106.1` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
 ## 为什么值得玩
 
@@ -17,7 +17,7 @@
 
 ## 内容一览
 
-`v0.9.41` 当前注册内容包括：
+`v0.9.42` 当前注册内容包括：
 
 - **72 张卡牌**，覆盖四种形态与多套核心机制
 - **10 个遗物**、**3 瓶药水**、**2 个附魔**
@@ -60,23 +60,21 @@ dotnet build .\ShinGetterMod.csproj -c Debug
 
 编译后的 DLL 与 PDB 会复制到被忽略的 `build/` 目录。
 
-### 构建、验证并部署测试包
+### 导出测试包
 
-仓库提供的 Godot/PowerShell 构建脚本会依次编译 DLL、导出 PCK、验证资源、复制 DLL/PCK/JSON，并进行一次无界面的游戏加载验证：
+使用 Godot 的 `Windows Desktop` 导出预设生成 PCK：
 
 ```powershell
-.\build-and-deploy.ps1 `
-  -Configuration Debug `
-  -GodotExe "D:\Godot\Godot_v4.5.1-stable_mono_win64_console.exe" `
-  -GameProject "D:\Games\SlayTheSpire2" `
-  -DeployDirectory "D:\Games\SlayTheSpire2\mods\ShinGetterMod"
+godot --headless --quit --path . --export-pack "Windows Desktop" .\build\ShinGetterMod.pck
 ```
 
-路径应替换为你的本机环境。脚本成功后，部署目录会包含：
+将以下文件放入本地游戏的同一个 Mod 目录：
 
 - `ShinGetterMod.dll`
 - `ShinGetterMod.pck`
 - `ShinGetterMod.json`
+
+Godot 资源改动还应在本地游戏工程中运行 `tools/validate-mod-resources.gd`，并完成一次无界面加载验证。仓库不跟踪个人部署脚本或本机路径配置。
 
 ## 项目结构
 

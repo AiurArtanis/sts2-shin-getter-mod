@@ -21,9 +21,13 @@ public sealed class SGC_TacticalRetreat : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PlayMovementVfx(() => ShinGetterCombatVfx.PlayTacticalRetreat(Owner.Creature));
+        if (IsUpgraded)
+            await Transform(choiceContext, Owner, this);
+
+        await PlayMovementVfx(() => ShinGetterCombatVfx.PlayTacticalRetreat(
+            Owner.Creature,
+            () => Transform(choiceContext, Owner, this)));
         await CreatureCmd.GainBlock(base.Owner.Creature, base.DynamicVars.Block, cardPlay);
-        await Transform(choiceContext, Owner, this);
         await CreatureCmd.GainBlock(base.Owner.Creature, base.DynamicVars.Block, cardPlay);
     }
 

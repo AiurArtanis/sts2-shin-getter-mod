@@ -3,48 +3,47 @@ using Godot;
 
 namespace ShinGetterMod.Nodes.Screens;
 
-public partial class NShinGetterCharacterSelectBackground : Control
+internal static class NShinGetterCharacterSelectBackground
 {
-    private Viewport? _viewport;
-    private Callable _sizeChangedCallback;
+    private static readonly StringName LayoutMetadata = "shin_getter_full_bleed";
 
-    public override void _Ready()
+    internal static void RefreshMarkedBackgrounds(Control? backgroundContainer)
     {
-        _viewport = GetViewport();
-        _sizeChangedCallback = Callable.From(OnViewportSizeChanged);
-        _viewport.Connect(Viewport.SignalName.SizeChanged, _sizeChangedCallback);
-        QueueLayoutRefresh();
-    }
+        if (backgroundContainer == null || !GodotObject.IsInstanceValid(backgroundContainer))
+            return;
 
-    public override void _ExitTree()
-    {
-        if (_viewport != null
-            && GodotObject.IsInstanceValid(_viewport)
-            && _viewport.IsConnected(Viewport.SignalName.SizeChanged, _sizeChangedCallback))
+        foreach (Node child in backgroundContainer.GetChildren())
         {
-            _viewport.Disconnect(Viewport.SignalName.SizeChanged, _sizeChangedCallback);
+            if (child is not Control background || !background.HasMeta(LayoutMetadata))
+                continue;
+
+            ApplyViewportLayout(background);
+            Callable.From(() => ApplyViewportLayout(background)).CallDeferred();
         }
     }
 
-    private void OnViewportSizeChanged() => QueueLayoutRefresh();
-
-    private void QueueLayoutRefresh() => Callable.From(ApplyViewportLayout).CallDeferred();
-
-    private void ApplyViewportLayout()
+    private static void ApplyViewportLayout(Control background)
     {
-        if (_viewport == null || !IsInsideTree() || GetParent() is not CanvasItem parent)
+        if (!GodotObject.IsInstanceValid(background)
+            || !background.IsInsideTree()
+            || background.GetParent() is not CanvasItem parent)
+        {
+            return;
+        }
+
+        Rect2 viewportRect = background.GetViewport().GetVisibleRect();
+        if (viewportRect.Size.X <= 0f || viewportRect.Size.Y <= 0f)
             return;
 
-        Rect2 viewportRect = _viewport.GetVisibleRect();
         Transform2D inverseParentTransform = parent.GetGlobalTransformWithCanvas().AffineInverse();
         Vector2 localTopLeft = inverseParentTransform * viewportRect.Position;
-        Vector2 localBottomRight = inverseParentTransform * (viewportRect.Position + viewportRect.Size);
+        Vector2 localBottomRight = inverseParentTransform * viewportRect.End;
 
-        SetAnchorsPreset(LayoutPreset.TopLeft);
-        PivotOffset = Vector2.Zero;
-        Rotation = 0f;
-        Scale = Vector2.One;
-        Position = localTopLeft;
-        Size = localBottomRight - localTopLeft;
+        background.SetAnchorsPreset(Control.LayoutPreset.TopLeft);
+        background.PivotOffset = Vector2.Zero;
+        background.Rotation = 0f;
+        background.Scale = Vector2.One;
+        background.Position = localTopLeft;
+        background.Size = localBottomRight - localTopLeft;
     }
 }

@@ -29,5 +29,5 @@ export_credentials.cfg
 *.log
 
 # Local development checks and planning notes
-/tools/*.ps1
+*.ps1
 /docs/
