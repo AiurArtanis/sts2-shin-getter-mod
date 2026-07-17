@@ -15,9 +15,9 @@ dest_files=["res://.godot/imported/sprite_000043.png-ff67a736b2e0f1ee3b8b48b82dc
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
-compress/lossy_quality=0.7
+compress/lossy_quality=0.75
 compress/uastc_level=0
 compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
