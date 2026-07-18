@@ -8,9 +8,9 @@
 
 Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter 1's explosive offense, Shin Getter 2's high-speed tactics, and Shin Getter 3's iron defense; then awaken Shin Getter Dragon and let the Getter Rays consume the tower. This is a gameplay character mod built around transformations, deckbuilding, and presentation, not a simple reskin.
 
-> Current version `v1.0.2` · Minimum game version `0.109.0` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> Current version `v1.0.3` · Minimum game version `0.109.0` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
-[Download v1.0.2](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.0.2) · [Report an issue](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+[Download v1.0.3](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.0.3) · [Report an issue](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
 ## ⚡ Combat at a glance
 
@@ -30,7 +30,7 @@ Morale supports several high-impact effects. Evolution and Radiation create addi
 
 ## 📦 What's included
 
-The content currently registered in `v1.0.2` includes:
+The content currently registered in `v1.0.3` includes:
 
 - **72 cards** spanning four forms and several core mechanics
 - **10 relics**, **3 potions**, and **2 enchantments**
@@ -46,7 +46,7 @@ The content currently registered in `v1.0.2` includes:
 
 ### Install the release
 
-1. Download `ShinGetterMod.pck`, `ShinGetterMod.dll`, and `ShinGetterMod.json` from the [GitHub Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.0.2).
+1. Download `ShinGetterMod.pck`, `ShinGetterMod.dll`, and `ShinGetterMod.json` from the [GitHub Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.0.3).
 2. Create a `ShinGetterMod` folder inside the game's mod-loading directory and place all three files together.
 3. Launch the game, open **Settings → Mod Settings**, and enable “真盖塔模组” (Shin Getter Mod) under **Installed Mods**.
 4. Accept the load prompt, fully quit, and relaunch the game. Start a new run and select **Shin Getter**.
