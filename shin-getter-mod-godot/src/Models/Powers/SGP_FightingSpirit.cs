@@ -32,8 +32,7 @@ public sealed class SGP_FightingSpirit : PowerModel
                 dealer,
                 Amount,
                 ValueProp.Move | ValueProp.SkipHurtAnim,
-                Owner,
-                null);
+                Owner);
         }
     }
 

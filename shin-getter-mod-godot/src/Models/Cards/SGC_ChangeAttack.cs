@@ -30,7 +30,7 @@ public sealed class SGC_ChangeAttack : ShinGetterCardBase
         for (int i = 0; i < x; i++)
         {
             await Transform(choiceContext, Owner, this);
-            await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this)
+            await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this, cardPlay)
                 .Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
             if (i + 1 < x && cardPlay.Target.IsAlive)
                 await QueueAcceleratedFollowupAnimation();

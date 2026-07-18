@@ -53,7 +53,7 @@ public sealed class SGC_StonerSunshine : ShinGetterCardBase
         ArgumentNullException.ThrowIfNull(CombatState);
         var combatState = CombatState;
 
-        await DamageCmd.Attack(DynamicVars.CalculatedDamage).FromCard(this)
+        await DamageCmd.Attack(DynamicVars.CalculatedDamage).FromCard(this, cardPlay)
             .TargetingAllOpponents(combatState)
             .WithAttackerAnim("Cast", 0.5f)
             .BeforeDamage(() => ShinGetterCombatVfx.PlayEnergyBall(Owner.Creature, combatState.GetOpponentsOf(Owner.Creature)))

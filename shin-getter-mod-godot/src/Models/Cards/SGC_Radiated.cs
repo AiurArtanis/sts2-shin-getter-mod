@@ -50,7 +50,8 @@ public sealed class SGC_Radiated : ShinGetterCardBase
             DynamicVars.Damage.BaseValue,
             DynamicVars.Damage.Props,
             Owner.Creature,
-            this);
+            this,
+            cardPlay);
 
         foreach (var creature in creatures.Where(creature => creature.IsAlive))
         {

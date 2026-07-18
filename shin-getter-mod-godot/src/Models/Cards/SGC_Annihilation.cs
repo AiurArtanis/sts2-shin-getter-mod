@@ -33,7 +33,7 @@ public sealed class SGC_Annihilation : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        var attack = await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this)
+        var attack = await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this, cardPlay)
             .TargetingAllOpponents(CombatState)
             .WithAttackerAnim("Cast", 0.35f)
             .BeforeDamage(() => ShinGetterCombatVfx.PlayAnnihilation(Owner.Creature, CombatState.GetOpponentsOf(Owner.Creature)))

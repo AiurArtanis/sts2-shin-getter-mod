@@ -37,7 +37,7 @@ public sealed class SGC_TornadoDrill : ShinGetterCardBase
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
-        await DamageCmd.Attack(DynamicVars.CalculatedDamage).FromCard(this)
+        await DamageCmd.Attack(DynamicVars.CalculatedDamage).FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
             .BeforeDamage(() => ShinGetterCombatVfx.PlayRisingDrill(cardPlay.Target))
             .WithHitFx("vfx/vfx_heavy_blunt")

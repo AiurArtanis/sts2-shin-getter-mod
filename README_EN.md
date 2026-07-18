@@ -8,7 +8,7 @@
 
 Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter 1's explosive offense, Shin Getter 2's high-speed tactics, and Shin Getter 3's iron defense; then awaken Shin Getter Dragon and let the Getter Rays consume the tower. This is a gameplay character mod built around transformations, deckbuilding, and presentation, not a simple reskin.
 
-> Current version `v1.0.2` · Minimum game version `0.106.1` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> Current version `v1.0.2` · Minimum game version `0.109.0` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
 [Download v1.0.2](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.0.2) · [Report an issue](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
@@ -78,7 +78,7 @@ Once the Workshop edition is available, enable it as follows:
 
 ### Requirements
 
-- *Slay the Spire 2* `0.106.1` or later
+- *Slay the Spire 2* `0.109.0` or later
 - Godot `4.5.1 Mono`
 - .NET SDK `9`
 - A local game project directory that Godot can load for validation

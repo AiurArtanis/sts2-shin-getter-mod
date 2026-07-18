@@ -8,7 +8,7 @@
 
 時空を越えた真ゲッターが塔へ挑みます。ゲッター1の爆発力、ゲッター2の高速戦術、ゲッター3の鉄壁の防御を切り替え、最後には真ゲッタードラゴンを目覚めさせてゲッターレイで塔を飲み込みましょう。単なる見た目変更ではなく、変形、デッキ構築、演出が一体となったプレイアブルキャラクターMODです。
 
-> 現在のバージョン `v1.0.2` · 最低ゲームバージョン `0.106.1` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> 現在のバージョン `v1.0.2` · 最低ゲームバージョン `0.109.0` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
 [v1.0.2をダウンロード](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.0.2) · [不具合を報告](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
@@ -78,7 +78,7 @@ Workshop版の公開後は、次の手順でも有効化できます。
 
 ### 必要な環境
 
-- 『Slay the Spire 2』`0.106.1` 以降
+- 『Slay the Spire 2』`0.109.0` 以降
 - Godot `4.5.1 Mono`
 - .NET SDK `9`
 - Godotが検証用に読み込めるローカルのゲームプロジェクトディレクトリ

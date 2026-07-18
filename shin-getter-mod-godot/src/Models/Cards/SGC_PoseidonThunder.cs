@@ -37,7 +37,7 @@ public sealed class SGC_PoseidonThunder : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this)
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this, cardPlay)
             .WithNoAttackerAnim()
             .TargetingAllOpponents(CombatState)
             .BeforeDamage(() => ShinGetterCombatVfx.PlayThunderField(Owner.Creature, CombatState.GetOpponentsOf(Owner.Creature)))

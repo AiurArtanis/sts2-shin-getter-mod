@@ -34,7 +34,7 @@ public sealed class SGC_GetterFlash : ShinGetterCardBase
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
 
-        var attack = await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this)
+        var attack = await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this, cardPlay)
             .WithNoAttackerAnim()
             .Targeting(cardPlay.Target)
             .BeforeDamage(async () =>

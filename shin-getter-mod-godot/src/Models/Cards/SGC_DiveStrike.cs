@@ -39,7 +39,7 @@ public sealed class SGC_DiveStrike : ShinGetterCardBase
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
 
-        await DamageCmd.Attack(DynamicVars.CalculatedDamage).FromCard(this)
+        await DamageCmd.Attack(DynamicVars.CalculatedDamage).FromCard(this, cardPlay)
             .WithNoAttackerAnim()
             .Targeting(cardPlay.Target)
             .BeforeDamage(async () =>
