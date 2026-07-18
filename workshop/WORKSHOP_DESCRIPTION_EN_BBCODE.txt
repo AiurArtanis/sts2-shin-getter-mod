@@ -1,0 +1,68 @@
+[h1]Slay the Spire 2 - Shin Getter Mod[/h1]
+
+[i]Three hearts. One Getter. Endless evolution.[/i]
+
+Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter 1's explosive offense, Shin Getter 2's high-speed tactics, and Shin Getter 3's iron defense; then awaken Shin Getter Dragon and let the Getter Rays consume the tower.
+
+[hr][/hr]
+
+[h2]⚡ Combat at a glance[/h2]
+
+[list]
+[*][b]Four forms, one character.[/b] Shin Getter 1 focuses on Vigor bursts. Shin Getter 2 gains extra Energy and draw while its Block is halved. Shin Getter 3 holds the line with Plating and defensive retaliation. Shin Getter Dragon accepts rewards from all three forms.
+[*][b]Transformation is a decision.[/b] Form-specific cards highlight the strongest actions available now. Movement, transformation cards, and related relics let you make shifting part of an attacking turn.
+[*][b]A complete character experience.[/b] Custom card frames, character animation, VFX, voices, finishing music, an exclusive event, and Ancient dialogue are all included.
+[/list]
+
+[h2]🧭 Starter routes[/h2]
+
+[list]
+[*][b]Vigor burst:[/b] Build Vigor, then finish with cards such as [i]Valor[/i] and [i]Dive Strike[/i].
+[*][b]Exhaust loop:[/b] Use exhausting cards to trigger [i]Getter Claw[/i]'s free damage. [i]Parts Swap[/i] recovers key pieces, while Shin Getter 2 can further amplify the payoff.
+[*][b]Iron retaliation:[/b] Stack Plating and Block in Shin Getter 3, then turn the enemy turn into a chance to counterattack.
+[*][b]Transformation chain:[/b] Build around frequent shifting, movement-triggered transformations, and [i]Chosen One[/i] so each change becomes resources or defense.
+[/list]
+
+[h2]📦 What's included[/h2]
+
+[list]
+[*]72 cards
+[*]10 relics, 3 potions, and 2 enchantments
+[*]1 exclusive event plus dedicated Ancient dialogue
+[*]Simplified Chinese, English, and Japanese localization
+[/list]
+
+[h2]🚀 How to play[/h2]
+
+[list]
+[*]After subscribing, start the game and open [b]Settings → Mod Settings[/b] from the main menu.
+[*]Find “真盖塔模组” (Shin Getter Mod) under [b]Installed Mods[/b], enable it, and accept the load prompt after confirming the source is trusted.
+[*]Fully quit and relaunch the game. Enabling or disabling a mod takes effect after a restart.
+[*]Start a new run and select [b]Shin Getter[/b].
+[/list]
+
+On your first run, follow the highlighted form-specific cards to establish a rhythm, then branch into one of the routes above.
+
+[h2]🗺 Roadmap[/h2]
+
+[list]
+[*]More events
+[*]More elements inspired by [i]Super Robot Wars[/i]
+[*]Enemies from the Getter Robo universe
+[*]A new [i]Destiny[/i] deck archetype
+[*]Improved animation presentation
+[*]Dedicated card frames for Spirit Command cards
+[*]Multiplayer support
+[/list]
+
+[h2]Current status[/h2]
+
+[b]Current version: v1.0.2[/b]
+
+The mod will continue to be maintained. Future game updates may affect compatibility. Please report issues on GitHub with the game version, mod version, reproduction steps, and relevant logs.
+
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod]GitHub repository and issue tracker[/url]
+
+[hr][/hr]
+
+[i]This is an unofficial fan-made mod. Names, characters, and original assets related to Slay the Spire 2 and Getter Robo belong to their respective rights holders.[/i]
