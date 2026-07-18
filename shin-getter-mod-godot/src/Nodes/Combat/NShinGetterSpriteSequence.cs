@@ -60,7 +60,7 @@ internal static class NShinGetterSpriteSequence
     public const int ShinDragonIdleMaxFrames = 36;
     public const int ShinDragonAttackMaxFrames = 60;
     public const int ShinDragonCastMaxFrames = 32;
-    public const int ShinDragonBlockMaxFrames = 121;
+    public const int ShinDragonBlockMaxFrames = 48;
     public const int ShinDragonDashMaxFrames = 48;
     public const int ShinDragonDeathMaxFrames = 48;
     public const double IdleFramesPerSecond = 24d;
