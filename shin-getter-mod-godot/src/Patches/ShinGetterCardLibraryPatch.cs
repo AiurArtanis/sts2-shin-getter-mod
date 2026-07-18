@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Reflection;
 using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Entities.UI;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Screens.CardLibrary;
+using MegaCrit.Sts2.Core.Saves;
 using ShinGetterMod.Models.CardPools;
 using ShinGetterMod.Models.Characters;
 
@@ -76,5 +78,19 @@ internal static class ShinGetterCardLibraryGridPatch
         }
 
         __instance.RefreshVisibility();
+    }
+}
+
+[HarmonyPatch(typeof(NCardLibraryGrid), "GetCardVisibility")]
+internal static class ShinGetterCardLibraryVisibilityPatch
+{
+    private static void Postfix(CardModel card, ref ModelVisibility __result)
+    {
+        if (card.Pool is not ShinGetterCardPool)
+            return;
+
+        __result = SaveManager.Instance.Progress.DiscoveredCards.Contains(card.Id)
+            ? ModelVisibility.Visible
+            : ModelVisibility.NotSeen;
     }
 }
