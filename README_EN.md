@@ -4,20 +4,31 @@
 
 ![Shin Getter Mod character-select screen](animations/character_select/shin_getter/character_select_shin_getter_bg.png)
 
-**Shin Getter has crossed space and time to climb the Spire.** This gameplay character mod for *Slay the Spire 2* brings four Getter forms, mid-combat transformations, and several interlocking deck archetypes together to recreate Shin Getter's escalating combat rhythm.
+**Three hearts. One Getter. Endless evolution.**
 
-> Current version `v0.9.42` · Minimum game version `0.106.1` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter 1's explosive offense, Shin Getter 2's high-speed tactics, and Shin Getter 3's iron defense; then awaken Shin Getter Dragon and let the Getter Rays consume the tower. This is a gameplay character mod built around transformations, deckbuilding, and presentation, not a simple reskin.
 
-## Why play it?
+> Current version `v0.9.41` · Minimum game version `0.106.1` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
-- **Four forms, one character.** Switch among Getter-1, Getter-2, Getter-3, and Shin Getter Dragon, making form choice part of each turn's decisions.
-- **More than one route to a winning deck.** Transformation, Morale, Vitality, Regeneration, Plating, Evolution, and Radiation can anchor separate archetypes or combine across them.
-- **Built around Shin Getter from cards to presentation.** The mod includes custom card frames, character animation, VFX, voices, finishing music, and a dedicated character-select scene.
-- **Integrated into the Spire instead of being a simple reskin.** Alongside the full card pool are exclusive relics, potions, enchantments, an event, and Ancient dialogue.
+## ⚡ Combat at a glance
 
-## What's included
+- **Four forms, one character.** Shin Getter 1 focuses on Vigor bursts; Shin Getter 2 gains extra Energy and draw while its Block is halved; Shin Getter 3 holds the line with Plating and defensive retaliation; Shin Getter Dragon accepts rewards from all three forms.
+- **Transformation is a decision.** Form-specific cards highlight the strong actions available now. Movement, transformation cards, and related relics let you make shifting part of an attacking turn.
+- **Built around Shin Getter from cards to presentation.** Custom card frames, character animation, VFX, voices, finishing music, and a dedicated character-select scene form one experience.
+- **Integrated into the Spire instead of being a reskin.** Alongside the full card pool are exclusive relics, potions, enchantments, an event, and Ancient dialogue.
 
-The content currently registered in `v0.9.42` includes:
+## 🧭 Starter routes
+
+- **Vitality burst:** Build Vigor, then finish with cards such as *Valor* and *Dive Strike*.
+- **Exhaust loop:** Use exhausting cards to trigger *Getter Claw*'s free damage. *Parts Swap* recovers key pieces, while Shin Getter 2 can further amplify the payoff.
+- **Iron retaliation:** Stack Plating and Block in Shin Getter 3, then turn the enemy turn into a chance to counterattack.
+- **Transformation chain:** Build around frequent shifting, movement-triggered transformations, and *Chosen One* so each change becomes resources or defense.
+
+Morale supports several high-impact effects. Evolution and Radiation create additional late-game paths. Choose a primary engine first, then let the remaining mechanics support it.
+
+## 📦 What's included
+
+The content currently registered in `v0.9.41` includes:
 
 - **72 cards** spanning four forms and several core mechanics
 - **10 relics**, **3 potions**, and **2 enchantments**
@@ -25,17 +36,29 @@ The content currently registered in `v0.9.42` includes:
 - Simplified Chinese, English, and Japanese localization
 - A complete character mod loaded through DLL, PCK, and JSON artifacts
 
-## Featured cards
+## 🃏 Full card gallery
 
-<p align="center">
-  <img src="images/packed/card_single/shin_getter/s_g_c_shin_form_card.png" width="30%" alt="Finished artwork for the Shin Form card" />
-  <img src="images/packed/card_single/shin_getter/s_g_c_stoner_sunshine_card.png" width="30%" alt="Finished artwork for the Stoner Sunshine card" />
-  <img src="images/packed/card_single/shin_getter/s_g_c_saint_dragon_roar_card.png" width="30%" alt="Finished artwork for the Saint Dragon Roar card" />
-</p>
+![Mosaic preview of the complete Shin Getter card gallery](art/shin_getter_face_card_mosaic_enhanced.png)
 
-## Project status
+## 🚀 Quick start
 
-This project is still in **active pre-release development**. Version numbers, balance, content counts, and compatibility with future game builds may change. There is no stable installation package or save-compatibility guarantee yet. Developers who want to test the mod or study its implementation can build it from source.
+Once the Workshop edition is released, enable it as follows:
+
+1. After subscribing, launch the game. From the main menu, open **Settings** and select **Mod Settings**.
+2. Under **Installed Mods**, find “真盖塔模组” (Shin Getter Mod) and tick its enable box.
+3. When the **Load Mods?** confirmation appears, choose **Load Mods** only after confirming the source is trusted. Fully quit and relaunch the game; enabling or disabling a mod takes effect only after a restart.
+4. Start a new run and select **Shin Getter**. On a first run, follow the highlighted form-specific cards to establish a rhythm, then branch into one of the routes above.
+
+The project is still in pre-release development. To help test it or study its implementation, build it from source below. Version numbers, balance, content counts, and compatibility with future game builds may change; no stable installation package or save-compatibility guarantee is offered yet.
+
+## 🗺 Roadmap
+
+- [ ] More events
+- [ ] More elements inspired by *Super Robot Wars*
+- [ ] Enemies from the *Getter Robo* universe
+- [ ] A new *Destiny* deck archetype
+- [ ] Improved animation presentation
+- [ ] Multiplayer
 
 ## Build from source
 
@@ -58,30 +81,32 @@ After restoring those dependencies, build the C# project:
 dotnet build .\ShinGetterMod.csproj -c Debug
 ```
 
-The compiled DLL and PDB are copied into the ignored `build/` directory.
+The built DLL and PDB are copied to the ignored `build/` directory.
 
-### Export a test package
+### Build, validate, and deploy a test package
 
-Export the PCK with Godot's `Windows Desktop` preset:
+The bundled Godot/PowerShell pipeline compiles the DLL, exports the PCK, validates resources, copies the DLL/PCK/JSON artifacts, and runs a headless game-load validation:
 
 ```powershell
-godot --headless --quit --path . --export-pack "Windows Desktop" .\build\ShinGetterMod.pck
+.\build-and-deploy.ps1 `
+  -Configuration Debug `
+  -GodotExe "D:\Godot\Godot_v4.5.1-stable_mono_win64_console.exe" `
+  -GameProject "D:\Games\SlayTheSpire2" `
+  -DeployDirectory "D:\Games\SlayTheSpire2\mods\ShinGetterMod"
 ```
 
-Place these files together in your local game's Mod directory:
+Replace the paths with your local environment. On success, the deployment directory contains:
 
 - `ShinGetterMod.dll`
 - `ShinGetterMod.pck`
 - `ShinGetterMod.json`
-
-Godot resource changes should also run `tools/validate-mod-resources.gd` from the local game project and pass one headless load check. Personal deployment scripts and machine-specific paths are not tracked by this repository.
 
 ## Repository layout
 
 - `src/`: cards, powers, relics, potions, enchantments, events, patches, and runtime code
 - `scenes/`, `animations/`, `images/`, `materials/`, `shaders/`, `audio/`: Godot scenes and audiovisual assets
 - `ShinGetterMod/`: mod data and localization resources
-- `tools/validate-mod-resources.gd`: exported-resource integrity check
+- `tools/validate-mod-resources.gd`: exported-package resource check
 - `ShinGetterMod.json`: mod manifest, version, and minimum game version
 
 ## Contributing and reporting issues
@@ -94,4 +119,4 @@ Do not commit local game dependencies, `addons/`, `build/` artifacts, or persona
 
 This is an unofficial fan-made mod. Names, characters, and source material related to *Slay the Spire 2* and Shin Getter remain the property of their respective rights holders.
 
-This repository does not currently include an open-source license. The code license, third-party asset attribution, and usage boundaries will be documented before redistribution and public contribution are opened. Until then, do not assume that the repository's contents are licensed for copying, modification, or redistribution.
+The original code in this repository is released under the [MIT License](LICENSE). It does not grant permission to copy, adapt, or redistribute *Slay the Spire 2*, Shin Getter, or other third-party material; users remain responsible for confirming the rights and provenance of all related assets.
