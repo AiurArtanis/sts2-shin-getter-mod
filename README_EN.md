@@ -1,4 +1,4 @@
-# Shin Getter Mod
+# Slay the Spire 2 - Shin Getter Mod
 
 [简体中文](README.md) | [日本語](README_JP.md)
 
@@ -71,7 +71,8 @@ Once the Workshop edition is available, enable it as follows:
 - [ ] Enemies from the *Getter Robo* universe
 - [ ] A new *Destiny* deck archetype
 - [ ] Improved animation presentation
-- [ ] Multiplayer
+- [ ] Dedicated card frames for Spirit Command cards
+- [ ] Multiplayer support
 
 ## Build from source
 
