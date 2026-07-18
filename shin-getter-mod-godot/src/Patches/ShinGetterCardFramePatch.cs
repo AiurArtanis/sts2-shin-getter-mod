@@ -267,6 +267,9 @@ internal static class ShinGetterCardFramePatch
     {
         creature = null!;
 
+        if (model.IsCanonical)
+            return false;
+
         if (model.Owner?.Creature is { } ownerCreature)
         {
             creature = ownerCreature;
