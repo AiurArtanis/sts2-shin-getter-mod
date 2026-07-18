@@ -12,4 +12,5 @@
 - Keep the canonical mod image at the repository root as `mod_image.png`.
 - Publish a ZIP named `shin-getter-mod-<version>.zip`, where `<version>` exactly matches the manifest version, including the lowercase `v` prefix.
 - Place `mod_image.png`, `ShinGetterMod.dll`, `ShinGetterMod.pck`, and `ShinGetterMod.json` at the ZIP root.
+- After build, resource validation, and game-load validation succeed, copy the same four files to `E:\SteamLibrary\steamapps\common\Slay the Spire 2\mods\ShinGetterMod` and verify their sizes and SHA-256 hashes against the release inputs.
 - Example: manifest version `v1.0.3` uses `shin-getter-mod-v1.0.3.zip`.
