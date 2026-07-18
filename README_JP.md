@@ -8,9 +8,9 @@
 
 時空を越えた真ゲッターが塔へ挑みます。ゲッター1の爆発力、ゲッター2の高速戦術、ゲッター3の鉄壁の防御を切り替え、最後には真ゲッタードラゴンを目覚めさせてゲッターレイで塔を飲み込みましょう。単なる見た目変更ではなく、変形、デッキ構築、演出が一体となったプレイアブルキャラクターMODです。
 
-> 現在のバージョン `v1.0.2` · 最低ゲームバージョン `0.106.1` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> 現在のバージョン `v1.0.3` · 最低ゲームバージョン `0.106.1` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
-[v1.0.2をダウンロード](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.0.2) · [不具合を報告](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+[v1.0.3をダウンロード](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.0.3) · [不具合を報告](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
 ## ⚡ 戦闘の核
 
@@ -30,7 +30,7 @@
 
 ## 📦 収録内容
 
-`v1.0.2` で現在登録されている内容：
+`v1.0.3` で現在登録されている内容：
 
 - 4形態と複数の主要メカニクスを扱う**カード72枚**
 - **レリック10個**、**ポーション3個**、**エンチャント2個**
@@ -46,7 +46,7 @@
 
 ### リリース版のインストール
 
-1. [GitHub Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.0.2) から `ShinGetterMod.pck`、`ShinGetterMod.dll`、`ShinGetterMod.json` をダウンロードします。
+1. [GitHub Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.0.3) から `shin-getter-mod-v1.0.3.zip` をダウンロードし、`ShinGetterMod.pck`、`ShinGetterMod.dll`、`ShinGetterMod.json`、`mod_image.png` を展開します。
 2. ゲームのMOD読み込みディレクトリに `ShinGetterMod` フォルダーを作成し、3ファイルをまとめて配置します。
 3. ゲームを起動し、**設定 → MOD設定**を開いて、**インストール済みのMOD**から「真盖塔模组」（真ゲッターMOD）を有効にします。
 4. 読み込み確認を承認した後、ゲームを完全に終了して再起動します。新しいランで**真ゲッター**を選択してください。

@@ -8,9 +8,9 @@
 
 让真盖塔穿越时空登上高塔。切换一号机的爆发、二号机的高速战术与三号机的钢铁防线，最终唤醒真盖塔龙，用盖塔射线吞没高塔。这里不是换一张角色皮肤，而是一套围绕变形、卡组与演出共同运转的玩法型角色 Mod。
 
-> 当前版本 `v1.0.2` · 最低游戏版本 `0.106.1` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> 当前版本 `v1.0.3` · 最低游戏版本 `0.106.1` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
-[下载 v1.0.2](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.0.2) · [提交问题](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+[下载 v1.0.3](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.0.3) · [提交问题](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
 ## ⚡ 战斗核心
 
@@ -30,7 +30,7 @@
 
 ## 📦 内容一览
 
-`v1.0.2` 当前注册内容包括：
+`v1.0.3` 当前注册内容包括：
 
 - **72 张卡牌**，覆盖四种形态与多套核心机制
 - **10 个遗物**、**3 瓶药水**、**2 个附魔**
@@ -46,7 +46,7 @@
 
 ### 安装发布版
 
-1. 从 [GitHub Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.0.2) 下载 `ShinGetterMod.pck`、`ShinGetterMod.dll` 与 `ShinGetterMod.json`。
+1. 从 [GitHub Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.0.3) 下载 `shin-getter-mod-v1.0.3.zip`，解压得到 `ShinGetterMod.pck`、`ShinGetterMod.dll`、`ShinGetterMod.json` 与 `mod_image.png`。
 2. 在游戏的模组加载目录中创建 `ShinGetterMod` 子目录，并将三个文件放在一起。
 3. 启动游戏，从主菜单进入**设置 → 模组设置**，在**已下载的模组**中启用“真盖塔模组”。
 4. 确认加载提示后完全退出并重新启动游戏。新开一局，选择**真盖塔**即可开始。
