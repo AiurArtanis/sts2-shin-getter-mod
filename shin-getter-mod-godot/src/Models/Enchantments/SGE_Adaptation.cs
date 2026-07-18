@@ -30,9 +30,7 @@ public sealed class SGE_Adaptation : EnchantmentModel
             Card.Owner.Creature,
             1m,
             ValueProp.Unblockable | ValueProp.Unpowered | ValueProp.Move,
-            Card.Owner.Creature,
-            Card,
-            cardPlay);
+            Card);
 
         await DecrementFirstDebuff();
 

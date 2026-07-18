@@ -43,7 +43,7 @@ public sealed class SGP_HotBlood : PowerModel
         return Task.CompletedTask;
     }
 
-    public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource, CardPlay? cardPlay)
+    public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
         if (cardSource == null) return 1m;
         if (cardSource.Owner.Creature != base.Owner) return 1m;

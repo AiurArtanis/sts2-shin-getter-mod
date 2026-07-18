@@ -8,7 +8,7 @@
 
 让真盖塔穿越时空登上高塔。切换一号机的爆发、二号机的高速战术与三号机的钢铁防线，最终唤醒真盖塔龙，用盖塔射线吞没高塔。这里不是换一张角色皮肤，而是一套围绕变形、卡组与演出共同运转的玩法型角色 Mod。
 
-> 当前版本 `v1.0.2` · 最低游戏版本 `0.109.0` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> 当前版本 `v1.0.2` · 最低游戏版本 `0.106.1` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
 [下载 v1.0.2](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.0.2) · [提交问题](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
@@ -78,7 +78,7 @@
 
 ### 环境要求
 
-- 《杀戮尖塔 2》`0.109.0` 或更高版本
+- 《杀戮尖塔 2》`0.106.1` 或更高版本
 - Godot `4.5.1 Mono`
 - .NET SDK `9`
 - 本机可供 Godot 加载验证的游戏工程目录

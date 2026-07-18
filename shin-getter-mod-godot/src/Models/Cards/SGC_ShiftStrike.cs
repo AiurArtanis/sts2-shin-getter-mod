@@ -31,7 +31,7 @@ public sealed class SGC_ShiftStrike : ShinGetterCardBase
         if (IsUpgraded)
             await Transform(choiceContext, Owner, this);
 
-        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this, cardPlay).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
         await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
         await PowerCmd.Apply<RegenPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
         await PowerCmd.Apply<PlatingPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);

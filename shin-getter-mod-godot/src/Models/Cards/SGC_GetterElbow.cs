@@ -25,7 +25,7 @@ public sealed class SGC_GetterElbow : ShinGetterCardBase
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
-        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this, cardPlay)
+        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this)
             .WithNoAttackerAnim()
             .Targeting(cardPlay.Target)
             .BeforeDamage(() => PlayMovementVfx(() => ShinGetterCombatVfx.PlayRush(Owner.Creature, cardPlay.Target)))

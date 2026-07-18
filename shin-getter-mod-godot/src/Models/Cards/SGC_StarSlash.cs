@@ -58,7 +58,7 @@ public sealed class SGC_StarSlash : ShinGetterCardBase
             }
         }
 
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue + stackedValue).FromCard(this, cardPlay)
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue + stackedValue).FromCard(this)
             .WithNoAttackerAnim()
             .Targeting(cardPlay.Target)
             .BeforeDamage(() => NShinGetterStaticVisuals.PlayPhasedCreatureActionAnimation(

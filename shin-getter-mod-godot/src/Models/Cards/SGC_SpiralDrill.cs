@@ -37,14 +37,7 @@ public sealed class SGC_SpiralDrill : ShinGetterCardBase
             const ValueProp damageProps = ValueProp.Move | ValueProp.Unblockable;
             for (int i = 0; i < hitCount && cardPlay.Target.IsAlive; i++)
             {
-                await CreatureCmd.Damage(
-                    choiceContext,
-                    cardPlay.Target,
-                    DynamicVars.Damage.BaseValue,
-                    damageProps,
-                    Owner.Creature,
-                    this,
-                    cardPlay);
+                await CreatureCmd.Damage(choiceContext, cardPlay.Target, DynamicVars.Damage.BaseValue, damageProps, this);
                 if (i < hitCount - 1 && cardPlay.Target.IsAlive)
                     await PlayAcceleratedFollowupAnimation();
             }
@@ -53,7 +46,7 @@ public sealed class SGC_SpiralDrill : ShinGetterCardBase
         }
         else
         {
-            await DamageCmd.Attack(DynamicVars.Damage.BaseValue).WithHitCount(hitCount).FromCard(this, cardPlay)
+            await DamageCmd.Attack(DynamicVars.Damage.BaseValue).WithHitCount(hitCount).FromCard(this)
                 .Targeting(cardPlay.Target)
                 .AfterAttackerAnim(AccelerateFollowupAnimations(hitCount))
                 .WithHitFx("vfx/vfx_heavy_blunt").Execute(choiceContext);

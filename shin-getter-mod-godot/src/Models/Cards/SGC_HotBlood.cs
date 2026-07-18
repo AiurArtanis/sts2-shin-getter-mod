@@ -39,7 +39,7 @@ public sealed class SGC_HotBlood : ShinGetterCardBase
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
         await ShinGetterCombatVfx.PlayHotBloodAura(Owner.Creature);
-        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this, cardPlay).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
         await PowerCmd.Apply<SGP_HotBlood>(choiceContext, Owner.Creature, DynamicVars["SGP_HotBlood"].BaseValue, Owner.Creature, this);
     }
 

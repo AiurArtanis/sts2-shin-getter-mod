@@ -33,7 +33,7 @@ public sealed class SGC_ExpansionStrike : ShinGetterCardBase
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
         int debuffTypes = Owner.Creature.Powers.Count(power => power.Type == PowerType.Debuff)
             + cardPlay.Target.Powers.Count(power => power.Type == PowerType.Debuff);
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue * debuffTypes).FromCard(this, cardPlay)
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue * debuffTypes).FromCard(this)
             .Targeting(cardPlay.Target)
             .BeforeDamage(() => PlayMovementVfx(() => ShinGetterCombatVfx.PlayExpansionRush(Owner.Creature, cardPlay.Target)))
             .WithHitFx("vfx/vfx_attack_blunt").Execute(choiceContext);

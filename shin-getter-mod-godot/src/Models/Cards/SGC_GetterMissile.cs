@@ -35,14 +35,7 @@ public sealed class SGC_GetterMissile : ShinGetterCardBase
                 break;
 
             var target = Owner.RunState.Rng.CombatTargets.NextItem(candidates);
-            var results = await CreatureCmd.Damage(
-                choiceContext,
-                target,
-                DynamicVars.Damage.BaseValue,
-                ValueProp.Move,
-                Owner.Creature,
-                this,
-                cardPlay);
+            var results = await CreatureCmd.Damage(choiceContext, target, DynamicVars.Damage.BaseValue, ValueProp.Move, this);
             if (target == Owner.Creature && HasForm(Owner, ShinGetterForm.Getter3))
             {
                 decimal damageTaken = results.Sum(result => result.TotalDamage);

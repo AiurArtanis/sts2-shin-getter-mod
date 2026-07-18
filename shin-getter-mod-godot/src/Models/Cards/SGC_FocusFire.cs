@@ -27,12 +27,12 @@ public sealed class SGC_FocusFire : ShinGetterCardBase
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
-        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this, cardPlay).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
         if (cardPlay.Target.IsAlive && cardPlay.Target.Powers.Any(power => power.TypeForCurrentAmount == PowerType.Debuff))
         {
             await QueueAcceleratedFollowupAnimation();
             await DamageCmd.Attack(10m)
-                .FromCard(this, cardPlay)
+                .FromCard(this)
                 .Targeting(cardPlay.Target)
                 .WithHitFx("vfx/vfx_attack_slash")
                 .Execute(choiceContext);
