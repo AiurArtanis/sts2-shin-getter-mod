@@ -1,0 +1,12 @@
+{
+  "SHIN_GETTER_TRANSFORM.title": "Transform",
+  "SHIN_GETTER_TRANSFORM.description": "Switch forms in this order: Shin Getter 1 -> Shin Getter 2 -> Shin Getter 3 -> Shin Getter 1.",
+  "SHIN_GETTER_SPIRIT_COMMAND.title": "Spirit Command Card",
+  "SHIN_GETTER_SPIRIT_COMMAND.description": "A card marked with [img=top,22x22]res://images/atlases/power_atlas.sprites/s_g_p_ki.tres[/img]. While you have at least 1 Ki, it is Retained. If your current Ki meets its requirement, it costs 1 less.",
+  "SHIN_GETTER_FORM_CARD.title": "Form-Specific Card",
+  "SHIN_GETTER_FORM_CARD.description": "A card with an effect specific to the current form.",
+  "SHIN_GETTER_INFINITE_EVOLUTION_TOTAL.title": "Infinite Evolution Total",
+  "SHIN_GETTER_INFINITE_EVOLUTION_TOTAL.description": "Permanent growth this run: Strength: {Strength}; Dexterity: {Dexterity}; Max HP: {MaxHp}.",
+  "SHIN_GETTER_STACK.title": "Stack",
+  "SHIN_GETTER_STACK.description": "Add the printed values on the selected cards to this card's damage, up to a total of 50."
+}

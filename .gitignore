@@ -1,7 +1,7 @@
 # Godot generated files
-.godot/
-/Godot/
-/android/
+/shin-getter-mod-godot/.godot/
+/shin-getter-mod-godot/Godot/
+/shin-getter-mod-godot/android/
 
 # IDE and .NET build output
 .vs/
@@ -15,14 +15,14 @@ obj/
 tmp/
 
 # Mod build/export output
-/build/
+/shin-getter-mod-godot/build/
 *.pck
 
 # Local game assemblies. Restore these from the installed game.
-/lib/*.dll
+/shin-getter-mod-godot/lib/*.dll
 
 # Game/editor addons are local SDK dependencies, not mod source.
-/addons/
+/shin-getter-mod-godot/addons/
 
 # Local export credentials and logs
 export_credentials.cfg

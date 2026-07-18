@@ -2,13 +2,15 @@
 
 [简体中文](README.md) | [日本語](README_JP.md)
 
-![Shin Getter Mod character-select screen](animations/character_select/shin_getter/character_select_shin_getter_bg.png)
+![Shin Getter Mod character-select screen](shin-getter-mod-godot/animations/character_select/shin_getter/character_select_shin_getter_bg.png)
 
 **Three hearts. One Getter. Endless evolution.**
 
 Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter 1's explosive offense, Shin Getter 2's high-speed tactics, and Shin Getter 3's iron defense; then awaken Shin Getter Dragon and let the Getter Rays consume the tower. This is a gameplay character mod built around transformations, deckbuilding, and presentation, not a simple reskin.
 
-> Current version `v0.9.41` · Minimum game version `0.106.1` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> Current version `v1.0.0` · Minimum game version `0.106.1` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+
+[Download V1.0.0](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/V1.0.0) · [Report an issue](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
 ## ⚡ Combat at a glance
 
@@ -28,7 +30,7 @@ Morale supports several high-impact effects. Evolution and Radiation create addi
 
 ## 📦 What's included
 
-The content currently registered in `v0.9.41` includes:
+The content currently registered in `v1.0.0` includes:
 
 - **72 cards** spanning four forms and several core mechanics
 - **10 relics**, **3 potions**, and **2 enchantments**
@@ -42,14 +44,25 @@ The content currently registered in `v0.9.41` includes:
 
 ## 🚀 Quick start
 
-Once the Workshop edition is released, enable it as follows:
+### Install the release
+
+1. Download `ShinGetterMod.pck`, `ShinGetterMod.dll`, and `ShinGetterMod.json` from the [GitHub Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/V1.0.0).
+2. Create a `ShinGetterMod` folder inside the game's mod-loading directory and place all three files together.
+3. Launch the game, open **Settings → Mod Settings**, and enable “真盖塔模组” (Shin Getter Mod) under **Installed Mods**.
+4. Accept the load prompt, fully quit, and relaunch the game. Start a new run and select **Shin Getter**.
+
+On a first run, follow the highlighted form-specific cards to establish a rhythm, then branch into one of the routes above.
+
+### Steam Workshop
+
+Once the Workshop edition is available, enable it as follows:
 
 1. After subscribing, launch the game. From the main menu, open **Settings** and select **Mod Settings**.
 2. Under **Installed Mods**, find “真盖塔模组” (Shin Getter Mod) and tick its enable box.
 3. When the **Load Mods?** confirmation appears, choose **Load Mods** only after confirming the source is trusted. Fully quit and relaunch the game; enabling or disabling a mod takes effect only after a restart.
-4. Start a new run and select **Shin Getter**. On a first run, follow the highlighted form-specific cards to establish a rhythm, then branch into one of the routes above.
+4. Start a new run and select **Shin Getter**.
 
-The project is still in pre-release development. To help test it or study its implementation, build it from source below. Version numbers, balance, content counts, and compatibility with future game builds may change; no stable installation package or save-compatibility guarantee is offered yet.
+`v1.0.0` is the first public release. Future game updates may affect compatibility; include the game version, mod version, reproduction steps, and relevant logs when reporting a problem.
 
 ## 🗺 Roadmap
 
@@ -78,40 +91,40 @@ The following dependencies come from a local game or development environment and
 After restoring those dependencies, build the C# project:
 
 ```powershell
+cd .\shin-getter-mod-godot
 dotnet build .\ShinGetterMod.csproj -c Debug
 ```
 
 The built DLL and PDB are copied to the ignored `build/` directory.
 
-### Build, validate, and deploy a test package
+### Export a test package
 
-The bundled Godot/PowerShell pipeline compiles the DLL, exports the PCK, validates resources, copies the DLL/PCK/JSON artifacts, and runs a headless game-load validation:
+Use the Godot `Windows Desktop` preset to export the PCK:
 
 ```powershell
-.\build-and-deploy.ps1 `
-  -Configuration Debug `
-  -GodotExe "D:\Godot\Godot_v4.5.1-stable_mono_win64_console.exe" `
-  -GameProject "D:\Games\SlayTheSpire2" `
-  -DeployDirectory "D:\Games\SlayTheSpire2\mods\ShinGetterMod"
+godot --headless --quit --path . --export-pack "Windows Desktop" .\build\ShinGetterMod.pck
 ```
 
-Replace the paths with your local environment. On success, the deployment directory contains:
+Place the following files together in the local game's mod directory:
 
 - `ShinGetterMod.dll`
 - `ShinGetterMod.pck`
 - `ShinGetterMod.json`
 
+For Godot resource changes, also run `tools/validate-mod-resources.gd` against a local game project and complete a headless load validation. Personal deployment scripts and machine-specific paths are intentionally not tracked.
+
 ## Repository layout
 
-- `src/`: cards, powers, relics, potions, enchantments, events, patches, and runtime code
-- `scenes/`, `animations/`, `images/`, `materials/`, `shaders/`, `audio/`: Godot scenes and audiovisual assets
-- `ShinGetterMod/`: mod data and localization resources
-- `tools/validate-mod-resources.gd`: exported-package resource check
-- `ShinGetterMod.json`: mod manifest, version, and minimum game version
+- `shin-getter-mod-godot/`: the complete Godot/C# mod project
+- `shin-getter-mod-godot/src/`: cards, powers, relics, potions, enchantments, events, patches, and runtime code
+- `shin-getter-mod-godot/scenes/`, `animations/`, `images/`, `materials/`, `shaders/`, `audio/`: Godot scenes and audiovisual assets
+- `shin-getter-mod-godot/ShinGetterMod/`: mod data and Simplified Chinese, English, and Japanese localization
+- `art/`: full card PNGs and the complete card-gallery mosaic
+- `workshop/`: Steam Workshop copy and publishing materials
 
 ## Contributing and reporting issues
 
-Before the public release, the repository remains focused on coordinated development and testing. When reporting a problem, include the game version, mod version, reproduction steps, and relevant logs whenever possible. Keep code contributions focused and run at least the relevant C# build. Changes to Godot resources should also pass the full build, resource-validation, and load-validation pipeline.
+When reporting a problem, include the game version, mod version, reproduction steps, and relevant logs whenever possible. Keep code contributions focused and run at least the relevant C# build. Changes to Godot resources should also pass the full build, resource-validation, and load-validation pipeline.
 
 Do not commit local game dependencies, `addons/`, `build/` artifacts, or personal test scripts.
 
