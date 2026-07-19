@@ -10,7 +10,7 @@ Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter
 
 > Current version `v1.0.3` · Minimum game version `0.106.1` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
-[Download v1.0.3](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.0.3) · [Report an issue](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+[Download latest release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest) · [Report an issue](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
 ## ⚡ Combat at a glance
 
@@ -46,7 +46,7 @@ The content currently registered in `v1.0.3` includes:
 
 ### Install the release
 
-1. Download `shin-getter-mod-v1.0.3.zip` from the [GitHub Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.0.3), then extract `ShinGetterMod.pck`, `ShinGetterMod.dll`, `ShinGetterMod.json`, and `mod_image.png`.
+1. Download the latest release archive from the [latest release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest), then extract `ShinGetterMod.pck`, `ShinGetterMod.dll`, `ShinGetterMod.json`, and `mod_image.png`.
 2. Create a `ShinGetterMod` folder inside the game's mod-loading directory and place all three files together.
 3. Launch the game, open **Settings → Mod Settings**, and enable “真盖塔模组” (Shin Getter Mod) under **Installed Mods**.
 4. Accept the load prompt, fully quit, and relaunch the game. Start a new run and select **Shin Getter**.
