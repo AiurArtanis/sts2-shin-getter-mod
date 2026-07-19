@@ -10,7 +10,7 @@
 
 > 当前版本 `v1.0.3` · 最低游戏版本 `0.109.0` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
-[下载 v1.0.3](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.0.3) · [提交问题](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+[下载最新版](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest) · [提交问题](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
 ## ⚡ 战斗核心
 
@@ -46,7 +46,7 @@
 
 ### 安装发布版
 
-1. 从 [GitHub Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.0.3) 下载 `ShinGetterMod.pck`、`ShinGetterMod.dll` 与 `ShinGetterMod.json`。
+1. 从 [下载最新版](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest) 获取 `ShinGetterMod.pck`、`ShinGetterMod.dll` 与 `ShinGetterMod.json`。
 2. 在游戏的模组加载目录中创建 `ShinGetterMod` 子目录，并将三个文件放在一起。
 3. 启动游戏，从主菜单进入**设置 → 模组设置**，在**已下载的模组**中启用“真盖塔模组”。
 4. 确认加载提示后完全退出并重新启动游戏。新开一局，选择**真盖塔**即可开始。

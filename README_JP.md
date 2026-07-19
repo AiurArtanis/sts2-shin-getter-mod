@@ -10,7 +10,7 @@
 
 > 現在のバージョン `v1.0.3` · 最低ゲームバージョン `0.109.0` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
-[v1.0.3をダウンロード](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.0.3) · [不具合を報告](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+[最新版をダウンロード](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest) · [不具合を報告](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
 ## ⚡ 戦闘の核
 
@@ -46,7 +46,7 @@
 
 ### リリース版のインストール
 
-1. [GitHub Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.0.3) から `ShinGetterMod.pck`、`ShinGetterMod.dll`、`ShinGetterMod.json` をダウンロードします。
+1. [最新版をダウンロード](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest) して、`ShinGetterMod.pck`、`ShinGetterMod.dll`、`ShinGetterMod.json` を入手します。
 2. ゲームのMOD読み込みディレクトリに `ShinGetterMod` フォルダーを作成し、3ファイルをまとめて配置します。
 3. ゲームを起動し、**設定 → MOD設定**を開いて、**インストール済みのMOD**から「真盖塔模组」（真ゲッターMOD）を有効にします。
 4. 読み込み確認を承認した後、ゲームを完全に終了して再起動します。新しいランで**真ゲッター**を選択してください。
