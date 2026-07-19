@@ -5,9 +5,9 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using MegaCrit.Sts2.Core.Models.Powers;
-using System.Linq;
 using ShinGetterMod.Audio;
 using ShinGetterMod.Models.Powers;
 using ShinGetterMod.Nodes.Combat;
@@ -34,7 +34,7 @@ public sealed class SGC_GetterFlash : ShinGetterCardBase
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
 
-        var attack = await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this, cardPlay)
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this, cardPlay)
             .WithNoAttackerAnim()
             .Targeting(cardPlay.Target)
             .BeforeDamage(async () =>
@@ -49,10 +49,22 @@ public sealed class SGC_GetterFlash : ShinGetterCardBase
                     0.74f);
             })
             .Execute(choiceContext);
+    }
 
-        decimal damageDealt = attack.Results.SelectMany(results => results).Sum(result => result.UnblockedDamage);
-        if (damageDealt > 0m)
-            await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, damageDealt, Owner.Creature, this);
+    public override async Task AfterDamageGiven(
+        PlayerChoiceContext choiceContext,
+        MegaCrit.Sts2.Core.Entities.Creatures.Creature dealer,
+        MegaCrit.Sts2.Core.Entities.Creatures.DamageResult result,
+        ValueProp props,
+        MegaCrit.Sts2.Core.Entities.Creatures.Creature target,
+        CardModel cardSource)
+    {
+        if (!ReferenceEquals(cardSource, this) || dealer != Owner.Creature)
+            return;
+
+        if (result.UnblockedDamage > 0)
+            await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, result.UnblockedDamage, Owner.Creature, this);
+
         if (HasForm(Owner, ShinGetterForm.Getter1))
         {
             await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, 2m, Owner.Creature, this);
