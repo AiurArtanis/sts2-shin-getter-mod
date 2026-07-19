@@ -8,5 +8,5 @@
   "has_dll": true,
   "dependencies": [],
   "affects_gameplay": true,
-  "min_game_version": "0.109.0"
+  "min_game_version": "0.107.0"
 }
