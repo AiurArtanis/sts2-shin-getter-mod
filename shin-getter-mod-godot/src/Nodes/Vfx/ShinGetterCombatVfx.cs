@@ -270,49 +270,83 @@ internal static partial class ShinGetterCombatVfx
         if (targetNode == null)
             return;
 
-        Vector2 startPosition = targetNode.VfxSpawnPosition + Vector2.Down * 260f;
-        Vector2 endPosition = targetNode.VfxSpawnPosition + Vector2.Up * 140f;
-        Node2D drill = new()
+        Vector2 startPosition = targetNode.VfxSpawnPosition + Vector2.Down * 300f;
+        Vector2 endPosition = targetNode.VfxSpawnPosition + Vector2.Up * 110f;
+        Node2D tornado = new()
         {
             GlobalPosition = startPosition,
             Modulate = new Color(1f, 1f, 1f, 0f),
-            Scale = Vector2.One * 0.82f,
+            Scale = new Vector2(0.72f, 0.86f),
         };
-        for (int ring = 0; ring < 4; ring++)
+
+        for (int strand = 0; strand < 6; strand++)
         {
             Line2D spiral = new()
             {
-                Width = 7f - ring,
-                DefaultColor = ring % 2 == 0 ? GetterRay : GetterWhite,
+                Width = 6.5f - strand * 0.55f,
+                DefaultColor = strand % 2 == 0
+                    ? new Color(GetterRay.R, GetterRay.G, GetterRay.B, 0.82f)
+                    : new Color(GetterWhite.R, GetterWhite.G, GetterWhite.B, 0.68f),
                 Antialiased = true,
             };
-            for (int index = 0; index < 42; index++)
+            Curve widthCurve = new();
+            widthCurve.AddPoint(new Vector2(0f, 0.22f));
+            widthCurve.AddPoint(new Vector2(0.7f, 0.78f));
+            widthCurve.AddPoint(new Vector2(1f, 1f));
+            spiral.WidthCurve = widthCurve;
+
+            for (int index = 0; index < 64; index++)
             {
-                float t = index / 41f;
-                float angle = t * Mathf.Tau * 3.2f + ring * 0.72f;
-                float radius = Mathf.Lerp(54f, 18f, t);
-                spiral.AddPoint(Vector2.Right.Rotated(angle) * radius + Vector2.Up * (t * 260f));
+                float t = index / 63f;
+                float angle = t * Mathf.Tau * 4.35f + strand * (Mathf.Tau / 6f);
+                float radius = Mathf.Lerp(10f, 92f, Mathf.Pow(t, 0.78f));
+                Vector2 orbit = new(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius * 0.24f);
+                spiral.AddPoint(orbit + Vector2.Up * (t * 320f));
             }
-            drill.AddChild(spiral);
+            tornado.AddChild(spiral);
         }
 
-        NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(drill);
-        Tween movementTween = drill.CreateTween().SetParallel();
-        movementTween.TweenProperty(drill, "global_position", endPosition, 0.46f)
+        for (int band = 0; band < 4; band++)
+        {
+            float t = (band + 1f) / 5f;
+            float radius = Mathf.Lerp(22f, 82f, t);
+            Line2D windBand = new()
+            {
+                Position = Vector2.Up * (t * 320f),
+                Width = 4.5f - band * 0.45f,
+                DefaultColor = new Color(GetterWhite.R, GetterWhite.G, GetterWhite.B, 0.58f),
+                Antialiased = true,
+            };
+            for (int index = 0; index < 28; index++)
+            {
+                float angle = index / 27f * Mathf.Tau * 0.82f;
+                windBand.AddPoint(new Vector2(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius * 0.28f));
+            }
+            tornado.AddChild(windBand);
+            tornado.CreateTween().TweenProperty(windBand, "rotation", Mathf.Tau * (band % 2 == 0 ? 1f : -1f), 0.52f)
+                .AsRelative();
+        }
+
+        NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(tornado);
+        Tween movementTween = tornado.CreateTween().SetParallel();
+        movementTween.TweenProperty(tornado, "global_position", endPosition, 0.52f)
             .SetEase(Tween.EaseType.Out)
             .SetTrans(Tween.TransitionType.Cubic);
-        movementTween.TweenProperty(drill, "rotation", Mathf.Pi, 0.46f).AsRelative();
-        movementTween.TweenProperty(drill, "scale", Vector2.One * 1.04f, 0.46f)
+        movementTween.TweenProperty(tornado, "scale", new Vector2(1.08f, 1.04f), 0.52f)
             .SetEase(Tween.EaseType.Out)
             .SetTrans(Tween.TransitionType.Cubic);
 
-        Tween fadeTween = drill.CreateTween();
-        fadeTween.TweenProperty(drill, "modulate:a", 0.92f, 0.06f);
-        fadeTween.TweenInterval(0.29f);
-        fadeTween.TweenProperty(drill, "modulate:a", 0f, 0.11f);
-        fadeTween.TweenCallback(Callable.From(drill.QueueFreeSafely));
+        Tween fadeTween = tornado.CreateTween();
+        fadeTween.TweenProperty(tornado, "modulate:a", 0.94f, 0.07f);
+        fadeTween.TweenInterval(0.34f);
+        fadeTween.TweenProperty(tornado, "modulate:a", 0f, 0.11f);
+        fadeTween.TweenCallback(Callable.From(tornado.QueueFreeSafely));
+
+        await Cmd.Wait(0.36f);
+        NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(
+            NBigSlashImpactVfx.Create(targetNode.VfxSpawnPosition, -Mathf.Pi / 2f, GetterRay));
         NGame.Instance?.ScreenShake(ShakeStrength.Medium, ShakeDuration.Short);
-        await Cmd.Wait(0.46f);
+        await Cmd.Wait(0.16f);
     }
 
     public static Task PlayHolyDragonRoarAtScreenCenter(Creature creature)
