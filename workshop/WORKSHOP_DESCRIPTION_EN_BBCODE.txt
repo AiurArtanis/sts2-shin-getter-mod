@@ -57,7 +57,7 @@ On your first run, follow the highlighted form-specific cards to establish a rhy
 
 [h2]Current status[/h2]
 
-[b]Current version: v1.0.2[/b]
+[b]Current version: v1.0.3[/b]
 
 The mod will continue to be maintained. Future game updates may affect compatibility. Please report issues on GitHub with the game version, mod version, reproduction steps, and relevant logs.
 
