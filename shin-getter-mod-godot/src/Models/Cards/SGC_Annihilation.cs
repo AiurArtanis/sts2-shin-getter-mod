@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using ShinGetterMod.Models.Powers;
 using ShinGetterMod.Nodes.Vfx;
@@ -33,24 +33,35 @@ public sealed class SGC_Annihilation : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        var attack = await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this)
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this)
             .TargetingAllOpponents(CombatState)
             .WithAttackerAnim("Cast", 0.35f)
             .BeforeDamage(() => ShinGetterCombatVfx.PlayAnnihilation(Owner.Creature, CombatState.GetOpponentsOf(Owner.Creature)))
             .Execute(choiceContext);
-        int targetCount = attack.Results.SelectMany(results => results).Count(result => result.TotalDamage > 0);
+    }
 
-        for (int i = 0; i < targetCount; i++)
+    public override async Task AfterDamageGiven(
+        PlayerChoiceContext choiceContext,
+        MegaCrit.Sts2.Core.Entities.Creatures.Creature dealer,
+        MegaCrit.Sts2.Core.Entities.Creatures.DamageResult result,
+        ValueProp props,
+        MegaCrit.Sts2.Core.Entities.Creatures.Creature target,
+        CardModel cardSource)
+    {
+        if (!ReferenceEquals(cardSource, this) || dealer != Owner.Creature)
+            return;
+
+        if (result.TotalDamage > 0)
         {
             var radiated = CombatState.CreateCard<SGC_Radiated>(Owner);
             await CardPileCmd.AddGeneratedCardToCombat(radiated, PileType.Hand, Owner);
         }
 
-        foreach (var enemy in CombatState.GetOpponentsOf(Owner.Creature).Where(creature => creature.IsAlive))
+        if (target.IsAlive)
         {
             await PowerCmd.Apply<SGP_Wane>(
                 choiceContext,
-                enemy,
+                target,
                 DynamicVars["Wane"].BaseValue,
                 Owner.Creature,
                 this);

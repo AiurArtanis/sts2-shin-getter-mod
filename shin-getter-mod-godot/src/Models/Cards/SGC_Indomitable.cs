@@ -18,12 +18,14 @@ public sealed class SGC_Indomitable : ShinGetterCardBase
     {
         HoverTipFactory.FromPower<VulnerablePower>(),
         HoverTipFactory.FromPower<SGP_Indomitable>(),
+        HoverTipFactory.FromPower<SGP_DelayDamage>(),
     });
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
         new PowerVar<VulnerablePower>(1m),
         new PowerVar<SGP_Indomitable>(1m),
+        new PowerVar<ThornsPower>(2m),
     };
 
     public SGC_Indomitable()
@@ -35,6 +37,15 @@ public sealed class SGC_Indomitable : ShinGetterCardBase
     {
         await PowerCmd.Apply<VulnerablePower>(choiceContext, base.Owner.Creature, 1m, base.Owner.Creature, this);
         await PowerCmd.Apply<SGP_Indomitable>(choiceContext, Owner.Creature, DynamicVars["SGP_Indomitable"].BaseValue, Owner.Creature, this);
+        if (HasForm(Owner, ShinGetterForm.Getter3))
+        {
+            await PowerCmd.Apply<ThornsPower>(
+                choiceContext,
+                Owner.Creature,
+                DynamicVars["ThornsPower"].BaseValue,
+                Owner.Creature,
+                this);
+        }
     }
 
     protected override void OnUpgrade()

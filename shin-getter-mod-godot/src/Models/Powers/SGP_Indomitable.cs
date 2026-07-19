@@ -1,48 +1,25 @@
 #nullable enable
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
-using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Localization;
-using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 
 namespace ShinGetterMod.Models.Powers;
 
 /// <summary>
-/// 不屈。下1次伤害延至下回合结算。
+/// 不屈。将下一次实际生命损失转移到延时伤害队列。
 /// </summary>
 public sealed class SGP_Indomitable : PowerModel
 {
     private class Data
     {
-        public decimal delayedDamage;
-        public int delayedRound;
-        public int chargesConsumed;
-        public bool isResolving;
+        public int pendingDamage;
     }
 
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
-    public override int DisplayAmount => System.Math.Max(0, Amount - GetInternalData<Data>().chargesConsumed);
-
-    public override LocString Description
-    {
-        get
-        {
-            LocString description = base.Description;
-            description.Add("Remaining", DisplayAmount);
-            return description;
-        }
-    }
-
-    protected override System.Collections.Generic.IEnumerable<DynamicVar> CanonicalVars =>
-        System.Array.Empty<DynamicVar>();
 
     protected override object InitInternalData() => new Data();
 
@@ -51,48 +28,24 @@ public sealed class SGP_Indomitable : PowerModel
         if (target != Owner || amount <= 0m)
             return amount;
 
-        var data = GetInternalData<Data>();
-        if (data.isResolving || data.chargesConsumed >= Amount)
+        int delayedDamage = (int)amount;
+        if (delayedDamage <= 0 || Amount <= 0)
             return amount;
 
-        data.delayedDamage += amount;
-        data.delayedRound = CombatState?.RoundNumber ?? 0;
-        data.chargesConsumed++;
-        InvokeDisplayAmountChanged();
+        GetInternalData<Data>().pendingDamage += delayedDamage;
         return 0m;
     }
 
-    public override async Task AfterSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, IEnumerable<Creature> participants)
+    public override async Task AfterModifyingHpLostAfterOsty()
     {
-        if (!participants.Contains(Owner))
+        var data = GetInternalData<Data>();
+        int delayedDamage = data.pendingDamage;
+        if (delayedDamage <= 0)
             return;
 
-        var data = GetInternalData<Data>();
-        int currentRound = CombatState?.RoundNumber ?? 0;
-        if (data.delayedDamage > 0 && data.delayedRound < currentRound)
-        {
-            decimal delayedDamage = data.delayedDamage;
-            int chargesConsumed = data.chargesConsumed;
-            data.delayedDamage = 0m;
-            data.chargesConsumed = 0;
-            data.isResolving = true;
-            InvokeDisplayAmountChanged();
-
-            await CreatureCmd.Damage(
-                choiceContext,
-                Owner,
-                delayedDamage,
-                ValueProp.Unpowered | ValueProp.Unblockable,
-                null,
-                null);
-
-            data.isResolving = false;
-            await PowerCmd.ModifyAmount(
-                new ThrowingPlayerChoiceContext(),
-                this,
-                -chargesConsumed,
-                null,
-                null);
-        }
+        data.pendingDamage = 0;
+        Flash();
+        await SGP_DelayDamage.AddPending(Owner, delayedDamage);
+        await PowerCmd.Decrement(this);
     }
 }
