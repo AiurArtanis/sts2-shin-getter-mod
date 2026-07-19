@@ -62,12 +62,13 @@ public sealed class SGC_GetterFlash : ShinGetterCardBase
         if (!ReferenceEquals(cardSource, this) || dealer != Owner.Creature)
             return;
 
-        if (result.UnblockedDamage > 0)
-            await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, result.UnblockedDamage, Owner.Creature, this);
+        bool hasGetterOneBonus = HasForm(Owner, ShinGetterForm.Getter1);
+        decimal vigorGain = result.UnblockedDamage + (hasGetterOneBonus ? 2m : 0m);
+        if (vigorGain > 0m)
+            await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, vigorGain, Owner.Creature, this);
 
-        if (HasForm(Owner, ShinGetterForm.Getter1))
+        if (hasGetterOneBonus)
         {
-            await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, 2m, Owner.Creature, this);
             await PowerCmd.Apply<SGP_Airborne>(choiceContext, Owner.Creature, 2m, Owner.Creature, this);
         }
     }

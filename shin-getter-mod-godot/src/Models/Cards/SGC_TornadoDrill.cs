@@ -40,7 +40,6 @@ public sealed class SGC_TornadoDrill : ShinGetterCardBase
         await DamageCmd.Attack(DynamicVars.CalculatedDamage).FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
             .BeforeDamage(() => ShinGetterCombatVfx.PlayRisingDrill(cardPlay.Target))
-            .WithHitFx("vfx/vfx_heavy_blunt")
             .Execute(choiceContext);
         if (cardPlay.Target.IsAlive)
         {

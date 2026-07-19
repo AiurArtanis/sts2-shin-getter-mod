@@ -1,4 +1,5 @@
 #nullable enable
+using System.Reflection;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Powers;
@@ -16,6 +17,8 @@ namespace ShinGetterMod.Patches;
 [HarmonyPatch(typeof(PowerModel), nameof(PowerModel.SetAmount))]
 internal static class VigorPowerSetAmountPatch
 {
+    private static readonly FieldInfo? InternalDataField = AccessTools.Field(typeof(PowerModel), "_internalData");
+
     /// <summary>
     /// 记录修改前的层数，用于 Postfix 中计算变化量。
     /// </summary>
@@ -35,6 +38,8 @@ internal static class VigorPowerSetAmountPatch
         int delta = __state - amount; // 正数=减少量
         if (delta <= 0) return;
 
+        ResetAttackTracking(__instance);
+
         var owner = __instance.Owner;
         if (owner == null) return;
 
@@ -48,5 +53,18 @@ internal static class VigorPowerSetAmountPatch
         var ctx = new ThrowingPlayerChoiceContext();
         await PowerCmd.Apply<RegenPower>(ctx, owner, gain, owner, null);
         await PowerCmd.Apply<PlatingPower>(ctx, owner, gain, owner, null);
+    }
+
+    private static void ResetAttackTracking(PowerModel vigor)
+    {
+        object? internalData = InternalDataField?.GetValue(vigor);
+        if (internalData == null)
+            return;
+
+        // Vigor normally disappears after an attack. Getter Flash can grant new Vigor
+        // before the old stacks are consumed, so the same instance survives and must
+        // release the completed AttackCommand before the next card is played.
+        AccessTools.Field(internalData.GetType(), "commandToModify")?.SetValue(internalData, null);
+        AccessTools.Field(internalData.GetType(), "amountWhenAttackStarted")?.SetValue(internalData, 0);
     }
 }
