@@ -22,6 +22,7 @@ internal static class ShinGetterBeamVfx
     private static readonly Color GetterRay = new(0.109804f, 0.752941f, 0.6f, 1f);
     private static readonly Color GetterPink = new(1f, 0.19f, 0.62f, 1f);
     private static readonly Color GetterWhite = new(1f, 0.94f, 1f, 1f);
+    private static readonly Vector2 ShinDragonHeadLocalPosition = new(-30f, -152f);
 
     public static async Task Play(Creature owner, IEnumerable<Creature> targets, ShinGetterBeamStyle style)
     {
@@ -29,7 +30,7 @@ internal static class ShinGetterBeamVfx
         if (livingTargets.Count == 0)
             return;
 
-        NHyperbeamVfx? beam = NHyperbeamVfx.Create(owner, livingTargets.Last());
+        NHyperbeamVfx? beam = CreateBeam(owner, livingTargets.Last());
         if (beam != null)
         {
             ApplyBeamSkin(beam, style);
@@ -154,7 +155,7 @@ internal static class ShinGetterBeamVfx
 
     private static void AddCenterGetterBeam(Creature owner, Creature target)
     {
-        NHyperbeamVfx? template = NHyperbeamVfx.Create(owner, target);
+        NHyperbeamVfx? template = CreateBeam(owner, target);
         if (template == null)
             return;
 
@@ -187,6 +188,26 @@ internal static class ShinGetterBeamVfx
         center.GetNodeOrNull<Node2D>("laser")?.Hide();
         vfxContainer.AddChildSafely(center);
         _ = TaskHelper.RunSafely(PlayCenterGetterBeamSequence(center));
+    }
+
+    private static NHyperbeamVfx? CreateBeam(Creature owner, Creature target)
+    {
+        var ownerNode = NCombatRoom.Instance?.GetCreatureNode(owner);
+        var targetNode = NCombatRoom.Instance?.GetCreatureNode(target);
+        AnimatedSprite2D? shinDragon = ownerNode?.Visuals.GetNodeOrNull<AnimatedSprite2D>("Visuals/ShinDragon");
+        if (shinDragon == null
+            || !shinDragon.Visible
+            || shinDragon.Modulate.A <= 0.01f
+            || targetNode == null)
+        {
+            return NHyperbeamVfx.Create(owner, target);
+        }
+
+        Vector2 localHeadPosition = ShinDragonHeadLocalPosition + shinDragon.Offset;
+        if (shinDragon.FlipH)
+            localHeadPosition.X = shinDragon.Offset.X - ShinDragonHeadLocalPosition.X;
+
+        return NHyperbeamVfx.Create(shinDragon.ToGlobal(localHeadPosition), targetNode.VfxSpawnPosition);
     }
 
     private static async Task PlayCenterGetterBeamSequence(Node2D center)
