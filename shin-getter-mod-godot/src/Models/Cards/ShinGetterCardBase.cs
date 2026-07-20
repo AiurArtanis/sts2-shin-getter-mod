@@ -111,7 +111,7 @@ public abstract class ShinGetterCardBase : CardModel
             ["SGC_Guts"] = new[] { "精神", "格挡" },
             ["SGC_HedgehogTactic"] = new[] { "格挡", "活力" },
             ["SGC_HotBlood"] = new[] { "精神" },
-            ["SGC_HurricaneStrike"] = new[] { "二号机", "敏捷" },
+            ["SGC_HurricaneStrike"] = new[] { "二号机", "分身" },
             ["SGC_Indomitable"] = new[] { "易伤", "延时伤害", "三号机", "荆棘" },
             ["SGC_InfiniteEvolution"] = new[] { "力量", "敏捷" },
             ["SGC_InsectVirus"] = new[] { "衰退" },
