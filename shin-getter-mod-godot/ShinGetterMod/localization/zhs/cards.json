@@ -10,7 +10,7 @@
   "S_G_C_DIVE_STRIKE.title": "俯冲打击",
   "S_G_C_DIVE_STRIKE.description": "造成{CalculatedDamage:diff()}点伤害。若处于[gold]腾空[/gold]，伤害翻倍。\n[red]一号机[/red]：获得1层[gold]腾空[/gold]。",
   "S_G_C_HURRICANE_STRIKE.title": "飓风打击",
-  "S_G_C_HURRICANE_STRIKE.description": "对所有敌人造成{Damage:diff()}点伤害，每命中1个目标抽1张牌。\n[white]二号机[/white]：本回合获得2点[gold]敏捷[/gold]。",
+  "S_G_C_HURRICANE_STRIKE.description": "对所有敌人造成{Damage:diff()}点伤害，每命中1个目标抽1张牌。\n[white]二号机[/white]：获得[gold]分身[/gold]。",
   "S_G_C_GETTER_CHOP.title": "盖塔手刀",
   "S_G_C_GETTER_CHOP.description": "掠夺敌方{Block:diff()}点[gold]格挡[/gold]2次，造成{Damage:diff()}点伤害2次。",
   "S_G_C_GETTER_ELBOW.title": "盖塔肘击",

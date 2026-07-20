@@ -10,7 +10,7 @@
   "S_G_C_DIVE_STRIKE.title": "ダイブストライク",
   "S_G_C_DIVE_STRIKE.description": "{CalculatedDamage:diff()}ダメージを与える。[gold]空中[/gold]なら、このダメージは2倍になる。\n[red]真ゲッター1[/red]：[gold]空中[/gold]を1得る。",
   "S_G_C_HURRICANE_STRIKE.title": "ハリケーンストライク",
-  "S_G_C_HURRICANE_STRIKE.description": "敵全体に{Damage:diff()}ダメージを与える。命中した対象1体につきカードを1枚引く。\n[white]真ゲッター2[/white]：このターン[gold]敏捷[/gold]を2得る。",
+  "S_G_C_HURRICANE_STRIKE.description": "敵全体に{Damage:diff()}ダメージを与える。命中した対象1体につきカードを1枚引く。\n[white]真ゲッター2[/white]：[gold]分身[/gold]を得る。",
   "S_G_C_GETTER_CHOP.title": "ゲッターチョップ",
   "S_G_C_GETTER_CHOP.description": "敵から{Block:diff()}[gold]ブロック[/gold]を2回奪い、{Damage:diff()}ダメージを2回与える。",
   "S_G_C_GETTER_ELBOW.title": "ゲッターエルボー",

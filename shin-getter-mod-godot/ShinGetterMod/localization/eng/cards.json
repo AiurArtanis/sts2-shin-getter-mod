@@ -10,7 +10,7 @@
   "S_G_C_DIVE_STRIKE.title": "Dive Strike",
   "S_G_C_DIVE_STRIKE.description": "Deal {CalculatedDamage:diff()} damage. If you are [gold]Airborne[/gold], double this damage.\n[red]Shin Getter 1[/red]: Gain 1 [gold]Airborne[/gold].",
   "S_G_C_HURRICANE_STRIKE.title": "Hurricane Strike",
-  "S_G_C_HURRICANE_STRIKE.description": "Deal {Damage:diff()} damage to ALL enemies. Draw 1 card for each target hit.\n[white]Shin Getter 2[/white]: Gain 2 [gold]Dexterity[/gold] this turn.",
+  "S_G_C_HURRICANE_STRIKE.description": "Deal {Damage:diff()} damage to ALL enemies. Draw 1 card for each target hit.\n[white]Shin Getter 2[/white]: Gain [gold]Shade[/gold].",
   "S_G_C_GETTER_CHOP.title": "Getter Chop",
   "S_G_C_GETTER_CHOP.description": "Steal {Block:diff()} [gold]Block[/gold] from the enemy 2 times. Deal {Damage:diff()} damage 2 times.",
   "S_G_C_GETTER_ELBOW.title": "Getter Elbow",
