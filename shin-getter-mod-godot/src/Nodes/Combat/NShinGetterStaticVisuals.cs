@@ -308,7 +308,7 @@ public static class NShinGetterStaticVisuals
     private static bool TryPlayVisibleActionAnimation(
         AnimatedSprite2D animation,
         string trigger,
-        System.Action<AnimatedSprite2D> ensureLoaded)
+        System.Action<AnimatedSprite2D, string> ensureLoaded)
     {
         if (!animation.Visible || animation.Modulate.A <= 0.01f)
             return false;
@@ -396,6 +396,8 @@ public static class NShinGetterStaticVisuals
                 sprite.Item.Visible = isNext;
                 sprite.Item.Modulate = new Color(sprite.Item.Modulate, isNext ? 1f : 0f);
                 sprite.Node.RotationDegrees = 0f;
+                if (!isNext && sprite.Node is AnimatedSprite2D animation)
+                    NShinGetterSpriteSequence.ReleaseActionAnimations(animation);
             }
             ActivateIdleAnimation(next);
             return;
@@ -456,6 +458,8 @@ public static class NShinGetterStaticVisuals
 
             sprite.Item.Visible = false;
             sprite.Node.RotationDegrees = 0f;
+            if (sprite.Node is AnimatedSprite2D animation)
+                NShinGetterSpriteSequence.ReleaseActionAnimations(animation);
             if (previous != null && sprite.Item == previous.Value.Item)
                 sprite.Node.Scale = previousBaseScale;
         }
@@ -498,5 +502,7 @@ public static class NShinGetterStaticVisuals
 
     private readonly record struct FormVisual(CanvasItem Item, Node2D Node);
 
-    private readonly record struct FormAnimation(AnimatedSprite2D Sprite, Action<AnimatedSprite2D> EnsureLoaded);
+    private readonly record struct FormAnimation(
+        AnimatedSprite2D Sprite,
+        Action<AnimatedSprite2D, string> EnsureLoaded);
 }

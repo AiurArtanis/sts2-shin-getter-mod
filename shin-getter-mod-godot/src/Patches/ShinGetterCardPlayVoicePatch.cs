@@ -1,7 +1,5 @@
-using System.Linq;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using ShinGetterMod.Audio;
 using ShinGetterMod.Models.Cards;
@@ -23,14 +21,11 @@ internal static class ShinGetterCardPlayVoicePatch
         string trigger = __instance.Type switch
         {
             CardType.Attack => "Attack",
-            CardType.Skill when HasBlock(__instance) => "Block",
+            CardType.Skill when __instance.GainsBlock => "Block",
             CardType.Skill or CardType.Power => "Cast",
             _ => "Dash",
         };
 
         NShinGetterStaticVisuals.TryPlayCreatureActionAnimation(__instance.Owner.Creature, trigger);
     }
-
-    private static bool HasBlock(CardModel card) =>
-        card.DynamicVars.Values.Any(variable => variable is BlockVar or CalculatedBlockVar);
 }
