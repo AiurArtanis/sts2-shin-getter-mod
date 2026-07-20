@@ -143,7 +143,7 @@
   "S_G_C_RADIATED.title": "放射能",
   "S_G_C_RADIATED.description": "获得{SGP_Evolution:diff()}层[getter_ray]进化[/getter_ray]，敌我所有角色受到{Damage:diff()}点伤害并获得{SGP_Radiation:diff()}层[gold]辐射[/gold]。",
   "S_G_C_INSECT_VIRUS.title": "虫人类病毒",
-  "S_G_C_INSECT_VIRUS.description": "\n在手牌中时，每回合结束获得4层[gold]衰退[/gold]。",
+  "S_G_C_INSECT_VIRUS.description": "在手牌中时，每回合结束获得4层[gold]衰退[/gold]。",
   "S_G_C_INFINITE_EVOLUTION.title": "无限进化",
   "S_G_C_INFINITE_EVOLUTION.description": "战斗胜利后，随机获得1点永久[gold]力量[/gold]、[gold]敏捷[/gold]或最大生命。",
   "S_G_C_HOLY_DRAGON_ROAR.title": "圣龙咆哮",
