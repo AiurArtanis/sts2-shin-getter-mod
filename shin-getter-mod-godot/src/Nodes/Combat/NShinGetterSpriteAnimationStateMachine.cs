@@ -14,7 +14,10 @@ internal static class NShinGetterSpriteAnimationStateMachine
     public static bool TryPlay(AnimatedSprite2D sprite, string trigger) =>
         TryPlay(sprite, trigger, NShinGetterSpriteSequence.EnsureLoaded);
 
-    public static bool TryPlay(AnimatedSprite2D sprite, string trigger, Action<AnimatedSprite2D> ensureLoaded)
+    public static bool TryPlay(
+        AnimatedSprite2D sprite,
+        string trigger,
+        Action<AnimatedSprite2D, string> ensureLoaded)
     {
         string? animationName = trigger switch
         {
@@ -33,7 +36,7 @@ internal static class NShinGetterSpriteAnimationStateMachine
         if (animationName == null)
             return false;
 
-        ensureLoaded(sprite);
+        ensureLoaded(sprite, animationName);
         State state = States.GetOrCreateValue(sprite);
         EnsureSignalConnected(sprite, state);
 
@@ -76,7 +79,7 @@ internal static class NShinGetterSpriteAnimationStateMachine
     }
 
     public static void PlayIdle(AnimatedSprite2D sprite) =>
-        PlayIdle(sprite, NShinGetterSpriteSequence.EnsureLoaded);
+        PlayIdle(sprite, NShinGetterSpriteSequence.EnsureIdleLoaded);
 
     public static void PlayIdle(AnimatedSprite2D sprite, Action<AnimatedSprite2D> ensureLoaded)
     {

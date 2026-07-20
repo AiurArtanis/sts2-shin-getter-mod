@@ -43,7 +43,7 @@ public sealed class ShinGetter : CharacterModel
 		ModelDb.Card<SGC_GetterBeam>(),
 	};
 	public override IReadOnlyList<RelicModel> StartingRelics => new RelicModel[] { ModelDb.Relic<SGR_GetterFurnace>() };
-	protected override IEnumerable<string> ExtraAssetPaths => NShinGetterSpriteSequence.GetAllFrameResourcePaths();
+	protected override IEnumerable<string> ExtraAssetPaths => NShinGetterSpriteSequence.GetStartupPreloadResourcePaths();
 
 	protected override string CharacterSelectIconPath =>
 		"res://images/packed/character_select/char_select_shin_getter.png";
