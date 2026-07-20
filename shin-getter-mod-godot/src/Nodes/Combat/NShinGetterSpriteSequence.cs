@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Godot;
@@ -8,6 +9,34 @@ namespace ShinGetterMod.Nodes.Combat;
 
 internal static class NShinGetterSpriteSequence
 {
+    private static readonly (string Directory, int MaxFrames)[] AllFrameSources =
+    {
+        (IdleFrameDirectory, IdleMaxFrames),
+        (AttackFrameDirectory, AttackMaxFrames),
+        (CastFrameDirectory, CastMaxFrames),
+        (GetterOneBlockFrameDirectory, GetterOneBlockMaxFrames),
+        (GetterOneDashFrameDirectory, GetterOneDashMaxFrames),
+        (DeathFrameDirectory, DeathMaxFrames),
+        (GetterTwoIdleFrameDirectory, GetterTwoIdleMaxFrames),
+        (GetterTwoAttackFrameDirectory, GetterTwoAttackMaxFrames),
+        (GetterTwoCastFrameDirectory, GetterTwoCastMaxFrames),
+        (GetterTwoBlockFrameDirectory, GetterTwoBlockMaxFrames),
+        (GetterTwoDashFrameDirectory, GetterTwoDashMaxFrames),
+        (GetterTwoDeathFrameDirectory, GetterTwoDeathMaxFrames),
+        (GetterThreeIdleFrameDirectory, GetterThreeIdleMaxFrames),
+        (GetterThreeAttackFrameDirectory, GetterThreeAttackMaxFrames),
+        (GetterThreeCastFrameDirectory, GetterThreeCastMaxFrames),
+        (GetterThreeBlockFrameDirectory, GetterThreeBlockMaxFrames),
+        (GetterThreeDashFrameDirectory, GetterThreeDashMaxFrames),
+        (GetterThreeDeathFrameDirectory, GetterThreeDeathMaxFrames),
+        (ShinDragonIdleFrameDirectory, ShinDragonIdleMaxFrames),
+        (ShinDragonAttackFrameDirectory, ShinDragonAttackMaxFrames),
+        (ShinDragonCastFrameDirectory, ShinDragonCastMaxFrames),
+        (ShinDragonBlockFrameDirectory, ShinDragonBlockMaxFrames),
+        (ShinDragonDashFrameDirectory, ShinDragonDashMaxFrames),
+        (ShinDragonDeathFrameDirectory, ShinDragonDeathMaxFrames),
+    };
+
     public const string IdleFrameDirectory = "res://images/characters/shin_getter/forms/getter_one_idle";
     public const string AttackFrameDirectory = "res://images/characters/shin_getter/forms/getter_one_attack";
     public const string CastFrameDirectory = "res://images/characters/shin_getter/forms/getter_one_cast";
@@ -74,6 +103,9 @@ internal static class NShinGetterSpriteSequence
     public const string AnimationName = IdleAnimationName;
     public const int MaxFrames = IdleMaxFrames;
     public const double FramesPerSecond = IdleFramesPerSecond;
+
+    public static IEnumerable<string> GetAllFrameResourcePaths() =>
+        AllFrameSources.SelectMany(source => GetFrameResourcePaths(source.Directory, source.MaxFrames));
 
     public static void EnsureLoaded(AnimatedSprite2D sprite)
     {
@@ -224,11 +256,20 @@ internal static class NShinGetterSpriteSequence
 
     private static Texture2D[] LoadTextures(string frameDirectory, int maxFrames)
     {
+        return GetFrameResourcePaths(frameDirectory, maxFrames)
+            .Select(path => ResourceLoader.Load<Texture2D>(path, null, ResourceLoader.CacheMode.Reuse))
+            .Where(texture => texture != null)
+            .Cast<Texture2D>()
+            .ToArray();
+    }
+
+    private static string[] GetFrameResourcePaths(string frameDirectory, int maxFrames)
+    {
         using DirAccess? directory = DirAccess.Open(frameDirectory);
         if (directory == null)
         {
             GD.PushWarning($"Shin Getter sprite sequence directory missing: {frameDirectory}");
-            return Array.Empty<Texture2D>();
+            return Array.Empty<string>();
         }
 
         string normalizedDirectory = frameDirectory.TrimEnd('/');
@@ -238,9 +279,7 @@ internal static class NShinGetterSpriteSequence
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .OrderBy(Path.GetFileName, StringComparer.OrdinalIgnoreCase)
             .Take(maxFrames)
-            .Select(frameFile => ResourceLoader.Load<Texture2D>($"{normalizedDirectory}/{frameFile}", null, ResourceLoader.CacheMode.Reuse))
-            .Where(texture => texture != null)
-            .Cast<Texture2D>()
+            .Select(frameFile => $"{normalizedDirectory}/{frameFile}")
             .ToArray();
     }
 
