@@ -8,7 +8,7 @@
 
 让真盖塔穿越时空登上高塔。切换一号机的爆发、二号机的高速战术与三号机的钢铁防线，最终唤醒真盖塔龙，用盖塔射线吞没高塔。这里不是换一张角色皮肤，而是一套围绕变形、卡组与演出共同运转的玩法型角色 Mod。
 
-> 当前版本 `v1.0.4` · 最低游戏版本 `0.106.1` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> 当前版本 `v1.0.7` · 最低游戏版本 `0.107.0` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
 [下载最新版](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest) · [提交问题](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
@@ -30,13 +30,24 @@
 
 ## 📦 内容一览
 
-`v1.0.3` 当前注册内容包括：
+`v1.0.7` 当前注册内容包括：
 
 - **72 张卡牌**，覆盖四种形态与多套核心机制
 - **10 个遗物**、**3 瓶药水**、**2 个附魔**
 - **1 个专属事件**与专属先古对话
 - 中、英、日三语本地化
 - DLL、PCK 与 JSON 组合加载的完整角色 Mod
+
+## 🆕 v1.0.7 发布说明
+
+[下载 v1.0.7](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.0.7)（`shin-getter-mod-v1.0.7.zip`）
+
+- **二号机奖励调整：**「飓风打击」在二号机形态下改为获得 1 层「分身」。
+- **递归伤害修复：**修复「血肉戏法」与「衰退」的自增长效果互相触发，导致递归伤害或异常秒杀的问题。
+- **外来卡牌动作：**外来卡牌会根据实际效果正确分派攻击、格挡、施法或位移动作。
+- **动画加载优化：**优化四种形态的动画资源加载与动作缓存，降低首场战斗卡顿和常驻显存占用。
+- **龙形态光束修正：**真盖塔龙的「盖塔光束」与「终极盖塔射线」现均从头部发射。
+- **三语文案整理：**清理「盖塔意志」「虫人类病毒」「盖塔射线爆发」中英日描述里的重复关键词、空白行和措辞问题。
 
 ## 🃏 全卡卡面
 
@@ -46,7 +57,7 @@
 
 ### 安装发布版
 
-1. 从 [下载最新版](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest) 下载最新发布压缩包，解压得到 `ShinGetterMod.pck`、`ShinGetterMod.dll`、`ShinGetterMod.json` 与 `mod_image.png`。
+1. 从 [v1.0.7 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.0.7) 下载 `shin-getter-mod-v1.0.7.zip`，解压得到 `ShinGetterMod.pck`、`ShinGetterMod.dll`、`ShinGetterMod.json` 与 `mod_image.png`。
 2. 在游戏的模组加载目录中创建 `ShinGetterMod` 子目录，并将三个文件放在一起。
 3. 启动游戏，从主菜单进入**设置 → 模组设置**，在**已下载的模组**中启用“真盖塔模组”。
 4. 确认加载提示后完全退出并重新启动游戏。新开一局，选择**真盖塔**即可开始。

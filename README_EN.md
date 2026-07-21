@@ -8,7 +8,7 @@
 
 Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter 1's explosive offense, Shin Getter 2's high-speed tactics, and Shin Getter 3's iron defense; then awaken Shin Getter Dragon and let the Getter Rays consume the tower. This is a gameplay character mod built around transformations, deckbuilding, and presentation, not a simple reskin.
 
-> Current version `v1.0.4` · Minimum game version `0.106.1` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> Current version `v1.0.7` · Minimum game version `0.107.0` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
 [Download latest release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest) · [Report an issue](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
@@ -30,13 +30,24 @@ Morale supports several high-impact effects. Evolution and Radiation create addi
 
 ## 📦 What's included
 
-The content currently registered in `v1.0.3` includes:
+The content currently registered in `v1.0.7` includes:
 
 - **72 cards** spanning four forms and several core mechanics
 - **10 relics**, **3 potions**, and **2 enchantments**
 - **1 exclusive event** plus dedicated Ancient dialogue
 - Simplified Chinese, English, and Japanese localization
 - A complete character mod loaded through DLL, PCK, and JSON artifacts
+
+## 🆕 v1.0.7 release notes
+
+[Download v1.0.7](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.0.7) (`shin-getter-mod-v1.0.7.zip`)
+
+- **Shin Getter 2 reward adjustment:** *Hurricane Strike* now grants 1 stack of *Shade* in Shin Getter 2 form.
+- **Recursive damage fix:** Fixed the self-growing effects of *Sleight of Flesh* and *Wane* triggering each other, which could cause recursive damage or unintended one-shot kills.
+- **External-card actions:** Cards from outside the mod now select Attack, Block, Cast, or Movement actions according to their actual effects.
+- **Animation-loading optimization:** Optimized four-form animation asset loading and action caching to reduce first-combat hitching and persistent VRAM usage.
+- **Dragon beam correction:** *Getter Beam* and *Final Getter Beam* in Shin Getter Dragon now fire from the head.
+- **Three-language text cleanup:** Cleaned up repeated keywords, blank lines, and phrasing in the Simplified Chinese, English, and Japanese descriptions for *Getter Will*, *Insect-Human Virus*, and *Getter Ray Burst*.
 
 ## 🃏 Full card gallery
 
@@ -46,7 +57,7 @@ The content currently registered in `v1.0.3` includes:
 
 ### Install the release
 
-1. Download the latest release archive from the [latest release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest), then extract `ShinGetterMod.pck`, `ShinGetterMod.dll`, `ShinGetterMod.json`, and `mod_image.png`.
+1. Download `shin-getter-mod-v1.0.7.zip` from the [v1.0.7 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.0.7), then extract `ShinGetterMod.pck`, `ShinGetterMod.dll`, `ShinGetterMod.json`, and `mod_image.png`.
 2. Create a `ShinGetterMod` folder inside the game's mod-loading directory and place all three files together.
 3. Launch the game, open **Settings → Mod Settings**, and enable “真盖塔模组” (Shin Getter Mod) under **Installed Mods**.
 4. Accept the load prompt, fully quit, and relaunch the game. Start a new run and select **Shin Getter**.
