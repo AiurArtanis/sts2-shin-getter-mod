@@ -1,0 +1,37 @@
+name: "咨询 / Question"
+description: "咨询安装、兼容性、玩法或使用方式 / Ask about installation, compatibility, gameplay, or usage."
+title: "【咨询】 "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        欢迎提问。请先确认 Issue 和 README 中没有现成答案；不要公开私人信息或本地路径。
+        Questions are welcome. Please check existing Issues and the README first; do not publish private information or local paths.
+  - type: textarea
+    id: description
+    attributes:
+      label: "咨询内容 / What would you like to know?"
+      description: "请清楚说明你的问题、已尝试的操作与结果。/ Clearly state the question, what you tried, and the result."
+      placeholder: "问题：...\n已尝试：...\n结果：...\nQuestion: ...\nTried: ...\nResult: ..."
+    validations:
+      required: true
+  - type: dropdown
+    id: game_branch
+    attributes:
+      label: "是否使用分支版本游戏？/ Are you using a beta branch?"
+      description: "默认选择正式/主线版。/ The default is the live/main branch."
+      options:
+        - "否 / No (正式/主线版)"
+        - "是 / Yes (分支版)"
+      default: 0
+    validations:
+      required: true
+  - type: input
+    id: mod_version
+    attributes:
+      label: "模组版本 / Mod version"
+      description: "请填写已安装的真盖塔模组版本。/ Enter the installed Shin Getter Mod version."
+      value: "latest release"
+    validations:
+      required: true
