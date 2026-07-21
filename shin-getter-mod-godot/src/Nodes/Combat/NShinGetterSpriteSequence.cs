@@ -1,13 +1,26 @@
 #nullable enable
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Godot;
 
 namespace ShinGetterMod.Nodes.Combat;
 
 internal static class NShinGetterSpriteSequence
 {
+    private const int MaxCachedActionAnimations = 2;
+
+    private static readonly (string Directory, int MaxFrames)[] StartupPreloadSources =
+    {
+        (AttackFrameDirectory, AttackMaxFrames),
+        (ShinDragonIdleFrameDirectory, ShinDragonIdleMaxFrames),
+    };
+
+    private static readonly ConditionalWeakTable<AnimatedSprite2D, ActionCacheState> ActionCaches = new();
+
     public const string IdleFrameDirectory = "res://images/characters/shin_getter/forms/getter_one_idle";
     public const string AttackFrameDirectory = "res://images/characters/shin_getter/forms/getter_one_attack";
     public const string CastFrameDirectory = "res://images/characters/shin_getter/forms/getter_one_cast";
@@ -75,15 +88,20 @@ internal static class NShinGetterSpriteSequence
     public const int MaxFrames = IdleMaxFrames;
     public const double FramesPerSecond = IdleFramesPerSecond;
 
-    public static void EnsureLoaded(AnimatedSprite2D sprite)
+    public static IEnumerable<string> GetStartupPreloadResourcePaths() =>
+        StartupPreloadSources.SelectMany(source => GetFrameResourcePaths(source.Directory, source.MaxFrames));
+
+    public static void EnsureLoaded(AnimatedSprite2D sprite, string animationName)
     {
         EnsureIdleLoaded(sprite);
         SpriteFrames frames = sprite.SpriteFrames;
-        LoadLinearAnimation(frames, AttackAnimationName, AttackFrameDirectory, AttackMaxFrames, AttackFramesPerSecond, loop: false);
-        LoadLinearAnimation(frames, CastAnimationName, CastFrameDirectory, CastMaxFrames, ActionFramesPerSecond, loop: false);
-        LoadLinearAnimation(frames, BlockAnimationName, GetterOneBlockFrameDirectory, GetterOneBlockMaxFrames, GetterOneBlockFramesPerSecond, loop: false);
-        LoadLinearAnimation(frames, DashAnimationName, GetterOneDashFrameDirectory, GetterOneDashMaxFrames, ActionFramesPerSecond, loop: false);
-        LoadLinearAnimation(frames, DeathAnimationName, DeathFrameDirectory, DeathMaxFrames, ActionFramesPerSecond, loop: false);
+        EnsureRequestedAnimation(frames, animationName,
+            (AttackAnimationName, AttackFrameDirectory, AttackMaxFrames, AttackFramesPerSecond),
+            (CastAnimationName, CastFrameDirectory, CastMaxFrames, ActionFramesPerSecond),
+            (BlockAnimationName, GetterOneBlockFrameDirectory, GetterOneBlockMaxFrames, GetterOneBlockFramesPerSecond),
+            (DashAnimationName, GetterOneDashFrameDirectory, GetterOneDashMaxFrames, ActionFramesPerSecond),
+            (DeathAnimationName, DeathFrameDirectory, DeathMaxFrames, ActionFramesPerSecond));
+        TrackAndTrimActionCache(sprite, animationName);
     }
 
     public static void EnsureIdleLoaded(AnimatedSprite2D sprite)
@@ -96,15 +114,17 @@ internal static class NShinGetterSpriteSequence
             sprite.Play(IdleAnimationName);
     }
 
-    public static void EnsureGetterTwoLoaded(AnimatedSprite2D sprite)
+    public static void EnsureGetterTwoLoaded(AnimatedSprite2D sprite, string animationName)
     {
         EnsureGetterTwoIdleLoaded(sprite);
         SpriteFrames frames = sprite.SpriteFrames;
-        LoadLinearAnimation(frames, AttackAnimationName, GetterTwoAttackFrameDirectory, GetterTwoAttackMaxFrames, AttackFramesPerSecond, loop: false);
-        LoadLinearAnimation(frames, CastAnimationName, GetterTwoCastFrameDirectory, GetterTwoCastMaxFrames, ActionFramesPerSecond, loop: false);
-        LoadLinearAnimation(frames, BlockAnimationName, GetterTwoBlockFrameDirectory, GetterTwoBlockMaxFrames, ActionFramesPerSecond, loop: false);
-        LoadLinearAnimation(frames, DashAnimationName, GetterTwoDashFrameDirectory, GetterTwoDashMaxFrames, ActionFramesPerSecond, loop: false);
-        LoadLinearAnimation(frames, DeathAnimationName, GetterTwoDeathFrameDirectory, GetterTwoDeathMaxFrames, ActionFramesPerSecond, loop: false);
+        EnsureRequestedAnimation(frames, animationName,
+            (AttackAnimationName, GetterTwoAttackFrameDirectory, GetterTwoAttackMaxFrames, AttackFramesPerSecond),
+            (CastAnimationName, GetterTwoCastFrameDirectory, GetterTwoCastMaxFrames, ActionFramesPerSecond),
+            (BlockAnimationName, GetterTwoBlockFrameDirectory, GetterTwoBlockMaxFrames, ActionFramesPerSecond),
+            (DashAnimationName, GetterTwoDashFrameDirectory, GetterTwoDashMaxFrames, ActionFramesPerSecond),
+            (DeathAnimationName, GetterTwoDeathFrameDirectory, GetterTwoDeathMaxFrames, ActionFramesPerSecond));
+        TrackAndTrimActionCache(sprite, animationName);
     }
 
     public static void EnsureGetterTwoIdleLoaded(AnimatedSprite2D sprite)
@@ -117,15 +137,17 @@ internal static class NShinGetterSpriteSequence
             sprite.Play(IdleAnimationName);
     }
 
-    public static void EnsureGetterThreeLoaded(AnimatedSprite2D sprite)
+    public static void EnsureGetterThreeLoaded(AnimatedSprite2D sprite, string animationName)
     {
         EnsureGetterThreeIdleLoaded(sprite);
         SpriteFrames frames = sprite.SpriteFrames;
-        LoadLinearAnimation(frames, AttackAnimationName, GetterThreeAttackFrameDirectory, GetterThreeAttackMaxFrames, AttackFramesPerSecond, loop: false);
-        LoadLinearAnimation(frames, DashAnimationName, GetterThreeDashFrameDirectory, GetterThreeDashMaxFrames, ActionFramesPerSecond, loop: false);
-        LoadLinearAnimation(frames, CastAnimationName, GetterThreeCastFrameDirectory, GetterThreeCastMaxFrames, ActionFramesPerSecond, loop: false);
-        LoadLinearAnimation(frames, BlockAnimationName, GetterThreeBlockFrameDirectory, GetterThreeBlockMaxFrames, ActionFramesPerSecond, loop: false);
-        LoadLinearAnimation(frames, DeathAnimationName, GetterThreeDeathFrameDirectory, GetterThreeDeathMaxFrames, ActionFramesPerSecond, loop: false);
+        EnsureRequestedAnimation(frames, animationName,
+            (AttackAnimationName, GetterThreeAttackFrameDirectory, GetterThreeAttackMaxFrames, AttackFramesPerSecond),
+            (CastAnimationName, GetterThreeCastFrameDirectory, GetterThreeCastMaxFrames, ActionFramesPerSecond),
+            (BlockAnimationName, GetterThreeBlockFrameDirectory, GetterThreeBlockMaxFrames, ActionFramesPerSecond),
+            (DashAnimationName, GetterThreeDashFrameDirectory, GetterThreeDashMaxFrames, ActionFramesPerSecond),
+            (DeathAnimationName, GetterThreeDeathFrameDirectory, GetterThreeDeathMaxFrames, ActionFramesPerSecond));
+        TrackAndTrimActionCache(sprite, animationName);
     }
 
     public static void EnsureGetterThreeIdleLoaded(AnimatedSprite2D sprite)
@@ -138,15 +160,17 @@ internal static class NShinGetterSpriteSequence
             sprite.Play(IdleAnimationName);
     }
 
-    public static void EnsureShinDragonLoaded(AnimatedSprite2D sprite)
+    public static void EnsureShinDragonLoaded(AnimatedSprite2D sprite, string animationName)
     {
         EnsureShinDragonIdleLoaded(sprite);
         SpriteFrames frames = sprite.SpriteFrames;
-        LoadLinearAnimation(frames, AttackAnimationName, ShinDragonAttackFrameDirectory, ShinDragonAttackMaxFrames, ShinDragonAttackFramesPerSecond, loop: false);
-        LoadLinearAnimation(frames, CastAnimationName, ShinDragonCastFrameDirectory, ShinDragonCastMaxFrames, ActionFramesPerSecond, loop: false);
-        LoadLinearAnimation(frames, BlockAnimationName, ShinDragonBlockFrameDirectory, ShinDragonBlockMaxFrames, ShinDragonBlockFramesPerSecond, loop: false);
-        LoadLinearAnimation(frames, DashAnimationName, ShinDragonDashFrameDirectory, ShinDragonDashMaxFrames, ActionFramesPerSecond, loop: false);
-        LoadLinearAnimation(frames, DeathAnimationName, ShinDragonDeathFrameDirectory, ShinDragonDeathMaxFrames, ActionFramesPerSecond, loop: false);
+        EnsureRequestedAnimation(frames, animationName,
+            (AttackAnimationName, ShinDragonAttackFrameDirectory, ShinDragonAttackMaxFrames, ShinDragonAttackFramesPerSecond),
+            (CastAnimationName, ShinDragonCastFrameDirectory, ShinDragonCastMaxFrames, ActionFramesPerSecond),
+            (BlockAnimationName, ShinDragonBlockFrameDirectory, ShinDragonBlockMaxFrames, ShinDragonBlockFramesPerSecond),
+            (DashAnimationName, ShinDragonDashFrameDirectory, ShinDragonDashMaxFrames, ActionFramesPerSecond),
+            (DeathAnimationName, ShinDragonDeathFrameDirectory, ShinDragonDeathMaxFrames, ActionFramesPerSecond));
+        TrackAndTrimActionCache(sprite, animationName);
     }
 
     public static void EnsureShinDragonIdleLoaded(AnimatedSprite2D sprite)
@@ -157,6 +181,63 @@ internal static class NShinGetterSpriteSequence
 
         if (!sprite.IsPlaying() && frames.HasAnimation(IdleAnimationName))
             sprite.Play(IdleAnimationName);
+    }
+
+    public static void ReleaseActionAnimations(AnimatedSprite2D sprite)
+    {
+        if (sprite.SpriteFrames is not { } frames)
+            return;
+
+        foreach (string animationName in ActionAnimationNames)
+        {
+            if (frames.HasAnimation(animationName))
+                frames.RemoveAnimation(animationName);
+        }
+
+        ActionCaches.Remove(sprite);
+    }
+
+    private static readonly string[] ActionAnimationNames =
+    {
+        AttackAnimationName,
+        HeavyAttackAnimationName,
+        CastAnimationName,
+        BlockAnimationName,
+        DashAnimationName,
+        DeathAnimationName,
+    };
+
+    private static void EnsureRequestedAnimation(
+        SpriteFrames frames,
+        string requestedAnimation,
+        params (string Name, string Directory, int MaxFrames, double FramesPerSecond)[] sources)
+    {
+        var source = sources.FirstOrDefault(candidate => candidate.Name == requestedAnimation);
+        if (source.Name == null)
+            return;
+
+        LoadLinearAnimation(
+            frames,
+            source.Name,
+            source.Directory,
+            source.MaxFrames,
+            source.FramesPerSecond,
+            loop: false);
+    }
+
+    private static void TrackAndTrimActionCache(AnimatedSprite2D sprite, string animationName)
+    {
+        if (animationName == IdleAnimationName || sprite.SpriteFrames?.HasAnimation(animationName) != true)
+            return;
+
+        ActionCacheState cache = ActionCaches.GetOrCreateValue(sprite);
+        cache.Touch(animationName);
+        while (cache.Count > MaxCachedActionAnimations)
+        {
+            string oldest = cache.RemoveOldest();
+            if (sprite.SpriteFrames.HasAnimation(oldest))
+                sprite.SpriteFrames.RemoveAnimation(oldest);
+        }
     }
 
     private static void LoadPingPongAnimation(
@@ -199,6 +280,9 @@ internal static class NShinGetterSpriteSequence
         if (HasSufficientAnimation(frames, animationKey, expectedFrameCount))
             return;
 
+        Stopwatch stopwatch = Stopwatch.StartNew();
+        ulong memoryBefore = OS.GetStaticMemoryUsage();
+        ulong videoMemoryBefore = RenderingServer.GetRenderingInfo(RenderingServer.RenderingInfo.VideoMemUsed);
         Texture2D[] textures = LoadTextures(frameDirectory, maxFrames);
         if (textures.Length == 0)
         {
@@ -211,6 +295,14 @@ internal static class NShinGetterSpriteSequence
         frames.SetAnimationLoop(animationKey, loop);
         frames.SetAnimationSpeed(animationKey, framesPerSecond);
         AddLinearFrames(frames, animationKey, textures);
+        stopwatch.Stop();
+        ulong memoryAfter = OS.GetStaticMemoryUsage();
+        ulong videoMemoryAfter = RenderingServer.GetRenderingInfo(RenderingServer.RenderingInfo.VideoMemUsed);
+        GD.Print(
+            $"Shin Getter staged animation load: {frameDirectory}, frames={textures.Length}, " +
+            $"elapsed={stopwatch.ElapsedMilliseconds}ms, " +
+            $"memory_delta={FormatSignedDelta(memoryAfter, memoryBefore)}, " +
+            $"vram_delta={FormatSignedDelta(videoMemoryAfter, videoMemoryBefore)}");
     }
 
     private static bool HasSufficientAnimation(SpriteFrames frames, StringName animationKey, int expectedFrameCount) =>
@@ -224,11 +316,20 @@ internal static class NShinGetterSpriteSequence
 
     private static Texture2D[] LoadTextures(string frameDirectory, int maxFrames)
     {
+        return GetFrameResourcePaths(frameDirectory, maxFrames)
+            .Select(path => ResourceLoader.Load<Texture2D>(path, null, ResourceLoader.CacheMode.Reuse))
+            .Where(texture => texture != null)
+            .Cast<Texture2D>()
+            .ToArray();
+    }
+
+    private static string[] GetFrameResourcePaths(string frameDirectory, int maxFrames)
+    {
         using DirAccess? directory = DirAccess.Open(frameDirectory);
         if (directory == null)
         {
             GD.PushWarning($"Shin Getter sprite sequence directory missing: {frameDirectory}");
-            return Array.Empty<Texture2D>();
+            return Array.Empty<string>();
         }
 
         string normalizedDirectory = frameDirectory.TrimEnd('/');
@@ -238,9 +339,7 @@ internal static class NShinGetterSpriteSequence
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .OrderBy(Path.GetFileName, StringComparer.OrdinalIgnoreCase)
             .Take(maxFrames)
-            .Select(frameFile => ResourceLoader.Load<Texture2D>($"{normalizedDirectory}/{frameFile}", null, ResourceLoader.CacheMode.Reuse))
-            .Where(texture => texture != null)
-            .Cast<Texture2D>()
+            .Select(frameFile => $"{normalizedDirectory}/{frameFile}")
             .ToArray();
     }
 
@@ -270,5 +369,33 @@ internal static class NShinGetterSpriteSequence
     {
         foreach (Texture2D texture in textures)
             frames.AddFrame(animationKey, texture);
+    }
+
+    private static string FormatSignedDelta(ulong after, ulong before)
+    {
+        long delta = after >= before
+            ? checked((long)(after - before))
+            : -checked((long)(before - after));
+        return $"{delta / 1024d / 1024d:+0.0;-0.0;0.0} MiB";
+    }
+
+    private sealed class ActionCacheState
+    {
+        private readonly LinkedList<string> _order = new();
+
+        public int Count => _order.Count;
+
+        public void Touch(string animationName)
+        {
+            _order.Remove(animationName);
+            _order.AddLast(animationName);
+        }
+
+        public string RemoveOldest()
+        {
+            string oldest = _order.First!.Value;
+            _order.RemoveFirst();
+            return oldest;
+        }
     }
 }

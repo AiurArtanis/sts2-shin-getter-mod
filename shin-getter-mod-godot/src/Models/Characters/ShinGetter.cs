@@ -13,6 +13,7 @@ using ShinGetterMod.Models.Cards;
 using ShinGetterMod.Models.PotionPools;
 using ShinGetterMod.Models.Relics;
 using ShinGetterMod.Models.RelicPools;
+using ShinGetterMod.Nodes.Combat;
 
 namespace ShinGetterMod.Models.Characters;
 
@@ -42,6 +43,7 @@ public sealed class ShinGetter : CharacterModel
 		ModelDb.Card<SGC_GetterBeam>(),
 	};
 	public override IReadOnlyList<RelicModel> StartingRelics => new RelicModel[] { ModelDb.Relic<SGR_GetterFurnace>() };
+	protected override IEnumerable<string> ExtraAssetPaths => NShinGetterSpriteSequence.GetStartupPreloadResourcePaths();
 
 	protected override string CharacterSelectIconPath =>
 		"res://images/packed/character_select/char_select_shin_getter.png";

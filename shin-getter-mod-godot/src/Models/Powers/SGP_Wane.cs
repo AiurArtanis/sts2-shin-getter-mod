@@ -43,7 +43,9 @@ public sealed class SGP_Wane : PowerModel
         if (target == Owner && result.UnblockedDamage > 0)
         {
             Flash();
-            await PowerCmd.Apply<SGP_Wane>(choiceContext, Owner, 1m, dealer, cardSource);
+            // Wane grows from its own trigger, not from the creature that dealt the hit.
+            // Keeping the dealer as applier recursively triggers effects such as Sleight of Flesh.
+            await PowerCmd.Apply<SGP_Wane>(choiceContext, Owner, 1m, null, cardSource);
         }
     }
 
