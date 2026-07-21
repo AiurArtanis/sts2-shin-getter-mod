@@ -1,0 +1,44 @@
+name: "建议 / Feature request"
+description: "提交玩法、内容、体验或美术改进建议 / Suggest a gameplay, content, UX, or visual improvement."
+title: "【功能】 "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        欢迎提出建议。请聚焦玩家可感知的目标与收益，不要粘贴私人信息或本地设计文档。
+        Suggestions are welcome. Focus on player-facing goals and benefits; do not post private information or local design documents.
+  - type: textarea
+    id: description
+    attributes:
+      label: "建议说明 / Describe the suggestion"
+      description: "请说明想解决的问题、建议内容，以及它会如何改善体验。/ Explain the problem, the proposed change, and how it would improve the experience."
+      placeholder: "问题：...\n建议：...\n预期体验：...\nProblem: ...\nSuggestion: ...\nExpected experience: ..."
+    validations:
+      required: true
+  - type: dropdown
+    id: game_branch
+    attributes:
+      label: "是否使用分支版本游戏？/ Are you using a beta branch?"
+      description: "默认选择正式/主线版。/ The default is the live/main branch."
+      options:
+        - "否 / No (正式/主线版)"
+        - "是 / Yes (分支版)"
+      default: 0
+    validations:
+      required: true
+  - type: input
+    id: mod_version
+    attributes:
+      label: "模组版本 / Mod version"
+      description: "请填写已安装的真盖塔模组版本。/ Enter the installed Shin Getter Mod version."
+      value: "latest release"
+    validations:
+      required: true
+  - type: textarea
+    id: examples
+    attributes:
+      label: "补充示例 / Examples or references"
+      description: "可选：描述使用场景、平衡风险或相关截图。/ Optional: add a use case, balance concern, or relevant screenshot."
+    validations:
+      required: false

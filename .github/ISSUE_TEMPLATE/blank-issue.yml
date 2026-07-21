@@ -1,0 +1,37 @@
+name: "空白 Issue / Blank Issue"
+description: "提交未被其他模板覆盖的反馈 / Submit feedback not covered by another template."
+title: "【其他】 "
+labels: ["idea"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        这是轻量的通用模板。请勿公开私人信息、本地路径或未公开的设计资料。
+        This is a lightweight general-purpose form. Do not post private information, local paths, or unpublished design material.
+  - type: textarea
+    id: description
+    attributes:
+      label: "内容说明 / Describe the feedback"
+      description: "请清楚说明你希望反馈的内容。/ Clearly describe the feedback you want to share."
+      placeholder: "内容：...\nContext: ..."
+    validations:
+      required: true
+  - type: dropdown
+    id: game_branch
+    attributes:
+      label: "是否使用分支版本游戏？/ Are you using a beta branch?"
+      description: "默认选择正式/主线版。/ The default is the live/main branch."
+      options:
+        - "否 / No (正式/主线版)"
+        - "是 / Yes (分支版)"
+      default: 0
+    validations:
+      required: true
+  - type: input
+    id: mod_version
+    attributes:
+      label: "模组版本 / Mod version"
+      description: "请填写已安装的真盖塔模组版本。/ Enter the installed Shin Getter Mod version."
+      value: "latest release"
+    validations:
+      required: true
