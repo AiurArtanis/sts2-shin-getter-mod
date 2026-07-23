@@ -15,6 +15,8 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_ChangeAttack : ShinGetterCardBase
 {
+    internal const float TransformSpeedScale = 1.5f;
+
     protected override bool HasEnergyCostX => true;
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new DamageVar(5m, ValueProp.Move) };
 
@@ -30,10 +32,9 @@ public sealed class SGC_ChangeAttack : ShinGetterCardBase
         for (int i = 0; i < x; i++)
         {
             await Transform(choiceContext, Owner, this);
+            await PlayAcceleratedFollowupAnimation();
             await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this, cardPlay)
                 .Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
-            if (i + 1 < x && cardPlay.Target.IsAlive)
-                await QueueAcceleratedFollowupAnimation();
         }
     }
 
