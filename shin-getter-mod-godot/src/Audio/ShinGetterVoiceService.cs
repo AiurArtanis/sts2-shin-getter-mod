@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
+using ShinGetterMod.Config;
 using ShinGetterMod.Models.Cards;
 using ShinGetterMod.Models.Characters;
 using ShinGetterMod.Models.Relics;
@@ -374,6 +375,12 @@ internal static class ShinGetterVoiceService
 
     private static bool TryClaimVoiceCue(Player player, ShinGetterVoiceCue cue)
     {
+        ShinGetterVoiceMode voiceMode = ShinGetterChunibyoConfigService.Current.VoiceMode;
+        if (voiceMode == ShinGetterVoiceMode.Silent)
+            return false;
+        if (voiceMode == ShinGetterVoiceMode.Always)
+            return true;
+
         int bit = GetVoiceBit(cue);
         int playedMask = 0;
         bool hasVoiceHistory = false;

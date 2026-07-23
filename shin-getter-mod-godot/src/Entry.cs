@@ -2,6 +2,7 @@ using System.Reflection;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Modding;
+using ShinGetterMod.Config;
 
 namespace ShinGetterMod;
 
@@ -14,6 +15,8 @@ public static class Entry
     {
         if (_initialized) return;
         _initialized = true;
+
+        ShinGetterChunibyoConfigService.Load();
 
         // Register all Harmony patches (CharacterListPatch)
         Harmony harmony = new Harmony("Artanis.ShinGetterMod");

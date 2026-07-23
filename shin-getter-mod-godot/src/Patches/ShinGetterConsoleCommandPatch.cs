@@ -11,13 +11,22 @@ namespace ShinGetterMod.Patches;
 internal static class ShinGetterConsoleCommandPatch
 {
     private const string AddAllCardsCommandName = "shin_getter_add_cards";
+    private const string ChunibyoCommandName = "chunibyo";
 
     private static bool Prefix(Player? player, string cmdName, string[] args, ref CmdResult __result)
     {
-        if (!cmdName.Equals(AddAllCardsCommandName, StringComparison.OrdinalIgnoreCase))
-            return true;
+        if (cmdName.Equals(AddAllCardsCommandName, StringComparison.OrdinalIgnoreCase))
+        {
+            __result = new ShinGetterAddAllCardsConsoleCmd().Process(player, args);
+            return false;
+        }
 
-        __result = new ShinGetterAddAllCardsConsoleCmd().Process(player, args);
-        return false;
+        if (cmdName.Equals(ChunibyoCommandName, StringComparison.OrdinalIgnoreCase))
+        {
+            __result = new ShinGetterChunibyoConsoleCmd().Process(player, args);
+            return false;
+        }
+
+        return true;
     }
 }

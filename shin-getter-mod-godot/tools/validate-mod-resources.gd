@@ -150,15 +150,23 @@ const REQUIRED_RESOURCES := {
 const EXISTS_ONLY_RESOURCES := [
 	# This scene references the mod DLL, which is loaded only during the later game-load validation.
 	"res://scenes/screens/char_select/char_select_bg_shin_getter.tscn",
+	"res://ShinGetterMod.json",
 	"res://ShinGetterMod/localization/eng/cards.json",
+	"res://ShinGetterMod/localization/eng/main_menu_ui.json",
+	"res://ShinGetterMod/localization/eng/settings_ui.json",
 	"res://ShinGetterMod/localization/eng/powers.json",
 	"res://ShinGetterMod/localization/eng/static_hover_tips.json",
 	"res://ShinGetterMod/localization/jpn/cards.json",
+	"res://ShinGetterMod/localization/jpn/main_menu_ui.json",
+	"res://ShinGetterMod/localization/jpn/settings_ui.json",
 	"res://ShinGetterMod/localization/jpn/powers.json",
 	"res://ShinGetterMod/localization/jpn/static_hover_tips.json",
 	"res://ShinGetterMod/localization/zhs/cards.json",
+	"res://ShinGetterMod/localization/zhs/main_menu_ui.json",
+	"res://ShinGetterMod/localization/zhs/settings_ui.json",
 	"res://ShinGetterMod/localization/zhs/powers.json",
 	"res://ShinGetterMod/localization/zhs/static_hover_tips.json",
+	"res://ShinGetterMod/update_history.json",
 ]
 
 const FORBIDDEN_RESOURCES := [
