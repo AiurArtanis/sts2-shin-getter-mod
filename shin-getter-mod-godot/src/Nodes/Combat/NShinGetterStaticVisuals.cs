@@ -13,10 +13,14 @@ namespace ShinGetterMod.Nodes.Combat;
 
 public static class NShinGetterStaticVisuals
 {
-    public static void ShowForm(Creature creature, ShinGetterForm form, bool animate = true)
+    public static Task ShowForm(
+        Creature creature,
+        ShinGetterForm form,
+        bool animate = true,
+        float speedScale = 1f)
     {
         if (!TryGetFormSprites(creature, out var visuals, out var sprites))
-            return;
+            return Task.CompletedTask;
 
         FormVisual next = form switch
         {
@@ -25,15 +29,15 @@ public static class NShinGetterStaticVisuals
             _ => sprites.GetterOne,
         };
 
-        SwitchTo(visuals, sprites, next, animate);
+        return SwitchTo(visuals, sprites, next, animate, speedScale);
     }
 
-    public static void ShowShinDragon(Creature creature, bool animate = true)
+    public static Task ShowShinDragon(Creature creature, bool animate = true)
     {
         if (!TryGetFormSprites(creature, out var visuals, out var sprites))
-            return;
+            return Task.CompletedTask;
 
-        SwitchTo(visuals, sprites, sprites.ShinDragon, animate);
+        return SwitchTo(visuals, sprites, sprites.ShinDragon, animate, 1f);
     }
 
     public static bool TryPlayGetterOneActionAnimation(NCreature creatureNode, string trigger)
@@ -373,7 +377,12 @@ public static class NShinGetterStaticVisuals
             yield return new FormAnimation(shinDragon, NShinGetterSpriteSequence.EnsureShinDragonLoaded);
     }
 
-    private static void SwitchTo(NCreatureVisuals visuals, FormSprites sprites, FormVisual next, bool animate)
+    private static async Task SwitchTo(
+        NCreatureVisuals visuals,
+        FormSprites sprites,
+        FormVisual next,
+        bool animate,
+        float speedScale)
     {
         if (next.Item.Visible && next.Item.Modulate.A > 0.99f)
         {
@@ -403,6 +412,8 @@ public static class NShinGetterStaticVisuals
             return;
         }
 
+        float animationSpeed = Math.Max(0.05f, speedScale);
+
         foreach (var sprite in sprites.All)
         {
             if (sprite.Item != next.Item && (previous == null || sprite.Item != previous.Value.Item))
@@ -426,27 +437,29 @@ public static class NShinGetterStaticVisuals
         {
             FormVisual previousVisual = previous.Value;
             previousBaseScale = previousVisual.Node.Scale;
-            transformTween.TweenProperty(previousVisual.Item, "modulate:a", 0f, 0.16f)
+            transformTween.TweenProperty(previousVisual.Item, "modulate:a", 0f, 0.16f / animationSpeed)
                 .SetEase(Tween.EaseType.In)
                 .SetTrans(Tween.TransitionType.Sine);
-            transformTween.TweenProperty(previousVisual.Node, "scale", previousBaseScale * 1.18f, 0.16f)
+            transformTween.TweenProperty(previousVisual.Node, "scale", previousBaseScale * 1.18f, 0.16f / animationSpeed)
                 .SetEase(Tween.EaseType.In)
                 .SetTrans(Tween.TransitionType.Sine);
         }
 
-        transformTween.TweenProperty(next.Item, "modulate:a", 1f, 0.28f)
-            .SetDelay(0.06f)
+        transformTween.TweenProperty(next.Item, "modulate:a", 1f, 0.28f / animationSpeed)
+            .SetDelay(0.06f / animationSpeed)
             .SetEase(Tween.EaseType.Out)
             .SetTrans(Tween.TransitionType.Sine);
-        transformTween.TweenProperty(next.Node, "scale", nextBaseScale, 0.28f)
-            .SetDelay(0.06f)
+        transformTween.TweenProperty(next.Node, "scale", nextBaseScale, 0.28f / animationSpeed)
+            .SetDelay(0.06f / animationSpeed)
             .SetEase(Tween.EaseType.Out)
             .SetTrans(Tween.TransitionType.Back);
-        transformTween.TweenProperty(next.Node, "rotation_degrees", 0f, 0.28f)
-            .SetDelay(0.06f)
+        transformTween.TweenProperty(next.Node, "rotation_degrees", 0f, 0.28f / animationSpeed)
+            .SetDelay(0.06f / animationSpeed)
             .SetEase(Tween.EaseType.Out)
             .SetTrans(Tween.TransitionType.Sine);
-        transformTween.TweenCallback(Callable.From(() => HideInactive(sprites, next, previous, previousBaseScale))).SetDelay(0.36f);
+        transformTween.TweenCallback(Callable.From(() => HideInactive(sprites, next, previous, previousBaseScale)))
+            .SetDelay(0.36f / animationSpeed);
+        await visuals.ToSignal(transformTween, Tween.SignalName.Finished);
     }
 
     private static void HideInactive(FormSprites sprites, FormVisual active, FormVisual? previous, Vector2 previousBaseScale)

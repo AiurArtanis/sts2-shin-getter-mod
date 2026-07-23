@@ -178,6 +178,7 @@ public abstract class ShinGetterCardBase : CardModel
         {
             "SGC_Annihilation",
             "SGC_Avalanche",
+            "SGC_ChangeAttack",
             "SGC_ExpansionStrike",
             "SGC_GetterElbow",
             "SGC_GetterMissile",
@@ -191,6 +192,7 @@ public abstract class ShinGetterCardBase : CardModel
     private static readonly IReadOnlySet<string> MovementVfxTimingCards =
         new HashSet<string>(StringComparer.Ordinal)
         {
+            "SGC_ChangeAttack",
             "SGC_DiveStrike",
             "SGC_ExpansionStrike",
             "SGC_GetterElbow",

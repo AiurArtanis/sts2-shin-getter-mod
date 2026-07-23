@@ -33,7 +33,8 @@ public sealed class SGP_ShinGetterTwo : PowerModel
         if (Owner != null && Amount > 0)
         {
             await PowerCmd.Apply<RegenPower>(new ThrowingPlayerChoiceContext(), Owner, 1m, Owner, null);
-            NShinGetterStaticVisuals.ShowForm(Owner, ShinGetterForm.Getter2);
+            float speedScale = cardSource is SGC_ChangeAttack ? SGC_ChangeAttack.TransformSpeedScale : 1f;
+            await NShinGetterStaticVisuals.ShowForm(Owner, ShinGetterForm.Getter2, speedScale: speedScale);
             ShinGetterCardFramePatch.RefreshVisibleCards();
         }
     }
