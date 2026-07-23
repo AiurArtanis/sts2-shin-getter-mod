@@ -20,7 +20,16 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
 {
     private const string ManifestPath = "res://ShinGetterMod.json";
     private const string UpdateHistoryPath = "res://ShinGetterMod/update_history.json";
+    private const string CharacterIconPath = "res://images/ui/top_panel/character_icon_shin_getter.png";
+    private const string KreonFontPath = "res://themes/kreon_regular_shared.tres";
     private const string LocTable = "settings_ui";
+    private const int PageTitleFontSize = 52;
+    private const int SidebarTitleFontSize = 48;
+    private const int SettingFontSize = 28;
+    private const int OptionFontSize = 27;
+    private const int ActionFontSize = 26;
+    private const int NoteFontSize = 21;
+    private const float SettingControlWidth = 560f;
 
     private Control? _initialFocus;
     private Label? _exportPathLabel;
@@ -38,21 +47,14 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
 
     private void BuildInterface()
     {
-        var backButton = PreloadManager.Cache
-            .GetScene(SceneHelper.GetScenePath("ui/back_button"))
-            .Instantiate<NBackButton>();
-        backButton.Name = "BackButton";
-        AddChild(backButton);
-
         var shade = new ColorRect
         {
             Name = "Shade",
             Color = new Color(0.025f, 0.035f, 0.045f, 0.84f),
-            MouseFilter = MouseFilterEnum.Stop,
+            MouseFilter = MouseFilterEnum.Ignore,
         };
         shade.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         AddChild(shade);
-        MoveChild(backButton, GetChildCount() - 1);
 
         var margin = new MarginContainer
         {
@@ -77,6 +79,14 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
 
         columns.AddChild(BuildModList());
         columns.AddChild(BuildSettingsPanel());
+
+        var backButton = PreloadManager.Cache
+            .GetScene(SceneHelper.GetScenePath("ui/back_button"))
+            .Instantiate<NBackButton>();
+        backButton.Name = "BackButton";
+        backButton.ZIndex = 100;
+        backButton.ZAsRelative = false;
+        AddChild(backButton);
     }
 
     private Control BuildModList()
@@ -91,18 +101,51 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         list.AddThemeConstantOverride("separation", 14);
         margin.AddChild(list);
 
-        list.AddChild(CreateHeading(Localize("SHIN_GETTER_CHUNIBYO.MODS", "Mods"), 32));
+        list.AddChild(CreateHeading(Localize("SHIN_GETTER_CHUNIBYO.MODS", "Mods"), SidebarTitleFontSize));
         list.AddChild(CreateDivider());
 
         var modButton = new Button
         {
-            Text = Localize("SHIN_GETTER_CHUNIBYO.MOD_NAME", "Shin Getter"),
-            CustomMinimumSize = new Vector2(0f, 58f),
+            CustomMinimumSize = new Vector2(0f, 66f),
+            SizeFlagsHorizontal = SizeFlags.ExpandFill,
             FocusMode = FocusModeEnum.All,
             ToggleMode = true,
             ButtonPressed = true,
+            Flat = true,
         };
-        modButton.AddThemeFontSizeOverride("font_size", 25);
+        AddSelectedModButtonStyles(modButton);
+
+        var modButtonContent = new HBoxContainer
+        {
+            MouseFilter = MouseFilterEnum.Ignore,
+        };
+        modButtonContent.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        modButtonContent.OffsetLeft = 20f;
+        modButtonContent.OffsetRight = -16f;
+        modButtonContent.AddThemeConstantOverride("separation", 12);
+        modButton.AddChild(modButtonContent);
+
+        var icon = new TextureRect
+        {
+            Texture = ResourceLoader.Load<Texture2D>(CharacterIconPath),
+            CustomMinimumSize = new Vector2(40f, 40f),
+            ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
+            StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered,
+            MouseFilter = MouseFilterEnum.Ignore,
+        };
+        modButtonContent.AddChild(icon);
+
+        var modLabel = new Label
+        {
+            Text = Localize("SHIN_GETTER_CHUNIBYO.MOD_NAME", "Shin Getter"),
+            SizeFlagsHorizontal = SizeFlags.ExpandFill,
+            HorizontalAlignment = HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Center,
+            MouseFilter = MouseFilterEnum.Ignore,
+        };
+        ApplyKreonFont(modLabel, 24);
+        modLabel.AddThemeColorOverride("font_color", StsColors.gold);
+        modButtonContent.AddChild(modLabel);
         modButton.Toggled += pressed =>
         {
             if (!pressed)
@@ -135,7 +178,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         header.AddThemeConstantOverride("separation", 18);
         root.AddChild(header);
 
-        var heading = CreateHeading(Localize("SHIN_GETTER_CHUNIBYO.TITLE", "Chunibyo Config"), 38);
+        var heading = CreateHeading(Localize("SHIN_GETTER_CHUNIBYO.TITLE", "Chunibyo Config"), PageTitleFontSize);
         heading.SizeFlagsHorizontal = SizeFlags.ExpandFill;
         header.AddChild(heading);
 
@@ -150,7 +193,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
             "Version",
             ReadManifestVersion());
         var versionLabel = new Label { Text = versionText };
-        versionLabel.AddThemeFontSizeOverride("font_size", 22);
+        ApplyKreonFont(versionLabel, 24);
         versionLabel.AddThemeColorOverride("font_color", new Color(0.72f, 0.78f, 0.8f));
         root.AddChild(versionLabel);
         root.AddChild(CreateDivider());
@@ -185,15 +228,15 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
 
     private Control BuildMainMenuToggle()
     {
+        var row = CreateSettingRow(Localize(
+            "SHIN_GETTER_CHUNIBYO.SHOW_IN_MAIN_MENU",
+            "Show Chunibyo Config on the main menu (restart required)"));
         var toggle = new CheckButton
         {
-            Text = Localize(
-                "SHIN_GETTER_CHUNIBYO.SHOW_IN_MAIN_MENU",
-                "Show Chunibyo Config on the main menu (restart required)"),
             ButtonPressed = ShinGetterChunibyoConfigService.Current.ShowInMainMenu,
-            CustomMinimumSize = new Vector2(0f, 56f),
+            CustomMinimumSize = new Vector2(SettingControlWidth, 64f),
+            SizeFlagsHorizontal = SizeFlags.ShrinkEnd,
         };
-        toggle.AddThemeFontSizeOverride("font_size", 24);
         toggle.Toggled += enabled =>
         {
             ShinGetterChunibyoConfigService.Current.ShowInMainMenu = enabled;
@@ -207,7 +250,8 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
                         "The entry will be hidden after restarting. Enter chunibyo on in the console to restore it."));
             }
         };
-        return toggle;
+        row.AddChild(toggle);
+        return row;
     }
 
     private Control BuildVoiceModeRow()
@@ -215,16 +259,19 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         var row = CreateSettingRow(Localize("SHIN_GETTER_CHUNIBYO.VOICE_AMOUNT", "Voice Amount"));
         _voiceModeDropdown = new OptionButton
         {
-            CustomMinimumSize = new Vector2(510f, 54f),
+            CustomMinimumSize = new Vector2(SettingControlWidth, 64f),
+            SizeFlagsHorizontal = SizeFlags.ShrinkEnd,
             FocusMode = FocusModeEnum.All,
         };
-        _voiceModeDropdown.AddThemeFontSizeOverride("font_size", 23);
-        _voiceModeDropdown.AddItem(Localize("SHIN_GETTER_CHUNIBYO.VOICE.SILENT", "Mature Professional"), (int)ShinGetterVoiceMode.Silent);
+        ApplyKreonFont(_voiceModeDropdown, OptionFontSize);
+        _voiceModeDropdown.AddItem(
+            StripColorTags(Localize("SHIN_GETTER_CHUNIBYO.VOICE.SILENT", "[white]Mature Professional[/white]")),
+            (int)ShinGetterVoiceMode.Silent);
         _voiceModeDropdown.AddItem(
             Localize("SHIN_GETTER_CHUNIBYO.VOICE.ONCE_PER_COMBAT", "I'm an adult, but hot blood still feels pretty good"),
             (int)ShinGetterVoiceMode.OncePerCombat);
         _voiceModeDropdown.AddItem(
-            StripRedTags(Localize("SHIN_GETTER_CHUNIBYO.VOICE.ALWAYS", "[red]Set Me Ablaze![/red]")),
+            StripColorTags(Localize("SHIN_GETTER_CHUNIBYO.VOICE.ALWAYS", "[red]Set Me Ablaze![/red]")),
             (int)ShinGetterVoiceMode.Always);
         _voiceModeDropdown.Select((int)ShinGetterChunibyoConfigService.Current.VoiceMode);
         UpdateVoiceModePresentation();
@@ -243,19 +290,20 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         var box = new VBoxContainer();
         box.AddThemeConstantOverride("separation", 4);
 
+        var row = CreateSettingRow(Localize("SHIN_GETTER_CHUNIBYO.EVENT_INVASION", "Event Invasion"));
         var toggle = new CheckButton
         {
-            Text = Localize("SHIN_GETTER_CHUNIBYO.EVENT_INVASION", "Event Invasion"),
             ButtonPressed = ShinGetterChunibyoConfigService.Current.EventInvasionEnabled,
-            CustomMinimumSize = new Vector2(0f, 52f),
+            CustomMinimumSize = new Vector2(SettingControlWidth, 64f),
+            SizeFlagsHorizontal = SizeFlags.ShrinkEnd,
         };
-        toggle.AddThemeFontSizeOverride("font_size", 24);
         toggle.Toggled += enabled =>
         {
             ShinGetterChunibyoConfigService.Current.EventInvasionEnabled = enabled;
             SaveConfigOrShowError();
         };
-        box.AddChild(toggle);
+        row.AddChild(toggle);
+        box.AddChild(row);
 
         var note = new Label
         {
@@ -263,8 +311,9 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
                 "SHIN_GETTER_CHUNIBYO.EVENT_INVASION_NOTE",
                 "Stores the global option for future event integration."),
             AutowrapMode = TextServer.AutowrapMode.WordSmart,
+            HorizontalAlignment = HorizontalAlignment.Left,
         };
-        note.AddThemeFontSizeOverride("font_size", 18);
+        ApplyKreonFont(note, NoteFontSize);
         note.AddThemeColorOverride("font_color", new Color(0.68f, 0.72f, 0.75f));
         box.AddChild(note);
 
@@ -275,7 +324,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
     {
         var section = new VBoxContainer();
         section.AddThemeConstantOverride("separation", 10);
-        section.AddChild(CreateHeading(Localize("SHIN_GETTER_CHUNIBYO.CARD_EXPORT", "Card Export"), 27));
+        section.AddChild(CreateHeading(Localize("SHIN_GETTER_CHUNIBYO.CARD_EXPORT", "Card Export"), 34));
 
         var pathRow = new HBoxContainer { SizeFlagsHorizontal = SizeFlags.ExpandFill };
         pathRow.AddThemeConstantOverride("separation", 12);
@@ -289,7 +338,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
             VerticalAlignment = VerticalAlignment.Center,
             TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis,
         };
-        _exportPathLabel.AddThemeFontSizeOverride("font_size", 19);
+        ApplyKreonFont(_exportPathLabel, 22);
         pathRow.AddChild(_exportPathLabel);
 
         pathRow.AddChild(CreateActionButton(
@@ -400,9 +449,12 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
             return;
 
         ShinGetterVoiceMode mode = ShinGetterChunibyoConfigService.Current.VoiceMode;
-        Color color = mode == ShinGetterVoiceMode.Always
-            ? new Color(0.96f, 0.28f, 0.2f)
-            : new Color(0.91f, 0.86f, 0.74f);
+        Color color = mode switch
+        {
+            ShinGetterVoiceMode.Silent => Colors.White,
+            ShinGetterVoiceMode.Always => new Color(0.96f, 0.28f, 0.2f),
+            _ => new Color(0.91f, 0.86f, 0.74f),
+        };
         _voiceModeDropdown.AddThemeColorOverride("font_color", color);
         _voiceModeDropdown.TooltipText = mode switch
         {
@@ -451,8 +503,12 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
 
     private static Label CreateHeading(string text, int fontSize)
     {
-        var label = new Label { Text = text };
-        label.AddThemeFontSizeOverride("font_size", fontSize);
+        var label = new Label
+        {
+            Text = text,
+            HorizontalAlignment = HorizontalAlignment.Left,
+        };
+        ApplyKreonFont(label, fontSize);
         label.AddThemeColorOverride("font_color", new Color(0.91f, 0.86f, 0.74f));
         return label;
     }
@@ -468,7 +524,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
     {
         var row = new HBoxContainer
         {
-            CustomMinimumSize = new Vector2(0f, 62f),
+            CustomMinimumSize = new Vector2(0f, 64f),
             SizeFlagsHorizontal = SizeFlags.ExpandFill,
         };
         row.AddThemeConstantOverride("separation", 18);
@@ -477,9 +533,10 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         {
             Text = labelText,
             SizeFlagsHorizontal = SizeFlags.ExpandFill,
+            HorizontalAlignment = HorizontalAlignment.Left,
             VerticalAlignment = VerticalAlignment.Center,
         };
-        label.AddThemeFontSizeOverride("font_size", 24);
+        ApplyKreonFont(label, SettingFontSize);
         row.AddChild(label);
         return row;
     }
@@ -492,9 +549,39 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
             CustomMinimumSize = new Vector2(190f, 52f),
             FocusMode = FocusModeEnum.All,
         };
-        button.AddThemeFontSizeOverride("font_size", 22);
+        ApplyKreonFont(button, ActionFontSize);
         button.Pressed += action;
         return button;
+    }
+
+    private static void AddSelectedModButtonStyles(Button button)
+    {
+        button.AddThemeStyleboxOverride("normal", CreateModButtonStyle(new Color(0.15f, 0.15f, 0.15f, 0.5f)));
+        button.AddThemeStyleboxOverride("hover", CreateModButtonStyle(new Color(0.2f, 0.2f, 0.2f, 0.65f)));
+        button.AddThemeStyleboxOverride("pressed", CreateModButtonStyle(new Color(0.2f, 0.2f, 0.2f, 0.7f)));
+        button.AddThemeStyleboxOverride("focus", CreateModButtonStyle(new Color(0.2f, 0.2f, 0.2f, 0.65f)));
+    }
+
+    private static StyleBoxFlat CreateModButtonStyle(Color background)
+    {
+        return new StyleBoxFlat
+        {
+            BgColor = background,
+            BorderColor = StsColors.gold,
+            BorderWidthLeft = 4,
+            CornerRadiusTopLeft = 8,
+            CornerRadiusTopRight = 8,
+            CornerRadiusBottomLeft = 8,
+            CornerRadiusBottomRight = 8,
+            ContentMarginLeft = 16f,
+            ContentMarginRight = 16f,
+        };
+    }
+
+    private static void ApplyKreonFont(Control control, int fontSize)
+    {
+        control.AddThemeFontOverride("font", PreloadManager.Cache.GetAsset<Font>(KreonFontPath));
+        control.AddThemeFontSizeOverride("font_size", fontSize);
     }
 
     private static void ShowPopup(string title, string body)
@@ -511,9 +598,11 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         return LocString.GetIfExists(LocTable, key)?.GetFormattedText() ?? fallback;
     }
 
-    private static string StripRedTags(string text)
+    private static string StripColorTags(string text)
     {
         return text
+            .Replace("[white]", string.Empty, StringComparison.OrdinalIgnoreCase)
+            .Replace("[/white]", string.Empty, StringComparison.OrdinalIgnoreCase)
             .Replace("[red]", string.Empty, StringComparison.OrdinalIgnoreCase)
             .Replace("[/red]", string.Empty, StringComparison.OrdinalIgnoreCase);
     }

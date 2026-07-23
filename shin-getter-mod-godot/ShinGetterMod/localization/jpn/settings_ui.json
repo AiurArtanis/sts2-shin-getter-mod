@@ -8,7 +8,7 @@
   "SHIN_GETTER_CHUNIBYO.HIDDEN_TITLE": "中二設定を非表示にしました",
   "SHIN_GETTER_CHUNIBYO.HIDDEN_BODY": "再起動後、メインメニューの項目は非表示になります。コンソールで chunibyo on と入力すると復元できます。",
   "SHIN_GETTER_CHUNIBYO.VOICE_AMOUNT": "台詞の量",
-  "SHIN_GETTER_CHUNIBYO.VOICE.SILENT": "もう立派な社会人だ。中二病とは無縁だ",
+  "SHIN_GETTER_CHUNIBYO.VOICE.SILENT": "[white]もう立派な社会人だ。中二病とは無縁だ[/white]",
   "SHIN_GETTER_CHUNIBYO.VOICE.SILENT_TOOLTIP": "台詞をすべて無効にします。変形効果音は再生されます。",
   "SHIN_GETTER_CHUNIBYO.VOICE.ONCE_PER_COMBAT": "大人になったが、熱血も悪くない",
   "SHIN_GETTER_CHUNIBYO.VOICE.ONCE_PER_COMBAT_TOOLTIP": "各台詞は戦闘ごとに一度だけ再生されます。",
