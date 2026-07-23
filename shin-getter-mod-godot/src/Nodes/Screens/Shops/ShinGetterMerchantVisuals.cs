@@ -11,10 +11,15 @@ namespace ShinGetterMod.Nodes.Screens.Shops;
 internal static class ShinGetterMerchantVisuals
 {
     private const string SpineSpriteName = "SpineSprite";
+    private const string GroundShadowName = "GroundShadow";
     private const string NormalSpriteName = "RyomaNormalSprite";
     private const string CitizenSpriteName = "RyomaCitizenSprite";
     private const float SpriteScale = 0.376f;
     private const float SpriteFootYOffset = 70f;
+    private const float ShadowWidth = 280f;
+    private const float ShadowHeight = 56f;
+    private const float ShadowCenterY = 70f;
+    private const float ShadowOpacity = 0.31f;
 
     public static void RefreshCurrentRoom()
     {
@@ -39,8 +44,23 @@ internal static class ShinGetterMerchantVisuals
             return;
 
         visual.GetNodeOrNull<CanvasItem>(SpineSpriteName)?.Hide();
+        ConfigureGroundShadow(visual.GetNodeOrNull<ColorRect>(GroundShadowName));
         SetSpriteState(normalSprite, !useCitizenTexture);
         SetSpriteState(citizenSprite, useCitizenTexture);
+    }
+
+    private static void ConfigureGroundShadow(ColorRect? shadow)
+    {
+        if (shadow == null)
+            return;
+
+        shadow.Visible = true;
+        shadow.Size = new Vector2(ShadowWidth, ShadowHeight);
+        shadow.Position = new Vector2(-ShadowWidth * 0.5f, ShadowCenterY - ShadowHeight * 0.5f);
+        shadow.Rotation = -0.025f;
+
+        if (shadow.Material is ShaderMaterial shadowMaterial)
+            shadowMaterial.SetShaderParameter("shadow_opacity", ShadowOpacity);
     }
 
     private static void SetSpriteState(Sprite2D? sprite, bool visible)
