@@ -27,22 +27,26 @@ public sealed class SGC_GetterMissile : ShinGetterCardBase
         await ShinGetterCombatVfx.PlayBurningGrowl(Owner.Creature);
         for (int i = 0; i < 4; i++)
         {
-            if (CombatManager.Instance.IsOverOrEnding || !HasLivingEnemyTargets())
+            if (CombatManager.Instance.IsOverOrEnding || !HasHittableEnemyTargets())
                 break;
 
-            var candidates = GetLivingMissileTargets();
+            var candidates = GetHittableMissileTargets();
             if (candidates.Count == 0)
                 break;
 
             var target = Owner.RunState.Rng.CombatTargets.NextItem(candidates);
+            var dealer = target == Owner.Creature ? null : Owner.Creature;
             var results = await CreatureCmd.Damage(
                 choiceContext,
                 target,
                 DynamicVars.Damage.BaseValue,
                 ValueProp.Move,
-                Owner.Creature,
+                dealer,
                 this,
                 cardPlay);
+            if (CombatManager.Instance.IsOverOrEnding || Owner.Creature.IsDead)
+                break;
+
             if (target == Owner.Creature && HasForm(Owner, ShinGetterForm.Getter3))
             {
                 decimal damageTaken = results.Sum(result => result.TotalDamage);
@@ -50,16 +54,16 @@ public sealed class SGC_GetterMissile : ShinGetterCardBase
                     await CreatureCmd.GainBlock(Owner.Creature, damageTaken, ValueProp.Unpowered, cardPlay);
             }
 
-            if (i < 3 && HasLivingEnemyTargets())
+            if (i < 3 && HasHittableEnemyTargets())
                 await PlayAcceleratedFollowupAnimation();
         }
     }
 
-    private bool HasLivingEnemyTargets() =>
-        CombatState.GetOpponentsOf(Owner.Creature).Any(creature => creature.IsAlive);
+    private bool HasHittableEnemyTargets() =>
+        CombatState.GetOpponentsOf(Owner.Creature).Any(creature => creature.IsHittable);
 
-    private List<Creature> GetLivingMissileTargets() =>
-        CombatState.Creatures.Where(creature => creature.IsAlive).ToList();
+    private List<Creature> GetHittableMissileTargets() =>
+        CombatState.Creatures.Where(creature => creature.IsHittable).ToList();
 
     protected override void OnUpgrade()
     {
