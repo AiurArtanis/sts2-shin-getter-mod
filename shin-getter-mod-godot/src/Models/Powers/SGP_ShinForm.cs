@@ -33,7 +33,7 @@ public sealed class SGP_ShinForm : PowerModel
         {
             await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), Owner, -2m, Owner, null);
             await PowerCmd.Apply<DexterityPower>(new ThrowingPlayerChoiceContext(), Owner, -2m, Owner, null);
-            NShinGetterStaticVisuals.ShowShinDragon(Owner);
+            await NShinGetterStaticVisuals.ShowShinDragon(Owner);
             ShinGetterCardFramePatch.RefreshVisibleCards();
         }
     }

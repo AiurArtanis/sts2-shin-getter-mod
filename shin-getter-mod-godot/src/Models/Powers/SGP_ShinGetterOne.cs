@@ -30,7 +30,8 @@ public sealed class SGP_ShinGetterOne : PowerModel
         {
             Flash();
             await PowerCmd.Apply<VigorPower>(new ThrowingPlayerChoiceContext(), base.Owner, 1m, base.Owner, null);
-            NShinGetterStaticVisuals.ShowForm(base.Owner, ShinGetterForm.Getter1);
+            float speedScale = cardSource is SGC_ChangeAttack ? SGC_ChangeAttack.TransformSpeedScale : 1f;
+            await NShinGetterStaticVisuals.ShowForm(base.Owner, ShinGetterForm.Getter1, speedScale: speedScale);
             ShinGetterCardFramePatch.RefreshVisibleCards();
         }
     }
