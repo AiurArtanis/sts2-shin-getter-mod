@@ -147,12 +147,12 @@ const REQUIRED_RESOURCES := {
 	"res://scenes/combat/energy_counters/shin_getter_energy_counter.tscn": true,
 	"res://scenes/ui/character_icons/shin_getter_icon.tscn": false,
 	"res://scenes/merchant/characters/shin_getter_merchant.tscn": true,
+	"res://scenes/rest_site/characters/shin_getter_rest_site.tscn": true,
 }
 
 const EXISTS_ONLY_RESOURCES := [
 	# These scenes reference the mod DLL, which is loaded only during the later game-load validation.
 	"res://scenes/screens/char_select/char_select_bg_shin_getter.tscn",
-	"res://scenes/rest_site/characters/shin_getter_rest_site.tscn",
 	"res://ShinGetterMod.json",
 	"res://ShinGetterMod/localization/eng/cards.json",
 	"res://ShinGetterMod/localization/eng/main_menu_ui.json",
@@ -248,8 +248,45 @@ func _initialize() -> void:
 			if REQUIRED_RESOURCES[path] and instance.get_script() == null:
 				push_error("Instantiated scene has no root script: %s" % path)
 				failed = true
+			if not _validate_issue_5_scene(path, instance):
+				failed = true
 			instance.free()
 
 		print("MOD_RESOURCE_OK: %s" % path)
 
 	quit(1 if failed else 0)
+
+
+func _validate_issue_5_scene(path: String, instance: Node) -> bool:
+	if path == "res://scenes/merchant/characters/shin_getter_merchant.tscn":
+		return _require_nodes(path, instance, [
+			"GroundShadow",
+			"RyomaNormalSprite",
+			"RyomaCitizenSprite",
+		])
+
+	if path == "res://scenes/rest_site/characters/shin_getter_rest_site.tscn":
+		var valid := _require_nodes(path, instance, [
+			"ControlRoot/GroundShadow",
+			"ControlRoot/RyomaRestSprite",
+			"ControlRoot/Hitbox",
+			"ControlRoot/SelectionReticle",
+			"ControlRoot/ThoughtBubbleLeft",
+			"ControlRoot/ThoughtBubbleRight",
+		])
+		var root_script := instance.get_script() as Script
+		if root_script == null or root_script.resource_path != "res://src/Core/Nodes/RestSite/NRestSiteCharacter.cs":
+			push_error("Rest-site scene must preserve the original NRestSiteCharacter root script: %s" % path)
+			valid = false
+		return valid
+
+	return true
+
+
+func _require_nodes(path: String, instance: Node, node_paths: Array[String]) -> bool:
+	var valid := true
+	for node_path in node_paths:
+		if instance.get_node_or_null(node_path) == null:
+			push_error("Mod scene %s is missing required node: %s" % [path, node_path])
+			valid = false
+	return valid

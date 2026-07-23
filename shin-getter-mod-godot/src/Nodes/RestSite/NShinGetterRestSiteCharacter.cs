@@ -1,10 +1,13 @@
 #nullable enable
 using Godot;
+using HarmonyLib;
 using MegaCrit.Sts2.Core.Nodes.RestSite;
+using ShinGetterMod.Models.Characters;
 
 namespace ShinGetterMod.Nodes.RestSite;
 
-public partial class NShinGetterRestSiteCharacter : NRestSiteCharacter
+[HarmonyPatch(typeof(NRestSiteCharacter), nameof(NRestSiteCharacter._Ready))]
+internal static class ShinGetterRestSiteCharacterPatch
 {
     private readonly record struct SeatPresentation(
         float LightStrength,
@@ -22,14 +25,17 @@ public partial class NShinGetterRestSiteCharacter : NRestSiteCharacter
         new(0.43f, 0.68f, 4.1f, 460f, -35f, 0.33f),
     };
 
-    public override void _Ready()
+    private static void Postfix(NRestSiteCharacter __instance)
     {
-        base._Ready();
+        if (__instance.Player.Character is not ShinGetter)
+            return;
 
-        int seatIndex = ResolveSeatIndex();
-        SeatPresentation presentation = SeatPresentations[seatIndex];
+        Sprite2D? sprite = __instance.GetNodeOrNull<Sprite2D>("%RyomaRestSprite");
+        ColorRect? shadow = __instance.GetNodeOrNull<ColorRect>("%GroundShadow");
+        if (sprite == null || shadow == null)
+            return;
 
-        Sprite2D sprite = GetNode<Sprite2D>("%RyomaRestSprite");
+        SeatPresentation presentation = SeatPresentations[ResolveSeatIndex(__instance)];
         if (sprite.Material is ShaderMaterial firelightMaterial)
         {
             firelightMaterial.SetShaderParameter("light_strength", presentation.LightStrength);
@@ -37,7 +43,6 @@ public partial class NShinGetterRestSiteCharacter : NRestSiteCharacter
             firelightMaterial.SetShaderParameter("flicker_phase", presentation.FlickerPhase);
         }
 
-        ColorRect shadow = GetNode<ColorRect>("%GroundShadow");
         shadow.Size = new Vector2(presentation.ShadowWidth, 96f);
         shadow.Position = new Vector2(
             -presentation.ShadowWidth * 0.5f + presentation.ShadowOffsetX,
@@ -48,9 +53,9 @@ public partial class NShinGetterRestSiteCharacter : NRestSiteCharacter
             shadowMaterial.SetShaderParameter("shadow_opacity", presentation.ShadowOpacity);
     }
 
-    private int ResolveSeatIndex()
+    private static int ResolveSeatIndex(NRestSiteCharacter character)
     {
-        string parentName = GetParent()?.Name.ToString() ?? string.Empty;
+        string parentName = character.GetParent()?.Name.ToString() ?? string.Empty;
         for (int i = 0; i < SeatPresentations.Length; i++)
         {
             if (parentName.EndsWith((i + 1).ToString(), System.StringComparison.Ordinal))
