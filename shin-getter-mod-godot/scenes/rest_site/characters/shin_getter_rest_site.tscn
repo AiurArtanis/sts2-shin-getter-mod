@@ -1,5 +1,75 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=8 format=3]
 
-[ext_resource type="PackedScene" path="res://scenes/rest_site/characters/ironclad_rest_site.tscn" id="1_base"]
+[ext_resource type="Script" path="res://src/Nodes/RestSite/NShinGetterRestSiteCharacter.cs" id="1_script"]
+[ext_resource type="Texture2D" path="res://images/characters/shin_getter/rest/s_g_o_ryoma_rest.png" id="2_ryoma"]
+[ext_resource type="Shader" path="res://shaders/shin_getter_rest_firelight.gdshader" id="3_firelight"]
+[ext_resource type="Shader" path="res://shaders/shin_getter_rest_shadow.gdshader" id="4_shadow"]
+[ext_resource type="PackedScene" uid="uid://bgy88bk44xxvk" path="res://scenes/ui/selection_reticle.tscn" id="5_reticle"]
 
-[node name="ShinGetterRestSite" instance=ExtResource("1_base")]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_firelight"]
+resource_local_to_scene = true
+shader = ExtResource("3_firelight")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_shadow"]
+resource_local_to_scene = true
+shader = ExtResource("4_shadow")
+
+[node name="ShinGetterRestSite" type="Node2D"]
+position = Vector2(-2, 42)
+scale = Vector2(0.760006, 0.760006)
+script = ExtResource("1_script")
+
+[node name="ControlRoot" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+
+[node name="GroundShadow" type="ColorRect" parent="ControlRoot"]
+unique_name_in_owner = true
+z_index = -1
+material = SubResource("ShaderMaterial_shadow")
+offset_left = -239.0
+offset_top = -32.0
+offset_right = 191.0
+offset_bottom = 64.0
+mouse_filter = 2
+
+[node name="RyomaRestSprite" type="Sprite2D" parent="ControlRoot"]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_firelight")
+position = Vector2(0, -308)
+scale = Vector2(0.45, 0.45)
+texture = ExtResource("2_ryoma")
+
+[node name="SelectionReticle" parent="ControlRoot" instance=ExtResource("5_reticle")]
+unique_name_in_owner = true
+offset_left = -275.0
+offset_top = -630.0
+offset_right = 275.0
+offset_bottom = 30.0
+
+[node name="Hitbox" type="Control" parent="ControlRoot"]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 0
+offset_left = -275.0
+offset_top = -630.0
+offset_right = 275.0
+offset_bottom = 30.0
+
+[node name="ThoughtBubbleRight" type="Control" parent="ControlRoot"]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 0
+offset_left = 190.0
+offset_top = -455.0
+offset_right = 190.0
+offset_bottom = -455.0
+
+[node name="ThoughtBubbleLeft" type="Control" parent="ControlRoot"]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 0
+offset_left = -190.0
+offset_top = -455.0
+offset_right = -190.0
+offset_bottom = -455.0

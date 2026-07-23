@@ -136,6 +136,9 @@ const REQUIRED_RESOURCES := {
 	"res://images/characters/shin_getter/forms/shin_getter_dragon_block/sprite_000121.png": false,
 	"res://images/characters/shin_getter/merchant/s_g_o_merchant_ryoma_citizen.png": false,
 	"res://images/characters/shin_getter/merchant/s_g_o_merchant_ryoma_normal.png": false,
+	"res://images/characters/shin_getter/rest/s_g_o_ryoma_rest.png": false,
+	"res://shaders/shin_getter_rest_firelight.gdshader": false,
+	"res://shaders/shin_getter_rest_shadow.gdshader": false,
 	"res://scenes/creature_visuals/shin_getter.tscn": true,
 	"res://scenes/creature_visuals/shin_getter_one_idle_frames.tres": false,
 	"res://scenes/creature_visuals/shin_getter_three_idle_frames.tres": false,
@@ -144,12 +147,12 @@ const REQUIRED_RESOURCES := {
 	"res://scenes/combat/energy_counters/shin_getter_energy_counter.tscn": true,
 	"res://scenes/ui/character_icons/shin_getter_icon.tscn": false,
 	"res://scenes/merchant/characters/shin_getter_merchant.tscn": true,
-	"res://scenes/rest_site/characters/shin_getter_rest_site.tscn": true,
 }
 
 const EXISTS_ONLY_RESOURCES := [
-	# This scene references the mod DLL, which is loaded only during the later game-load validation.
+	# These scenes reference the mod DLL, which is loaded only during the later game-load validation.
 	"res://scenes/screens/char_select/char_select_bg_shin_getter.tscn",
+	"res://scenes/rest_site/characters/shin_getter_rest_site.tscn",
 	"res://ShinGetterMod.json",
 	"res://ShinGetterMod/localization/eng/cards.json",
 	"res://ShinGetterMod/localization/eng/main_menu_ui.json",
