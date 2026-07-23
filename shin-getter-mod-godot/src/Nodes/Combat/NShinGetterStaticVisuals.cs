@@ -59,6 +59,27 @@ public static class NShinGetterStaticVisuals
         return TryPlayVisibleFormActionAnimation(creatureNode, trigger);
     }
 
+    public static float PlayGetterDeathAnimation(NCreature creatureNode)
+    {
+        if (!TryGetVisibleFormAnimation(creatureNode, out FormAnimation formAnimation))
+            return 0f;
+
+        AnimatedSprite2D sprite = formAnimation.Sprite;
+        if (!TryPlayVisibleActionAnimation(sprite, "Dead", formAnimation.EnsureLoaded)
+            || sprite.SpriteFrames is not { } frames)
+        {
+            return 0f;
+        }
+
+        StringName animation = sprite.Animation;
+        int frameCount = frames.GetFrameCount(animation);
+        double framesPerSecond = frames.GetAnimationSpeed(animation);
+        float speedScale = Math.Max(0.05f, Math.Abs(sprite.SpeedScale));
+        return framesPerSecond > 0.0
+            ? (float)(frameCount / framesPerSecond / speedScale)
+            : 0f;
+    }
+
     public static bool QueueNextActionSpeed(Creature creature, float speedScale)
     {
         var creatureNode = NCombatRoom.Instance?.GetCreatureNode(creature);
