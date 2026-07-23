@@ -8,7 +8,7 @@
   "SHIN_GETTER_CHUNIBYO.HIDDEN_TITLE": "Chunibyo Config entry hidden",
   "SHIN_GETTER_CHUNIBYO.HIDDEN_BODY": "The main-menu entry will be hidden after restarting. Enter chunibyo on in the console to restore it.",
   "SHIN_GETTER_CHUNIBYO.VOICE_AMOUNT": "Voice Amount",
-  "SHIN_GETTER_CHUNIBYO.VOICE.SILENT": "I'm a mature professional; chunibyo has nothing to do with me",
+  "SHIN_GETTER_CHUNIBYO.VOICE.SILENT": "[white]I'm a mature professional; chunibyo has nothing to do with me[/white]",
   "SHIN_GETTER_CHUNIBYO.VOICE.SILENT_TOOLTIP": "Disables voice lines. Transformation sound effects remain enabled.",
   "SHIN_GETTER_CHUNIBYO.VOICE.ONCE_PER_COMBAT": "I'm an adult, but hot blood still feels pretty good",
   "SHIN_GETTER_CHUNIBYO.VOICE.ONCE_PER_COMBAT_TOOLTIP": "Each voice line plays at most once per combat.",
