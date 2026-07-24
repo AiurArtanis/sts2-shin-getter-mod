@@ -251,7 +251,7 @@ internal static class ShinGetterVoiceService
             _ => null,
         };
 
-    internal static void PlayTransform(Player player, ShinGetterForm targetForm)
+    internal static Task PlayTransform(Player player, ShinGetterForm targetForm)
     {
         PlayAudio(TransformSfxPath);
 
@@ -263,8 +263,13 @@ internal static class ShinGetterVoiceService
             _ => null,
         };
 
-        if (cue is { } value)
-            TryPlayOneTime(player, Lines[value]);
+        if (cue is not { } value
+            || !TryPlayOneTime(player, Lines[value], out float durationSeconds))
+        {
+            return Task.CompletedTask;
+        }
+
+        return Cmd.Wait(durationSeconds);
     }
 
     internal static void PlayShinDragonTransform(Player player)
@@ -335,8 +340,12 @@ internal static class ShinGetterVoiceService
         TryPlayAudio(path, volume);
     }
 
-    private static bool TryPlayAudio(string path, float volume = 1f)
+    private static bool TryPlayAudio(string path, float volume = 1f) =>
+        TryPlayAudio(path, out _, volume);
+
+    private static bool TryPlayAudio(string path, out float durationSeconds, float volume = 1f)
     {
+        durationSeconds = 0f;
         if (NonInteractiveMode.IsActive)
             return false;
 
@@ -356,15 +365,20 @@ internal static class ShinGetterVoiceService
         audioPlayer.Finished += audioPlayer.QueueFree;
         sceneTree.Root.AddChild(audioPlayer);
         audioPlayer.Play();
+        durationSeconds = (float)stream.GetLength();
         return true;
     }
 
-    private static bool TryPlayOneTime(Player player, VoiceLine line)
+    private static bool TryPlayOneTime(Player player, VoiceLine line) =>
+        TryPlayOneTime(player, line, out _);
+
+    private static bool TryPlayOneTime(Player player, VoiceLine line, out float durationSeconds)
     {
+        durationSeconds = 0f;
         if (!TryClaimVoiceCue(player, line.Cue))
             return false;
 
-        if (!TryPlayAudio(AudioRoot + line.AudioFile))
+        if (!TryPlayAudio(AudioRoot + line.AudioFile, out durationSeconds))
             return false;
 
         PlaySubtitle(player, line.LocalizationKey);
