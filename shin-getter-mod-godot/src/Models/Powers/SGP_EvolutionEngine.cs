@@ -20,6 +20,7 @@ public sealed class SGP_EvolutionEngine : PowerModel
     private class Data
     {
         public bool pendingEnergyGain;
+        public int markedTurnNumber;
     }
 
     public override PowerType Type => PowerType.Buff;
@@ -35,8 +36,12 @@ public sealed class SGP_EvolutionEngine : PowerModel
         if (!participants.Contains(Owner) || Owner.Player is not { } player)
             return;
 
+        var playerCombatState = player.PlayerCombatState;
+        if (playerCombatState == null)
+            return;
+
         var data = GetInternalData<Data>();
-        if (data.pendingEnergyGain)
+        if (data.pendingEnergyGain && playerCombatState.TurnNumber > data.markedTurnNumber)
         {
             data.pendingEnergyGain = false;
             Flash();
@@ -49,6 +54,8 @@ public sealed class SGP_EvolutionEngine : PowerModel
     /// </summary>
     public void MarkPendingEnergyGain()
     {
-        GetInternalData<Data>().pendingEnergyGain = true;
+        var data = GetInternalData<Data>();
+        data.pendingEnergyGain = true;
+        data.markedTurnNumber = Owner.Player?.PlayerCombatState?.TurnNumber ?? int.MaxValue;
     }
 }

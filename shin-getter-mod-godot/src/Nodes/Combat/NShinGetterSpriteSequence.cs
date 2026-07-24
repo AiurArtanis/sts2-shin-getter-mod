@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Godot;
@@ -12,6 +11,8 @@ namespace ShinGetterMod.Nodes.Combat;
 internal static class NShinGetterSpriteSequence
 {
     private const int MaxCachedActionAnimations = 2;
+    private const int FrameSize = 720;
+    private const string SpriteSheetFileName = "sprite_sheet.png";
 
     private static readonly (string Directory, int MaxFrames)[] StartupPreloadSources =
     {
@@ -89,7 +90,7 @@ internal static class NShinGetterSpriteSequence
     public const double FramesPerSecond = IdleFramesPerSecond;
 
     public static IEnumerable<string> GetStartupPreloadResourcePaths() =>
-        StartupPreloadSources.SelectMany(source => GetFrameResourcePaths(source.Directory, source.MaxFrames));
+        StartupPreloadSources.Select(source => GetSpriteSheetResourcePath(source.Directory));
 
     public static void EnsureLoaded(AnimatedSprite2D sprite, string animationName)
     {
@@ -316,45 +317,46 @@ internal static class NShinGetterSpriteSequence
 
     private static Texture2D[] LoadTextures(string frameDirectory, int maxFrames)
     {
-        return GetFrameResourcePaths(frameDirectory, maxFrames)
-            .Select(path => ResourceLoader.Load<Texture2D>(path, null, ResourceLoader.CacheMode.Reuse))
-            .Where(texture => texture != null)
-            .Cast<Texture2D>()
-            .ToArray();
-    }
-
-    private static string[] GetFrameResourcePaths(string frameDirectory, int maxFrames)
-    {
-        using DirAccess? directory = DirAccess.Open(frameDirectory);
-        if (directory == null)
+        string sheetPath = GetSpriteSheetResourcePath(frameDirectory);
+        Texture2D? sheet = ResourceLoader.Load<Texture2D>(sheetPath, null, ResourceLoader.CacheMode.Reuse);
+        if (sheet == null)
         {
-            GD.PushWarning($"Shin Getter sprite sequence directory missing: {frameDirectory}");
-            return Array.Empty<string>();
+            GD.PushWarning($"Shin Getter sprite sheet missing: {sheetPath}");
+            return Array.Empty<Texture2D>();
         }
 
-        string normalizedDirectory = frameDirectory.TrimEnd('/');
-        return directory.GetFiles()
-            .Where(IsFrameResourceFile)
-            .Select(NormalizeFrameResourceFile)
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .OrderBy(Path.GetFileName, StringComparer.OrdinalIgnoreCase)
-            .Take(maxFrames)
-            .Select(frameFile => $"{normalizedDirectory}/{frameFile}")
+        int sheetWidth = sheet.GetWidth();
+        int sheetHeight = sheet.GetHeight();
+        if (sheetWidth % FrameSize != 0 || sheetHeight % FrameSize != 0)
+        {
+            GD.PushWarning($"Shin Getter sprite sheet has an invalid cell grid: {sheetPath}, size={sheetWidth}x{sheetHeight}");
+            return Array.Empty<Texture2D>();
+        }
+
+        int columns = sheetWidth / FrameSize;
+        int rows = sheetHeight / FrameSize;
+        if (columns * rows < maxFrames)
+        {
+            GD.PushWarning($"Shin Getter sprite sheet has insufficient cells: {sheetPath}, cells={columns * rows}, expected={maxFrames}");
+            return Array.Empty<Texture2D>();
+        }
+
+        return Enumerable.Range(0, maxFrames)
+            .Select(index => (Texture2D)new AtlasTexture
+            {
+                Atlas = sheet,
+                Region = new Rect2(
+                    index % columns * FrameSize,
+                    index / columns * FrameSize,
+                    FrameSize,
+                    FrameSize),
+                FilterClip = true,
+            })
             .ToArray();
     }
 
-    private static bool IsFrameResourceFile(string file) =>
-        file.StartsWith("sprite_", StringComparison.OrdinalIgnoreCase)
-        && (file.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
-            || file.EndsWith(".png.remap", StringComparison.OrdinalIgnoreCase)
-            || file.EndsWith(".png.import", StringComparison.OrdinalIgnoreCase));
-
-    private static string NormalizeFrameResourceFile(string file) =>
-        file.EndsWith(".remap", StringComparison.OrdinalIgnoreCase)
-            ? file[..^".remap".Length]
-            : file.EndsWith(".import", StringComparison.OrdinalIgnoreCase)
-                ? file[..^".import".Length]
-            : file;
+    private static string GetSpriteSheetResourcePath(string frameDirectory) =>
+        $"{frameDirectory.TrimEnd('/')}/{SpriteSheetFileName}";
 
     private static void AddPingPongFrames(SpriteFrames frames, StringName animationKey, Texture2D[] textures)
     {

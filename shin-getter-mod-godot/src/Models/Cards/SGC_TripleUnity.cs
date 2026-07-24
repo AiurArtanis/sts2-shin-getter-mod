@@ -12,13 +12,13 @@ namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
 /// 三体同心 | 技能 | 罕见 | 1费 | 进化流
-/// 接下来打出的 2 张牌，每张打出后变形
+/// 接下来打出的 3 张牌，每张打出后变形
 /// </summary>
 public sealed class SGC_TripleUnity : ShinGetterCardBase
 {
     protected override IEnumerable<IHoverTip> ExtraHoverTips => WithContextualHoverTips(new IHoverTip[] { HoverTipFactory.FromPower<SGP_TripleUnity>() });
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new PowerVar<SGP_TripleUnity>(2m) };
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new PowerVar<SGP_TripleUnity>(3m) };
 
     public SGC_TripleUnity()
         : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
