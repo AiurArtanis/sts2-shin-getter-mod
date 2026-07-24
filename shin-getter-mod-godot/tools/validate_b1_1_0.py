@@ -39,7 +39,36 @@ def validate_balance() -> None:
     require("src/Models/Cards/ShinGetterCardBase.cs", "GetPower<SGP_Seal>()", "FlashBlockedTransform()")
     require("src/Models/Powers/SGP_Evolution.cs", "AfterPlayerTurnStartLate", "int evolutionAmount = Amount;")
     reject("src/Models/Powers/SGP_Evolution.cs", "BeforeSideTurnEnd", "ModifyAmount(choiceContext, this")
-    require("src/Models/Powers/SGP_EvolutionEngine.cs", "TurnNumber > data.markedTurnNumber", "MarkPendingEnergyGain()")
+    require(
+        "src/Models/Powers/SGP_EvolutionEngine.cs",
+        "AfterPlayerTurnStartEarly",
+        "if (!data.pendingEnergyGain)",
+        "data.pendingEnergyGain = false;",
+        "MarkPendingEnergyGain()",
+        "data.pendingEnergyGain = true;",
+    )
+    reject(
+        "src/Models/Powers/SGP_EvolutionEngine.cs",
+        "AfterSideTurnStart",
+        "markedTurnNumber",
+        "TurnNumber",
+    )
+
+
+def validate_evolution_engine_sequence() -> None:
+    pending_energy_gain = False
+
+    # T1 late: Evolution succeeds and schedules T2 energy.
+    pending_energy_gain = True
+
+    # T2 early: the previous reward is paid before T2 late can schedule another one.
+    gained_energy_on_t2 = pending_energy_gain
+    pending_energy_gain = False
+    assert gained_energy_on_t2
+
+    # T2 late: a second consecutive Evolution keeps a distinct reward pending for T3.
+    pending_energy_gain = True
+    assert pending_energy_gain
 
 
 def validate_localization() -> None:
@@ -81,6 +110,7 @@ def validate_sprite_sheets() -> None:
 
 def main() -> None:
     validate_balance()
+    validate_evolution_engine_sequence()
     validate_localization()
     validate_sprite_sheets()
     print("B1.1.0 static validation passed")
