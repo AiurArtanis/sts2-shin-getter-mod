@@ -15,7 +15,7 @@ shader = ExtResource("4_shadow")
 visible = false
 
 [node name="GroundShadow" type="ColorRect" parent="."]
-z_index = -1
+z_index = 0
 material = SubResource("ShaderMaterial_shadow")
 offset_left = -140.0
 offset_top = 42.0
@@ -24,12 +24,14 @@ offset_bottom = 98.0
 mouse_filter = 2
 
 [node name="RyomaNormalSprite" type="Sprite2D" parent="."]
+z_index = 1
 position = Vector2(0, -193.576)
 texture = ExtResource("2_normal")
 scale = Vector2(0.376, 0.376)
 
 [node name="RyomaCitizenSprite" type="Sprite2D" parent="."]
 visible = false
+z_index = 1
 position = Vector2(0, -188.124)
 texture = ExtResource("3_citizen")
 scale = Vector2(0.376, 0.376)

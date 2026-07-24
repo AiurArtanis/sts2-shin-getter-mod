@@ -2,6 +2,7 @@
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Nodes.RestSite;
+using MegaCrit.Sts2.Core.Nodes.Rooms;
 using ShinGetterMod.Models.Characters;
 
 namespace ShinGetterMod.Nodes.RestSite;
@@ -57,6 +58,59 @@ internal static class ShinGetterRestSiteCharacterPatch
     {
         string parentName = character.GetParent()?.Name.ToString() ?? string.Empty;
         for (int i = 0; i < SeatPresentations.Length; i++)
+        {
+            if (parentName.EndsWith((i + 1).ToString(), System.StringComparison.Ordinal))
+                return i;
+        }
+
+        return 0;
+    }
+}
+
+[HarmonyPatch(typeof(NRestSiteRoom), nameof(NRestSiteRoom._Ready))]
+internal static class ShinGetterRestSiteRoomPatch
+{
+    private static readonly Vector2 RyomaGroundPosition = new(550f, 770f);
+
+    private static void Postfix(NRestSiteRoom __instance)
+    {
+        NRestSiteCharacter? displayedRyoma = null;
+        foreach (NRestSiteCharacter character in __instance.characterAnims)
+        {
+            if (character.Player.Character is not ShinGetter)
+                continue;
+
+            bool shouldDisplay = displayedRyoma == null;
+            SetRyomaVisible(character, shouldDisplay);
+            if (shouldDisplay)
+                displayedRyoma = character;
+        }
+
+        if (displayedRyoma == null)
+            return;
+
+        int seatIndex = ResolveSeatIndex(displayedRyoma);
+        if (seatIndex % 2 == 1)
+            displayedRyoma.FlipX();
+
+        if (displayedRyoma.GetParent() is Control seatContainer)
+            seatContainer.Position = RyomaGroundPosition;
+    }
+
+    private static void SetRyomaVisible(NRestSiteCharacter character, bool visible)
+    {
+        Sprite2D? sprite = character.GetNodeOrNull<Sprite2D>("%RyomaRestSprite");
+        ColorRect? shadow = character.GetNodeOrNull<ColorRect>("%GroundShadow");
+        if (sprite != null)
+            sprite.Visible = visible;
+        if (shadow != null)
+            shadow.Visible = visible;
+    }
+
+    private static int ResolveSeatIndex(NRestSiteCharacter character)
+    {
+        string parentName = character.GetParent()?.Name.ToString() ?? string.Empty;
+        for (int i = 0; i < 4; i++)
         {
             if (parentName.EndsWith((i + 1).ToString(), System.StringComparison.Ordinal))
                 return i;

@@ -20,7 +20,7 @@ visible = false
 
 [node name="GroundShadow" type="ColorRect" parent="ControlRoot"]
 unique_name_in_owner = true
-z_index = -1
+z_index = 0
 material = SubResource("ShaderMaterial_shadow")
 offset_left = -239.0
 offset_top = -32.0
@@ -30,6 +30,7 @@ mouse_filter = 2
 
 [node name="RyomaRestSprite" type="Sprite2D" parent="ControlRoot"]
 unique_name_in_owner = true
+z_index = 1
 material = SubResource("ShaderMaterial_firelight")
 position = Vector2(0, -308)
 scale = Vector2(0.45, 0.45)
