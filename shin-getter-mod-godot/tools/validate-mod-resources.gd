@@ -259,11 +259,16 @@ func _initialize() -> void:
 
 func _validate_issue_5_scene(path: String, instance: Node) -> bool:
 	if path == "res://scenes/merchant/characters/shin_getter_merchant.tscn":
-		return _require_nodes(path, instance, [
+		var valid := _require_nodes(path, instance, [
 			"GroundShadow",
 			"RyomaNormalSprite",
 			"RyomaCitizenSprite",
 		])
+		return _require_visible_shadow_layer(
+			path,
+			instance.get_node_or_null("GroundShadow"),
+			instance.get_node_or_null("RyomaNormalSprite")
+		) and valid
 
 	if path == "res://scenes/rest_site/characters/shin_getter_rest_site.tscn":
 		var valid := _require_nodes(path, instance, [
@@ -278,6 +283,11 @@ func _validate_issue_5_scene(path: String, instance: Node) -> bool:
 		if root_script == null or root_script.resource_path != "res://src/Core/Nodes/RestSite/NRestSiteCharacter.cs":
 			push_error("Rest-site scene must preserve the original NRestSiteCharacter root script: %s" % path)
 			valid = false
+		valid = _require_visible_shadow_layer(
+			path,
+			instance.get_node_or_null("ControlRoot/GroundShadow"),
+			instance.get_node_or_null("ControlRoot/RyomaRestSprite")
+		) and valid
 		return valid
 
 	return true
@@ -290,3 +300,12 @@ func _require_nodes(path: String, instance: Node, node_paths: Array[String]) -> 
 			push_error("Mod scene %s is missing required node: %s" % [path, node_path])
 			valid = false
 	return valid
+
+
+func _require_visible_shadow_layer(path: String, shadow: CanvasItem, sprite: CanvasItem) -> bool:
+	if shadow == null or sprite == null:
+		return false
+	if shadow.z_index < 0 or shadow.z_index >= sprite.z_index:
+		push_error("Mod scene %s must render its ground shadow above the room background and below the character" % path)
+		return false
+	return true
