@@ -45,6 +45,12 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         ConnectSignals();
     }
 
+    public override void OnSubmenuOpened()
+    {
+        base.OnSubmenuOpened();
+        _initialFocus?.CallDeferred(Control.MethodName.GrabFocus);
+    }
+
     private void BuildInterface()
     {
         var shade = new ColorRect
