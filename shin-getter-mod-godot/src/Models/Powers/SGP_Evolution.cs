@@ -1,11 +1,10 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
@@ -15,7 +14,7 @@ using MegaCrit.Sts2.Core.Models.Powers;
 namespace ShinGetterMod.Models.Powers;
 
 /// <summary>
-/// 进化。回合结束时消耗全部进化，分别将不超过进化层数的活力/再生/覆甲转化为永久成长。
+/// 进化。回合开始时在气力之后，分别将不超过进化层数的活力/再生/覆甲转化为永久成长。
 /// </summary>
 public sealed class SGP_Evolution : PowerModel
 {
@@ -44,12 +43,11 @@ public sealed class SGP_Evolution : PowerModel
             silent: true);
     }
 
-    public override async Task BeforeSideTurnEnd(
+    public override async Task AfterPlayerTurnStartLate(
         PlayerChoiceContext choiceContext,
-        CombatSide side,
-        IEnumerable<Creature> participants)
+        Player player)
     {
-        if (!participants.Contains(Owner) || Owner.IsDead || Amount <= 0)
+        if (player.Creature != Owner || Owner.IsDead || Amount <= 0)
             return;
 
         var vigor = Owner.GetPower<VigorPower>();
@@ -69,7 +67,6 @@ public sealed class SGP_Evolution : PowerModel
         await ConsumePower(choiceContext, vigor, strengthGain);
         await ConsumePower(choiceContext, regen, maxHpGain);
         await ConsumePower(choiceContext, plating, dexterityGain);
-        await PowerCmd.ModifyAmount(choiceContext, this, -evolutionAmount, null, null);
 
         if (strengthGain > 0)
             await PowerCmd.Apply<StrengthPower>(choiceContext, Owner, strengthGain, Owner, null);

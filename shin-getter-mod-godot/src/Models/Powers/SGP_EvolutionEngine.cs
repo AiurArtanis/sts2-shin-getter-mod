@@ -1,12 +1,9 @@
 #nullable enable
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
-using System.Linq;
 using MegaCrit.Sts2.Core.Entities.Powers;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 
@@ -30,18 +27,20 @@ public sealed class SGP_EvolutionEngine : PowerModel
 
     protected override object InitInternalData() => new Data();
 
-    public override async Task AfterSideTurnStart(CombatSide side, IReadOnlyList<Creature> participants, ICombatState combatState)
+    public override async Task AfterPlayerTurnStartEarly(
+        PlayerChoiceContext choiceContext,
+        Player player)
     {
-        if (!participants.Contains(Owner) || Owner.Player is not { } player)
+        if (player.Creature != Owner || Owner.IsDead)
             return;
 
         var data = GetInternalData<Data>();
-        if (data.pendingEnergyGain)
-        {
-            data.pendingEnergyGain = false;
-            Flash();
-            await PlayerCmd.GainEnergy(Amount, player);
-        }
+        if (!data.pendingEnergyGain)
+            return;
+
+        data.pendingEnergyGain = false;
+        Flash();
+        await PlayerCmd.GainEnergy(Amount, player);
     }
 
     /// <summary>
@@ -49,6 +48,7 @@ public sealed class SGP_EvolutionEngine : PowerModel
     /// </summary>
     public void MarkPendingEnergyGain()
     {
-        GetInternalData<Data>().pendingEnergyGain = true;
+        var data = GetInternalData<Data>();
+        data.pendingEnergyGain = true;
     }
 }

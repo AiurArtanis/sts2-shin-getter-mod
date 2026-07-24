@@ -89,7 +89,7 @@ public abstract class ShinGetterCardBase : CardModel
             ["SGC_Defend"] = new[] { "格挡" },
             ["SGC_Desperation"] = new[] { "精神指令卡", "进化", "力量", "缓冲", "人工制品" },
             ["SGC_DiveStrike"] = new[] { "腾空", "一号机" },
-            ["SGC_Enable"] = new[] { "精神" },
+            ["SGC_Enable"] = new[] { "精神", "一号机" },
             ["SGC_EvolutionEngine"] = new[] { "进化", "能量" },
             ["SGC_EvolutionResonance"] = new[] { "进化" },
             ["SGC_ExpansionStrike"] = new[] { "三号机", "覆甲" },
@@ -119,7 +119,7 @@ public abstract class ShinGetterCardBase : CardModel
             ["SGC_IronWall"] = new[] { "精神", "三号机", "覆甲" },
             ["SGC_Jammer"] = new[] { "分身", "变形", "二号机" },
             ["SGC_Ki"] = new[] { "气力", "活力" },
-            ["SGC_LigerAssault"] = new[] { "二号机", "分身" },
+            ["SGC_LigerAssault"] = new[] { "二号机", "分身", "缓冲" },
             ["SGC_Meltdown"] = new[] { "放射能" },
             ["SGC_Overload"] = new[] { "能量" },
             ["SGC_PoseidonThunder"] = new[] { "易伤", "虚弱", "脆弱" },
@@ -520,6 +520,12 @@ public abstract class ShinGetterCardBase : CardModel
         }
 
         var creature = player.Creature;
+        if (creature.GetPower<SGP_Seal>() is { } seal)
+        {
+            seal.FlashBlockedTransform();
+            return;
+        }
+
         ShinGetterCardFramePatch.BeginFormTransition(next);
         Task transformVoiceTask = Task.CompletedTask;
         try

@@ -12,7 +12,7 @@ namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
 /// 再动 | 能力 | 稀有 | 4费
-/// 保留。【精神 6】结束当前回合，获得 1 个额外的回合
+/// 保留。【精神 6】变形至一号机；结束当前回合，获得 1 个额外的回合
 /// </summary>
 public sealed class SGC_Enable : ShinGetterCardBase
 {
@@ -27,6 +27,7 @@ public sealed class SGC_Enable : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        await TransformTo(choiceContext, Owner, ShinGetterForm.Getter1, this);
         var enablePower = await PowerCmd.Apply<SGP_Enable>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
         enablePower?.FlashOnPlay();
         PlayerCmd.EndTurn(Owner, canBackOut: false);
