@@ -17,9 +17,6 @@ internal static class ShinGetterGameOverPatch
     private static readonly AccessTools.FieldRef<NGameOverScreen, RunHistory> HistoryRef =
         AccessTools.FieldRefAccess<NGameOverScreen, RunHistory>("_history");
 
-    private static readonly AccessTools.FieldRef<NGameOverScreen, string> EncounterQuoteRef =
-        AccessTools.FieldRefAccess<NGameOverScreen, string>("_encounterQuote");
-
     private static readonly AccessTools.FieldRef<NGameOverScreen, MegaRichTextLabel> DeathQuoteRef =
         AccessTools.FieldRefAccess<NGameOverScreen, MegaRichTextLabel>("_deathQuote");
 
@@ -32,7 +29,6 @@ internal static class ShinGetterGameOverPatch
             return;
 
         string deathQuote = player.Character.EventDeathPreventionLine.GetFormattedText();
-        EncounterQuoteRef(__instance) = deathQuote;
         DeathQuoteRef(__instance).Text = deathQuote;
     }
 }
