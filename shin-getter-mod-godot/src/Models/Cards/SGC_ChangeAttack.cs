@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
@@ -31,12 +33,27 @@ public sealed class SGC_ChangeAttack : ShinGetterCardBase
         int x = ResolveEnergyXValue() + (IsUpgraded ? 1 : 0);
         for (int i = 0; i < x; i++)
         {
+            if (!CanContinueChangeAttack(cardPlay.Target))
+                break;
+
             await Transform(choiceContext, Owner, this);
+            if (!CanContinueChangeAttack(cardPlay.Target))
+                break;
+
             await PlayAcceleratedFollowupAnimation();
+            if (!CanContinueChangeAttack(cardPlay.Target))
+                break;
+
             await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this)
                 .Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
         }
     }
+
+    private bool CanContinueChangeAttack(Creature target) =>
+        CombatManager.Instance.IsInProgress
+        && !CombatManager.Instance.IsOverOrEnding
+        && !Owner.Creature.IsDead
+        && target.IsHittable;
 
     protected override void OnUpgrade()
     {

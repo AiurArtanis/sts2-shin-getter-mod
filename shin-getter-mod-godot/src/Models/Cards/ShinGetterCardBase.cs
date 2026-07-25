@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -471,6 +472,11 @@ public abstract class ShinGetterCardBase : CardModel
             return;
         }
 
+        if (!CanTransformInCombat(player))
+        {
+            return;
+        }
+
         var creature = player.Creature;
 
         if (creature.GetPower<SGP_Seal>() is { } seal)
@@ -519,6 +525,11 @@ public abstract class ShinGetterCardBase : CardModel
             return;
         }
 
+        if (!CanTransformInCombat(player))
+        {
+            return;
+        }
+
         var creature = player.Creature;
         if (creature.GetPower<SGP_Seal>() is { } seal)
         {
@@ -561,6 +572,11 @@ public abstract class ShinGetterCardBase : CardModel
         if (cardSource is SGC_ChangeAttack)
             await transformVoiceTask;
     }
+
+    private static bool CanTransformInCombat(Player player) =>
+        CombatManager.Instance.IsInProgress
+        && !CombatManager.Instance.IsOverOrEnding
+        && !player.Creature.IsDead;
 
     private static async Task NotifyTransform(Creature creature)
     {
