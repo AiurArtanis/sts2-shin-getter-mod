@@ -4,6 +4,8 @@
   "SHIN_GETTER_CHUNIBYO.MOD_NAME": "真ゲッター",
   "SHIN_GETTER_CHUNIBYO.VERSION": "現在のバージョン：{Version}",
   "SHIN_GETTER_CHUNIBYO.UPDATE_HISTORY": "更新履歴",
+  "SHIN_GETTER_CHUNIBYO.SETTINGS_ENTRY": "中二設定（真ゲッターMOD）",
+  "SHIN_GETTER_CHUNIBYO.OPEN_CONFIG": "設定を開く",
   "SHIN_GETTER_CHUNIBYO.SHOW_IN_MAIN_MENU": "メインメニューに中二設定を表示（再起動が必要）",
   "SHIN_GETTER_CHUNIBYO.HIDDEN_TITLE": "中二設定を非表示にしました",
   "SHIN_GETTER_CHUNIBYO.HIDDEN_BODY": "再起動後、メインメニューの項目は非表示になります。コンソールで chunibyo on と入力すると復元できます。",

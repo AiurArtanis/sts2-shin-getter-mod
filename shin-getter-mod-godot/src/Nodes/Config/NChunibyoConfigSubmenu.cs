@@ -11,6 +11,7 @@ using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
+using MegaCrit.Sts2.Core.Nodes.Screens.Settings;
 using ShinGetterMod.Config;
 using ShinGetterMod.Diagnostics.CardExport;
 
@@ -22,6 +23,8 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
     private const string UpdateHistoryPath = "res://ShinGetterMod/update_history.json";
     private const string CharacterIconPath = "res://images/ui/top_panel/character_icon_shin_getter.png";
     private const string KreonFontPath = "res://themes/kreon_regular_shared.tres";
+    private const string ConfigTickboxScenePath = "res://ShinGetterMod/scenes/config/shin_getter_config_tickbox.tscn";
+    private const string VoicePaginatorScenePath = "res://ShinGetterMod/scenes/config/shin_getter_voice_paginator.tscn";
     private const string LocTable = "settings_ui";
     private const int PageTitleFontSize = 52;
     private const int SidebarTitleFontSize = 48;
@@ -33,7 +36,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
 
     private Control? _initialFocus;
     private Label? _exportPathLabel;
-    private OptionButton? _voiceModeDropdown;
+    private NShinGetterVoicePaginator? _voiceModePaginator;
     private FileDialog? _folderDialog;
 
     protected override Control? InitialFocusedControl => _initialFocus;
@@ -176,12 +179,10 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
 
     private Control BuildSettingsPanel()
     {
-        var panel = CreatePanel(Vector2.Zero);
-        panel.SizeFlagsHorizontal = SizeFlags.ExpandFill;
-        panel.SizeFlagsVertical = SizeFlags.ExpandFill;
-
         var margin = CreateInnerMargin();
-        panel.AddChild(margin);
+        margin.Name = "OriginalStyleSettingsPanel";
+        margin.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+        margin.SizeFlagsVertical = SizeFlags.ExpandFill;
 
         var root = new VBoxContainer
         {
@@ -240,7 +241,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         options.AddChild(CreateDivider());
         options.AddChild(BuildCardExportSection());
 
-        return panel;
+        return margin;
     }
 
     private Control BuildMainMenuToggle()
@@ -248,13 +249,9 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         var row = CreateSettingRow(Localize(
             "SHIN_GETTER_CHUNIBYO.SHOW_IN_MAIN_MENU",
             "Show Chunibyo Config on the main menu (restart required)"));
-        var toggle = new CheckButton
-        {
-            ButtonPressed = ShinGetterChunibyoConfigService.Current.ShowInMainMenu,
-            CustomMinimumSize = new Vector2(SettingControlWidth, 64f),
-            SizeFlagsHorizontal = SizeFlags.ShrinkEnd,
-        };
-        toggle.Toggled += enabled =>
+        NShinGetterConfigTickbox toggle = CreateOriginalTickbox(
+            ShinGetterChunibyoConfigService.Current.ShowInMainMenu,
+            enabled =>
         {
             ShinGetterChunibyoConfigService.Current.ShowInMainMenu = enabled;
             SaveConfigOrShowError();
@@ -266,39 +263,35 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
                         "SHIN_GETTER_CHUNIBYO.HIDDEN_BODY",
                         "The entry will be hidden after restarting. Enter chunibyo on in the console to restore it."));
             }
-        };
+        });
         row.AddChild(toggle);
         return row;
     }
 
     private Control BuildVoiceModeRow()
     {
-        var row = CreateSettingRow(Localize("SHIN_GETTER_CHUNIBYO.VOICE_AMOUNT", "Voice Amount"));
-        _voiceModeDropdown = new OptionButton
+        var row = CreateSettingRow(
+            Localize("SHIN_GETTER_CHUNIBYO.VOICE_AMOUNT", "Voice Amount"),
+            104f);
+        _voiceModePaginator = ResourceLoader.Load<PackedScene>(VoicePaginatorScenePath)
+            .Instantiate<NShinGetterVoicePaginator>();
+        _voiceModePaginator.SizeFlagsHorizontal = SizeFlags.ShrinkEnd;
+        row.AddChild(_voiceModePaginator);
+        _voiceModePaginator.Configure(
+            new[]
+            {
+                StripColorTags(Localize("SHIN_GETTER_CHUNIBYO.VOICE.SILENT", "[white]Mature Professional[/white]")),
+                Localize("SHIN_GETTER_CHUNIBYO.VOICE.ONCE_PER_COMBAT", "I'm an adult, but hot blood still feels pretty good"),
+                StripColorTags(Localize("SHIN_GETTER_CHUNIBYO.VOICE.ALWAYS", "[red]Set Me Ablaze![/red]")),
+            },
+            (int)ShinGetterChunibyoConfigService.Current.VoiceMode);
+        _voiceModePaginator.IndexChanged += index =>
         {
-            CustomMinimumSize = new Vector2(SettingControlWidth, 64f),
-            SizeFlagsHorizontal = SizeFlags.ShrinkEnd,
-            FocusMode = FocusModeEnum.All,
-        };
-        ApplyKreonFont(_voiceModeDropdown, OptionFontSize);
-        _voiceModeDropdown.AddItem(
-            StripColorTags(Localize("SHIN_GETTER_CHUNIBYO.VOICE.SILENT", "[white]Mature Professional[/white]")),
-            (int)ShinGetterVoiceMode.Silent);
-        _voiceModeDropdown.AddItem(
-            Localize("SHIN_GETTER_CHUNIBYO.VOICE.ONCE_PER_COMBAT", "I'm an adult, but hot blood still feels pretty good"),
-            (int)ShinGetterVoiceMode.OncePerCombat);
-        _voiceModeDropdown.AddItem(
-            StripColorTags(Localize("SHIN_GETTER_CHUNIBYO.VOICE.ALWAYS", "[red]Set Me Ablaze![/red]")),
-            (int)ShinGetterVoiceMode.Always);
-        _voiceModeDropdown.Select((int)ShinGetterChunibyoConfigService.Current.VoiceMode);
-        UpdateVoiceModePresentation();
-        _voiceModeDropdown.ItemSelected += index =>
-        {
-            ShinGetterChunibyoConfigService.Current.VoiceMode = (ShinGetterVoiceMode)_voiceModeDropdown.GetItemId((int)index);
+            ShinGetterChunibyoConfigService.Current.VoiceMode = (ShinGetterVoiceMode)index;
             UpdateVoiceModePresentation();
             SaveConfigOrShowError();
         };
-        row.AddChild(_voiceModeDropdown);
+        UpdateVoiceModePresentation();
         return row;
     }
 
@@ -308,17 +301,13 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         box.AddThemeConstantOverride("separation", 4);
 
         var row = CreateSettingRow(Localize("SHIN_GETTER_CHUNIBYO.EVENT_INVASION", "Event Invasion"));
-        var toggle = new CheckButton
-        {
-            ButtonPressed = ShinGetterChunibyoConfigService.Current.EventInvasionEnabled,
-            CustomMinimumSize = new Vector2(SettingControlWidth, 64f),
-            SizeFlagsHorizontal = SizeFlags.ShrinkEnd,
-        };
-        toggle.Toggled += enabled =>
+        NShinGetterConfigTickbox toggle = CreateOriginalTickbox(
+            ShinGetterChunibyoConfigService.Current.EventInvasionEnabled,
+            enabled =>
         {
             ShinGetterChunibyoConfigService.Current.EventInvasionEnabled = enabled;
             SaveConfigOrShowError();
-        };
+        });
         row.AddChild(toggle);
         box.AddChild(row);
 
@@ -462,7 +451,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
 
     private void UpdateVoiceModePresentation()
     {
-        if (_voiceModeDropdown == null)
+        if (_voiceModePaginator == null)
             return;
 
         ShinGetterVoiceMode mode = ShinGetterChunibyoConfigService.Current.VoiceMode;
@@ -472,8 +461,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
             ShinGetterVoiceMode.Always => new Color(0.96f, 0.28f, 0.2f),
             _ => new Color(0.91f, 0.86f, 0.74f),
         };
-        _voiceModeDropdown.AddThemeColorOverride("font_color", color);
-        _voiceModeDropdown.TooltipText = mode switch
+        string tooltip = mode switch
         {
             ShinGetterVoiceMode.Silent => Localize(
                 "SHIN_GETTER_CHUNIBYO.VOICE.SILENT_TOOLTIP",
@@ -485,6 +473,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
                 "SHIN_GETTER_CHUNIBYO.VOICE.ONCE_PER_COMBAT_TOOLTIP",
                 "Each voice line plays at most once per combat."),
         };
+        _voiceModePaginator.SetPresentation(color, tooltip);
     }
 
     private static PanelContainer CreatePanel(Vector2 minimumSize)
@@ -537,11 +526,11 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         return divider;
     }
 
-    private static HBoxContainer CreateSettingRow(string labelText)
+    private static HBoxContainer CreateSettingRow(string labelText, float minimumHeight = 72f)
     {
         var row = new HBoxContainer
         {
-            CustomMinimumSize = new Vector2(0f, 64f),
+            CustomMinimumSize = new Vector2(0f, minimumHeight),
             SizeFlagsHorizontal = SizeFlags.ExpandFill,
         };
         row.AddThemeConstantOverride("separation", 18);
@@ -556,6 +545,19 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         ApplyKreonFont(label, SettingFontSize);
         row.AddChild(label);
         return row;
+    }
+
+    private static NShinGetterConfigTickbox CreateOriginalTickbox(bool isTicked, Action<bool> onChanged)
+    {
+        var tickbox = ResourceLoader.Load<PackedScene>(ConfigTickboxScenePath)
+            .Instantiate<NShinGetterConfigTickbox>();
+        tickbox.CustomMinimumSize = new Vector2(320f, 64f);
+        tickbox.SizeFlagsHorizontal = SizeFlags.ShrinkEnd;
+        tickbox.InitialIsTicked = isTicked;
+        tickbox.Connect(
+            NTickbox.SignalName.Toggled,
+            Callable.From<NTickbox>(changed => onChanged(changed.IsTicked)));
+        return tickbox;
     }
 
     private static Button CreateActionButton(string text, Action action)

@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
+using MegaCrit.Sts2.Core.Nodes.Screens.Settings;
 using ShinGetterMod.Config;
 using ShinGetterMod.Nodes.Config;
 
@@ -82,4 +83,89 @@ internal static class ShinGetterChunibyoMainMenuPatch
             GD.PushError($"Shin Getter could not add the Chunibyo Config main-menu entry: {ex}");
         }
     }
+}
+
+[HarmonyPatch(typeof(NSettingsScreen), nameof(NSettingsScreen._Ready))]
+internal static class ShinGetterChunibyoSettingsEntryPatch
+{
+    private const string EntryName = "ShinGetterChunibyoSettings";
+
+    private static void Postfix(NSettingsScreen __instance)
+    {
+        try
+        {
+            var modding = __instance.GetNodeOrNull<MarginContainer>("%Modding");
+            var sourceButton = __instance.GetNodeOrNull<NOpenModdingScreenButton>("%ModdingButton");
+            if (modding?.GetParent() is not VBoxContainer content
+                || sourceButton == null
+                || content.GetNodeOrNull<MarginContainer>(EntryName) != null)
+            {
+                return;
+            }
+
+            var divider = (ColorRect)__instance.GetNode<ColorRect>("%ModdingDivider").Duplicate();
+            divider.Name = EntryName + "Divider";
+            divider.UniqueNameInOwner = false;
+            divider.Visible = modding.Visible;
+
+            var entry = (MarginContainer)modding.Duplicate((int)(
+                Node.DuplicateFlags.Groups
+                | Node.DuplicateFlags.Scripts
+                | Node.DuplicateFlags.UseInstantiation));
+            entry.Name = EntryName;
+            entry.UniqueNameInOwner = false;
+            entry.Visible = modding.Visible;
+            entry.GetNode<MegaCrit.Sts2.addons.mega_text.MegaRichTextLabel>("Label").Text =
+                Localize("SHIN_GETTER_CHUNIBYO.SETTINGS_ENTRY", "Chunibyo Config (Shin Getter Mod)");
+
+            var button = entry.GetNode<NOpenModdingScreenButton>("ModdingButton");
+            button.Name = "OpenChunibyoConfigButton";
+            button.UniqueNameInOwner = false;
+            MakeButtonRed(button.GetNode<TextureRect>("Image"));
+            button.Connect(
+                NClickableControl.SignalName.Released,
+                Callable.From<NButton>(_ => FindMainMenuStack(__instance)?.PushSubmenuType<NChunibyoConfigSubmenu>()));
+            if (!sourceButton.IsEnabled)
+                button.Disable();
+
+            int insertAt = modding.GetIndex() + 1;
+            content.AddChild(divider);
+            content.MoveChild(divider, insertAt);
+            content.AddChild(entry);
+            content.MoveChild(entry, insertAt + 1);
+            button.GetNode<MegaCrit.Sts2.addons.mega_text.MegaLabel>("Label").SetTextAutoSize(
+                Localize("SHIN_GETTER_CHUNIBYO.OPEN_CONFIG", "Open Config"));
+        }
+        catch (Exception ex)
+        {
+            GD.PushError($"Shin Getter could not add the settings-screen Chunibyo Config entry: {ex}");
+        }
+    }
+
+    private static NMainMenuSubmenuStack? FindMainMenuStack(Node node)
+    {
+        for (Node? current = node.GetParent(); current != null; current = current.GetParent())
+        {
+            if (current is NMainMenuSubmenuStack stack)
+                return stack;
+        }
+
+        return null;
+    }
+
+    private static void MakeButtonRed(TextureRect image)
+    {
+        if (image.Material is not ShaderMaterial source)
+            return;
+
+        var material = (ShaderMaterial)source.Duplicate(true);
+        material.ResourceLocalToScene = true;
+        material.SetShaderParameter("h", 0.0f);
+        material.SetShaderParameter("s", 1.55f);
+        material.SetShaderParameter("v", 1.05f);
+        image.Material = material;
+    }
+
+    private static string Localize(string key, string fallback) =>
+        LocString.GetIfExists("settings_ui", key)?.GetFormattedText() ?? fallback;
 }

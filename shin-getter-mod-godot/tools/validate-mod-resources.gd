@@ -132,6 +132,8 @@ const REQUIRED_RESOURCES := {
 
 const EXISTS_ONLY_RESOURCES := [
 	# These scenes reference the mod DLL, which is loaded only during the later game-load validation.
+	"res://scenes/config/shin_getter_config_tickbox.tscn",
+	"res://scenes/config/shin_getter_voice_paginator.tscn",
 	"res://scenes/screens/char_select/char_select_bg_shin_getter.tscn",
 	"res://ShinGetterMod.json",
 	"res://ShinGetterMod/localization/eng/cards.json",

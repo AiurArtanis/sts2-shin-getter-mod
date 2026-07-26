@@ -4,6 +4,8 @@
   "SHIN_GETTER_CHUNIBYO.MOD_NAME": "Shin Getter",
   "SHIN_GETTER_CHUNIBYO.VERSION": "Current version: {Version}",
   "SHIN_GETTER_CHUNIBYO.UPDATE_HISTORY": "Update History",
+  "SHIN_GETTER_CHUNIBYO.SETTINGS_ENTRY": "Chunibyo Config (Shin Getter Mod)",
+  "SHIN_GETTER_CHUNIBYO.OPEN_CONFIG": "Open Config",
   "SHIN_GETTER_CHUNIBYO.SHOW_IN_MAIN_MENU": "Show Chunibyo Config on the main menu (restart required)",
   "SHIN_GETTER_CHUNIBYO.HIDDEN_TITLE": "Chunibyo Config entry hidden",
   "SHIN_GETTER_CHUNIBYO.HIDDEN_BODY": "The main-menu entry will be hidden after restarting. Enter chunibyo on in the console to restore it.",
