@@ -30,7 +30,6 @@ mouse_filter = 2
 
 [node name="RyomaRestSprite" type="Sprite2D" parent="ControlRoot"]
 unique_name_in_owner = true
-z_index = 1
 material = SubResource("ShaderMaterial_firelight")
 position = Vector2(0, -308)
 scale = Vector2(0.45, 0.45)

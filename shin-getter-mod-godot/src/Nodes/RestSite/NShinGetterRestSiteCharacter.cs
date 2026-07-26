@@ -70,7 +70,7 @@ internal static class ShinGetterRestSiteCharacterPatch
 [HarmonyPatch(typeof(NRestSiteRoom), nameof(NRestSiteRoom._Ready))]
 internal static class ShinGetterRestSiteRoomPatch
 {
-    private static readonly Vector2 RyomaGroundPosition = new(550f, 770f);
+    private static readonly Vector2 RyomaGroundPosition = new(526f, 786f);
 
     private static void Postfix(NRestSiteRoom __instance)
     {

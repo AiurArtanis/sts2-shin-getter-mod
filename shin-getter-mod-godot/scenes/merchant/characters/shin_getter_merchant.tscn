@@ -3,7 +3,7 @@
 [ext_resource type="PackedScene" path="res://scenes/merchant/characters/ironclad_merchant.tscn" id="1_base"]
 [ext_resource type="Texture2D" path="res://images/characters/shin_getter/merchant/s_g_o_merchant_ryoma_normal.png" id="2_normal"]
 [ext_resource type="Texture2D" path="res://images/characters/shin_getter/merchant/s_g_o_merchant_ryoma_citizen.png" id="3_citizen"]
-[ext_resource type="Shader" path="res://shaders/shin_getter_rest_shadow.gdshader" id="4_shadow"]
+[ext_resource type="Shader" path="res://shaders/shin_getter_merchant_shadow.gdshader" id="4_shadow"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_shadow"]
 resource_local_to_scene = true
@@ -24,14 +24,12 @@ offset_bottom = 98.0
 mouse_filter = 2
 
 [node name="RyomaNormalSprite" type="Sprite2D" parent="."]
-z_index = 1
 position = Vector2(0, -193.576)
 texture = ExtResource("2_normal")
 scale = Vector2(0.376, 0.376)
 
 [node name="RyomaCitizenSprite" type="Sprite2D" parent="."]
 visible = false
-z_index = 1
 position = Vector2(0, -188.124)
 texture = ExtResource("3_citizen")
 scale = Vector2(0.376, 0.376)
