@@ -86,69 +86,71 @@ internal static class ShinGetterEventInvasionService
     private static IEnumerable<EventOption> BuildTeaMasterOptions(TeaMaster eventModel)
     {
         Player owner = RequireOwner(eventModel);
+        bool ryomaAvailable = owner.Creature.CurrentHp > 5
+            && HasAnyCard<SGC_FightingSpirit, SGC_Ki>(owner);
+        EventOption ryoma = CreateConditionalOption(
+            eventModel,
+            ryomaAvailable,
+            () => TeaMasterRyoma(eventModel),
+            "TEA_MASTER",
+            "RYOMA",
+            HoverTipFactory.FromRelicExcludingItself<EmberTea>());
+        if (ryomaAvailable)
+            ryoma.ThatDoesDamage(5);
+        yield return ryoma;
 
-        if (owner.Creature.CurrentHp > 5
-            && HasAnyCard<SGC_FightingSpirit, SGC_Ki>(owner))
-        {
-            yield return new EventOption(
-                    eventModel,
-                    () => TeaMasterRyoma(eventModel),
-                    Key("TEA_MASTER", "RYOMA"),
-                    HoverTipFactory.FromRelicExcludingItself<EmberTea>())
-                .ThatDoesDamage(5);
-        }
-
-        if (owner.Gold >= 100)
-        {
-            IHoverTip[] hovers = HoverTipFactory.FromRelicExcludingItself<BoneTea>()
-                .Concat(HoverTipFactory.FromRelicExcludingItself<EmberTea>())
-                .ToArray();
-            yield return new EventOption(
-                eventModel,
-                () => TeaMasterMuqing(eventModel),
-                Key("TEA_MASTER", "MUQING"),
-                disableOnChosen: false,
-                isProceed: false,
-                hovers);
-        }
+        bool muqingAvailable = owner.Gold >= 100;
+        IHoverTip[] hovers = HoverTipFactory.FromRelicExcludingItself<BoneTea>()
+            .Concat(HoverTipFactory.FromRelicExcludingItself<EmberTea>())
+            .ToArray();
+        yield return CreateConditionalOption(
+            eventModel,
+            muqingAvailable,
+            () => TeaMasterMuqing(eventModel),
+            "TEA_MASTER",
+            "MUQING",
+            hovers,
+            disableOnChosen: false);
     }
 
     private static IEnumerable<EventOption> BuildSlipperyBridgeOptions(SlipperyBridge eventModel)
     {
         Player owner = RequireOwner(eventModel);
-        if (owner.Creature.CurrentHp > 5
-            && HasAnyCard<SGC_Ki, SGC_Spirit, SGC_SuperKi>(owner))
-        {
-            yield return new EventOption(
-                    eventModel,
-                    () => SlipperyBridgeRyoma(eventModel),
-                    Key("SLIPPERY_BRIDGE", "RYOMA"))
-                .ThatDoesDamage(5);
-        }
+        bool ryomaAvailable = owner.Creature.CurrentHp > 5
+            && HasAnyCard<SGC_Ki, SGC_Spirit, SGC_SuperKi>(owner);
+        EventOption ryoma = CreateConditionalOption(
+            eventModel,
+            ryomaAvailable,
+            () => SlipperyBridgeRyoma(eventModel),
+            "SLIPPERY_BRIDGE",
+            "RYOMA");
+        if (ryomaAvailable)
+            ryoma.ThatDoesDamage(5);
+        yield return ryoma;
 
-        if (owner.Deck.Cards.Any(card => card.IsRemovable)
-            && HasAnyCard<SGC_Acceleration, SGC_ShedLoad>(owner))
-        {
-            yield return new EventOption(
-                eventModel,
-                () => SlipperyBridgeHayato(eventModel),
-                Key("SLIPPERY_BRIDGE", "HAYATO"));
-        }
+        bool hayatoAvailable = owner.Deck.Cards.Any(card => card.IsRemovable)
+            && HasAnyCard<SGC_Acceleration, SGC_ShedLoad>(owner);
+        yield return CreateConditionalOption(
+            eventModel,
+            hayatoAvailable,
+            () => SlipperyBridgeHayato(eventModel),
+            "SLIPPERY_BRIDGE",
+            "HAYATO");
     }
 
     private static IEnumerable<EventOption> BuildSpiritGrafterOptions(SpiritGrafter eventModel)
     {
         Player owner = RequireOwner(eventModel);
-        if (Enum.GetValues<ShinGetterForm>()
+        bool available = Enum.GetValues<ShinGetterForm>()
             .Where(form => form != ShinGetterForm.None)
-            .All(form => HasExclusiveFormCard(owner, form)))
-        {
-            yield return new EventOption(
-                eventModel,
-                () => SpiritGrafterTripleUnity(eventModel),
-                Key("SPIRIT_GRAFTER", "TRIPLE_UNITY"),
-                HoverTipFactory.FromCardWithCardHoverTips<SGC_TripleUnity>());
-        }
+            .All(form => HasExclusiveFormCard(owner, form));
+        yield return CreateConditionalOption(
+            eventModel,
+            available,
+            () => SpiritGrafterTripleUnity(eventModel),
+            "SPIRIT_GRAFTER",
+            "TRIPLE_UNITY",
+            HoverTipFactory.FromCardWithCardHoverTips<SGC_TripleUnity>());
     }
 
     private static IEnumerable<EventOption> BuildWoodCarvingsOptions(WoodCarvings eventModel)
@@ -168,40 +170,40 @@ internal static class ShinGetterEventInvasionService
             Key("THIS_OR_THAT", "RYOMA"));
 
         Player owner = RequireOwner(eventModel);
-        if (owner.Gold >= 75
-            && HasAnyCard<SGC_Insight, SGC_BackupPlan>(owner))
-        {
-            yield return new EventOption(
-                eventModel,
-                () => ThisOrThatHayato(eventModel),
-                Key("THIS_OR_THAT", "HAYATO"));
-        }
+        bool hayatoAvailable = owner.Gold >= 75
+            && HasAnyCard<SGC_Insight, SGC_BackupPlan>(owner);
+        yield return CreateConditionalOption(
+            eventModel,
+            hayatoAvailable,
+            () => ThisOrThatHayato(eventModel),
+            "THIS_OR_THAT",
+            "HAYATO");
     }
 
     private static IEnumerable<EventOption> BuildAmalgamatorOptions(Amalgamator eventModel)
     {
         Player owner = RequireOwner(eventModel);
-        if (owner.Deck.Cards.Any(IsRyomaExtraRemovalCandidate))
-        {
-            yield return new EventOption(
-                eventModel,
-                () => AmalgamatorRyoma(eventModel),
-                Key("AMALGAMATOR", "RYOMA"));
-        }
+        bool ryomaAvailable = owner.Deck.Cards.Any(IsRyomaExtraRemovalCandidate);
+        yield return CreateConditionalOption(
+            eventModel,
+            ryomaAvailable,
+            () => AmalgamatorRyoma(eventModel),
+            "AMALGAMATOR",
+            "RYOMA");
 
-        if (owner.Gold >= 100
+        bool muqingAvailable = owner.Gold >= 100
             && owner.Deck.Cards.Count(card => card is SGC_Strike && card.IsRemovable) >= 2
-            && owner.Deck.Cards.Count(card => card is SGC_Defend && card.IsRemovable) >= 2)
-        {
-            IHoverTip[] hovers = HoverTipFactory.FromCardWithCardHoverTips<UltimateStrike>()
-                .Concat(HoverTipFactory.FromCardWithCardHoverTips<UltimateDefend>())
-                .ToArray();
-            yield return new EventOption(
-                eventModel,
-                () => AmalgamatorMuqing(eventModel),
-                Key("AMALGAMATOR", "MUQING"),
-                hovers);
-        }
+            && owner.Deck.Cards.Count(card => card is SGC_Defend && card.IsRemovable) >= 2;
+        IHoverTip[] hovers = HoverTipFactory.FromCardWithCardHoverTips<UltimateStrike>()
+            .Concat(HoverTipFactory.FromCardWithCardHoverTips<UltimateDefend>())
+            .ToArray();
+        yield return CreateConditionalOption(
+            eventModel,
+            muqingAvailable,
+            () => AmalgamatorMuqing(eventModel),
+            "AMALGAMATOR",
+            "MUQING",
+            hovers);
     }
 
     private static async Task TeaMasterRyoma(TeaMaster eventModel)
@@ -380,6 +382,25 @@ internal static class ShinGetterEventInvasionService
 
     private static bool IsRyomaExtraRemovalCandidate(CardModel card) =>
         card.IsRemovable && card is not SGC_Strike && card is not SGC_Defend;
+
+    private static EventOption CreateConditionalOption(
+        EventModel eventModel,
+        bool available,
+        Func<Task> onChosen,
+        string eventName,
+        string optionName,
+        IEnumerable<IHoverTip>? hoverTips = null,
+        bool disableOnChosen = true)
+    {
+        string key = Key(eventName, available ? optionName : $"{optionName}_LOCKED");
+        return new EventOption(
+            eventModel,
+            available ? onChosen : null,
+            key,
+            disableOnChosen,
+            isProceed: false,
+            hoverTips: available ? (hoverTips ?? Array.Empty<IHoverTip>()).ToArray() : Array.Empty<IHoverTip>());
+    }
 
     private static string Key(string eventName, string optionName) =>
         $"{LocPrefix}.{eventName}.pages.INITIAL.options.{optionName}";
