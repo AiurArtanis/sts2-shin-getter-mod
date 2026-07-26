@@ -183,7 +183,7 @@ def validate_sprite_sheets() -> None:
     require(
         validator_path,
         "CHARACTER_FRAME_MANIFEST_PATH",
-        "_load_character_frame_manifest()",
+        "_load_character_frame_manifest(pck_path)",
         "EXPECTED_CHARACTER_SOURCE_FRAME_COUNT := 920",
     )
     reject(validator_path, "FORBIDDEN_CHARACTER_FRAME_COUNTS", "range(1, FORBIDDEN_CHARACTER_FRAME_COUNTS")
