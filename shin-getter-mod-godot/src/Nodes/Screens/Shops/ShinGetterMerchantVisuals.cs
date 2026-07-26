@@ -16,9 +16,9 @@ internal static class ShinGetterMerchantVisuals
     private const string CitizenSpriteName = "RyomaCitizenSprite";
     private const float SpriteScale = 0.376f;
     private const float SpriteFootYOffset = 70f;
-    private const float ShadowWidth = 248f;
-    private const float ShadowHeight = 52f;
-    private const float ShadowCenterY = 72f;
+    private const float ShadowWidth = 288f;
+    private const float ShadowHeight = 78f;
+    private const float ShadowCenterY = 57f;
     private const float ShadowOpacity = 0.22f;
 
     public static void RefreshCurrentRoom()
@@ -60,7 +60,11 @@ internal static class ShinGetterMerchantVisuals
         shadow.Rotation = -0.015f;
 
         if (shadow.Material is ShaderMaterial shadowMaterial)
+        {
             shadowMaterial.SetShaderParameter("shadow_opacity", ShadowOpacity);
+            shadowMaterial.SetShaderParameter("tail_offset", new Vector2(0.12f, -0.29f));
+            shadowMaterial.SetShaderParameter("tail_strength", 0.48f);
+        }
     }
 
     private static void SetSpriteState(Sprite2D? sprite, bool visible)

@@ -8,6 +8,8 @@
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_shadow"]
 resource_local_to_scene = true
 shader = ExtResource("4_shadow")
+shader_parameter/tail_offset = Vector2(0.12, -0.29)
+shader_parameter/tail_strength = 0.48
 
 [node name="ShinGetterMerchant" instance=ExtResource("1_base")]
 
@@ -17,9 +19,9 @@ visible = false
 [node name="GroundShadow" type="ColorRect" parent="."]
 z_index = 0
 material = SubResource("ShaderMaterial_shadow")
-offset_left = -140.0
-offset_top = 42.0
-offset_right = 140.0
+offset_left = -152.0
+offset_top = 16.0
+offset_right = 152.0
 offset_bottom = 98.0
 mouse_filter = 2
 
