@@ -6,6 +6,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from build_character_sprite_sheets import FRAME_COUNTS, load_frame_manifest
+
 
 ROOT = Path(__file__).resolve().parents[1]
 REPO_ROOT = ROOT.parent
@@ -113,8 +115,10 @@ def validate_localization() -> None:
     for language in ("eng", "jpn", "zhs"):
         cards_path = f"ShinGetterMod/localization/{language}/cards.json"
         powers_path = f"ShinGetterMod/localization/{language}/powers.json"
+        hover_tips_path = f"ShinGetterMod/localization/{language}/static_hover_tips.json"
         cards = json.loads(read(cards_path))
         powers = json.loads(read(powers_path))
+        hover_tips = json.loads(read(hover_tips_path))
         if "{BufferPower:diff()}" not in cards["S_G_C_LIGER_ASSAULT.description"]:
             raise AssertionError(f"{cards_path}: Liger Assault is missing BufferPower")
         if "S_G_P_EVOLUTION.description" not in powers:
@@ -125,6 +129,18 @@ def validate_localization() -> None:
         stale_fragments = ("not consumed", "進化のスタックは消費されない", "进化层数不会消耗")
         if any(fragment in evolution for fragment in stale_fragments):
             raise AssertionError(f"{powers_path}: Evolution still claims it is not consumed")
+        forbidden_retain_markers = {
+            "eng": ("retain",),
+            "jpn": ("保留",),
+            "zhs": ("保留",),
+        }[language]
+        spirit_command_descriptions = {
+            powers_path: powers["S_G_P_KI.description"],
+            hover_tips_path: hover_tips["SHIN_GETTER_SPIRIT_COMMAND.description"],
+        }
+        for path, description in spirit_command_descriptions.items():
+            if any(marker in description.lower() for marker in forbidden_retain_markers):
+                raise AssertionError(f"{path}: Spirit Command description still claims Retain")
 
 
 def validate_sprite_sheets() -> None:
@@ -144,9 +160,33 @@ def validate_sprite_sheets() -> None:
         if any(fragment in text.lower() for fragment in forbidden):
             raise AssertionError(f"{sidecar.relative_to(ROOT)}: VRAM compression metadata remains")
 
-    source_frames = list((REPO_ROOT / "art_sources/characters/shin_getter/forms").glob("*/sprite_*.png"))
+    source_root = REPO_ROOT / "art_sources/characters/shin_getter/forms"
+    source_frames = list(source_root.glob("*/sprite_*.png"))
     if len(source_frames) != 920:
         raise AssertionError(f"expected 920 source frames, got {len(source_frames)}")
+    frame_manifest = load_frame_manifest(source_root / "frame_manifest.txt")
+    manifest_frame_paths = {
+        f"{action}/sprite_{frame_number:06d}.png"
+        for action, frame_numbers in frame_manifest.items()
+        for frame_number in frame_numbers
+    }
+    actual_frame_paths = {path.relative_to(source_root).as_posix() for path in source_frames}
+    manifest_entry_count = sum(len(frame_numbers) for frame_numbers in frame_manifest.values())
+    if manifest_entry_count != 920 or manifest_frame_paths != actual_frame_paths:
+        missing = sorted(actual_frame_paths - manifest_frame_paths)
+        extra = sorted(manifest_frame_paths - actual_frame_paths)
+        raise AssertionError(
+            "PCK forbidden frame set does not exactly match the 920 source files; "
+            f"missing={missing[:3]}, extra={extra[:3]}"
+        )
+    validator_path = "tools/validate-mod-resources.gd"
+    require(
+        validator_path,
+        "CHARACTER_FRAME_MANIFEST_PATH",
+        "_load_character_frame_manifest()",
+        "EXPECTED_CHARACTER_SOURCE_FRAME_COUNT := 920",
+    )
+    reject(validator_path, "FORBIDDEN_CHARACTER_FRAME_COUNTS", "range(1, FORBIDDEN_CHARACTER_FRAME_COUNTS")
     if (ROOT / "art_sources/characters/shin_getter/forms").exists():
         raise AssertionError("source frames remain inside the Godot project import scope")
 

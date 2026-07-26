@@ -47,10 +47,48 @@ IDLE_RESOURCES = {
 }
 
 
-def frame_paths(source_dir: Path, expected_count: int) -> list[Path]:
-    paths = sorted(source_dir.glob("sprite_*.png"))
-    if len(paths) != expected_count:
-        raise ValueError(f"{source_dir}: expected {expected_count} frames, found {len(paths)}")
+def load_frame_manifest(manifest_path: Path) -> dict[str, tuple[int, ...]]:
+    sequences: dict[str, tuple[int, ...]] = {}
+    actions: dict[str, str] = {}
+    for line_number, raw_line in enumerate(manifest_path.read_text(encoding="utf-8").splitlines(), 1):
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        declaration, separator, value = line.partition("=")
+        if not separator:
+            raise ValueError(f"{manifest_path}:{line_number}: missing '='")
+        kind_and_name = declaration.split(maxsplit=1)
+        if len(kind_and_name) != 2:
+            raise ValueError(f"{manifest_path}:{line_number}: invalid declaration")
+        kind, name = kind_and_name
+        if kind == "sequence":
+            numbers = tuple(int(token) for token in value.split(","))
+            if not numbers or len(numbers) != len(set(numbers)):
+                raise ValueError(f"{manifest_path}:{line_number}: empty or duplicate frame number")
+            sequences[name] = numbers
+        elif kind == "action":
+            actions[name] = value
+        else:
+            raise ValueError(f"{manifest_path}:{line_number}: unknown declaration {kind!r}")
+
+    manifest: dict[str, tuple[int, ...]] = {}
+    for action, sequence_name in actions.items():
+        if sequence_name not in sequences:
+            raise ValueError(f"{manifest_path}: action {action!r} references unknown sequence {sequence_name!r}")
+        manifest[action] = sequences[sequence_name]
+    if set(manifest) != set(FRAME_COUNTS):
+        raise ValueError(f"{manifest_path}: action set does not match FRAME_COUNTS")
+    return manifest
+
+
+def frame_paths(source_dir: Path, expected_count: int, frame_numbers: tuple[int, ...]) -> list[Path]:
+    paths = [source_dir / f"sprite_{frame_number:06d}.png" for frame_number in frame_numbers]
+    actual_paths = set(source_dir.glob("sprite_*.png"))
+    if len(paths) != expected_count or set(paths) != actual_paths:
+        raise ValueError(
+            f"{source_dir}: manifest/source mismatch; expected {expected_count} exact frames, "
+            f"manifest has {len(paths)}, source has {len(actual_paths)}"
+        )
     return paths
 
 
@@ -65,8 +103,8 @@ def sheet_geometry(frame_count: int) -> tuple[int, int]:
     return columns, rows
 
 
-def build_sheet(source_dir: Path, output_dir: Path, frame_count: int) -> None:
-    paths = frame_paths(source_dir, frame_count)
+def build_sheet(source_dir: Path, output_dir: Path, frame_count: int, frame_numbers: tuple[int, ...]) -> None:
+    paths = frame_paths(source_dir, frame_count, frame_numbers)
     columns, rows = sheet_geometry(frame_count)
     sheet = Image.new("RGBA", (columns * FRAME_SIZE, rows * FRAME_SIZE))
     for index, path in enumerate(paths):
@@ -84,8 +122,8 @@ def build_sheet(source_dir: Path, output_dir: Path, frame_count: int) -> None:
     print(f"BUILT {output_dir.name}: {frame_count} frames, {columns}x{rows}, {sheet.width}x{sheet.height}")
 
 
-def verify_sheet(source_dir: Path, output_dir: Path, frame_count: int) -> None:
-    paths = frame_paths(source_dir, frame_count)
+def verify_sheet(source_dir: Path, output_dir: Path, frame_count: int, frame_numbers: tuple[int, ...]) -> None:
+    paths = frame_paths(source_dir, frame_count, frame_numbers)
     columns, rows = sheet_geometry(frame_count)
     output_path = output_dir / SHEET_NAME
     with Image.open(output_path) as sheet:
@@ -155,14 +193,15 @@ def main() -> None:
     project_root = args.project_root.resolve()
     source_root = project_root.parent / "art_sources" / "characters" / "shin_getter" / "forms"
     output_root = project_root / "images" / "characters" / "shin_getter" / "forms"
+    frame_manifest = load_frame_manifest(source_root / "frame_manifest.txt")
 
     for action, frame_count in FRAME_COUNTS.items():
         source_dir = source_root / action
         output_dir = output_root / action
         if args.check:
-            verify_sheet(source_dir, output_dir, frame_count)
+            verify_sheet(source_dir, output_dir, frame_count, frame_manifest[action])
         else:
-            build_sheet(source_dir, output_dir, frame_count)
+            build_sheet(source_dir, output_dir, frame_count, frame_manifest[action])
 
     if not args.check:
         for action in IDLE_RESOURCES:

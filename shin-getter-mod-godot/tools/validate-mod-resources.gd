@@ -156,32 +156,8 @@ const FORBIDDEN_RESOURCE_DEPENDENCIES := {
 	],
 }
 
-const FORBIDDEN_CHARACTER_FRAME_COUNTS := {
-	"getter_one_attack": 40,
-	"getter_one_block": 24,
-	"getter_one_cast": 32,
-	"getter_one_dash": 48,
-	"getter_one_death": 48,
-	"getter_one_idle": 24,
-	"getter_two_attack": 40,
-	"getter_two_block": 24,
-	"getter_two_cast": 32,
-	"getter_two_dash": 48,
-	"getter_two_death": 48,
-	"getter_two_idle": 24,
-	"getter_three_attack": 40,
-	"getter_three_block": 24,
-	"getter_three_cast": 32,
-	"getter_three_dash": 48,
-	"getter_three_death": 48,
-	"getter_three_idle": 24,
-	"shin_getter_dragon_attack": 60,
-	"shin_getter_dragon_block": 48,
-	"shin_getter_dragon_cast": 32,
-	"shin_getter_dragon_dash": 48,
-	"shin_getter_dragon_death": 48,
-	"shin_getter_dragon_idle": 36,
-}
+const CHARACTER_FRAME_MANIFEST_PATH := "../art_sources/characters/shin_getter/forms/frame_manifest.txt"
+const EXPECTED_CHARACTER_SOURCE_FRAME_COUNT := 920
 
 
 func _initialize() -> void:
@@ -255,14 +231,67 @@ func _initialize() -> void:
 func _validate_forbidden_character_frames() -> bool:
 	var valid := true
 	var checked := 0
-	for action in FORBIDDEN_CHARACTER_FRAME_COUNTS:
-		for frame_number in range(1, FORBIDDEN_CHARACTER_FRAME_COUNTS[action] + 1):
+	var frame_manifest := _load_character_frame_manifest()
+	if frame_manifest.is_empty():
+		return false
+	for action in frame_manifest:
+		for frame_number in frame_manifest[action]:
 			var path := "res://images/characters/shin_getter/forms/%s/sprite_%06d.png" % [action, frame_number]
 			checked += 1
 			if ResourceLoader.exists(path):
 				push_error("Forbidden per-frame character resource was exported: %s" % path)
 				valid = false
+	if checked != EXPECTED_CHARACTER_SOURCE_FRAME_COUNT:
+		push_error("Character frame manifest has %d entries; expected %d" % [checked, EXPECTED_CHARACTER_SOURCE_FRAME_COUNT])
+		valid = false
 
 	if valid:
 		print("MOD_CHARACTER_SOURCE_FRAMES_ABSENT: %d" % checked)
 	return valid
+
+
+func _load_character_frame_manifest() -> Dictionary:
+	var project_path := ProjectSettings.globalize_path("res://")
+	var manifest_path := project_path.path_join(CHARACTER_FRAME_MANIFEST_PATH).simplify_path()
+	var file := FileAccess.open(manifest_path, FileAccess.READ)
+	if file == null:
+		push_error("Unable to read character frame manifest: %s" % manifest_path)
+		return {}
+
+	var sequences := {}
+	var actions := {}
+	var line_number := 0
+	while not file.eof_reached():
+		line_number += 1
+		var line := file.get_line().strip_edges()
+		if line.is_empty() or line.begins_with("#"):
+			continue
+		var assignment := line.split("=", false, 1)
+		var declaration := assignment[0].split(" ", false, 1) if assignment.size() == 2 else PackedStringArray()
+		if declaration.size() != 2:
+			push_error("Invalid character frame manifest declaration at line %d" % line_number)
+			return {}
+		var kind := declaration[0]
+		var name := declaration[1]
+		if kind == "sequence":
+			var frame_numbers := PackedInt32Array()
+			for token in assignment[1].split(",", false):
+				if not token.is_valid_int():
+					push_error("Invalid frame number at manifest line %d" % line_number)
+					return {}
+				frame_numbers.append(token.to_int())
+			sequences[name] = frame_numbers
+		elif kind == "action":
+			actions[name] = assignment[1]
+		else:
+			push_error("Unknown character frame manifest declaration at line %d" % line_number)
+			return {}
+
+	var manifest := {}
+	for action in actions:
+		var sequence_name: String = actions[action]
+		if not sequences.has(sequence_name):
+			push_error("Character frame action %s references unknown sequence %s" % [action, sequence_name])
+			return {}
+		manifest[action] = sequences[sequence_name]
+	return manifest
