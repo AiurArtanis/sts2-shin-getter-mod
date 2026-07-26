@@ -45,7 +45,6 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
     {
         SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         BuildInterface();
-        ConnectSignals();
     }
 
     public override void OnSubmenuOpened()
@@ -93,6 +92,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         backButton.ZIndex = 100;
         backButton.ZAsRelative = false;
         AddChild(backButton);
+        ConnectSignals();
 
         columns.AddChild(BuildModList());
         columns.AddChild(BuildSettingsPanel());
