@@ -2,7 +2,7 @@
   "SHIN_GETTER_TRANSFORM.title": "变形",
   "SHIN_GETTER_TRANSFORM.description": "按一号机→二号机→三号机→一号机的顺序切换形态。",
   "SHIN_GETTER_SPIRIT_COMMAND.title": "精神指令卡",
-  "SHIN_GETTER_SPIRIT_COMMAND.description": "卡面带有[img=top,22x22]res://images/atlases/power_atlas.sprites/s_g_p_ki.tres[/img]标记的卡牌。拥有至少1点气力时，该牌获得保留；当前气力达到指定数量后，该牌的耗能降低1。",
+    "SHIN_GETTER_SPIRIT_COMMAND.description": "卡面带有[img=top,22x22]res://images/atlases/power_atlas.sprites/s_g_p_ki.tres[/img]标记的卡牌。当前气力达到指定数量后，该牌的耗能降低1。",
   "SHIN_GETTER_FORM_CARD.title": "专属形态卡",
   "SHIN_GETTER_FORM_CARD.description": "具有当前形态专属效果的卡牌。",
   "SHIN_GETTER_INFINITE_EVOLUTION_TOTAL.title": "无限进化累计",

@@ -10,7 +10,7 @@
   "S_G_P_FIGHTING_SPIRIT.title": "斗志",
   "S_G_P_FIGHTING_SPIRIT.description": "被攻击前，先对攻击者造成{Amount}点伤害。",
   "S_G_P_KI.title": "气力",
-  "S_G_P_KI.description": "回合开始时获得等同于层数的活力；受到的最终伤害减少等同于层数的数值；每次受到伤害后减少1层。拥有气力时，精神指令卡获得保留。",
+    "S_G_P_KI.description": "回合开始时获得等同于层数的活力；受到的最终伤害减少等同于层数的数值；每次受到伤害后减少1层。",
   "S_G_P_SUPER_KI.title": "超强气",
   "S_G_P_SUPER_KI.description": "每回合开始时，将1张气势加入手牌。",
   "S_G_P_EVOLUTION.title": "进化",
