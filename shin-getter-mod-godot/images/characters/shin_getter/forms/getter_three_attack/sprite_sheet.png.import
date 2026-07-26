@@ -3,20 +3,19 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bq7pr5ve5gy1r"
-path.s3tc="res://.godot/imported/sprite_sheet.png-6467146f22a22178b10a053d487dcc1c.s3tc.ctex"
+path="res://.godot/imported/sprite_sheet.png-6467146f22a22178b10a053d487dcc1c.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
-"vram_texture": true
+"vram_texture": false
 }
 
 [deps]
 
 source_file="res://images/characters/shin_getter/forms/getter_three_attack/sprite_sheet.png"
-dest_files=["res://.godot/imported/sprite_sheet.png-6467146f22a22178b10a053d487dcc1c.s3tc.ctex"]
+dest_files=["res://.godot/imported/sprite_sheet.png-6467146f22a22178b10a053d487dcc1c.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

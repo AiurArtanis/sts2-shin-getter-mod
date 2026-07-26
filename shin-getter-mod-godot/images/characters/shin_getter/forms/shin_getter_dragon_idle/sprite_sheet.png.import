@@ -3,22 +3,21 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cvko8rm0hmvn8"
-path.s3tc="res://.godot/imported/sprite_sheet.png-01d6bc3317a96cca17a2c18644e23d5f.s3tc.ctex"
+path="res://.godot/imported/sprite_sheet.png-01d6bc3317a96cca17a2c18644e23d5f.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
-"vram_texture": true
+"vram_texture": false
 }
 
 [deps]
 
 source_file="res://images/characters/shin_getter/forms/shin_getter_dragon_idle/sprite_sheet.png"
-dest_files=["res://.godot/imported/sprite_sheet.png-01d6bc3317a96cca17a2c18644e23d5f.s3tc.ctex"]
+dest_files=["res://.godot/imported/sprite_sheet.png-01d6bc3317a96cca17a2c18644e23d5f.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=1
 compress/high_quality=false
-compress/lossy_quality=0.7
+compress/lossy_quality=0.75
 compress/uastc_level=0
 compress/rdo_quality_loss=0.0
 compress/hdr_compression=1

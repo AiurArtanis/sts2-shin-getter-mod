@@ -40,7 +40,10 @@ public sealed class SGC_ChangeAttack : ShinGetterCardBase
             if (!CanContinueChangeAttack(cardPlay.Target))
                 break;
 
-            await PlayAcceleratedFollowupAnimation();
+            if (i < x - 1)
+                await PlayAcceleratedFollowupAnimation();
+            else
+                await PlayNormalFollowupAnimation();
             if (!CanContinueChangeAttack(cardPlay.Target))
                 break;
 
