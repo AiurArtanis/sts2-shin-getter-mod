@@ -19,6 +19,7 @@ public sealed class SGR_EmperorsFragment : ShinGetterRelicBase
 {
     private int _playedVoiceMask;
     private int _combatStartVoiceCount;
+    private bool _eventInvasionEnabled = true;
 
     public override RelicRarity Rarity => RelicRarity.Ancient;
 
@@ -50,11 +51,23 @@ public sealed class SGR_EmperorsFragment : ShinGetterRelicBase
         }
     }
 
+    [SavedProperty]
+    public bool EventInvasionEnabled
+    {
+        get => _eventInvasionEnabled;
+        set
+        {
+            AssertMutable();
+            _eventInvasionEnabled = value;
+        }
+    }
+
     internal static SGR_EmperorsFragment CreateFrom(SGR_GetterFurnace getterFurnace)
     {
         var fragment = (SGR_EmperorsFragment)ModelDb.Relic<SGR_EmperorsFragment>().ToMutable();
         fragment.PlayedVoiceMask = getterFurnace.PlayedVoiceMask;
         fragment.CombatStartVoiceCount = getterFurnace.CombatStartVoiceCount;
+        fragment.EventInvasionEnabled = getterFurnace.EventInvasionEnabled;
         return fragment;
     }
 
