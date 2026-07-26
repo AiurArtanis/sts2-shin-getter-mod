@@ -180,12 +180,15 @@ internal static class ShinGetterEventInvasionService
 
     private static IEnumerable<EventOption> BuildAmalgamatorOptions(Amalgamator eventModel)
     {
-        yield return new EventOption(
-            eventModel,
-            () => AmalgamatorRyoma(eventModel),
-            Key("AMALGAMATOR", "RYOMA"));
-
         Player owner = RequireOwner(eventModel);
+        if (owner.Deck.Cards.Any(IsRyomaExtraRemovalCandidate))
+        {
+            yield return new EventOption(
+                eventModel,
+                () => AmalgamatorRyoma(eventModel),
+                Key("AMALGAMATOR", "RYOMA"));
+        }
+
         if (owner.Gold >= 100
             && owner.Deck.Cards.Count(card => card is SGC_Strike && card.IsRemovable) >= 2
             && owner.Deck.Cards.Count(card => card is SGC_Defend && card.IsRemovable) >= 2)
@@ -286,17 +289,19 @@ internal static class ShinGetterEventInvasionService
     private static async Task AmalgamatorRyoma(Amalgamator eventModel)
     {
         Player owner = RequireOwner(eventModel);
-        List<CardModel> basics = owner.Deck.Cards
-            .Where(card => card.IsRemovable && card is SGC_Strike or SGC_Defend)
-            .ToList();
-        await CardPileCmd.RemoveFromDeck(basics);
-
         CardModel? extra = (await CardSelectCmd.FromDeckForRemoval(
             owner,
-            new CardSelectorPrefs(CardSelectorPrefs.RemoveSelectionPrompt, 1)))
+            new CardSelectorPrefs(CardSelectorPrefs.RemoveSelectionPrompt, 1),
+            IsRyomaExtraRemovalCandidate))
             .FirstOrDefault();
-        if (extra != null)
-            await CardPileCmd.RemoveFromDeck(extra);
+        if (extra == null)
+            return;
+
+        List<CardModel> cardsToRemove = owner.Deck.Cards
+            .Where(card => card.IsRemovable && card is SGC_Strike or SGC_Defend)
+            .Append(extra)
+            .ToList();
+        await CardPileCmd.RemoveFromDeck(cardsToRemove);
 
         Finish(eventModel, PageKey("AMALGAMATOR", "RYOMA"));
     }
@@ -372,6 +377,9 @@ internal static class ShinGetterEventInvasionService
         targetTypes.ExceptWith(sharedTypes);
         return owner.Deck.Cards.Any(card => targetTypes.Contains(card.GetType()));
     }
+
+    private static bool IsRyomaExtraRemovalCandidate(CardModel card) =>
+        card.IsRemovable && card is not SGC_Strike && card is not SGC_Defend;
 
     private static string Key(string eventName, string optionName) =>
         $"{LocPrefix}.{eventName}.pages.INITIAL.options.{optionName}";
