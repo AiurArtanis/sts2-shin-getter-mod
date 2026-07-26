@@ -63,7 +63,7 @@ internal static class ShinGetterEventOptionIconPatch
             : key.Contains(".MUQING", StringComparison.Ordinal)
                 ? GetterThreeIcon
                 : GetterOneIcon;
-        return CreateIcon(path, new Rect2(OptionWidth - 70f, 22f, 56f, 56f));
+        return CreateIcon(path, new Rect2(OptionWidth - 68f, 18f, 54f, 54f));
     }
 
     private static Control CreateTripleIcon()
@@ -100,18 +100,21 @@ internal static class ShinGetterEventContentCenterPatch
     private static void Postfix(NEventLayout __instance)
     {
         VBoxContainer? options = __instance.GetNodeOrNull<VBoxContainer>("%OptionsContainer");
-        if (options == null || !options.GetChildren().OfType<NEventOptionButton>()
-                .Any(button => button.Option.TextKey.StartsWith(Prefix, StringComparison.Ordinal)))
-        {
+        if (options == null)
             return;
-        }
 
-        QueueRecenter(__instance);
-        if (!__instance.HasMeta(ResizeConnectedMeta))
+        bool containsInvasionOption = options.GetChildren().OfType<NEventOptionButton>()
+            .Any(button => button.Option.TextKey.StartsWith(Prefix, StringComparison.Ordinal));
+        bool managesCentering = __instance.HasMeta(ResizeConnectedMeta);
+        if (containsInvasionOption && !managesCentering)
         {
             __instance.SetMeta(ResizeConnectedMeta, true);
             __instance.Resized += () => QueueRecenter(__instance);
+            managesCentering = true;
         }
+
+        if (managesCentering)
+            QueueRecenter(__instance);
     }
 
     private static void QueueRecenter(NEventLayout layout)
