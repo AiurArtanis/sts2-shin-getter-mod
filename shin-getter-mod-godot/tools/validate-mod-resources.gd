@@ -389,7 +389,7 @@ func _require_visible_shadow_layer(path: String, shadow: CanvasItem, sprite: Can
 func _require_directional_merchant_shadow(path: String, shadow: ColorRect) -> bool:
 	if shadow == null:
 		return false
-	if shadow.size.x < 280.0 or shadow.size.y < 72.0 or shadow.position.y > 20.0:
+	if shadow.size.x < 312.0 or shadow.size.y < 92.0 or shadow.position.y > 14.0:
 		push_error("Mod scene %s must leave enough room behind the merchant for the directional shadow" % path)
 		return false
 	var material := shadow.material as ShaderMaterial
@@ -398,7 +398,8 @@ func _require_directional_merchant_shadow(path: String, shadow: ColorRect) -> bo
 		return false
 	var tail_offset: Vector2 = material.get_shader_parameter("tail_offset")
 	var tail_strength: float = material.get_shader_parameter("tail_strength")
-	if tail_offset.x <= 0.0 or tail_offset.y >= 0.0 or tail_strength <= 0.0:
+	var shadow_opacity: float = material.get_shader_parameter("shadow_opacity")
+	if tail_offset.x < 0.15 or tail_offset.y > -0.28 or tail_strength < 0.58 or shadow_opacity < 0.26:
 		push_error("Mod scene %s must cast its merchant shadow backward along the shop lighting direction" % path)
 		return false
 	return true

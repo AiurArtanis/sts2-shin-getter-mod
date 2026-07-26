@@ -8,8 +8,10 @@
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_shadow"]
 resource_local_to_scene = true
 shader = ExtResource("4_shadow")
-shader_parameter/tail_offset = Vector2(0.12, -0.29)
-shader_parameter/tail_strength = 0.48
+shader_parameter/shadow_opacity = 0.28
+shader_parameter/tail_offset = Vector2(0.18, -0.32)
+shader_parameter/tail_strength = 0.62
+shader_parameter/shadow_color = Vector3(0.035, 0.021, 0.016)
 
 [node name="ShinGetterMerchant" instance=ExtResource("1_base")]
 
@@ -19,10 +21,10 @@ visible = false
 [node name="GroundShadow" type="ColorRect" parent="."]
 z_index = 0
 material = SubResource("ShaderMaterial_shadow")
-offset_left = -152.0
-offset_top = 16.0
-offset_right = 152.0
-offset_bottom = 98.0
+offset_left = -160.0
+offset_top = 10.0
+offset_right = 160.0
+offset_bottom = 106.0
 mouse_filter = 2
 
 [node name="RyomaNormalSprite" type="Sprite2D" parent="."]
