@@ -125,16 +125,16 @@ internal static class ShinGetterChunibyoSettingsEntryPatch
             button.Connect(
                 NClickableControl.SignalName.Released,
                 Callable.From<NButton>(_ => FindMainMenuStack(__instance)?.PushSubmenuType<NChunibyoConfigSubmenu>()));
-            if (!sourceButton.IsEnabled)
-                button.Disable();
-
-            int insertAt = modding.GetIndex() + 1;
-            content.AddChild(divider);
-            content.MoveChild(divider, insertAt);
+            int insertAt = modding.GetIndex();
             content.AddChild(entry);
-            content.MoveChild(entry, insertAt + 1);
+            content.MoveChild(entry, insertAt);
+            content.AddChild(divider);
+            content.MoveChild(divider, insertAt + 1);
             button.GetNode<MegaCrit.Sts2.addons.mega_text.MegaLabel>("Label").SetTextAutoSize(
                 Localize("SHIN_GETTER_CHUNIBYO.OPEN_CONFIG", "Open Config"));
+
+            if (!sourceButton.IsEnabled)
+                Callable.From(button.Disable).CallDeferred();
         }
         catch (Exception ex)
         {
