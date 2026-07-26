@@ -14,7 +14,7 @@
   "S_G_P_SUPER_KI.title": "超强气",
   "S_G_P_SUPER_KI.description": "每回合开始时，将1张气势加入手牌。",
   "S_G_P_EVOLUTION.title": "进化",
-  "S_G_P_EVOLUTION.description": "回合开始时，在气力生效后，将活力、再生和覆甲各自最多等同于进化层数的数值转化为力量、最大生命和敏捷；进化层数不会消耗。",
+  "S_G_P_EVOLUTION.description": "回合开始时，在气力生效后，将活力、再生和覆甲各自最多等同于进化层数的数值转化为力量、最大生命和敏捷。至少成功转化一种资源时，失去1层进化。",
   "S_G_P_EVOLUTION_ENGINE.title": "进化引擎",
   "S_G_P_EVOLUTION_ENGINE.description": "触发进化后的下一回合获得{Amount:energyIcons()}。",
   "S_G_P_AIRBORNE.title": "腾空",

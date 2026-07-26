@@ -300,6 +300,9 @@ public abstract class ShinGetterCardBase : CardModel
     protected Task PlayAcceleratedFollowupAnimation() =>
         NShinGetterStaticVisuals.PlayAcceleratedFollowupAnimation(Owner.Creature, AcceleratedFollowupSpeedScale);
 
+    protected Task PlayNormalFollowupAnimation() =>
+        NShinGetterStaticVisuals.PlayAcceleratedFollowupAnimation(Owner.Creature, 1f);
+
     public override async Task BeforeCardPlayed(CardPlay cardPlay)
     {
         await base.BeforeCardPlayed(cardPlay);

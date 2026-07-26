@@ -14,7 +14,7 @@ namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
 /// 热血 | 攻击 | 罕见 | 3费 | 钢之魂流
-/// 保留。【精神 4，升级后 2】造成 15 伤害，下一次伤害翻倍。消耗
+/// 【精神 4，升级后 2】造成 15 伤害，下一次伤害翻倍。消耗
 /// </summary>
 public sealed class SGC_HotBlood : ShinGetterCardBase
 {

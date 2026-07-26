@@ -3,20 +3,19 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c185dddao16hp"
-path.s3tc="res://.godot/imported/sprite_sheet.png-bd74149a3ce329c8f633a73321dd1a4a.s3tc.ctex"
+path="res://.godot/imported/sprite_sheet.png-bd74149a3ce329c8f633a73321dd1a4a.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
-"vram_texture": true
+"vram_texture": false
 }
 
 [deps]
 
 source_file="res://images/characters/shin_getter/forms/shin_getter_dragon_block/sprite_sheet.png"
-dest_files=["res://.godot/imported/sprite_sheet.png-bd74149a3ce329c8f633a73321dd1a4a.s3tc.ctex"]
+dest_files=["res://.godot/imported/sprite_sheet.png-bd74149a3ce329c8f633a73321dd1a4a.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

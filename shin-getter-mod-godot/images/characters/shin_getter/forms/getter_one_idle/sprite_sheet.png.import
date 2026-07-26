@@ -3,20 +3,19 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://y74657vwegqh"
-path.s3tc="res://.godot/imported/sprite_sheet.png-5a9bdf2bdaa78e84a9bc5f6e3c7dd6a7.s3tc.ctex"
+path="res://.godot/imported/sprite_sheet.png-5a9bdf2bdaa78e84a9bc5f6e3c7dd6a7.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
-"vram_texture": true
+"vram_texture": false
 }
 
 [deps]
 
 source_file="res://images/characters/shin_getter/forms/getter_one_idle/sprite_sheet.png"
-dest_files=["res://.godot/imported/sprite_sheet.png-5a9bdf2bdaa78e84a9bc5f6e3c7dd6a7.s3tc.ctex"]
+dest_files=["res://.godot/imported/sprite_sheet.png-5a9bdf2bdaa78e84a9bc5f6e3c7dd6a7.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

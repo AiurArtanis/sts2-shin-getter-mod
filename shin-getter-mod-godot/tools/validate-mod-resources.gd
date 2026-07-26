@@ -156,6 +156,33 @@ const FORBIDDEN_RESOURCE_DEPENDENCIES := {
 	],
 }
 
+const FORBIDDEN_CHARACTER_FRAME_COUNTS := {
+	"getter_one_attack": 40,
+	"getter_one_block": 24,
+	"getter_one_cast": 32,
+	"getter_one_dash": 48,
+	"getter_one_death": 48,
+	"getter_one_idle": 24,
+	"getter_two_attack": 40,
+	"getter_two_block": 24,
+	"getter_two_cast": 32,
+	"getter_two_dash": 48,
+	"getter_two_death": 48,
+	"getter_two_idle": 24,
+	"getter_three_attack": 40,
+	"getter_three_block": 24,
+	"getter_three_cast": 32,
+	"getter_three_dash": 48,
+	"getter_three_death": 48,
+	"getter_three_idle": 24,
+	"shin_getter_dragon_attack": 60,
+	"shin_getter_dragon_block": 48,
+	"shin_getter_dragon_cast": 32,
+	"shin_getter_dragon_dash": 48,
+	"shin_getter_dragon_death": 48,
+	"shin_getter_dragon_idle": 36,
+}
+
 
 func _initialize() -> void:
 	var args := OS.get_cmdline_user_args()
@@ -185,6 +212,9 @@ func _initialize() -> void:
 			continue
 
 		print("MOD_RESOURCE_ABSENT: %s" % path)
+
+	if not _validate_forbidden_character_frames():
+		failed = true
 
 	for path in FORBIDDEN_RESOURCE_DEPENDENCIES:
 		var dependencies := ResourceLoader.get_dependencies(path)
@@ -220,3 +250,19 @@ func _initialize() -> void:
 		print("MOD_RESOURCE_OK: %s" % path)
 
 	quit(1 if failed else 0)
+
+
+func _validate_forbidden_character_frames() -> bool:
+	var valid := true
+	var checked := 0
+	for action in FORBIDDEN_CHARACTER_FRAME_COUNTS:
+		for frame_number in range(1, FORBIDDEN_CHARACTER_FRAME_COUNTS[action] + 1):
+			var path := "res://images/characters/shin_getter/forms/%s/sprite_%06d.png" % [action, frame_number]
+			checked += 1
+			if ResourceLoader.exists(path):
+				push_error("Forbidden per-frame character resource was exported: %s" % path)
+				valid = false
+
+	if valid:
+		print("MOD_CHARACTER_SOURCE_FRAMES_ABSENT: %d" % checked)
+	return valid
