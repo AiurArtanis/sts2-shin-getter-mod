@@ -152,10 +152,27 @@ def validate_sprite_sheets() -> None:
     frame_pngs = [path for path in forms.glob("*/sprite_*.png") if path.name != "sprite_sheet.png"]
     if frame_pngs:
         raise AssertionError("runtime form directories still contain per-frame PNG files")
+    expected_imports = {
+        "attack": ("compress/mode=0", None),
+        "block": ("compress/mode=1", "compress/lossy_quality=0.75"),
+        "cast": ("compress/mode=0", None),
+        "dash": ("compress/mode=1", "compress/lossy_quality=0.75"),
+        "death": ("compress/mode=1", "compress/lossy_quality=0.6"),
+        "idle": ("compress/mode=1", "compress/lossy_quality=0.75"),
+    }
     for sidecar in imports:
         text = sidecar.read_text(encoding="utf-8")
-        if '"vram_texture": false' not in text or "compress/mode=0" not in text:
-            raise AssertionError(f"{sidecar.relative_to(ROOT)}: lossless import is not enabled")
+        action = sidecar.parent.name.rsplit("_", 1)[-1]
+        if action not in expected_imports:
+            raise AssertionError(f"{sidecar.relative_to(ROOT)}: unknown animation action")
+        expected_mode, expected_quality = expected_imports[action]
+        required = ['"vram_texture": false', expected_mode, "mipmaps/generate=false"]
+        if expected_quality is not None:
+            required.append(expected_quality)
+        if any(fragment not in text for fragment in required):
+            raise AssertionError(
+                f"{sidecar.relative_to(ROOT)}: expected {action} import policy {required}"
+            )
         forbidden = ('"vram_texture": true', "compress/mode=2", "s3tc", "bptc")
         if any(fragment in text.lower() for fragment in forbidden):
             raise AssertionError(f"{sidecar.relative_to(ROOT)}: VRAM compression metadata remains")
