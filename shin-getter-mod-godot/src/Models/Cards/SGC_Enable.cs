@@ -12,7 +12,7 @@ namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
 /// 再动 | 能力 | 稀有 | 4费
-/// 保留。【精神 6】变形至一号机；结束当前回合，获得 1 个额外的回合
+/// 【精神 6】变形至一号机；结束当前回合，获得 1 个额外的回合
 /// </summary>
 public sealed class SGC_Enable : ShinGetterCardBase
 {

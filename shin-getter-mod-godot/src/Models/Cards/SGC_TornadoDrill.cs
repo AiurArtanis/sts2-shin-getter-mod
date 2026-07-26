@@ -16,15 +16,15 @@ namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
 /// 龙卷钻头 | 攻击 | 罕见 | 2费 | 二号/护盾特攻
-/// 造成 20 伤害并施加 1 层易伤
+/// 造成 16 伤害并施加 1 层易伤
 /// 二号机加成：对格挡造成双倍伤害
 /// </summary>
 public sealed class SGC_TornadoDrill : ShinGetterCardBase
 {
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new CalculationBaseVar(20m),
-        new ExtraDamageVar(20m),
+        new CalculationBaseVar(16m),
+        new ExtraDamageVar(16m),
         new CalculatedDamageVar(ValueProp.Move).WithMultiplier(GetBlockBreakerMultiplier),
         new PowerVar<VulnerablePower>(1m),
     };
@@ -54,8 +54,8 @@ public sealed class SGC_TornadoDrill : ShinGetterCardBase
 
     protected override void OnUpgrade()
     {
-        DynamicVars.CalculationBase.UpgradeValueBy(6m);
-        DynamicVars.ExtraDamage.UpgradeValueBy(6m);
+        DynamicVars.CalculationBase.UpgradeValueBy(5m);
+        DynamicVars.ExtraDamage.UpgradeValueBy(5m);
     }
 
     private static decimal GetBlockBreakerMultiplier(CardModel card, Creature? target) =>

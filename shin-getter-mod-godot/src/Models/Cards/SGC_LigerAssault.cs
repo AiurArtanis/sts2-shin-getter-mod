@@ -35,7 +35,7 @@ public sealed class SGC_LigerAssault : ShinGetterCardBase
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
         int x = ResolveEnergyXValue() + (IsUpgraded ? 1 : 0);
-        if (x > 0 && HasForm(Owner, ShinGetterForm.Getter2))
+        if (HasForm(Owner, ShinGetterForm.Getter2))
         {
             await PowerCmd.Apply<SGP_Shade>(choiceContext, Owner.Creature, DynamicVars["SGP_Shade"].BaseValue, Owner.Creature, this);
             await PowerCmd.Apply<BufferPower>(choiceContext, Owner.Creature, DynamicVars["BufferPower"].BaseValue, Owner.Creature, this);
