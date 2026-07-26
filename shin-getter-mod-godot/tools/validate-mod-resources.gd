@@ -176,7 +176,7 @@ const FORBIDDEN_RESOURCE_DEPENDENCIES := {
 	],
 }
 
-const CHARACTER_FRAME_MANIFEST_PATH := "../art_sources/characters/shin_getter/forms/frame_manifest.txt"
+const CHARACTER_FRAME_MANIFEST_PATH := "art_sources/characters/shin_getter/forms/frame_manifest.txt"
 const EXPECTED_CHARACTER_SOURCE_FRAME_COUNT := 920
 
 
@@ -209,7 +209,7 @@ func _initialize() -> void:
 
 		print("MOD_RESOURCE_ABSENT: %s" % path)
 
-	if not _validate_forbidden_character_frames():
+	if not _validate_forbidden_character_frames(args[0]):
 		failed = true
 
 	for path in FORBIDDEN_RESOURCE_DEPENDENCIES:
@@ -250,10 +250,10 @@ func _initialize() -> void:
 	quit(1 if failed else 0)
 
 
-func _validate_forbidden_character_frames() -> bool:
+func _validate_forbidden_character_frames(pck_path: String) -> bool:
 	var valid := true
 	var checked := 0
-	var frame_manifest := _load_character_frame_manifest()
+	var frame_manifest := _load_character_frame_manifest(pck_path)
 	if frame_manifest.is_empty():
 		return false
 	for action in frame_manifest:
@@ -272,9 +272,9 @@ func _validate_forbidden_character_frames() -> bool:
 	return valid
 
 
-func _load_character_frame_manifest() -> Dictionary:
-	var project_path := ProjectSettings.globalize_path("res://")
-	var manifest_path := project_path.path_join(CHARACTER_FRAME_MANIFEST_PATH).simplify_path()
+func _load_character_frame_manifest(pck_path: String) -> Dictionary:
+	var repo_path := pck_path.get_base_dir().get_base_dir().get_base_dir()
+	var manifest_path := repo_path.path_join(CHARACTER_FRAME_MANIFEST_PATH).simplify_path()
 	var file := FileAccess.open(manifest_path, FileAccess.READ)
 	if file == null:
 		push_error("Unable to read character frame manifest: %s" % manifest_path)
