@@ -23,8 +23,8 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
     private const string UpdateHistoryPath = "res://ShinGetterMod/update_history.json";
     private const string CharacterIconPath = "res://images/ui/top_panel/character_icon_shin_getter.png";
     private const string KreonFontPath = "res://themes/kreon_regular_shared.tres";
-    private const string ConfigTickboxScenePath = "res://ShinGetterMod/scenes/config/shin_getter_config_tickbox.tscn";
-    private const string VoicePaginatorScenePath = "res://ShinGetterMod/scenes/config/shin_getter_voice_paginator.tscn";
+    private const string ConfigTickboxScenePath = "res://scenes/config/shin_getter_config_tickbox.tscn";
+    private const string VoicePaginatorScenePath = "res://scenes/config/shin_getter_voice_paginator.tscn";
     private const string LocTable = "settings_ui";
     private const int PageTitleFontSize = 52;
     private const int SidebarTitleFontSize = 48;
@@ -45,7 +45,6 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
     {
         SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         BuildInterface();
-        ConnectSignals();
     }
 
     public override void OnSubmenuOpened()
@@ -86,9 +85,6 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         columns.AddThemeConstantOverride("separation", 28);
         margin.AddChild(columns);
 
-        columns.AddChild(BuildModList());
-        columns.AddChild(BuildSettingsPanel());
-
         var backButton = PreloadManager.Cache
             .GetScene(SceneHelper.GetScenePath("ui/back_button"))
             .Instantiate<NBackButton>();
@@ -96,6 +92,10 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         backButton.ZIndex = 100;
         backButton.ZAsRelative = false;
         AddChild(backButton);
+        ConnectSignals();
+
+        columns.AddChild(BuildModList());
+        columns.AddChild(BuildSettingsPanel());
     }
 
     private Control BuildModList()
