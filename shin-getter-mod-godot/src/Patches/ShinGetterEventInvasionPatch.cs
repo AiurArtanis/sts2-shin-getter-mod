@@ -99,7 +99,7 @@ internal static class ShinGetterEventContentCenterPatch
 
     private static void Postfix(NEventLayout __instance)
     {
-        VBoxContainer? options = __instance.GetNodeOrNull<VBoxContainer>("%OptionsContainer");
+        VBoxContainer options = __instance.GetNodeOrNull<VBoxContainer>("%OptionsContainer");
         if (options == null)
             return;
 
@@ -127,7 +127,7 @@ internal static class ShinGetterEventContentCenterPatch
         if (!GodotObject.IsInstanceValid(layout))
             return;
 
-        VBoxContainer? options = layout.GetNodeOrNull<VBoxContainer>("%OptionsContainer");
+        VBoxContainer options = layout.GetNodeOrNull<VBoxContainer>("%OptionsContainer");
         if (options?.GetParent() is not VBoxContainer content)
             return;
 
