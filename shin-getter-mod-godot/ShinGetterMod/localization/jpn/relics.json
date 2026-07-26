@@ -29,5 +29,8 @@
   "S_G_R_YUMMY_COOKIE.title": "おいしいクッキー・真ゲッター",
   "S_G_R_YUMMY_COOKIE.description": "取得時、カードを[blue]{Cards}[/blue]枚[gold]アップグレード[/gold]する。",
   "S_G_R_YUMMY_COOKIE.eventDescription": "カードを[blue]{Cards}[/blue]枚[gold]アップグレード[/gold]する。",
-  "S_G_R_YUMMY_COOKIE.flavor": "ゲッター線で焼き上げた香りは、進化さえ少しおいしそうに思わせる。"
+  "S_G_R_YUMMY_COOKIE.flavor": "ゲッター線で焼き上げた香りは、進化さえ少しおいしそうに思わせる。",
+  "S_G_R_TRIPLE_WOOD_CARVING.title": "三位一体の木彫り",
+  "S_G_R_TRIPLE_WOOD_CARVING.description": "戦闘開始時、ランダムに1～3回[gold]変形[/gold]する。",
+  "S_G_R_TRIPLE_WOOD_CARVING.flavor": "鳥、蛇、輪が赤、白、黄の光の中で一つになる。"
 }

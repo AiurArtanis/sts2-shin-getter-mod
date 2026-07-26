@@ -29,5 +29,8 @@
   "S_G_R_YUMMY_COOKIE.title": "Yummy Cookie - Shin Getter",
   "S_G_R_YUMMY_COOKIE.description": "Upon pickup, [gold]Upgrade[/gold] [blue]{Cards}[/blue] {Cards:plural:card|cards}.",
   "S_G_R_YUMMY_COOKIE.eventDescription": "[gold]Upgrade[/gold] [blue]{Cards}[/blue] {Cards:plural:card|cards}.",
-  "S_G_R_YUMMY_COOKIE.flavor": "Baked in Getter Rays, it makes evolution smell unexpectedly delicious."
+  "S_G_R_YUMMY_COOKIE.flavor": "Baked in Getter Rays, it makes evolution smell unexpectedly delicious.",
+  "S_G_R_TRIPLE_WOOD_CARVING.title": "Triple Wood Carving",
+  "S_G_R_TRIPLE_WOOD_CARVING.description": "At the start of combat, [gold]Transform[/gold] 1 to 3 times at random.",
+  "S_G_R_TRIPLE_WOOD_CARVING.flavor": "Bird, snake, and ring become one beneath red, white, and yellow light."
 }

@@ -57,7 +57,7 @@ public sealed class SGC_Specialization : ShinGetterCardBase
         DynamicVars["Cards"].UpgradeValueBy(1m);
     }
 
-    private static CardModel[] GetFormCards(ShinGetterForm form) => form switch
+    internal static CardModel[] GetFormCards(ShinGetterForm form) => form switch
     {
         ShinGetterForm.Getter1 => new CardModel[]
         {

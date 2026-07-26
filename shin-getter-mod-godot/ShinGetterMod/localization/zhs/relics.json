@@ -29,5 +29,8 @@
   "S_G_R_YUMMY_COOKIE.title": "美味饼干-真盖塔",
   "S_G_R_YUMMY_COOKIE.description": "拾起时，[gold]升级[/gold][blue]{Cards}[/blue]张牌。",
   "S_G_R_YUMMY_COOKIE.eventDescription": "[gold]升级[/gold][blue]{Cards}[/blue]张牌。",
-  "S_G_R_YUMMY_COOKIE.flavor": "盖塔线烤出的香气，让进化也显得有些可口。"
+  "S_G_R_YUMMY_COOKIE.flavor": "盖塔线烤出的香气，让进化也显得有些可口。",
+  "S_G_R_TRIPLE_WOOD_CARVING.title": "三合一木雕",
+  "S_G_R_TRIPLE_WOOD_CARVING.description": "战斗开始时，随机[gold]变形[/gold]1至3次。",
+  "S_G_R_TRIPLE_WOOD_CARVING.flavor": "飞鸟、长蛇与圆环在红、白、黄三色微光中合为一体。"
 }

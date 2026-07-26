@@ -22,6 +22,7 @@ public sealed class SGR_GetterFurnace : ShinGetterRelicBase
 {
 	private int _playedVoiceMask;
     private int _combatStartVoiceCount;
+    private bool _eventInvasionEnabled = true;
 
     public override RelicRarity Rarity => RelicRarity.Starter;
 
@@ -50,6 +51,17 @@ public sealed class SGR_GetterFurnace : ShinGetterRelicBase
         {
             AssertMutable();
             _combatStartVoiceCount = value;
+        }
+    }
+
+    [SavedProperty]
+    public bool EventInvasionEnabled
+    {
+        get => _eventInvasionEnabled;
+        set
+        {
+            AssertMutable();
+            _eventInvasionEnabled = value;
         }
     }
 
