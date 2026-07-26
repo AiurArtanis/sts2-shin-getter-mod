@@ -326,11 +326,16 @@ func _validate_issue_5_scene(path: String, instance: Node) -> bool:
 			"RyomaNormalSprite",
 			"RyomaCitizenSprite",
 		])
-		return _require_visible_shadow_layer(
+		valid = _require_visible_shadow_layer(
 			path,
 			instance.get_node_or_null("GroundShadow"),
 			instance.get_node_or_null("RyomaNormalSprite")
 		) and valid
+		valid = _require_directional_merchant_shadow(
+			path,
+			instance.get_node_or_null("GroundShadow")
+		) and valid
+		return valid
 
 	if path == "res://scenes/rest_site/characters/shin_getter_rest_site.tscn":
 		var valid := _require_nodes(path, instance, [
@@ -372,5 +377,23 @@ func _require_visible_shadow_layer(path: String, shadow: CanvasItem, sprite: Can
 		return false
 	if shadow.get_parent() != sprite.get_parent() or shadow.get_index() >= sprite.get_index():
 		push_error("Mod scene %s must order its ground shadow before the character within the same room container" % path)
+		return false
+	return true
+
+
+func _require_directional_merchant_shadow(path: String, shadow: ColorRect) -> bool:
+	if shadow == null:
+		return false
+	if shadow.size.x < 280.0 or shadow.size.y < 72.0 or shadow.position.y > 20.0:
+		push_error("Mod scene %s must leave enough room behind the merchant for the directional shadow" % path)
+		return false
+	var material := shadow.material as ShaderMaterial
+	if material == null:
+		push_error("Mod scene %s must use the dedicated merchant shadow ShaderMaterial" % path)
+		return false
+	var tail_offset: Vector2 = material.get_shader_parameter("tail_offset")
+	var tail_strength: float = material.get_shader_parameter("tail_strength")
+	if tail_offset.x <= 0.0 or tail_offset.y >= 0.0 or tail_strength <= 0.0:
+		push_error("Mod scene %s must cast its merchant shadow backward along the shop lighting direction" % path)
 		return false
 	return true
