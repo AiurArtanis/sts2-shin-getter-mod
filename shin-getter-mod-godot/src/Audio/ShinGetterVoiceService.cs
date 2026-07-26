@@ -217,7 +217,7 @@ internal static class ShinGetterVoiceService
             return;
 
         VoiceLine? line = ResolveCardVoice(card);
-        if (line == null || (requireCardPlayStart && !line.StartAtCardPlay))
+        if (line == null || line.StartAtCardPlay != requireCardPlayStart)
             return;
 
         if (line.RequiredForm != ShinGetterForm.None

@@ -121,6 +121,17 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         };
         AddSelectedModButtonStyles(modButton);
 
+        var selectedBackdrop = new Panel
+        {
+            Name = "SelectedModBackdrop",
+            MouseFilter = MouseFilterEnum.Ignore,
+        };
+        selectedBackdrop.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        selectedBackdrop.AddThemeStyleboxOverride(
+            "panel",
+            CreateModButtonStyle(new Color(0.15f, 0.15f, 0.15f, 0.5f)));
+        modButton.AddChild(selectedBackdrop);
+
         var modButtonContent = new HBoxContainer
         {
             MouseFilter = MouseFilterEnum.Ignore,
@@ -562,10 +573,12 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
 
     private static void AddSelectedModButtonStyles(Button button)
     {
-        button.AddThemeStyleboxOverride("normal", CreateModButtonStyle(new Color(0.15f, 0.15f, 0.15f, 0.5f)));
-        button.AddThemeStyleboxOverride("hover", CreateModButtonStyle(new Color(0.2f, 0.2f, 0.2f, 0.65f)));
-        button.AddThemeStyleboxOverride("pressed", CreateModButtonStyle(new Color(0.2f, 0.2f, 0.2f, 0.7f)));
-        button.AddThemeStyleboxOverride("focus", CreateModButtonStyle(new Color(0.2f, 0.2f, 0.2f, 0.65f)));
+        var transparent = new StyleBoxEmpty();
+        button.AddThemeStyleboxOverride("normal", transparent);
+        button.AddThemeStyleboxOverride("hover", transparent);
+        button.AddThemeStyleboxOverride("pressed", transparent);
+        button.AddThemeStyleboxOverride("hover_pressed", transparent);
+        button.AddThemeStyleboxOverride("focus", transparent);
     }
 
     private static StyleBoxFlat CreateModButtonStyle(Color background)
