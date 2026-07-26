@@ -115,6 +115,7 @@ const REQUIRED_RESOURCES := {
 	"res://images/characters/shin_getter/merchant/s_g_o_merchant_ryoma_citizen.png": false,
 	"res://images/characters/shin_getter/merchant/s_g_o_merchant_ryoma_normal.png": false,
 	"res://images/characters/shin_getter/rest/s_g_o_ryoma_rest.png": false,
+	"res://shaders/shin_getter_merchant_shadow.gdshader": false,
 	"res://shaders/shin_getter_rest_firelight.gdshader": false,
 	"res://shaders/shin_getter_rest_shadow.gdshader": false,
 	"res://scenes/creature_visuals/shin_getter.tscn": true,
@@ -291,7 +292,10 @@ func _require_nodes(path: String, instance: Node, node_paths: Array[String]) -> 
 func _require_visible_shadow_layer(path: String, shadow: CanvasItem, sprite: CanvasItem) -> bool:
 	if shadow == null or sprite == null:
 		return false
-	if shadow.z_index < 0 or shadow.z_index >= sprite.z_index:
-		push_error("Mod scene %s must render its ground shadow above the room background and below the character" % path)
+	if shadow.z_index != 0 or sprite.z_index != 0:
+		push_error("Mod scene %s must keep its custom visuals at room z-index 0 so later menu layers remain above them" % path)
+		return false
+	if shadow.get_parent() != sprite.get_parent() or shadow.get_index() >= sprite.get_index():
+		push_error("Mod scene %s must order its ground shadow before the character within the same room container" % path)
 		return false
 	return true
