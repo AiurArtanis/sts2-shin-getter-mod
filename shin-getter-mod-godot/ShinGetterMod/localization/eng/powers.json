@@ -14,7 +14,7 @@
   "S_G_P_SUPER_KI.title": "Super Spirit",
   "S_G_P_SUPER_KI.description": "At the start of each turn, add 1 Spirit to your hand.",
   "S_G_P_EVOLUTION.title": "Evolution",
-  "S_G_P_EVOLUTION.description": "At the start of your turn, after Ki resolves, convert up to this amount of Vigor, Regen, and Plating into Strength, Max HP, and Dexterity respectively. Evolution is not consumed.",
+  "S_G_P_EVOLUTION.description": "At the start of your turn, after Ki resolves, convert up to this amount of Vigor, Regen, and Plating into Strength, Max HP, and Dexterity respectively. If at least one resource is converted, lose 1 Evolution.",
   "S_G_P_EVOLUTION_ENGINE.title": "Evolution Engine",
   "S_G_P_EVOLUTION_ENGINE.description": "The turn after Evolution triggers, gain {Amount:energyIcons()}.",
   "S_G_P_AIRBORNE.title": "Airborne",

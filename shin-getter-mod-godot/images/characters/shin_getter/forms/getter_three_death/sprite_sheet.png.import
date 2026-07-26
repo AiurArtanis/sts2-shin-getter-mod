@@ -3,20 +3,19 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c4t5bllj5regj"
-path.s3tc="res://.godot/imported/sprite_sheet.png-dbc858ac9d72ade7288029127d69455c.s3tc.ctex"
+path="res://.godot/imported/sprite_sheet.png-dbc858ac9d72ade7288029127d69455c.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
-"vram_texture": true
+"vram_texture": false
 }
 
 [deps]
 
 source_file="res://images/characters/shin_getter/forms/getter_three_death/sprite_sheet.png"
-dest_files=["res://.godot/imported/sprite_sheet.png-dbc858ac9d72ade7288029127d69455c.s3tc.ctex"]
+dest_files=["res://.godot/imported/sprite_sheet.png-dbc858ac9d72ade7288029127d69455c.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

@@ -11,7 +11,7 @@ namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
 /// 底力 | 技能 | 稀有 | 3费
-/// 保留。【精神 1】获得等同于已失去生命值的格挡。消耗
+/// 【精神 1】获得等同于已失去生命值的格挡。消耗
 /// </summary>
 public sealed class SGC_Guts : ShinGetterCardBase
 {

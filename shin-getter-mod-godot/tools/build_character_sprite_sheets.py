@@ -153,7 +153,7 @@ def main() -> None:
     args = parser.parse_args()
 
     project_root = args.project_root.resolve()
-    source_root = project_root / "art_sources" / "characters" / "shin_getter" / "forms"
+    source_root = project_root.parent / "art_sources" / "characters" / "shin_getter" / "forms"
     output_root = project_root / "images" / "characters" / "shin_getter" / "forms"
 
     for action, frame_count in FRAME_COUNTS.items():

@@ -79,6 +79,7 @@ public sealed class SGP_Evolution : PowerModel
         {
             var engine = Owner.GetPower<SGP_EvolutionEngine>();
             engine?.MarkPendingEnergyGain();
+            await PowerCmd.ModifyAmount(choiceContext, this, -1m, null, null);
         }
     }
 

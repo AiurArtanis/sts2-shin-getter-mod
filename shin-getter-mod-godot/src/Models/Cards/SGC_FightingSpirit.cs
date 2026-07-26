@@ -13,7 +13,7 @@ namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
 /// 斗志 | 能力 | 罕见 | 2费 | 防杀终端
-/// 保留。【精神 2】被攻击前先对敌人造成 5 伤害
+/// 【精神 2】被攻击前先对敌人造成 5 伤害
 /// </summary>
 public sealed class SGC_FightingSpirit : ShinGetterCardBase
 {
