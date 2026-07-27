@@ -159,7 +159,7 @@ internal static class ShinGetterEventInvasionService
             eventModel,
             () => WoodCarvingsTripleCarving(eventModel),
             Key("WOOD_CARVINGS", "TRIPLE_CARVING"),
-            HoverTipFactory.FromRelicExcludingItself<SGR_TripleWoodCarving>());
+            HoverTipFactory.FromRelic<SGR_TripleWoodCarving>());
     }
 
     private static IEnumerable<EventOption> BuildThisOrThatOptions(ThisOrThat eventModel)
