@@ -410,7 +410,12 @@ func _require_directional_merchant_shadow(path: String, shadow: ColorRect) -> bo
 	var tail_offset: Vector2 = material.get_shader_parameter("tail_offset")
 	var tail_strength: float = material.get_shader_parameter("tail_strength")
 	var shadow_opacity: float = material.get_shader_parameter("shadow_opacity")
+	var left_foot_fill_offset: Vector2 = material.get_shader_parameter("left_foot_fill_offset")
+	var left_foot_fill_strength: float = material.get_shader_parameter("left_foot_fill_strength")
 	if tail_offset.x < 0.20 or tail_offset.y > -0.34 or tail_strength < 0.70 or shadow_opacity < 0.38:
 		push_error("Mod scene %s must cast its merchant shadow backward along the shop lighting direction" % path)
+		return false
+	if left_foot_fill_offset.x > -0.09 or left_foot_fill_offset.y > -0.075 or left_foot_fill_strength < 0.50:
+		push_error("Mod scene %s must retain the local soft shadow above and left of Ryoma's left foot" % path)
 		return false
 	return true
