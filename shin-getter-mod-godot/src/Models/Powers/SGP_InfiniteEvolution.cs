@@ -69,7 +69,13 @@ public sealed class SGP_InfiniteEvolution : PowerModel
     {
         if (!base.Owner.IsDead && base.Amount > 0 && base.Owner.Player is { } player)
         {
-            VictoryGain gain = (VictoryGain)player.RunState.Rng.CombatCardSelection.NextInt(3);
+            int roll = player.RunState.Rng.CombatCardSelection.NextInt(100);
+            VictoryGain gain = roll switch
+            {
+                < 18 => VictoryGain.Strength,
+                < 88 => VictoryGain.MaxHp,
+                _ => VictoryGain.Dexterity,
+            };
             SGC_InfiniteEvolution? sourceCard = ResolveSourceCard(player);
             if (sourceCard == null)
                 return;
