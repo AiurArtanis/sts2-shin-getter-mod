@@ -247,10 +247,23 @@ func _initialize() -> void:
 			if not _validate_issue_5_scene(path, instance):
 				failed = true
 			instance.free()
+		if not _validate_issue_8_resource(path, resource):
+			failed = true
 
 		print("MOD_RESOURCE_OK: %s" % path)
 
 	quit(1 if failed else 0)
+
+
+func _validate_issue_8_resource(path: String, resource: Resource) -> bool:
+	if path != "res://images/atlases/relic_atlas.sprites/s_g_r_triple_wood_carving.tres" \
+		and path != "res://images/atlases/relic_outline_atlas.sprites/s_g_r_triple_wood_carving.tres":
+		return true
+	var texture := resource as AtlasTexture
+	if texture == null or texture.region != Rect2(128.0, 256.0, 128.0, 128.0):
+		push_error("Triple Wood Carving must use the bird/snake/ring atlas cell at row 3, column 2: %s" % path)
+		return false
+	return true
 
 
 func _validate_forbidden_character_frames(pck_path: String) -> bool:

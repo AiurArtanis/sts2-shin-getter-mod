@@ -6,6 +6,7 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.Events;
 using ShinGetterMod.Events;
 
@@ -27,7 +28,11 @@ internal static class ShinGetterEventInvasionPatch
 internal static class ShinGetterEventOptionIconPatch
 {
     private const string Prefix = "SHIN_GETTER_EVENT_INVASION.";
-    private const float OptionWidth = 800f;
+    private const float IconRightInset = 18f;
+    private const float IconTextGap = 12f;
+    private const float SingleIconSize = 40.5f;
+    private const float TripleIconSize = 27f;
+    private const float TripleIconGap = 5f;
     private const string GetterOneIcon = "res://images/atlases/power_atlas.sprites/s_g_p_shin_getter_one.tres";
     private const string GetterTwoIcon = "res://images/atlases/power_atlas.sprites/s_g_p_shin_getter_two.tres";
     private const string GetterThreeIcon = "res://images/atlases/power_atlas.sprites/s_g_p_shin_getter_three.tres";
@@ -43,7 +48,7 @@ internal static class ShinGetterEventOptionIconPatch
 
         bool isTriple = key.Contains(".SPIRIT_GRAFTER.", StringComparison.Ordinal)
             || key.Contains(".WOOD_CARVINGS.", StringComparison.Ordinal);
-        Control icon = isTriple ? CreateTripleIcon() : CreateSingleIcon(key);
+        Control icon = CreateIconLayer(key, isTriple);
         icon.Name = "ShinGetterOptionIcon";
         icon.ZIndex = 8;
         icon.MouseFilter = Control.MouseFilterEnum.Ignore;
@@ -53,48 +58,67 @@ internal static class ShinGetterEventOptionIconPatch
 
         MegaCrit.Sts2.addons.mega_text.MegaRichTextLabel label =
             __instance.GetNode<MegaCrit.Sts2.addons.mega_text.MegaRichTextLabel>("%Text");
-        label.OffsetRight = isTriple ? OptionWidth - 142f : OptionWidth - 84f;
+        float reservedWidth = isTriple
+            ? IconRightInset + TripleIconSize * 3f + TripleIconGap * 2f + IconTextGap
+            : IconRightInset + SingleIconSize + IconTextGap;
+        label.AnchorRight = 1f;
+        label.OffsetRight = -reservedWidth;
     }
 
-    private static Control CreateSingleIcon(string key)
+    private static Control CreateIconLayer(string key, bool isTriple)
     {
-        string path = key.Contains(".HAYATO", StringComparison.Ordinal)
-            ? GetterTwoIcon
-            : key.Contains(".MUQING", StringComparison.Ordinal)
-                ? GetterThreeIcon
-                : GetterOneIcon;
-        return CreateIcon(path, new Rect2(OptionWidth - 68f, 18f, 54f, 54f));
-    }
+        var layer = new Control();
+        layer.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
 
-    private static Control CreateTripleIcon()
-    {
-        var container = new Control
+        if (isTriple)
         {
-            Position = new Vector2(OptionWidth - 132f, 26f),
-            Size = new Vector2(118f, 48f),
-        };
-        container.AddChild(CreateIcon(GetterOneIcon, new Rect2(0f, 0f, 36f, 36f)));
-        container.AddChild(CreateIcon(GetterTwoIcon, new Rect2(41f, 0f, 36f, 36f)));
-        container.AddChild(CreateIcon(GetterThreeIcon, new Rect2(82f, 0f, 36f, 36f)));
-        return container;
+            string[] paths = { GetterOneIcon, GetterTwoIcon, GetterThreeIcon };
+            for (int i = 0; i < paths.Length; i++)
+            {
+                float iconsToRight = paths.Length - 1 - i;
+                float rightOffset = IconRightInset + iconsToRight * (TripleIconSize + TripleIconGap);
+                layer.AddChild(CreateRightAnchoredIcon(paths[i], rightOffset, TripleIconSize));
+            }
+        }
+        else
+        {
+            string path = key.Contains(".HAYATO", StringComparison.Ordinal)
+                ? GetterTwoIcon
+                : key.Contains(".MUQING", StringComparison.Ordinal)
+                    ? GetterThreeIcon
+                    : GetterOneIcon;
+            layer.AddChild(CreateRightAnchoredIcon(path, IconRightInset, SingleIconSize));
+        }
+
+        return layer;
     }
 
-    private static TextureRect CreateIcon(string path, Rect2 rect) => new()
+    private static TextureRect CreateRightAnchoredIcon(string path, float rightOffset, float size)
     {
-        Texture = ResourceLoader.Load<Texture2D>(path),
-        Position = rect.Position,
-        Size = rect.Size,
-        ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
-        StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered,
-        MouseFilter = Control.MouseFilterEnum.Ignore,
-    };
+        var icon = new TextureRect
+        {
+            Texture = ResourceLoader.Load<Texture2D>(path),
+            AnchorLeft = 1f,
+            AnchorTop = 0.5f,
+            AnchorRight = 1f,
+            AnchorBottom = 0.5f,
+            OffsetLeft = -rightOffset - size,
+            OffsetTop = -size * 0.5f,
+            OffsetRight = -rightOffset,
+            OffsetBottom = size * 0.5f,
+            ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
+            StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered,
+            MouseFilter = Control.MouseFilterEnum.Ignore,
+        };
+        return icon;
+    }
 }
 
 [HarmonyPatch(typeof(NEventLayout), nameof(NEventLayout.AddOptions))]
 internal static class ShinGetterEventContentCenterPatch
 {
     private const string Prefix = "SHIN_GETTER_EVENT_INVASION.";
-    private const float MinimumTopMargin = 72f;
+    private const float FallbackTopBarHeight = 100f;
     private static readonly StringName ResizeConnectedMeta = "shin_getter_event_center_resize_connected";
 
     private static void Postfix(NEventLayout __instance)
@@ -132,7 +156,24 @@ internal static class ShinGetterEventContentCenterPatch
             return;
 
         float contentHeight = content.GetCombinedMinimumSize().Y;
-        float top = Mathf.Max(MinimumTopMargin, (layout.Size.Y - contentHeight) * 0.5f);
+        float availableTop = GetAvailableTop(layout);
+        float availableHeight = Mathf.Max(0f, layout.Size.Y - availableTop);
+        float top = availableTop + Mathf.Max(0f, (availableHeight - contentHeight) * 0.5f);
         content.Position = new Vector2(content.Position.X, top);
+    }
+
+    private static float GetAvailableTop(NEventLayout layout)
+    {
+        Control topBarBackground = NRun.Instance?.GlobalUi?.TopBar.GetNodeOrNull<Control>("BgImage");
+        Transform2D layoutInverse = layout.GetGlobalTransformWithCanvas().AffineInverse();
+        if (topBarBackground != null && GodotObject.IsInstanceValid(topBarBackground))
+        {
+            Vector2 globalBottom = topBarBackground.GetGlobalTransformWithCanvas()
+                * new Vector2(0f, topBarBackground.Size.Y);
+            return Mathf.Max(0f, (layoutInverse * globalBottom).Y);
+        }
+
+        Vector2 fallbackGlobalBottom = new(layout.GlobalPosition.X, FallbackTopBarHeight);
+        return Mathf.Max(0f, (layoutInverse * fallbackGlobalBottom).Y);
     }
 }
