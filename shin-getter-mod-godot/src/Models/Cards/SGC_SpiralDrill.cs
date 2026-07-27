@@ -35,6 +35,7 @@ public sealed class SGC_SpiralDrill : ShinGetterCardBase
         if (HasForm(Owner, ShinGetterForm.Getter2))
         {
             const ValueProp damageProps = ValueProp.Move | ValueProp.Unblockable;
+            int vigorToConsume = CaptureVigorForManualAttack(damageProps);
             for (int i = 0; i < hitCount && cardPlay.Target.IsAlive; i++)
             {
                 await CreatureCmd.Damage(
@@ -48,6 +49,7 @@ public sealed class SGC_SpiralDrill : ShinGetterCardBase
                 if (i < hitCount - 1 && cardPlay.Target.IsAlive)
                     await PlayAcceleratedFollowupAnimation();
             }
+            await ConsumeCapturedVigor(choiceContext, vigorToConsume);
             if (Owner.Creature.GetPower<SGP_HotBlood>() is { } hotBlood)
                 await hotBlood.ConsumeForCardDamage(choiceContext, this, ValueProp.Move | ValueProp.Unblockable);
         }

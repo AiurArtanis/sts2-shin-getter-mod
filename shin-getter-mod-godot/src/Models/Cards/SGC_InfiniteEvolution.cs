@@ -91,7 +91,7 @@ public sealed class SGC_InfiniteEvolution : ShinGetterCardBase
 
     public override async Task BeforeCombatStart()
     {
-        if (Owner?.Creature == null || Owner.PlayerCombatState == null)
+        if (DeckVersion == null || Owner?.Creature == null || Owner.PlayerCombatState == null)
             return;
 
         var ctx = new ThrowingPlayerChoiceContext();
