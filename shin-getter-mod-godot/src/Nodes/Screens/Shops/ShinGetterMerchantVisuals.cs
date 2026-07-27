@@ -16,10 +16,11 @@ internal static class ShinGetterMerchantVisuals
     private const string CitizenSpriteName = "RyomaCitizenSprite";
     private const float SpriteScale = 0.376f;
     private const float SpriteFootYOffset = 70f;
-    private const float ShadowWidth = 320f;
-    private const float ShadowHeight = 96f;
-    private const float ShadowCenterY = 58f;
-    private const float ShadowOpacity = 0.28f;
+    private const float ShadowWidth = 420f;
+    private const float ShadowHeight = 132f;
+    private const float ShadowCenterX = -34f;
+    private const float ShadowCenterY = 42f;
+    private const float ShadowOpacity = 0.40f;
 
     public static void RefreshCurrentRoom()
     {
@@ -56,15 +57,17 @@ internal static class ShinGetterMerchantVisuals
 
         shadow.Visible = true;
         shadow.Size = new Vector2(ShadowWidth, ShadowHeight);
-        shadow.Position = new Vector2(-ShadowWidth * 0.5f, ShadowCenterY - ShadowHeight * 0.5f);
+        shadow.Position = new Vector2(
+            ShadowCenterX - ShadowWidth * 0.5f,
+            ShadowCenterY - ShadowHeight * 0.5f);
         shadow.Rotation = -0.025f;
 
         if (shadow.Material is ShaderMaterial shadowMaterial)
         {
             shadowMaterial.SetShaderParameter("shadow_opacity", ShadowOpacity);
-            shadowMaterial.SetShaderParameter("tail_offset", new Vector2(0.18f, -0.32f));
-            shadowMaterial.SetShaderParameter("tail_strength", 0.62f);
-            shadowMaterial.SetShaderParameter("shadow_color", new Vector3(0.035f, 0.021f, 0.016f));
+            shadowMaterial.SetShaderParameter("tail_offset", new Vector2(0.22f, -0.36f));
+            shadowMaterial.SetShaderParameter("tail_strength", 0.74f);
+            shadowMaterial.SetShaderParameter("shadow_color", new Vector3(0.018f, 0.012f, 0.010f));
         }
     }
 

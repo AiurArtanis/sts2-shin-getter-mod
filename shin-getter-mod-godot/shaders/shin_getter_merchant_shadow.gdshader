@@ -1,9 +1,9 @@
 shader_type canvas_item;
 
-uniform float shadow_opacity : hint_range(0.0, 1.0) = 0.28;
-uniform vec2 tail_offset = vec2(0.18, -0.32);
-uniform float tail_strength : hint_range(0.0, 1.0) = 0.62;
-uniform vec3 shadow_color = vec3(0.035, 0.021, 0.016);
+uniform float shadow_opacity : hint_range(0.0, 1.0) = 0.40;
+uniform vec2 tail_offset = vec2(0.22, -0.36);
+uniform float tail_strength : hint_range(0.0, 1.0) = 0.74;
+uniform vec3 shadow_color = vec3(0.018, 0.012, 0.010);
 
 float soft_ellipse(vec2 point, vec2 center, vec2 radius, float softness) {
 	vec2 normalized = (point - center) / radius;
@@ -31,8 +31,8 @@ void fragment() {
 
 	float left_contact = soft_ellipse(UV, left_foot, vec2(0.115, 0.085), 0.68);
 	float right_contact = soft_ellipse(UV, right_foot, vec2(0.125, 0.09), 0.68);
-	float ambient_contact = soft_ellipse(UV, contact_center, vec2(0.29, 0.13), 0.78);
-	float contact = max(max(left_contact, right_contact), ambient_contact * 0.34);
+	float ambient_contact = soft_ellipse(UV, contact_center, vec2(0.34, 0.16), 0.78);
+	float contact = max(max(left_contact, right_contact), ambient_contact * 0.46);
 
 	float left_leg = soft_projected_ellipse(
 		UV,
@@ -52,10 +52,10 @@ void fragment() {
 		UV,
 		contact_center + tail_offset * 0.82,
 		tail_offset,
-		vec2(0.255, 0.24),
+		vec2(0.31, 0.29),
 		0.82
 	);
-	float projected = max(max(left_leg, right_leg) * 0.92, body_cast * 0.58);
+	float projected = max(max(left_leg, right_leg) * 0.94, body_cast * 0.72);
 	float alpha = min(1.0, max(contact * 0.94, projected * tail_strength)) * shadow_opacity;
 	COLOR = vec4(shadow_color, alpha);
 }
