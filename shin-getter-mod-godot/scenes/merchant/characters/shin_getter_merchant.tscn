@@ -11,6 +11,8 @@ shader = ExtResource("4_shadow")
 shader_parameter/shadow_opacity = 0.4
 shader_parameter/tail_offset = Vector2(0.22, -0.36)
 shader_parameter/tail_strength = 0.74
+shader_parameter/left_foot_fill_offset = Vector2(-0.105, -0.095)
+shader_parameter/left_foot_fill_strength = 0.58
 shader_parameter/shadow_color = Vector3(0.018, 0.012, 0.01)
 
 [node name="ShinGetterMerchant" instance=ExtResource("1_base")]
