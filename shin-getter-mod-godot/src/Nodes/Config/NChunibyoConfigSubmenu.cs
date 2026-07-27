@@ -29,8 +29,6 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
     private const int PageTitleFontSize = 52;
     private const int SidebarTitleFontSize = 48;
     private const int SettingFontSize = 28;
-    private const int OptionFontSize = 27;
-    private const int ActionFontSize = 26;
     private const int NoteFontSize = 21;
     private const float SettingControlWidth = 560f;
 
@@ -246,9 +244,13 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
 
     private Control BuildMainMenuToggle()
     {
-        var row = CreateSettingRow(Localize(
-            "SHIN_GETTER_CHUNIBYO.SHOW_IN_MAIN_MENU",
-            "Show Chunibyo Config on the main menu (restart required)"));
+        var row = CreateSettingRow(
+            Localize(
+                "SHIN_GETTER_CHUNIBYO.SHOW_IN_MAIN_MENU",
+                "Show Chunibyo Config on the main menu"),
+            noteText: Localize(
+                "SHIN_GETTER_CHUNIBYO.SHOW_IN_MAIN_MENU_NOTE",
+                "Requires restarting the game"));
         NShinGetterConfigTickbox toggle = CreateOriginalTickbox(
             ShinGetterChunibyoConfigService.Current.ShowInMainMenu,
             enabled =>
@@ -261,7 +263,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
                     Localize("SHIN_GETTER_CHUNIBYO.HIDDEN_TITLE", "Chunibyo Config entry hidden"),
                     Localize(
                         "SHIN_GETTER_CHUNIBYO.HIDDEN_BODY",
-                        "The entry will be hidden after restarting. Enter chunibyo on in the console to restore it."));
+                        "After restarting, the main-menu entry will no longer be shown. You can find it under Settings - Game Settings."));
             }
         });
         row.AddChild(toggle);
@@ -297,10 +299,11 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
 
     private Control BuildEventInvasionToggle()
     {
-        var box = new VBoxContainer();
-        box.AddThemeConstantOverride("separation", 4);
-
-        var row = CreateSettingRow(Localize("SHIN_GETTER_CHUNIBYO.EVENT_INVASION", "Event Invasion"));
+        var row = CreateSettingRow(
+            Localize("SHIN_GETTER_CHUNIBYO.EVENT_INVASION", "Event Invasion"),
+            noteText: Localize(
+                "SHIN_GETTER_CHUNIBYO.EVENT_INVASION_NOTE",
+                "Adds extra options to some events in ? rooms."));
         NShinGetterConfigTickbox toggle = CreateOriginalTickbox(
             ShinGetterChunibyoConfigService.Current.EventInvasionEnabled,
             enabled =>
@@ -309,21 +312,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
             SaveConfigOrShowError();
         });
         row.AddChild(toggle);
-        box.AddChild(row);
-
-        var note = new Label
-        {
-            Text = Localize(
-                "SHIN_GETTER_CHUNIBYO.EVENT_INVASION_NOTE",
-                "Stores the global option for future event integration."),
-            AutowrapMode = TextServer.AutowrapMode.WordSmart,
-            HorizontalAlignment = HorizontalAlignment.Left,
-        };
-        ApplyKreonFont(note, NoteFontSize);
-        note.AddThemeColorOverride("font_color", new Color(0.68f, 0.72f, 0.75f));
-        box.AddChild(note);
-
-        return box;
+        return row;
     }
 
     private Control BuildCardExportSection()
@@ -353,7 +342,10 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
 
         var exportButton = CreateActionButton(
             Localize("SHIN_GETTER_CHUNIBYO.EXPORT", "Export Cards"),
-            ExportCards);
+            ExportCards,
+            Localize(
+                "SHIN_GETTER_CHUNIBYO.EXPORT_TOOLTIP",
+                "Click to export every Shin Getter mod card design."));
         exportButton.SizeFlagsHorizontal = SizeFlags.ShrinkEnd;
         section.AddChild(exportButton);
 
@@ -438,7 +430,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
             body.Append(Localize(entry.LocalizationKey, entry.Version));
         }
 
-        ShowPopup(
+        ShowUpdateHistoryPopup(
             Localize("SHIN_GETTER_CHUNIBYO.UPDATE_TITLE", "Shin Getter Update History"),
             body.Length == 0 ? ReadManifestVersion() : body.ToString());
     }
@@ -526,7 +518,10 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         return divider;
     }
 
-    private static HBoxContainer CreateSettingRow(string labelText, float minimumHeight = 72f)
+    private static HBoxContainer CreateSettingRow(
+        string labelText,
+        float minimumHeight = 72f,
+        string? noteText = null)
     {
         var row = new HBoxContainer
         {
@@ -535,15 +530,36 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         };
         row.AddThemeConstantOverride("separation", 18);
 
+        var textColumn = new VBoxContainer
+        {
+            SizeFlagsHorizontal = SizeFlags.ExpandFill,
+            SizeFlagsVertical = SizeFlags.ShrinkCenter,
+        };
+        textColumn.AddThemeConstantOverride("separation", 2);
+
         var label = new Label
         {
             Text = labelText,
-            SizeFlagsHorizontal = SizeFlags.ExpandFill,
             HorizontalAlignment = HorizontalAlignment.Left,
             VerticalAlignment = VerticalAlignment.Center,
         };
         ApplyKreonFont(label, SettingFontSize);
-        row.AddChild(label);
+        textColumn.AddChild(label);
+
+        if (!string.IsNullOrWhiteSpace(noteText))
+        {
+            var note = new Label
+            {
+                Text = noteText,
+                AutowrapMode = TextServer.AutowrapMode.WordSmart,
+                HorizontalAlignment = HorizontalAlignment.Left,
+            };
+            ApplyKreonFont(note, NoteFontSize);
+            note.AddThemeColorOverride("font_color", new Color(0.68f, 0.72f, 0.75f));
+            textColumn.AddChild(note);
+        }
+
+        row.AddChild(textColumn);
         return row;
     }
 
@@ -565,10 +581,10 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         foreach (string path in new[] { "LabelContainer/Mask/Label", "LabelContainer/Mask/VfxLabel" })
         {
             var label = paginator.GetNode<MegaCrit.Sts2.addons.mega_text.MegaLabel>(path);
-            label.AddThemeFontSizeOverride("font_size", 24);
+            label.AddThemeFontSizeOverride("font_size", 28);
             label.AutowrapMode = TextServer.AutowrapMode.WordSmart;
             label.MinFontSize = 16;
-            label.MaxFontSize = 24;
+            label.MaxFontSize = 28;
         }
     }
 
@@ -611,16 +627,13 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
             ReassignSceneOwner(child, owner);
     }
 
-    private static Button CreateActionButton(string text, Action action)
+    private static NShinGetterConfigActionButton CreateActionButton(
+        string text,
+        Action action,
+        string tooltip = "")
     {
-        var button = new Button
-        {
-            Text = text,
-            CustomMinimumSize = new Vector2(190f, 52f),
-            FocusMode = FocusModeEnum.All,
-        };
-        ApplyKreonFont(button, ActionFontSize);
-        button.Pressed += action;
+        var button = new NShinGetterConfigActionButton();
+        button.Initialize(text, action, tooltip);
         return button;
     }
 
@@ -663,6 +676,34 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
             NModalContainer.Instance.Add(popup);
         else
             GD.Print($"[ShinGetterChunibyo] {title}: {body}");
+    }
+
+    private static void ShowUpdateHistoryPopup(string title, string body)
+    {
+        NErrorPopup? popup = NErrorPopup.Create(title, body, showReportBugButton: false);
+        if (popup == null || NModalContainer.Instance == null)
+        {
+            GD.Print($"[ShinGetterChunibyo] {title}: {body}");
+            return;
+        }
+
+        NModalContainer.Instance.Add(popup);
+        Callable.From(() => ConfigureUpdateHistoryPopup(popup)).CallDeferred();
+    }
+
+    private static void ConfigureUpdateHistoryPopup(NErrorPopup popup)
+    {
+        if (!GodotObject.IsInstanceValid(popup))
+            return;
+
+        Control verticalPopup = popup.GetNode<Control>("VerticalPopup");
+        verticalPopup.OffsetTop = -410f;
+        verticalPopup.OffsetBottom = 410f;
+
+        RichTextLabel description = popup.GetNode<RichTextLabel>("VerticalPopup/Description");
+        description.ScrollActive = true;
+        description.HorizontalAlignment = HorizontalAlignment.Left;
+        description.VerticalAlignment = VerticalAlignment.Top;
     }
 
     private static string Localize(string key, string fallback)
