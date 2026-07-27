@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using System.Linq;
+using ShinGetterMod.Models.Powers;
 using ShinGetterMod.Nodes.Vfx;
 
 namespace ShinGetterMod.Models.Cards;
@@ -24,6 +25,7 @@ public sealed class SGC_GetterMissile : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        int vigorToConsume = CaptureVigorForManualAttack(ValueProp.Move);
         await ShinGetterCombatVfx.PlayBurningGrowl(Owner.Creature);
         for (int i = 0; i < 4; i++)
         {
@@ -56,6 +58,9 @@ public sealed class SGC_GetterMissile : ShinGetterCardBase
             if (i < 3 && HasHittableEnemyTargets())
                 await PlayAcceleratedFollowupAnimation();
         }
+        await ConsumeCapturedVigor(choiceContext, vigorToConsume);
+        if (Owner.Creature.GetPower<SGP_HotBlood>() is { } hotBlood)
+            await hotBlood.ConsumeForCardDamage(choiceContext, this, ValueProp.Move);
     }
 
     private bool HasHittableEnemyTargets() =>

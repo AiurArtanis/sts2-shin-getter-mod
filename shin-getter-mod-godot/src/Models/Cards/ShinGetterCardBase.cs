@@ -14,6 +14,7 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
+using MegaCrit.Sts2.Core.ValueProps;
 using ShinGetterMod.Audio;
 using ShinGetterMod.Models.CardPools;
 using ShinGetterMod.Models.Characters;
@@ -302,6 +303,19 @@ public abstract class ShinGetterCardBase : CardModel
 
     protected Task PlayNormalFollowupAnimation() =>
         NShinGetterStaticVisuals.PlayAcceleratedFollowupAnimation(Owner.Creature, 1f);
+
+    protected int CaptureVigorForManualAttack(ValueProp damageProps) =>
+        Type == CardType.Attack && damageProps.IsPoweredAttack()
+            ? Owner.Creature.GetPower<VigorPower>()?.Amount ?? 0
+            : 0;
+
+    protected async Task ConsumeCapturedVigor(PlayerChoiceContext choiceContext, int amount)
+    {
+        if (amount <= 0 || Owner.Creature.GetPower<VigorPower>() is not { } vigor)
+            return;
+
+        await PowerCmd.ModifyAmount(choiceContext, vigor, -amount, null, null);
+    }
 
     public override async Task BeforeCardPlayed(CardPlay cardPlay)
     {
