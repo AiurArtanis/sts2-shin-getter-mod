@@ -121,7 +121,9 @@ internal static class ShinGetterChunibyoSettingsEntryPatch
             var button = entry.GetNode<NOpenModdingScreenButton>("ModdingButton");
             button.Name = "OpenChunibyoConfigButton";
             button.UniqueNameInOwner = false;
-            MakeButtonRed(button.GetNode<TextureRect>("Image"));
+            MatchResetButtonMaterial(
+                button.GetNode<TextureRect>("Image"),
+                content.GetNodeOrNull<TextureRect>("ResetGameplay/ResetGameplayButton/Image"));
             button.Connect(
                 NClickableControl.SignalName.Released,
                 Callable.From<NButton>(_ => FindMainMenuStack(__instance)?.PushSubmenuType<NChunibyoConfigSubmenu>()));
@@ -153,16 +155,13 @@ internal static class ShinGetterChunibyoSettingsEntryPatch
         return null;
     }
 
-    private static void MakeButtonRed(TextureRect image)
+    private static void MatchResetButtonMaterial(TextureRect image, TextureRect? resetImage)
     {
-        if (image.Material is not ShaderMaterial source)
+        if (resetImage?.Material is not Material source)
             return;
 
-        var material = (ShaderMaterial)source.Duplicate(true);
+        var material = (Material)source.Duplicate(true);
         material.ResourceLocalToScene = true;
-        material.SetShaderParameter("h", 0.0f);
-        material.SetShaderParameter("s", 1.55f);
-        material.SetShaderParameter("v", 1.05f);
         image.Material = material;
     }
 
