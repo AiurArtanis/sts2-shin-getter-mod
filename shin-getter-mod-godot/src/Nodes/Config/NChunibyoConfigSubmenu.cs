@@ -274,6 +274,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
             Localize("SHIN_GETTER_CHUNIBYO.VOICE_AMOUNT", "Voice Amount"),
             104f);
         _voiceModePaginator = InstantiateOriginalControl<NShinGetterVoicePaginator>(VoicePaginatorScenePath);
+        ConfigureVoicePaginatorLayout(_voiceModePaginator);
         _voiceModePaginator.SizeFlagsHorizontal = SizeFlags.ShrinkEnd;
         row.AddChild(_voiceModePaginator);
         _voiceModePaginator.Configure(
@@ -556,6 +557,19 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
             NTickbox.SignalName.Toggled,
             Callable.From<NTickbox>(changed => onChanged(changed.IsTicked)));
         return tickbox;
+    }
+
+    private static void ConfigureVoicePaginatorLayout(NShinGetterVoicePaginator paginator)
+    {
+        paginator.CustomMinimumSize = new Vector2(SettingControlWidth, 104f);
+        foreach (string path in new[] { "LabelContainer/Mask/Label", "LabelContainer/Mask/VfxLabel" })
+        {
+            var label = paginator.GetNode<MegaCrit.Sts2.addons.mega_text.MegaLabel>(path);
+            label.AddThemeFontSizeOverride("font_size", 24);
+            label.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+            label.MinFontSize = 16;
+            label.MaxFontSize = 24;
+        }
     }
 
     private static T InstantiateOriginalControl<T>(string scenePath) where T : Control, new()
