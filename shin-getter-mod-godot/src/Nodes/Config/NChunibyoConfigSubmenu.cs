@@ -23,8 +23,8 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
     private const string UpdateHistoryPath = "res://ShinGetterMod/update_history.json";
     private const string CharacterIconPath = "res://images/ui/top_panel/character_icon_shin_getter.png";
     private const string KreonFontPath = "res://themes/kreon_regular_shared.tres";
-    private const string ConfigTickboxScenePath = "res://scenes/config/shin_getter_config_tickbox.tscn";
-    private const string VoicePaginatorScenePath = "res://scenes/config/shin_getter_voice_paginator.tscn";
+    private const string ConfigTickboxScenePath = "res://scenes/screens/settings_tickbox.tscn";
+    private const string VoicePaginatorScenePath = "res://scenes/screens/paginator.tscn";
     private const string LocTable = "settings_ui";
     private const int PageTitleFontSize = 52;
     private const int SidebarTitleFontSize = 48;
@@ -273,8 +273,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         var row = CreateSettingRow(
             Localize("SHIN_GETTER_CHUNIBYO.VOICE_AMOUNT", "Voice Amount"),
             104f);
-        _voiceModePaginator = ResourceLoader.Load<PackedScene>(VoicePaginatorScenePath)
-            .Instantiate<NShinGetterVoicePaginator>();
+        _voiceModePaginator = InstantiateOriginalControl<NShinGetterVoicePaginator>(VoicePaginatorScenePath);
         _voiceModePaginator.SizeFlagsHorizontal = SizeFlags.ShrinkEnd;
         row.AddChild(_voiceModePaginator);
         _voiceModePaginator.Configure(
@@ -549,8 +548,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
 
     private static NShinGetterConfigTickbox CreateOriginalTickbox(bool isTicked, Action<bool> onChanged)
     {
-        var tickbox = ResourceLoader.Load<PackedScene>(ConfigTickboxScenePath)
-            .Instantiate<NShinGetterConfigTickbox>();
+        var tickbox = InstantiateOriginalControl<NShinGetterConfigTickbox>(ConfigTickboxScenePath);
         tickbox.CustomMinimumSize = new Vector2(320f, 64f);
         tickbox.SizeFlagsHorizontal = SizeFlags.ShrinkEnd;
         tickbox.InitialIsTicked = isTicked;
@@ -558,6 +556,45 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
             NTickbox.SignalName.Toggled,
             Callable.From<NTickbox>(changed => onChanged(changed.IsTicked)));
         return tickbox;
+    }
+
+    private static T InstantiateOriginalControl<T>(string scenePath) where T : Control, new()
+    {
+        Control template = ResourceLoader.Load<PackedScene>(scenePath).Instantiate<Control>();
+        var control = new T
+        {
+            Name = template.Name,
+            CustomMinimumSize = template.CustomMinimumSize,
+            FocusMode = template.FocusMode,
+            MouseFilter = template.MouseFilter,
+            SizeFlagsHorizontal = template.SizeFlagsHorizontal,
+            SizeFlagsVertical = template.SizeFlagsVertical,
+        };
+
+        while (template.GetChildCount() > 0)
+        {
+            Node child = template.GetChild(0);
+            ClearSceneOwner(child);
+            child.Reparent(control);
+            ReassignSceneOwner(child, control);
+        }
+
+        template.Free();
+        return control;
+    }
+
+    private static void ClearSceneOwner(Node node)
+    {
+        foreach (Node child in node.GetChildren())
+            ClearSceneOwner(child);
+        node.Owner = null;
+    }
+
+    private static void ReassignSceneOwner(Node node, Node owner)
+    {
+        node.Owner = owner;
+        foreach (Node child in node.GetChildren())
+            ReassignSceneOwner(child, owner);
     }
 
     private static Button CreateActionButton(string text, Action action)
