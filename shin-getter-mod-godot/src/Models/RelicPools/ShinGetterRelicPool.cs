@@ -30,14 +30,18 @@ public sealed class ShinGetterRelicPool : RelicPoolModel
 			ModelDb.Relic<SGR_YummyCookie>(),
 		};
 
-		return relics.Concat(WeightedShinGetterRelics(relics, weight: 2));
+		return relics
+			.Concat(WeightedShinGetterRelics(relics, weight: 2))
+			.Append(ModelDb.Relic<SGR_TripleWoodCarving>());
 	}
 
 	private static IEnumerable<RelicModel> WeightedShinGetterRelics(IEnumerable<RelicModel> relics, int weight)
 	{
 		foreach (RelicModel relic in relics)
 		{
-			if (relic.Rarity != RelicRarity.Starter && relic.Rarity != RelicRarity.Ancient)
+			if (relic.Rarity != RelicRarity.Starter
+				&& relic.Rarity != RelicRarity.Ancient
+				&& relic.Rarity != RelicRarity.Event)
 			{
 				for (int i = 1; i < weight; i++)
 					yield return relic;
