@@ -40,10 +40,14 @@ void fragment() {
 		0.76
 	);
 	float ambient_contact = soft_ellipse(UV, contact_center, vec2(0.34, 0.16), 0.78);
-	float contact = max(
+	float base_contact = max(
 		max(left_contact, right_contact),
-		max(ambient_contact * 0.46, left_foot_fill * left_foot_fill_strength)
+		ambient_contact * 0.46
 	);
+	// Add the local fill over the existing contact field. A max blend made the
+	// extra lobe disappear wherever the wider ambient shadow was already darker.
+	float fill_contact = left_foot_fill * left_foot_fill_strength;
+	float contact = min(1.0, base_contact + fill_contact * (1.0 - base_contact));
 
 	float left_leg = soft_projected_ellipse(
 		UV,

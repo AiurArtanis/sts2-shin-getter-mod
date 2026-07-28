@@ -418,4 +418,8 @@ func _require_directional_merchant_shadow(path: String, shadow: ColorRect) -> bo
 	if left_foot_fill_offset.x > -0.09 or left_foot_fill_offset.y > -0.075 or left_foot_fill_strength < 0.50:
 		push_error("Mod scene %s must retain the local soft shadow above and left of Ryoma's left foot" % path)
 		return false
+	var shader_source := material.shader.code
+	if not shader_source.contains("base_contact + fill_contact * (1.0 - base_contact)"):
+		push_error("Mod scene %s must visibly layer its left-foot fill over the existing contact shadow" % path)
+		return false
 	return true

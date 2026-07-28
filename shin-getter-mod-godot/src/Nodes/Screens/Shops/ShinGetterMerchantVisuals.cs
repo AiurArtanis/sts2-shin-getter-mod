@@ -67,6 +67,8 @@ internal static class ShinGetterMerchantVisuals
             shadowMaterial.SetShaderParameter("shadow_opacity", ShadowOpacity);
             shadowMaterial.SetShaderParameter("tail_offset", new Vector2(0.22f, -0.36f));
             shadowMaterial.SetShaderParameter("tail_strength", 0.74f);
+            shadowMaterial.SetShaderParameter("left_foot_fill_offset", new Vector2(-0.105f, -0.095f));
+            shadowMaterial.SetShaderParameter("left_foot_fill_strength", 0.58f);
             shadowMaterial.SetShaderParameter("shadow_color", new Vector3(0.018f, 0.012f, 0.010f));
         }
     }
