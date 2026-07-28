@@ -33,6 +33,7 @@ using ShinGetterMod.Models.Characters;
 using ShinGetterMod.Models.Encounters;
 using ShinGetterMod.Models.Potions;
 using ShinGetterMod.Models.Relics;
+using ByrdpipRelic = MegaCrit.Sts2.Core.Models.Relics.Byrdpip;
 
 namespace ShinGetterMod.Events;
 
@@ -318,7 +319,7 @@ internal static class ShinGetterEventInvasionService
             () => ByrdonisNestRyoma(eventModel),
             "BYRDONIS_NEST",
             "RYOMA",
-            HoverTipFactory.FromRelic<Byrdpip>());
+            HoverTipFactory.FromRelic<ByrdpipRelic>());
     }
 
     private static IEnumerable<EventOption> BuildInfestedAutomatonOptions(InfestedAutomaton eventModel)
@@ -589,7 +590,7 @@ internal static class ShinGetterEventInvasionService
             ModelDb.Encounter<ByrdonisElite>().ToMutable(),
             new Reward[]
             {
-                new RelicReward(ModelDb.Relic<Byrdpip>().ToMutable(), RequireOwner(eventModel)),
+                new RelicReward(ModelDb.Relic<ByrdpipRelic>().ToMutable(), RequireOwner(eventModel)),
             },
             PendingBattleSetup.ByrdonisNest);
         return Task.CompletedTask;
@@ -745,7 +746,7 @@ internal static class ShinGetterEventInvasionService
 
     private static void ApplySpiralEnchantment(CardModel card)
     {
-        Spiral spiral = ModelDb.Enchantment<Spiral>().ToMutable();
+        EnchantmentModel spiral = ModelDb.Enchantment<Spiral>().ToMutable();
         card.EnchantInternal(spiral, 1m);
         spiral.ModifyCard();
         card.FinalizeUpgradeInternal();

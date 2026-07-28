@@ -71,7 +71,8 @@ def validate_service() -> None:
         "HasAnyCard<SGC_Jammer, SGC_Insight>(owner)",
         "await LoseHp(owner, 6)",
         "ModelDb.Encounter<ByrdonisElite>().ToMutable()",
-        "ModelDb.Relic<Byrdpip>().ToMutable()",
+        "using ByrdpipRelic = MegaCrit.Sts2.Core.Models.Relics.Byrdpip;",
+        "ModelDb.Relic<ByrdpipRelic>().ToMutable()",
         "CardFactory.CreateForReward(owner, 2, powerOptions)",
         "CardFactory.CreateForReward(owner, 2, zeroCostOptions)",
         "CardCreationFlags.NoCardPoolModifications",
@@ -101,6 +102,7 @@ def validate_service() -> None:
         "SGC_TornadoDrill or SGC_SpiralDrill",
         "card.Enchantment == null",
         "CardCmd.Downgrade(selected)",
+        "EnchantmentModel spiral = ModelDb.Enchantment<Spiral>().ToMutable()",
         "card.EnchantInternal(spiral, 1m)",
         "CardsEnchanted.Add(new CardEnchantmentHistoryEntry(card, spiral.Id))",
     )
