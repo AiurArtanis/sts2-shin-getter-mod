@@ -8,6 +8,7 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Gold;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Events;
@@ -17,23 +18,56 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
+using MegaCrit.Sts2.Core.Models.Encounters;
+using MegaCrit.Sts2.Core.Models.Enchantments;
 using MegaCrit.Sts2.Core.Models.Events;
+using MegaCrit.Sts2.Core.Models.Monsters;
 using MegaCrit.Sts2.Core.Models.Relics;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
+using MegaCrit.Sts2.Core.Rewards;
+using MegaCrit.Sts2.Core.Runs;
+using MegaCrit.Sts2.Core.Runs.History;
 using MegaCrit.Sts2.Core.ValueProps;
 using ShinGetterMod.Models.Cards;
 using ShinGetterMod.Models.Characters;
+using ShinGetterMod.Models.Encounters;
+using ShinGetterMod.Models.Potions;
 using ShinGetterMod.Models.Relics;
 
 namespace ShinGetterMod.Events;
 
 internal static class ShinGetterEventInvasionService
 {
+    private enum PendingBattleSetup
+    {
+        ByrdonisNest,
+        Trial,
+    }
+
     private const string LocPrefix = "SHIN_GETTER_EVENT_INVASION";
 
     private static readonly MethodInfo SetEventFinishedMethod =
         AccessTools.Method(typeof(EventModel), "SetEventFinished", new[] { typeof(LocString) })
         ?? throw new MissingMethodException(typeof(EventModel).FullName, "SetEventFinished");
+
+    private static readonly MethodInfo SetEventStateMethod =
+        AccessTools.Method(typeof(EventModel), "SetEventState", new[]
+        {
+            typeof(LocString),
+            typeof(IEnumerable<EventOption>),
+        }) ?? throw new MissingMethodException(typeof(EventModel).FullName, "SetEventState");
+
+    private static readonly MethodInfo EnterCombatWithoutExitingEventMethod =
+        AccessTools.Method(typeof(EventModel), "EnterCombatWithoutExitingEvent", new[]
+        {
+            typeof(EncounterModel),
+            typeof(IReadOnlyList<Reward>),
+            typeof(bool),
+        }) ?? throw new MissingMethodException(typeof(EventModel).FullName, "EnterCombatWithoutExitingEvent");
+
+    private static readonly HashSet<EventModel> EventsEnteringSinglePlayerCombat = new();
+    private static readonly Dictionary<Player, (PendingBattleSetup Setup, EncounterModel Encounter)>
+        PendingBattleSetups = new();
 
     internal static IEnumerable<EventOption> AppendOptions(
         EventModel eventModel,
@@ -51,6 +85,14 @@ internal static class ShinGetterEventInvasionService
             WoodCarvings woodCarvings => BuildWoodCarvingsOptions(woodCarvings),
             ThisOrThat thisOrThat => BuildThisOrThatOptions(thisOrThat),
             Amalgamator amalgamator => BuildAmalgamatorOptions(amalgamator),
+            ByrdonisNest byrdonisNest => BuildByrdonisNestOptions(byrdonisNest),
+            InfestedAutomaton infestedAutomaton => BuildInfestedAutomatonOptions(infestedAutomaton),
+            TheLegendsWereTrue legendsWereTrue => BuildTheLegendsWereTrueOptions(legendsWereTrue),
+            Trial trial => BuildTrialOptions(trial, options),
+            SunkenStatue sunkenStatue => BuildSunkenStatueOptions(sunkenStatue),
+            SpiralingWhirlpool spiralingWhirlpool => BuildSpiralingWhirlpoolOptions(spiralingWhirlpool),
+            RoundTeaParty roundTeaParty => BuildRoundTeaPartyOptions(roundTeaParty),
+            RanwidTheElder ranwidTheElder => BuildRanwidTheElderOptions(ranwidTheElder),
             _ => Array.Empty<EventOption>(),
         };
 
@@ -75,12 +117,67 @@ internal static class ShinGetterEventInvasionService
             return false;
         }
 
-        if (!options.Any(option => option.TextKey.Contains(".pages.INITIAL.options.", StringComparison.Ordinal)))
+        bool isInitialPage = options.Any(option =>
+            option.TextKey.Contains(".pages.INITIAL.options.", StringComparison.Ordinal));
+        bool isTrialVerdictPage = eventModel is Trial && options.Any(option =>
+            option.TextKey.StartsWith("TRIAL.pages.MERCHANT.options.", StringComparison.Ordinal)
+            || option.TextKey.StartsWith("TRIAL.pages.NOBLE.options.", StringComparison.Ordinal)
+            || option.TextKey.StartsWith("TRIAL.pages.NONDESCRIPT.options.", StringComparison.Ordinal));
+        if (!isInitialPage && !isTrialVerdictPage)
             return false;
 
         return owner.GetRelic<SGR_GetterFurnace>()?.EventInvasionEnabled
             ?? owner.GetRelic<SGR_EmperorsFragment>()?.EventInvasionEnabled
             ?? false;
+    }
+
+    internal static bool IsEnteringSinglePlayerEventCombat(EventModel eventModel) =>
+        EventsEnteringSinglePlayerCombat.Contains(eventModel);
+
+    internal static async Task ApplyPendingBattleSetup(Player owner)
+    {
+        if (!PendingBattleSetups.Remove(
+                owner,
+                out (PendingBattleSetup Setup, EncounterModel Encounter) pending))
+            return;
+
+        var combatState = owner.Creature.CombatState;
+        if (combatState == null || !ReferenceEquals(combatState.Encounter, pending.Encounter))
+            return;
+
+        if (pending.Setup == PendingBattleSetup.ByrdonisNest)
+        {
+            if (combatState.Encounter is not ByrdonisElite)
+                return;
+
+            Creature? byrdonis = combatState.Enemies
+                .FirstOrDefault(creature => creature.Monster is Byrdonis);
+            if (byrdonis != null)
+                await CreatureCmd.Stun(byrdonis, _ => Task.CompletedTask);
+            return;
+        }
+
+        if (combatState.Encounter is not SGEncounter_TrialKnightsElite)
+            return;
+
+        PlayerCombatState? playerCombatState = owner.PlayerCombatState;
+        if (playerCombatState == null)
+            return;
+
+        List<CardModel> cardsToPlay = owner.Deck.Cards
+            .Where(IsTrialSpiritCommand)
+            .Select(deckCard => playerCombatState.AllCards.FirstOrDefault(
+                combatCard => ReferenceEquals(combatCard.DeckVersion, deckCard)))
+            .Where(card => card != null)
+            .Cast<CardModel>()
+            .ToList();
+        foreach (CardModel card in cardsToPlay)
+        {
+            await CardCmd.AutoPlay(
+                new ThrowingPlayerChoiceContext(),
+                card,
+                null);
+        }
     }
 
     private static IEnumerable<EventOption> BuildTeaMasterOptions(TeaMaster eventModel)
@@ -204,6 +301,136 @@ internal static class ShinGetterEventInvasionService
             "AMALGAMATOR",
             "MUQING",
             hovers);
+    }
+
+    private static IEnumerable<EventOption> BuildByrdonisNestOptions(ByrdonisNest eventModel)
+    {
+        Player owner = RequireOwner(eventModel);
+        yield return new EventOption(
+            eventModel,
+            () => ByrdonisNestMuqing(eventModel),
+            Key("BYRDONIS_NEST", "MUQING"));
+
+        bool ryomaAvailable = HasAnyCard<SGC_HotBlood, SGC_FightingSpirit, SGC_SuperKi>(owner);
+        yield return CreateConditionalOption(
+            eventModel,
+            ryomaAvailable,
+            () => ByrdonisNestRyoma(eventModel),
+            "BYRDONIS_NEST",
+            "RYOMA",
+            HoverTipFactory.FromRelic<Byrdpip>());
+    }
+
+    private static IEnumerable<EventOption> BuildInfestedAutomatonOptions(InfestedAutomaton eventModel)
+    {
+        Player owner = RequireOwner(eventModel);
+        bool available = owner.Creature.MaxHp > 4
+            && HasAnyCard<SGC_Jammer, SGC_Insight>(owner);
+        yield return CreateConditionalOption(
+            eventModel,
+            available,
+            () => InfestedAutomatonHayato(eventModel),
+            "INFESTED_AUTOMATON",
+            "HAYATO");
+    }
+
+    private static IEnumerable<EventOption> BuildTheLegendsWereTrueOptions(TheLegendsWereTrue eventModel)
+    {
+        Player owner = RequireOwner(eventModel);
+        bool ryomaAvailable = owner.GetRelic<SGR_GoodCitizenCard>() == null;
+        yield return CreateConditionalOption(
+            eventModel,
+            ryomaAvailable,
+            () => TheLegendsWereTrueRyoma(eventModel),
+            "THE_LEGENDS_WERE_TRUE",
+            "RYOMA",
+            HoverTipFactory.FromRelic<SGR_GoodCitizenCard>());
+
+        bool hayatoAvailable = owner.Creature.CurrentHp > 12
+            && owner.Gold >= 35
+            && owner.HasOpenPotionSlots
+            && HasAnyCard<SGC_Insight, SGC_Acceleration>(owner);
+        yield return CreateConditionalOption(
+            eventModel,
+            hayatoAvailable,
+            () => TheLegendsWereTrueHayato(eventModel),
+            "THE_LEGENDS_WERE_TRUE",
+            "HAYATO",
+            new[] { HoverTipFactory.FromPotion<SGR_GetterColdBrew>() });
+    }
+
+    private static IEnumerable<EventOption> BuildTrialOptions(
+        Trial eventModel,
+        IReadOnlyList<EventOption> currentOptions)
+    {
+        bool isVerdictPage = currentOptions.Any(option =>
+            option.TextKey.StartsWith("TRIAL.pages.MERCHANT.options.", StringComparison.Ordinal)
+            || option.TextKey.StartsWith("TRIAL.pages.NOBLE.options.", StringComparison.Ordinal)
+            || option.TextKey.StartsWith("TRIAL.pages.NONDESCRIPT.options.", StringComparison.Ordinal));
+        if (!isVerdictPage)
+            yield break;
+
+        Player owner = RequireOwner(eventModel);
+        bool available = owner.Deck.Cards.Any(IsTrialSpiritCommand);
+        yield return CreateConditionalOption(
+            eventModel,
+            available,
+            () => TrialRyoma(eventModel),
+            "TRIAL",
+            "RYOMA");
+    }
+
+    private static IEnumerable<EventOption> BuildSunkenStatueOptions(SunkenStatue eventModel)
+    {
+        Player owner = RequireOwner(eventModel);
+        bool available = owner.Creature.CurrentHp > 7
+            && HasAnyCard<SGC_Indomitable, SGC_IronWall>(owner);
+        yield return CreateConditionalOption(
+            eventModel,
+            available,
+            () => SunkenStatueMuqing(eventModel),
+            "SUNKEN_STATUE",
+            "MUQING");
+    }
+
+    private static IEnumerable<EventOption> BuildSpiralingWhirlpoolOptions(SpiralingWhirlpool eventModel)
+    {
+        Player owner = RequireOwner(eventModel);
+        bool available = HasAnyCard<SGC_TornadoDrill, SGC_SpiralDrill>(owner)
+            && owner.Deck.Cards.Any(card => card.IsUpgraded);
+        yield return CreateConditionalOption(
+            eventModel,
+            available,
+            () => SpiralingWhirlpoolHayato(eventModel),
+            "SPIRALING_WHIRLPOOL",
+            "HAYATO",
+            HoverTipFactory.FromEnchantment<Spiral>());
+    }
+
+    private static IEnumerable<EventOption> BuildRoundTeaPartyOptions(RoundTeaParty eventModel)
+    {
+        Player owner = RequireOwner(eventModel);
+        bool available = owner.Creature.CurrentHp > 11
+            && owner.Deck.Cards.Any(card =>
+                (card is SGC_Ki or SGC_FightingSpirit) && card.IsUpgradable);
+        yield return CreateConditionalOption(
+            eventModel,
+            available,
+            () => RoundTeaPartyRyoma(eventModel),
+            "ROUND_TEA_PARTY",
+            "RYOMA");
+    }
+
+    private static IEnumerable<EventOption> BuildRanwidTheElderOptions(RanwidTheElder eventModel)
+    {
+        Player owner = RequireOwner(eventModel);
+        bool available = owner.Deck.Cards.Any(card => card is SGC_SaotomeBlueprint);
+        yield return CreateConditionalOption(
+            eventModel,
+            available,
+            () => RanwidTheElderRyoma(eventModel),
+            "RANWID_THE_ELDER",
+            "RYOMA");
     }
 
     private static async Task TeaMasterRyoma(TeaMaster eventModel)
@@ -342,6 +569,241 @@ internal static class ShinGetterEventInvasionService
         Finish(eventModel, PageKey("AMALGAMATOR", "MUQING"));
     }
 
+    private static async Task ByrdonisNestMuqing(ByrdonisNest eventModel)
+    {
+        Player owner = RequireOwner(eventModel);
+        await LoseHp(owner, 6);
+        List<CardModel> candidates = owner.Deck.Cards.Where(card => card.IsUpgradable).ToList();
+        CardModel? card = eventModel.Rng.NextItem(candidates);
+        if (card != null)
+            CardCmd.Upgrade(card, CardPreviewStyle.EventLayout);
+        Finish(eventModel, PageKey("BYRDONIS_NEST", "MUQING"));
+    }
+
+    private static Task ByrdonisNestRyoma(ByrdonisNest eventModel)
+    {
+        BeginEventBattle(
+            eventModel,
+            "BYRDONIS_NEST",
+            "RYOMA",
+            ModelDb.Encounter<ByrdonisElite>().ToMutable(),
+            new Reward[]
+            {
+                new RelicReward(ModelDb.Relic<Byrdpip>().ToMutable(), RequireOwner(eventModel)),
+            },
+            PendingBattleSetup.ByrdonisNest);
+        return Task.CompletedTask;
+    }
+
+    private static async Task InfestedAutomatonHayato(InfestedAutomaton eventModel)
+    {
+        Player owner = RequireOwner(eventModel);
+        await CreatureCmd.LoseMaxHp(
+            new ThrowingPlayerChoiceContext(),
+            owner.Creature,
+            4,
+            isFromCard: false);
+
+        IReadOnlyList<CardPoolModel> pools = new[] { owner.Character.CardPool };
+        CardCreationOptions powerOptions = CardCreationOptions.ForNonCombatWithDefaultOdds(
+            pools,
+            card => card.Type == CardType.Power);
+        List<CardCreationResult> candidates = CardFactory.CreateForReward(owner, 2, powerOptions).ToList();
+        HashSet<ModelId> usedIds = candidates.Select(result => result.Card.Id).ToHashSet();
+
+        CardCreationOptions zeroCostOptions = CardCreationOptions.ForNonCombatWithDefaultOdds(
+                pools,
+                card => card.EnergyCost is { Canonical: 0, CostsX: false }
+                    && !usedIds.Contains(card.Id))
+            .WithFlags(CardCreationFlags.NoCardPoolModifications);
+        candidates.AddRange(CardFactory.CreateForReward(owner, 2, zeroCostOptions));
+
+        CardSelectorPrefs prefs = new(
+            SelectionKey("INFESTED_AUTOMATON", "HAYATO"),
+            1);
+        CardModel? selected = (await CardSelectCmd.FromSimpleGridForRewards(
+            new BlockingPlayerChoiceContext(),
+            candidates,
+            owner,
+            prefs)).FirstOrDefault();
+        if (selected != null)
+            CardCmd.PreviewCardPileAdd(await CardPileCmd.Add(selected, PileType.Deck));
+
+        Finish(eventModel, PageKey("INFESTED_AUTOMATON", "HAYATO"));
+    }
+
+    private static async Task TheLegendsWereTrueRyoma(TheLegendsWereTrue eventModel)
+    {
+        await RelicCmd.Obtain<SGR_GoodCitizenCard>(RequireOwner(eventModel));
+        Finish(eventModel, PageKey("THE_LEGENDS_WERE_TRUE", "RYOMA"));
+    }
+
+    private static async Task TheLegendsWereTrueHayato(TheLegendsWereTrue eventModel)
+    {
+        Player owner = RequireOwner(eventModel);
+        await LoseHp(owner, 12);
+        await PlayerCmd.LoseGold(35, owner, GoldLossType.Spent);
+        await PotionCmd.TryToProcure<SGR_GetterColdBrew>(owner);
+        Finish(eventModel, PageKey("THE_LEGENDS_WERE_TRUE", "HAYATO"));
+    }
+
+    private static Task TrialRyoma(Trial eventModel)
+    {
+        BeginEventBattle(
+            eventModel,
+            "TRIAL",
+            "RYOMA",
+            ModelDb.Encounter<SGEncounter_TrialKnightsElite>().ToMutable(),
+            Array.Empty<Reward>(),
+            PendingBattleSetup.Trial);
+        return Task.CompletedTask;
+    }
+
+    private static async Task SunkenStatueMuqing(SunkenStatue eventModel)
+    {
+        Player owner = RequireOwner(eventModel);
+        await CreatureCmd.LoseMaxHp(
+            new ThrowingPlayerChoiceContext(),
+            owner.Creature,
+            7,
+            isFromCard: false);
+        decimal gold = Math.Round(
+            eventModel.DynamicVars.Gold.BaseValue * 1.8m,
+            MidpointRounding.AwayFromZero);
+        await PlayerCmd.GainGold(gold, owner);
+        Finish(eventModel, PageKey("SUNKEN_STATUE", "MUQING"));
+    }
+
+    private static async Task SpiralingWhirlpoolHayato(SpiralingWhirlpool eventModel)
+    {
+        Player owner = RequireOwner(eventModel);
+        CardSelectorPrefs prefs = new(
+            SelectionKey("SPIRALING_WHIRLPOOL", "HAYATO"),
+            1);
+        CardModel? selected = (await CardSelectCmd.FromDeckGeneric(
+            owner,
+            prefs,
+            card => card.IsUpgraded)).FirstOrDefault();
+        if (selected == null)
+            return;
+
+        CardCmd.Downgrade(selected);
+        CardCmd.Preview(selected, 1.2f, CardPreviewStyle.EventLayout);
+
+        List<CardModel> drillCards = owner.Deck.Cards
+            .Where(card => (card is SGC_TornadoDrill or SGC_SpiralDrill)
+                && card.Enchantment == null)
+            .ToList();
+        foreach (CardModel card in drillCards)
+            ApplySpiralEnchantment(card);
+        if (drillCards.Count > 0)
+            CardCmd.Preview(drillCards, 1.2f, CardPreviewStyle.EventLayout);
+
+        Finish(eventModel, PageKey("SPIRALING_WHIRLPOOL", "HAYATO"));
+    }
+
+    private static async Task RoundTeaPartyRyoma(RoundTeaParty eventModel)
+    {
+        Player owner = RequireOwner(eventModel);
+        await LoseHp(owner, 11);
+        List<CardModel> candidates = owner.Deck.Cards
+            .Where(card => (card is SGC_Ki or SGC_FightingSpirit) && card.IsUpgradable)
+            .ToList();
+        CardModel? card = eventModel.Rng.NextItem(candidates);
+        if (card != null)
+            CardCmd.Upgrade(card, CardPreviewStyle.EventLayout);
+        await RelicCmd.Obtain(RelicFactory.PullNextRelicFromFront(owner).ToMutable(), owner);
+        Finish(eventModel, PageKey("ROUND_TEA_PARTY", "RYOMA"));
+    }
+
+    private static async Task RanwidTheElderRyoma(RanwidTheElder eventModel)
+    {
+        Player owner = RequireOwner(eventModel);
+        SGC_SaotomeBlueprint? blueprint = owner.Deck.Cards
+            .OfType<SGC_SaotomeBlueprint>()
+            .OrderBy(card => card.IsUpgraded)
+            .FirstOrDefault();
+        if (blueprint == null)
+            return;
+
+        RelicModel[] choices =
+        {
+            RelicFactory.PullNextRelicFromFront(owner).ToMutable(),
+            RelicFactory.PullNextRelicFromFront(owner).ToMutable(),
+        };
+        RelicModel? selected;
+        do
+        {
+            selected = await RelicSelectCmd.FromChooseARelicScreen(owner, choices);
+        }
+        while (selected == null);
+
+        await CardPileCmd.RemoveFromDeck(blueprint);
+        await RelicCmd.Obtain(selected, owner);
+        Finish(eventModel, PageKey("RANWID_THE_ELDER", "RYOMA"));
+    }
+
+    private static void ApplySpiralEnchantment(CardModel card)
+    {
+        Spiral spiral = ModelDb.Enchantment<Spiral>().ToMutable();
+        card.EnchantInternal(spiral, 1m);
+        spiral.ModifyCard();
+        card.FinalizeUpgradeInternal();
+        card.Owner.RunState.CurrentMapPointHistoryEntry?
+            .GetEntry(card.Owner.NetId)
+            .CardsEnchanted.Add(new CardEnchantmentHistoryEntry(card, spiral.Id));
+    }
+
+    private static void BeginEventBattle(
+        EventModel eventModel,
+        string eventName,
+        string pageName,
+        EncounterModel encounter,
+        IReadOnlyList<Reward> extraRewards,
+        PendingBattleSetup setup)
+    {
+        EventOption startFight = new(
+            eventModel,
+            () => StartEventBattle(eventModel, encounter, extraRewards, setup),
+            PageOptionKey(eventName, pageName, "START_FIGHT"),
+            disableOnChosen: true,
+            isProceed: true);
+        SetEventStateMethod.Invoke(
+            eventModel,
+            new object[]
+            {
+                new LocString("events", PageKey(eventName, pageName)),
+                new[] { startFight },
+            });
+    }
+
+    private static Task StartEventBattle(
+        EventModel eventModel,
+        EncounterModel encounter,
+        IReadOnlyList<Reward> extraRewards,
+        PendingBattleSetup setup)
+    {
+        Player owner = RequireOwner(eventModel);
+        PendingBattleSetups[owner] = (setup, encounter);
+        EventsEnteringSinglePlayerCombat.Add(eventModel);
+        try
+        {
+            EnterCombatWithoutExitingEventMethod.Invoke(
+                eventModel,
+                new object[] { encounter, extraRewards, false });
+        }
+        catch
+        {
+            PendingBattleSetups.Remove(owner);
+            throw;
+        }
+        finally
+        {
+            EventsEnteringSinglePlayerCombat.Remove(eventModel);
+        }
+        return Task.CompletedTask;
+    }
+
     private static Task LoseHp(Player owner, int amount) =>
         CreatureCmd.Damage(
             new ThrowingPlayerChoiceContext(),
@@ -365,6 +827,13 @@ internal static class ShinGetterEventInvasionService
         where T2 : CardModel
         where T3 : CardModel =>
         owner.Deck.Cards.Any(card => card is T1 or T2 or T3);
+
+    private static bool IsTrialSpiritCommand(CardModel card) =>
+        card is SGC_Ki
+            or SGC_Spirit
+            or SGC_SuperKi
+            or SGC_FightingSpirit
+            or SGC_Indomitable;
 
     private static bool HasExclusiveFormCard(Player owner, ShinGetterForm form)
     {
@@ -407,6 +876,12 @@ internal static class ShinGetterEventInvasionService
 
     private static string PageKey(string eventName, string pageName) =>
         $"{LocPrefix}.{eventName}.pages.{pageName}.description";
+
+    private static string PageOptionKey(string eventName, string pageName, string optionName) =>
+        $"{LocPrefix}.{eventName}.pages.{pageName}.options.{optionName}";
+
+    private static LocString SelectionKey(string eventName, string routeName) =>
+        new("events", $"{LocPrefix}.{eventName}.pages.{routeName}.selectionPrompt");
 
     private static void Finish(EventModel eventModel, string descriptionKey)
     {

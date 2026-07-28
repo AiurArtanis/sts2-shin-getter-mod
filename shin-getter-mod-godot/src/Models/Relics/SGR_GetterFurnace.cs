@@ -11,6 +11,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using ShinGetterMod.Audio;
+using ShinGetterMod.Events;
 using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Relics;
@@ -73,6 +74,7 @@ public sealed class SGR_GetterFurnace : ShinGetterRelicBase
         await PowerCmd.Apply<SGP_Ki>(
             new ThrowingPlayerChoiceContext(), Owner.Creature,
             DynamicVars["SGP_Ki"].BaseValue, Owner.Creature, null);
+        await ShinGetterEventInvasionService.ApplyPendingBattleSetup(Owner);
     }
 
     public override Task AfterCardChangedPiles(CardModel card, PileType oldPileType, AbstractModel? clonedBy)
