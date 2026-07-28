@@ -91,8 +91,10 @@ def validate_service() -> None:
         ".OrderBy(card => card.IsUpgraded)",
         "PendingBattleSetup.ByrdonisNest",
         "PendingBattleSetup.Trial",
-        "combatState?.Encounter is not ByrdonisElite",
-        "combatState?.Encounter is not SGEncounter_TrialKnightsElite",
+        "ReferenceEquals(combatState.Encounter, pending.Encounter)",
+        "PendingBattleSetups[owner] = (setup, encounter)",
+        "combatState.Encounter is not ByrdonisElite",
+        "combatState.Encounter is not SGEncounter_TrialKnightsElite",
         "await CreatureCmd.Stun(byrdonis",
         "ReferenceEquals(combatCard.DeckVersion, deckCard)",
         "await CardCmd.AutoPlay(",
@@ -123,6 +125,14 @@ def validate_service() -> None:
     ranwid = method_body(service, "private static async Task RanwidTheElderRyoma")
     if "LoseGold" in ranwid:
         raise AssertionError("Ranwid's route must not spend Gold.")
+    require(
+        ranwid,
+        ".OrderBy(card => card.IsUpgraded)",
+        "do\n        {",
+        "while (selected == null);",
+    )
+    if ranwid.count("RelicFactory.PullNextRelicFromFront(owner)") != 2:
+        raise AssertionError("Ranwid's route must pull exactly two relic choices once.")
 
     require(
         patch,

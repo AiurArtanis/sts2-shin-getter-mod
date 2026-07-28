@@ -66,7 +66,8 @@ internal static class ShinGetterEventInvasionService
         }) ?? throw new MissingMethodException(typeof(EventModel).FullName, "EnterCombatWithoutExitingEvent");
 
     private static readonly HashSet<EventModel> EventsEnteringSinglePlayerCombat = new();
-    private static readonly Dictionary<Player, PendingBattleSetup> PendingBattleSetups = new();
+    private static readonly Dictionary<Player, (PendingBattleSetup Setup, EncounterModel Encounter)>
+        PendingBattleSetups = new();
 
     internal static IEnumerable<EventOption> AppendOptions(
         EventModel eventModel,
@@ -135,13 +136,18 @@ internal static class ShinGetterEventInvasionService
 
     internal static async Task ApplyPendingBattleSetup(Player owner)
     {
-        if (!PendingBattleSetups.Remove(owner, out PendingBattleSetup setup))
+        if (!PendingBattleSetups.Remove(
+                owner,
+                out (PendingBattleSetup Setup, EncounterModel Encounter) pending))
             return;
 
         var combatState = owner.Creature.CombatState;
-        if (setup == PendingBattleSetup.ByrdonisNest)
+        if (combatState == null || !ReferenceEquals(combatState.Encounter, pending.Encounter))
+            return;
+
+        if (pending.Setup == PendingBattleSetup.ByrdonisNest)
         {
-            if (combatState?.Encounter is not ByrdonisElite)
+            if (combatState.Encounter is not ByrdonisElite)
                 return;
 
             Creature? byrdonis = combatState.Enemies
@@ -151,7 +157,7 @@ internal static class ShinGetterEventInvasionService
             return;
         }
 
-        if (combatState?.Encounter is not SGEncounter_TrialKnightsElite)
+        if (combatState.Encounter is not SGEncounter_TrialKnightsElite)
             return;
 
         PlayerCombatState? playerCombatState = owner.PlayerCombatState;
@@ -713,21 +719,24 @@ internal static class ShinGetterEventInvasionService
     private static async Task RanwidTheElderRyoma(RanwidTheElder eventModel)
     {
         Player owner = RequireOwner(eventModel);
-        RelicModel[] choices =
-        {
-            RelicFactory.PullNextRelicFromFront(owner).ToMutable(),
-            RelicFactory.PullNextRelicFromFront(owner).ToMutable(),
-        };
-        RelicModel? selected = await RelicSelectCmd.FromChooseARelicScreen(owner, choices);
-        if (selected == null)
-            return;
-
         SGC_SaotomeBlueprint? blueprint = owner.Deck.Cards
             .OfType<SGC_SaotomeBlueprint>()
             .OrderBy(card => card.IsUpgraded)
             .FirstOrDefault();
         if (blueprint == null)
             return;
+
+        RelicModel[] choices =
+        {
+            RelicFactory.PullNextRelicFromFront(owner).ToMutable(),
+            RelicFactory.PullNextRelicFromFront(owner).ToMutable(),
+        };
+        RelicModel? selected;
+        do
+        {
+            selected = await RelicSelectCmd.FromChooseARelicScreen(owner, choices);
+        }
+        while (selected == null);
 
         await CardPileCmd.RemoveFromDeck(blueprint);
         await RelicCmd.Obtain(selected, owner);
@@ -775,7 +784,7 @@ internal static class ShinGetterEventInvasionService
         PendingBattleSetup setup)
     {
         Player owner = RequireOwner(eventModel);
-        PendingBattleSetups[owner] = setup;
+        PendingBattleSetups[owner] = (setup, encounter);
         EventsEnteringSinglePlayerCombat.Add(eventModel);
         try
         {
