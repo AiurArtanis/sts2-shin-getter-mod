@@ -24,6 +24,19 @@ internal static class ShinGetterEventInvasionPatch
     }
 }
 
+[HarmonyPatch(typeof(EventModel), "get_IsShared")]
+internal static class ShinGetterSinglePlayerEventCombatPatch
+{
+    private static bool Prefix(EventModel __instance, ref bool __result)
+    {
+        if (!ShinGetterEventInvasionService.IsEnteringSinglePlayerEventCombat(__instance))
+            return true;
+
+        __result = true;
+        return false;
+    }
+}
+
 [HarmonyPatch(typeof(NEventOptionButton), nameof(NEventOptionButton._Ready))]
 internal static class ShinGetterEventOptionIconPatch
 {
