@@ -10,7 +10,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SERVICE_PATH = ROOT / "src/Events/ShinGetterEventInvasionService.cs"
 PATCH_PATH = ROOT / "src/Patches/ShinGetterEventInvasionPatch.cs"
-ENCOUNTER_PATH = ROOT / "src/Models/Encounters/SGEncounter_TrialKnightsElite.cs"
 LOCALIZATION_ROOT = ROOT / "ShinGetterMod/localization"
 LANGUAGES = ("eng", "jpn", "zhs")
 
@@ -57,7 +56,6 @@ def load_json(path: Path) -> dict[str, object]:
 def validate_service() -> None:
     service = SERVICE_PATH.read_text(encoding="utf-8")
     patch = PATCH_PATH.read_text(encoding="utf-8")
-    encounter = ENCOUNTER_PATH.read_text(encoding="utf-8")
 
     for event_type in EVENT_TYPES:
         require(service, f"{event_type} ")
@@ -95,7 +93,8 @@ def validate_service() -> None:
         "ReferenceEquals(combatState.Encounter, pending.Encounter)",
         "PendingBattleSetups[owner] = (setup, encounter)",
         "combatState.Encounter is not ByrdonisElite",
-        "combatState.Encounter is not SGEncounter_TrialKnightsElite",
+        "combatState.Encounter is not KnightsElite",
+        "ModelDb.Encounter<KnightsElite>().ToMutable()",
         "await CreatureCmd.Stun(byrdonis",
         "ReferenceEquals(combatCard.DeckVersion, deckCard)",
         "await CardCmd.AutoPlay(",
@@ -141,38 +140,27 @@ def validate_service() -> None:
         '[HarmonyPatch(typeof(EventModel), "get_IsShared")]',
         "IsEnteringSinglePlayerEventCombat(__instance)",
     )
-    require(
-        encounter,
-        "RoomType.Elite",
-        "EncounterTag.Knights",
-        "ModelDb.Monster<SpectralKnight>()",
-        "ModelDb.Monster<MagiKnight>()",
-        "ModelDb.Affliction<Hexed>().OverlayPath",
-    )
-    if "HasScene" in encounter:
-        raise AssertionError("The custom encounter has no dedicated scene asset.")
-    if "FlailKnight" in encounter:
-        raise AssertionError("The issue #58 Trial encounter must contain only two knights.")
+    if "SGEncounter_TrialKnightsElite" in service:
+        raise AssertionError("Trial must use the original three-knight elite encounter.")
+    custom_encounter = ROOT / "src/Models/Encounters/SGEncounter_TrialKnightsElite.cs"
+    if custom_encounter.exists():
+        raise AssertionError("The obsolete two-knight encounter must be removed.")
 
 
 def validate_localization() -> None:
     event_key_sets: dict[str, set[str]] = {}
-    encounter_key_sets: dict[str, set[str]] = {}
+    event_tables: dict[str, dict[str, object]] = {}
     prefix = "SHIN_GETTER_EVENT_INVASION."
 
     for language in LANGUAGES:
         events = load_json(LOCALIZATION_ROOT / language / "events.json")
-        encounters = load_json(LOCALIZATION_ROOT / language / "encounters.json")
+        event_tables[language] = events
         event_key_sets[language] = {key for key in events if key.startswith(prefix)}
-        encounter_key_sets[language] = set(encounters)
 
     expected_events = event_key_sets[LANGUAGES[0]]
-    expected_encounters = encounter_key_sets[LANGUAGES[0]]
     for language in LANGUAGES[1:]:
         if event_key_sets[language] != expected_events:
             raise AssertionError(f"Event localization keys differ for {language}.")
-        if encounter_key_sets[language] != expected_encounters:
-            raise AssertionError(f"Encounter localization keys differ for {language}.")
 
     for event_name in (
         "BYRDONIS_NEST",
@@ -187,12 +175,20 @@ def validate_localization() -> None:
         if not any(key.startswith(f"{prefix}{event_name}.") for key in expected_events):
             raise AssertionError(f"Missing localization family: {event_name}")
 
-    required_encounter_keys = {
-        "S_G_ENCOUNTER_TRIAL_KNIGHTS_ELITE.title",
-        "S_G_ENCOUNTER_TRIAL_KNIGHTS_ELITE.loss",
+    trial_fight_key = f"{prefix}TRIAL.pages.RYOMA.options.START_FIGHT.description"
+    expected_knights = {
+        "eng": ("Flail Knight", "Spectral Knight", "Magi Knight"),
+        "jpn": ("フレイルナイト", "スペクトラルナイト", "メイジナイト"),
+        "zhs": ("连枷骑士", "幽灵骑士", "魔法骑士"),
     }
-    if not required_encounter_keys.issubset(expected_encounters):
-        raise AssertionError("Missing Trial encounter localization keys.")
+    for language, knight_names in expected_knights.items():
+        description = event_tables[language].get(trial_fight_key)
+        if not isinstance(description, str) or not all(
+            name in description for name in knight_names
+        ):
+            raise AssertionError(
+                f"Trial fight description must name all three knights for {language}."
+            )
 
 
 def main() -> None:

@@ -102,7 +102,7 @@
   "SHIN_GETTER_EVENT_INVASION.TRIAL.pages.INITIAL.options.RYOMA_LOCKED.description": "気合・気迫・超強気・闘志・不屈のいずれかが必要。",
   "SHIN_GETTER_EVENT_INVASION.TRIAL.pages.RYOMA.description": "被告はうつむき、とうに書かれた判決を待っている。\n\n竜馬はその者を指し、法廷のざわめきを押し潰した。[red]「お前は有罪だ。怒りを飲み込み、こんな馬鹿どもに自分の運命を任せた罪だ。」[/red]\n\n傍聴席から罵声が上がる。竜馬は操縦桿を軋ませ、陪審へ振り返った。\n\n[red]「こいつらが臆病なのは確かだ。だが座って見物しているお前らこそ、救いようがねえ。」[/red]\n\n法槌が落ち、鎖と影が同時に襲いかかる。真ゲッターは証言台を突き破って迎え撃った。",
   "SHIN_GETTER_EVENT_INVASION.TRIAL.pages.RYOMA.options.START_FIGHT.title": "裁判を中断する。",
-  "SHIN_GETTER_EVENT_INVASION.TRIAL.pages.RYOMA.options.START_FIGHT.description": "スペクトラルナイトとメイジナイトに挑む。",
+  "SHIN_GETTER_EVENT_INVASION.TRIAL.pages.RYOMA.options.START_FIGHT.description": "フレイルナイト、スペクトラルナイト、メイジナイトに挑む。",
   "SHIN_GETTER_EVENT_INVASION.SUNKEN_STATUE.pages.INITIAL.options.MUQING.title": "[yellow]水だと？ ゲッター3の出番だ！[/yellow]",
   "SHIN_GETTER_EVENT_INVASION.SUNKEN_STATUE.pages.INITIAL.options.MUQING.description": "最大HPを[red]7[/red]失い、潜水で得られるゴールドの1.8倍を得る。",
   "SHIN_GETTER_EVENT_INVASION.SUNKEN_STATUE.pages.INITIAL.options.MUQING_LOCKED.title": "ロック",

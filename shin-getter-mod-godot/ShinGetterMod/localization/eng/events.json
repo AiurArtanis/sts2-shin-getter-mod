@@ -102,7 +102,7 @@
   "SHIN_GETTER_EVENT_INVASION.TRIAL.pages.INITIAL.options.RYOMA_LOCKED.description": "Requires Spirit, Drive, Super Spirit, Fighting Spirit, or Persist.",
   "SHIN_GETTER_EVENT_INVASION.TRIAL.pages.RYOMA.description": "The accused lowers their head, waiting for a sentence written long ago.\n\nRyoma points at them, his voice drowning out the courtroom: [red]“You are guilty. Guilty of swallowing your anger and letting these fools rule your life.”[/red]\n\nThe benches erupt in outrage. Ryoma turns on the jury as the control lever cracks in his grip.\n\n[red]“They may be cowards. You people sitting here to watch are beyond forgiveness.”[/red]\n\nThe gavel falls. Chains and shadows surge forward together, and Shin Getter bursts through the stand to meet them.",
   "SHIN_GETTER_EVENT_INVASION.TRIAL.pages.RYOMA.options.START_FIGHT.title": "Interrupt the trial.",
-  "SHIN_GETTER_EVENT_INVASION.TRIAL.pages.RYOMA.options.START_FIGHT.description": "Challenge the Spectral Knight and Magi Knight.",
+  "SHIN_GETTER_EVENT_INVASION.TRIAL.pages.RYOMA.options.START_FIGHT.description": "Challenge the Flail Knight, Spectral Knight, and Magi Knight.",
   "SHIN_GETTER_EVENT_INVASION.SUNKEN_STATUE.pages.INITIAL.options.MUQING.title": "[yellow]Water? This is where Getter 3 shines![/yellow]",
   "SHIN_GETTER_EVENT_INVASION.SUNKEN_STATUE.pages.INITIAL.options.MUQING.description": "Lose [red]7[/red] Max HP. Gain 1.8 times the diving Gold.",
   "SHIN_GETTER_EVENT_INVASION.SUNKEN_STATUE.pages.INITIAL.options.MUQING_LOCKED.title": "Locked",
