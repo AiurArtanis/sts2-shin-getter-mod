@@ -60,6 +60,16 @@ internal static class ShinGetterExecutionMusicService
     internal static Task StopActiveAndRestore() =>
         _activeState is { } state ? StopStateAndRestore(state) : Task.CompletedTask;
 
+    internal static void StopImmediatelyAndRestore()
+    {
+        if (_activeState is not { } state)
+            return;
+
+        _activeState = null;
+        DiscardPlayback(state);
+        NAudioManager.Instance?.SetBgmVol(SaveManager.Instance.SettingsSave.VolumeBgm);
+    }
+
     private static void OnCombatEnded(CombatRoom _)
     {
         TaskHelper.RunSafely(StopActiveAndRestore());
@@ -128,6 +138,7 @@ internal static class ShinGetterExecutionMusicService
             return;
         }
 
+        bool replacedEncounterMusic = ShinGetterEncounterMusicService.SuspendForExecution();
         ExecutionMusicState? previousState = _activeState;
         _activeState = null;
         if (previousState != null && !ReferenceEquals(previousState, state))
@@ -158,15 +169,23 @@ internal static class ShinGetterExecutionMusicService
         Tween tween = player.CreateTween();
         state.FadeTween = tween;
         tween.SetParallel();
-        tween.TweenMethod(
-            Callable.From<float>(volume =>
-            {
-                state.CurrentBgmVolume = volume;
-                NAudioManager.Instance?.SetBgmVol(volume);
-            }),
-            configuredBgmVolume,
-            0f,
-            FadeInDurationSeconds);
+        if (replacedEncounterMusic)
+        {
+            state.CurrentBgmVolume = 0f;
+            NAudioManager.Instance?.SetBgmVol(0f);
+        }
+        else
+        {
+            tween.TweenMethod(
+                Callable.From<float>(volume =>
+                {
+                    state.CurrentBgmVolume = volume;
+                    NAudioManager.Instance?.SetBgmVol(volume);
+                }),
+                configuredBgmVolume,
+                0f,
+                FadeInDurationSeconds);
+        }
         tween.TweenProperty(
             player,
             "volume_db",
