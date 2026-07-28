@@ -2,6 +2,9 @@
 using System;
 using System.Collections.Generic;
 using Godot;
+using MegaCrit.Sts2.addons.mega_text;
+using MegaCrit.Sts2.Core.HoverTips;
+using MegaCrit.Sts2.Core.Nodes.HoverTips;
 using MegaCrit.Sts2.Core.Nodes.Screens.Settings;
 
 namespace ShinGetterMod.Nodes.Config;
@@ -9,14 +12,22 @@ namespace ShinGetterMod.Nodes.Config;
 public partial class NShinGetterVoicePaginator : NPaginator
 {
     private Color _presentationColor = Colors.White;
-    private string _presentationTooltip = string.Empty;
+    private IHoverTip? _presentationHoverTip;
+    private MegaLabel? _vfxPresentationLabel;
+    private int _currentFontSize = 28;
 
     public event Action<int>? IndexChanged;
 
     public override void _Ready()
     {
         ConnectSignals();
+        _vfxPresentationLabel = GetNode<MegaLabel>("LabelContainer/Mask/VfxLabel");
+        _label.MouseFilter = MouseFilterEnum.Pass;
+        _vfxPresentationLabel.MouseFilter = MouseFilterEnum.Ignore;
+        _label.Connect(Control.SignalName.MouseEntered, Callable.From(ShowHoverTip));
+        _label.Connect(Control.SignalName.MouseExited, Callable.From(HideHoverTip));
         RefreshLabel();
+        ApplyVfxFontSize(_currentFontSize);
         ApplyPresentation();
     }
 
@@ -29,16 +40,17 @@ public partial class NShinGetterVoicePaginator : NPaginator
             RefreshLabel();
     }
 
-    public void SetPresentation(Color color, string tooltip)
+    public void SetPresentation(Color color, IHoverTip hoverTip)
     {
         _presentationColor = color;
-        _presentationTooltip = tooltip;
+        _presentationHoverTip = hoverTip;
         if (IsNodeReady())
             ApplyPresentation();
     }
 
     protected override void OnIndexChanged(int index)
     {
+        ApplyVfxFontSize(_currentFontSize);
         RefreshLabel();
         IndexChanged?.Invoke(index);
     }
@@ -48,12 +60,45 @@ public partial class NShinGetterVoicePaginator : NPaginator
         if (_options.Count == 0)
             return;
 
-        _label.SetTextAutoSize(_options[_currentIndex]);
+        string text = _options[_currentIndex];
+        _currentFontSize = text.Length switch
+        {
+            <= 14 => 28,
+            <= 30 => 24,
+            <= 44 => 22,
+            _ => 20,
+        };
+
+        _label.AutoSizeEnabled = false;
+        _label.AddThemeFontSizeOverride("font_size", _currentFontSize);
+        _label.Text = text;
     }
 
     private void ApplyPresentation()
     {
         _label.Modulate = _presentationColor;
-        TooltipText = _presentationTooltip;
+    }
+
+    private void ApplyVfxFontSize(int fontSize)
+    {
+        if (_vfxPresentationLabel == null)
+            return;
+
+        _vfxPresentationLabel.AutoSizeEnabled = false;
+        _vfxPresentationLabel.AddThemeFontSizeOverride("font_size", fontSize);
+    }
+
+    private void ShowHoverTip()
+    {
+        if (_presentationHoverTip == null)
+            return;
+
+        NHoverTipSet.CreateAndShow(_label, _presentationHoverTip)?
+            .SetGlobalPosition(_label.GlobalPosition + NSettingsScreen.settingTipsOffset);
+    }
+
+    private void HideHoverTip()
+    {
+        NHoverTipSet.Remove(_label);
     }
 }
