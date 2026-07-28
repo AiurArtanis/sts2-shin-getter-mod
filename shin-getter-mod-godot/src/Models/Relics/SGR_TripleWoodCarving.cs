@@ -1,6 +1,9 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
+using MegaCrit.Sts2.Core.Localization;
 using ShinGetterMod.Models.Cards;
 
 namespace ShinGetterMod.Models.Relics;
@@ -8,6 +11,14 @@ namespace ShinGetterMod.Models.Relics;
 public sealed class SGR_TripleWoodCarving : ShinGetterRelicBase
 {
     public override RelicRarity Rarity => RelicRarity.Event;
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
+        new IHoverTip[]
+        {
+            new HoverTip(
+                new LocString("static_hover_tips", "SHIN_GETTER_TRANSFORM.title"),
+                new LocString("static_hover_tips", "SHIN_GETTER_TRANSFORM.description")),
+        };
 
     public override async Task BeforeCombatStart()
     {
