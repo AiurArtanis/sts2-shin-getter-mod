@@ -14,6 +14,7 @@ public partial class NShinGetterVoicePaginator : NPaginator
     private Color _presentationColor = Colors.White;
     private IHoverTip? _presentationHoverTip;
     private MegaLabel? _vfxPresentationLabel;
+    private int _currentFontSize = 28;
 
     public event Action<int>? IndexChanged;
 
@@ -26,6 +27,7 @@ public partial class NShinGetterVoicePaginator : NPaginator
         _label.Connect(Control.SignalName.MouseEntered, Callable.From(ShowHoverTip));
         _label.Connect(Control.SignalName.MouseExited, Callable.From(HideHoverTip));
         RefreshLabel();
+        ApplyVfxFontSize(_currentFontSize);
         ApplyPresentation();
     }
 
@@ -48,6 +50,7 @@ public partial class NShinGetterVoicePaginator : NPaginator
 
     protected override void OnIndexChanged(int index)
     {
+        ApplyVfxFontSize(_currentFontSize);
         RefreshLabel();
         IndexChanged?.Invoke(index);
     }
@@ -58,7 +61,7 @@ public partial class NShinGetterVoicePaginator : NPaginator
             return;
 
         string text = _options[_currentIndex];
-        int fontSize = text.Length switch
+        _currentFontSize = text.Length switch
         {
             <= 14 => 28,
             <= 30 => 24,
@@ -67,18 +70,22 @@ public partial class NShinGetterVoicePaginator : NPaginator
         };
 
         _label.AutoSizeEnabled = false;
-        _label.AddThemeFontSizeOverride("font_size", fontSize);
+        _label.AddThemeFontSizeOverride("font_size", _currentFontSize);
         _label.Text = text;
-        if (_vfxPresentationLabel != null)
-        {
-            _vfxPresentationLabel.AutoSizeEnabled = false;
-            _vfxPresentationLabel.AddThemeFontSizeOverride("font_size", fontSize);
-        }
     }
 
     private void ApplyPresentation()
     {
         _label.Modulate = _presentationColor;
+    }
+
+    private void ApplyVfxFontSize(int fontSize)
+    {
+        if (_vfxPresentationLabel == null)
+            return;
+
+        _vfxPresentationLabel.AutoSizeEnabled = false;
+        _vfxPresentationLabel.AddThemeFontSizeOverride("font_size", fontSize);
     }
 
     private void ShowHoverTip()
