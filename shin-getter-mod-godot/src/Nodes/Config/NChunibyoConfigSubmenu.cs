@@ -8,6 +8,7 @@ using System.Text.Json;
 using Godot;
 using MegaCrit.Sts2.Core.Assets;
 using MegaCrit.Sts2.Core.Helpers;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
@@ -343,9 +344,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         var exportButton = CreateActionButton(
             Localize("SHIN_GETTER_CHUNIBYO.EXPORT", "Export Cards"),
             ExportCards,
-            Localize(
-                "SHIN_GETTER_CHUNIBYO.EXPORT_TOOLTIP",
-                "Click to export every Shin Getter mod card design."));
+            new HoverTip(new LocString(LocTable, "SHIN_GETTER_CHUNIBYO.EXPORT_TOOLTIP")));
         exportButton.SizeFlagsHorizontal = SizeFlags.ShrinkEnd;
         section.AddChild(exportButton);
 
@@ -453,19 +452,13 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
             ShinGetterVoiceMode.Always => new Color(0.96f, 0.28f, 0.2f),
             _ => new Color(0.91f, 0.86f, 0.74f),
         };
-        string tooltip = mode switch
+        string tooltipKey = mode switch
         {
-            ShinGetterVoiceMode.Silent => Localize(
-                "SHIN_GETTER_CHUNIBYO.VOICE.SILENT_TOOLTIP",
-                "Disables voice lines. Transformation sound effects remain enabled."),
-            ShinGetterVoiceMode.Always => Localize(
-                "SHIN_GETTER_CHUNIBYO.VOICE.ALWAYS_TOOLTIP",
-                "Plays a line every time its trigger condition is met."),
-            _ => Localize(
-                "SHIN_GETTER_CHUNIBYO.VOICE.ONCE_PER_COMBAT_TOOLTIP",
-                "Each voice line plays at most once per combat."),
+            ShinGetterVoiceMode.Silent => "SHIN_GETTER_CHUNIBYO.VOICE.SILENT_TOOLTIP",
+            ShinGetterVoiceMode.Always => "SHIN_GETTER_CHUNIBYO.VOICE.ALWAYS_TOOLTIP",
+            _ => "SHIN_GETTER_CHUNIBYO.VOICE.ONCE_PER_COMBAT_TOOLTIP",
         };
-        _voiceModePaginator.SetPresentation(color, tooltip);
+        _voiceModePaginator.SetPresentation(color, new HoverTip(new LocString(LocTable, tooltipKey)));
     }
 
     private static PanelContainer CreatePanel(Vector2 minimumSize)
@@ -630,10 +623,10 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
     private static NShinGetterConfigActionButton CreateActionButton(
         string text,
         Action action,
-        string tooltip = "")
+        IHoverTip? hoverTip = null)
     {
         var button = new NShinGetterConfigActionButton();
-        button.Initialize(text, action, tooltip);
+        button.Initialize(text, action, hoverTip);
         return button;
     }
 
@@ -701,7 +694,28 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         verticalPopup.OffsetBottom = 410f;
 
         RichTextLabel description = popup.GetNode<RichTextLabel>("VerticalPopup/Description");
-        description.ScrollActive = true;
+        var scroll = new ScrollContainer
+        {
+            Name = "UpdateHistoryScroll",
+            AnchorLeft = description.AnchorLeft,
+            AnchorTop = description.AnchorTop,
+            AnchorRight = description.AnchorRight,
+            AnchorBottom = description.AnchorBottom,
+            OffsetLeft = description.OffsetLeft,
+            OffsetTop = description.OffsetTop,
+            OffsetRight = description.OffsetRight,
+            OffsetBottom = description.OffsetBottom,
+            HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled,
+            VerticalScrollMode = ScrollContainer.ScrollMode.Auto,
+            ClipContents = true,
+        };
+        verticalPopup.AddChild(scroll);
+        description.Reparent(scroll, keepGlobalTransform: false);
+        description.SetAnchorsAndOffsetsPreset(LayoutPreset.TopWide);
+        description.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+        description.SizeFlagsVertical = SizeFlags.ShrinkBegin;
+        description.FitContent = true;
+        description.ScrollActive = false;
         description.HorizontalAlignment = HorizontalAlignment.Left;
         description.VerticalAlignment = VerticalAlignment.Top;
     }
