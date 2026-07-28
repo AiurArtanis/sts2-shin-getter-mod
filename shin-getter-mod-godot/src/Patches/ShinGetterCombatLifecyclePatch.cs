@@ -12,6 +12,7 @@ internal static class ShinGetterCombatLifecyclePatch
     [HarmonyPrefix]
     private static void Prefix()
     {
+        ShinGetterEncounterMusicService.StopActiveAndRestore();
         TaskHelper.RunSafely(ShinGetterExecutionMusicService.StopActiveAndRestore());
     }
 }
