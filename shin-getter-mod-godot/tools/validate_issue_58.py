@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 
@@ -23,6 +24,9 @@ EVENT_TYPES = (
     "RoundTeaParty",
     "RanwidTheElder",
 )
+
+TAG_PATTERN = re.compile(r"\[(?P<closing>/)?(?P<name>[A-Za-z_]+)(?:[=\s][^\]]*)?\]")
+SELF_CLOSING_TAGS = {"lb", "rb"}
 
 
 def require(text: str, *needles: str) -> None:
@@ -51,6 +55,25 @@ def load_json(path: Path) -> dict[str, object]:
     if not isinstance(value, dict):
         raise AssertionError(f"Expected a JSON object: {path}")
     return value
+
+
+def extract_tags(text: str) -> tuple[str, ...]:
+    return tuple(match.group(0) for match in TAG_PATTERN.finditer(text))
+
+
+def validate_tag_nesting(key: str, text: str) -> None:
+    stack: list[str] = []
+    for match in TAG_PATTERN.finditer(text):
+        tag_name = match.group("name")
+        if tag_name in SELF_CLOSING_TAGS:
+            continue
+        if match.group("closing"):
+            if not stack or stack.pop() != tag_name:
+                raise AssertionError(f"Invalid rich-text nesting for {key}: {match.group(0)}")
+        else:
+            stack.append(tag_name)
+    if stack:
+        raise AssertionError(f"Unclosed rich-text tags for {key}: {stack}")
 
 
 def validate_service() -> None:
@@ -161,6 +184,101 @@ def validate_localization() -> None:
     for language in LANGUAGES[1:]:
         if event_key_sets[language] != expected_events:
             raise AssertionError(f"Event localization keys differ for {language}.")
+
+    rich_text_prefixes = (prefix, "S_G_E_GETTER_MANDALA.")
+    rich_text_keys = {
+        key
+        for key in event_tables[LANGUAGES[0]]
+        if key.startswith(rich_text_prefixes)
+    }
+    for key in rich_text_keys:
+        expected_tag_sequence: tuple[str, ...] | None = None
+        for language in LANGUAGES:
+            text = event_tables[language].get(key)
+            if not isinstance(text, str):
+                raise AssertionError(f"Missing rich-text localization key for {language}: {key}")
+            if "[white]" in text or "[/white]" in text:
+                raise AssertionError(f"Use [color=white], not [white], for {language}: {key}")
+            if "[cyan]" in text or "[/cyan]" in text:
+                raise AssertionError(f"Use a registered color tag for {language}: {key}")
+            validate_tag_nesting(f"{language}:{key}", text)
+            tag_sequence = extract_tags(text)
+            if expected_tag_sequence is None:
+                expected_tag_sequence = tag_sequence
+            elif tag_sequence != expected_tag_sequence:
+                raise AssertionError(f"Rich-text tag ranges differ for {language}: {key}")
+
+    actor_colors = {
+        "RYOMA": "[red]",
+        "HAYATO": "[color=white]",
+        "MUQING": "[yellow]",
+    }
+    for language in LANGUAGES:
+        events = event_tables[language]
+        for actor, color_tag in actor_colors.items():
+            actor_title_suffix = f".options.{actor}.title"
+            for key in expected_events:
+                if key.endswith(actor_title_suffix):
+                    text = events.get(key)
+                    if not isinstance(text, str) or color_tag not in text:
+                        raise AssertionError(
+                            f"Missing {actor} color in {language}: {key}"
+                        )
+
+    triad_keys = (
+        f"{prefix}SPIRIT_GRAFTER.pages.INITIAL.options.TRIPLE_UNITY.title",
+        f"{prefix}WOOD_CARVINGS.pages.INITIAL.options.TRIPLE_CARVING.title",
+        "S_G_E_GETTER_MANDALA.pages.GETTER_G_FUSION.description",
+    )
+    for language in LANGUAGES:
+        for key in triad_keys:
+            text = event_tables[language].get(key)
+            if not isinstance(text, str):
+                raise AssertionError(f"Missing triad rich text for {language}: {key}")
+            require(text, "[red]", "[color=white]", "[yellow]")
+
+    rich_text_contracts = {
+        f"{prefix}BYRDONIS_NEST.pages.RYOMA.description": (
+            "[red]",
+            "[jitter]",
+            "[/jitter]",
+            "[/red]",
+        ),
+        f"{prefix}SPIRIT_GRAFTER.pages.TRIPLE_UNITY.description": (
+            "[getter_ray]",
+            "[sine]",
+            "[/sine]",
+            "[/getter_ray]",
+        ),
+        f"{prefix}WOOD_CARVINGS.pages.INITIAL.options.TRIPLE_CARVING.title": (
+            "[getter_ray]",
+            "[/getter_ray]",
+        ),
+        f"{prefix}TRIAL.pages.RYOMA.options.START_FIGHT.title": (
+            "[red]",
+            "[b]",
+            "[/b]",
+            "[/red]",
+        ),
+        f"{prefix}ROUND_TEA_PARTY.pages.RYOMA.description": (
+            "[red]",
+            "[jitter]",
+            "[/jitter]",
+            "[/red]",
+        ),
+        "S_G_E_GETTER_MANDALA.pages.INITIAL.description": (
+            "[sine]",
+            "[aqua]",
+            "[/aqua]",
+            "[/sine]",
+        ),
+    }
+    for language in LANGUAGES:
+        for key, required_tags in rich_text_contracts.items():
+            text = event_tables[language].get(key)
+            if not isinstance(text, str):
+                raise AssertionError(f"Missing rich-text contract for {language}: {key}")
+            require(text, *required_tags)
 
     for event_name in (
         "BYRDONIS_NEST",
