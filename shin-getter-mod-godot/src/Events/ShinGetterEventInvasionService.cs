@@ -30,7 +30,6 @@ using MegaCrit.Sts2.Core.Runs.History;
 using MegaCrit.Sts2.Core.ValueProps;
 using ShinGetterMod.Models.Cards;
 using ShinGetterMod.Models.Characters;
-using ShinGetterMod.Models.Encounters;
 using ShinGetterMod.Models.Potions;
 using ShinGetterMod.Models.Relics;
 using ByrdpipRelic = MegaCrit.Sts2.Core.Models.Relics.Byrdpip;
@@ -158,7 +157,7 @@ internal static class ShinGetterEventInvasionService
             return;
         }
 
-        if (combatState.Encounter is not SGEncounter_TrialKnightsElite)
+        if (combatState.Encounter is not KnightsElite)
             return;
 
         PlayerCombatState? playerCombatState = owner.PlayerCombatState;
@@ -654,7 +653,7 @@ internal static class ShinGetterEventInvasionService
             eventModel,
             "TRIAL",
             "RYOMA",
-            ModelDb.Encounter<SGEncounter_TrialKnightsElite>().ToMutable(),
+            ModelDb.Encounter<KnightsElite>().ToMutable(),
             Array.Empty<Reward>(),
             PendingBattleSetup.Trial);
         return Task.CompletedTask;

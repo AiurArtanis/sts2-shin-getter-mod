@@ -1,16 +1,22 @@
 #!/usr/bin/env python3
-"""Static acceptance gate for issue #58 event invasion batch 2."""
+"""Static acceptance gate for issue#58 event invasion batch 2."""
 
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
 SERVICE_PATH = ROOT / "src/Events/ShinGetterEventInvasionService.cs"
 PATCH_PATH = ROOT / "src/Patches/ShinGetterEventInvasionPatch.cs"
-ENCOUNTER_PATH = ROOT / "src/Models/Encounters/SGEncounter_TrialKnightsElite.cs"
+RICH_TEXT_PATCH_PATH = ROOT / "src/Patches/RichTextWhitePatch.cs"
+RICH_TEXT_EFFECT_PATHS = {
+    "white": ROOT / "src/RichTextTags/RichTextWhite.cs",
+    "yellow": ROOT / "src/RichTextTags/RichTextYellow.cs",
+    "getter_ray": ROOT / "src/RichTextTags/RichTextGetterRay.cs",
+}
 LOCALIZATION_ROOT = ROOT / "ShinGetterMod/localization"
 LANGUAGES = ("eng", "jpn", "zhs")
 
@@ -24,6 +30,9 @@ EVENT_TYPES = (
     "RoundTeaParty",
     "RanwidTheElder",
 )
+
+TAG_PATTERN = re.compile(r"\[(?P<closing>/)?(?P<name>[A-Za-z_]+)(?:[=\s][^\]]*)?\]")
+SELF_CLOSING_TAGS = {"lb", "rb"}
 
 
 def require(text: str, *needles: str) -> None:
@@ -54,10 +63,28 @@ def load_json(path: Path) -> dict[str, object]:
     return value
 
 
+def extract_tags(text: str) -> tuple[str, ...]:
+    return tuple(match.group(0) for match in TAG_PATTERN.finditer(text))
+
+
+def validate_tag_nesting(key: str, text: str) -> None:
+    stack: list[str] = []
+    for match in TAG_PATTERN.finditer(text):
+        tag_name = match.group("name")
+        if tag_name in SELF_CLOSING_TAGS:
+            continue
+        if match.group("closing"):
+            if not stack or stack.pop() != tag_name:
+                raise AssertionError(f"Invalid rich-text nesting for {key}: {match.group(0)}")
+        else:
+            stack.append(tag_name)
+    if stack:
+        raise AssertionError(f"Unclosed rich-text tags for {key}: {stack}")
+
+
 def validate_service() -> None:
     service = SERVICE_PATH.read_text(encoding="utf-8")
     patch = PATCH_PATH.read_text(encoding="utf-8")
-    encounter = ENCOUNTER_PATH.read_text(encoding="utf-8")
 
     for event_type in EVENT_TYPES:
         require(service, f"{event_type} ")
@@ -95,7 +122,8 @@ def validate_service() -> None:
         "ReferenceEquals(combatState.Encounter, pending.Encounter)",
         "PendingBattleSetups[owner] = (setup, encounter)",
         "combatState.Encounter is not ByrdonisElite",
-        "combatState.Encounter is not SGEncounter_TrialKnightsElite",
+        "combatState.Encounter is not KnightsElite",
+        "ModelDb.Encounter<KnightsElite>().ToMutable()",
         "await CreatureCmd.Stun(byrdonis",
         "ReferenceEquals(combatCard.DeckVersion, deckCard)",
         "await CardCmd.AutoPlay(",
@@ -141,38 +169,176 @@ def validate_service() -> None:
         '[HarmonyPatch(typeof(EventModel), "get_IsShared")]',
         "IsEnteringSinglePlayerEventCombat(__instance)",
     )
+    if "SGEncounter_TrialKnightsElite" in service:
+        raise AssertionError("Trial must use the original three-knight elite encounter.")
+    custom_encounter = ROOT / "src/Models/Encounters/SGEncounter_TrialKnightsElite.cs"
+    if custom_encounter.exists():
+        raise AssertionError("The obsolete two-knight encounter must be removed.")
+
+
+def validate_rich_text_registration() -> None:
+    patch = RICH_TEXT_PATCH_PATH.read_text(encoding="utf-8")
     require(
-        encounter,
-        "RoomType.Elite",
-        "EncounterTag.Knights",
-        "ModelDb.Monster<SpectralKnight>()",
-        "ModelDb.Monster<MagiKnight>()",
-        "ModelDb.Affliction<Hexed>().OverlayPath",
+        patch,
+        '[HarmonyPatch(typeof(MegaRichTextLabel), "InstallEffectsIfNeeded")]',
+        "if (!__instance.BbcodeEnabled)",
+        "__instance.CustomEffects.Add(WhiteEffect)",
+        "__instance.CustomEffects.Add(YellowEffect)",
+        "__instance.CustomEffects.Add(GetterRayEffect)",
     )
-    if "HasScene" in encounter:
-        raise AssertionError("The custom encounter has no dedicated scene asset.")
-    if "FlailKnight" in encounter:
-        raise AssertionError("The issue #58 Trial encounter must contain only two knights.")
+
+    expected_effect_contracts = {
+        "white": ('Bbcode => "white"', "charFx.Color = Colors.White"),
+        "yellow": ('Bbcode => "yellow"', 'charFx.Color = new Color("FFE600")'),
+        "getter_ray": (
+            'Bbcode => "getter_ray"',
+            'charFx.Color = new Color("44FCC5")',
+        ),
+    }
+    for tag_name, contracts in expected_effect_contracts.items():
+        effect = RICH_TEXT_EFFECT_PATHS[tag_name].read_text(encoding="utf-8")
+        require(effect, *contracts)
 
 
 def validate_localization() -> None:
     event_key_sets: dict[str, set[str]] = {}
-    encounter_key_sets: dict[str, set[str]] = {}
+    event_tables: dict[str, dict[str, object]] = {}
     prefix = "SHIN_GETTER_EVENT_INVASION."
 
     for language in LANGUAGES:
         events = load_json(LOCALIZATION_ROOT / language / "events.json")
-        encounters = load_json(LOCALIZATION_ROOT / language / "encounters.json")
+        event_tables[language] = events
         event_key_sets[language] = {key for key in events if key.startswith(prefix)}
-        encounter_key_sets[language] = set(encounters)
 
     expected_events = event_key_sets[LANGUAGES[0]]
-    expected_encounters = encounter_key_sets[LANGUAGES[0]]
     for language in LANGUAGES[1:]:
         if event_key_sets[language] != expected_events:
             raise AssertionError(f"Event localization keys differ for {language}.")
-        if encounter_key_sets[language] != expected_encounters:
-            raise AssertionError(f"Encounter localization keys differ for {language}.")
+
+    for language, events in event_tables.items():
+        for key, value in events.items():
+            if isinstance(value, str) and "[color=white]" in value:
+                raise AssertionError(
+                    f"Use the registered [white] tag for {language}: {key}"
+                )
+
+    rich_text_prefixes = (prefix, "S_G_E_GETTER_MANDALA.")
+    rich_text_keys = {
+        key
+        for key in event_tables[LANGUAGES[0]]
+        if key.startswith(rich_text_prefixes)
+    }
+    for key in rich_text_keys:
+        expected_tag_sequence: tuple[str, ...] | None = None
+        for language in LANGUAGES:
+            text = event_tables[language].get(key)
+            if not isinstance(text, str):
+                raise AssertionError(f"Missing rich-text localization key for {language}: {key}")
+            if "[cyan]" in text or "[/cyan]" in text:
+                raise AssertionError(f"Use a registered color tag for {language}: {key}")
+            validate_tag_nesting(f"{language}:{key}", text)
+            tag_sequence = extract_tags(text)
+            if expected_tag_sequence is None:
+                expected_tag_sequence = tag_sequence
+            elif tag_sequence != expected_tag_sequence:
+                raise AssertionError(f"Rich-text tag ranges differ for {language}: {key}")
+
+    actor_colors = {
+        "RYOMA": "[red]",
+        "HAYATO": "[white]",
+        "MUQING": "[yellow]",
+    }
+    for language in LANGUAGES:
+        events = event_tables[language]
+        for actor, color_tag in actor_colors.items():
+            actor_title_suffix = f".options.{actor}.title"
+            for key in expected_events:
+                if key.endswith(actor_title_suffix):
+                    text = events.get(key)
+                    if not isinstance(text, str) or color_tag not in text:
+                        raise AssertionError(
+                            f"Missing {actor} color in {language}: {key}"
+                        )
+
+    triad_keys = (
+        f"{prefix}SPIRIT_GRAFTER.pages.INITIAL.options.TRIPLE_UNITY.title",
+        f"{prefix}WOOD_CARVINGS.pages.INITIAL.options.TRIPLE_CARVING.title",
+        "S_G_E_GETTER_MANDALA.pages.GETTER_G_FUSION.description",
+    )
+    for language in LANGUAGES:
+        for key in triad_keys:
+            text = event_tables[language].get(key)
+            if not isinstance(text, str):
+                raise AssertionError(f"Missing triad rich text for {language}: {key}")
+            require(text, "[red]", "[white]", "[yellow]")
+
+    rich_text_contracts = {
+        f"{prefix}BYRDONIS_NEST.pages.RYOMA.description": (
+            "[red]",
+            "[jitter]",
+            "[/jitter]",
+            "[/red]",
+        ),
+        f"{prefix}SPIRIT_GRAFTER.pages.TRIPLE_UNITY.description": (
+            "[getter_ray]",
+            "[sine]",
+            "[/sine]",
+            "[/getter_ray]",
+        ),
+        f"{prefix}WOOD_CARVINGS.pages.INITIAL.options.TRIPLE_CARVING.title": (
+            "[getter_ray]",
+            "[/getter_ray]",
+        ),
+        f"{prefix}TRIAL.pages.RYOMA.options.START_FIGHT.title": (
+            "[red]",
+            "[b]",
+            "[/b]",
+            "[/red]",
+        ),
+        f"{prefix}ROUND_TEA_PARTY.pages.RYOMA.description": (
+            "[red]",
+            "[jitter]",
+            "[/jitter]",
+            "[/red]",
+        ),
+        "S_G_E_GETTER_MANDALA.pages.INITIAL.description": (
+            "[sine]",
+            "[getter_ray]",
+            "[/getter_ray]",
+            "[/sine]",
+        ),
+        "S_G_E_GETTER_MANDALA.pages.PRIMAL_GETTER.description": (
+            "[getter_ray]",
+            "[b]",
+            "[/b]",
+            "[/getter_ray]",
+        ),
+        "S_G_E_GETTER_MANDALA.pages.IGNORE.description": (
+            "[getter_ray]",
+            "[/getter_ray]",
+        ),
+    }
+    for language in LANGUAGES:
+        for key, required_tags in rich_text_contracts.items():
+            text = event_tables[language].get(key)
+            if not isinstance(text, str):
+                raise AssertionError(f"Missing rich-text contract for {language}: {key}")
+            require(text, *required_tags)
+
+    getter_mandala_keys = (
+        "S_G_E_GETTER_MANDALA.pages.INITIAL.description",
+        "S_G_E_GETTER_MANDALA.pages.PRIMAL_GETTER.description",
+        "S_G_E_GETTER_MANDALA.pages.IGNORE.description",
+    )
+    for language in LANGUAGES:
+        for key in getter_mandala_keys:
+            text = event_tables[language].get(key)
+            if not isinstance(text, str):
+                raise AssertionError(f"Missing Getter Mandala text for {language}: {key}")
+            if "[aqua]" in text or "[/aqua]" in text:
+                raise AssertionError(
+                    f"Getter semantics must use [getter_ray], not [aqua], for {language}: {key}"
+                )
 
     for event_name in (
         "BYRDONIS_NEST",
@@ -187,18 +353,27 @@ def validate_localization() -> None:
         if not any(key.startswith(f"{prefix}{event_name}.") for key in expected_events):
             raise AssertionError(f"Missing localization family: {event_name}")
 
-    required_encounter_keys = {
-        "S_G_ENCOUNTER_TRIAL_KNIGHTS_ELITE.title",
-        "S_G_ENCOUNTER_TRIAL_KNIGHTS_ELITE.loss",
+    trial_fight_key = f"{prefix}TRIAL.pages.RYOMA.options.START_FIGHT.description"
+    expected_knights = {
+        "eng": ("Flail Knight", "Spectral Knight", "Magi Knight"),
+        "jpn": ("フレイルナイト", "スペクトラルナイト", "メイジナイト"),
+        "zhs": ("连枷骑士", "幽灵骑士", "魔法骑士"),
     }
-    if not required_encounter_keys.issubset(expected_encounters):
-        raise AssertionError("Missing Trial encounter localization keys.")
+    for language, knight_names in expected_knights.items():
+        description = event_tables[language].get(trial_fight_key)
+        if not isinstance(description, str) or not all(
+            name in description for name in knight_names
+        ):
+            raise AssertionError(
+                f"Trial fight description must name all three knights for {language}."
+            )
 
 
 def main() -> None:
     validate_service()
+    validate_rich_text_registration()
     validate_localization()
-    print("issue #58 static validation passed")
+    print("issue#58 static validation passed")
 
 
 if __name__ == "__main__":
