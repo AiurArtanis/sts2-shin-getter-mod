@@ -89,8 +89,10 @@ public partial class NShinGetterConfigActionButton : NSettingsButton
         if (_hoverTip == null)
             return;
 
-        NHoverTipSet.CreateAndShow(this, _hoverTip)?
-            .SetGlobalPosition(GlobalPosition + NSettingsScreen.settingTipsOffset);
+        NHoverTipSet.CreateAndShow(
+            this,
+            _hoverTip,
+            HoverTip.GetHoverTipAlignment(this));
     }
 
     private void HideHoverTip()

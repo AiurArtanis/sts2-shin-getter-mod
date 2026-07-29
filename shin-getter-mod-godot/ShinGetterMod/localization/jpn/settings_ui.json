@@ -15,7 +15,7 @@
   "SHIN_GETTER_CHUNIBYO.VOICE.SILENT_TOOLTIP": "台詞をすべて無効にします。変形効果音は再生されます。",
   "SHIN_GETTER_CHUNIBYO.VOICE.ONCE_PER_COMBAT": "大人になったが、熱血も悪くない",
   "SHIN_GETTER_CHUNIBYO.VOICE.ONCE_PER_COMBAT_TOOLTIP": "各台詞は戦闘ごとに一度だけ再生されます。",
-  "SHIN_GETTER_CHUNIBYO.VOICE.ALWAYS": "[red]燃えてきた！[/red]",
+  "SHIN_GETTER_CHUNIBYO.VOICE.ALWAYS": "[red][sine]燃えてきた！[/sine][/red]",
   "SHIN_GETTER_CHUNIBYO.VOICE.ALWAYS_TOOLTIP": "条件を満たすたびに台詞を再生します。",
   "SHIN_GETTER_CHUNIBYO.EVENT_INVASION": "イベント侵入",
   "SHIN_GETTER_CHUNIBYO.EVENT_INVASION_NOTE": "？部屋の一部イベントに追加の選択肢を加えます。",
