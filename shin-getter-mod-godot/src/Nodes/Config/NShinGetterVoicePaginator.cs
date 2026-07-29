@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Godot;
 using MegaCrit.Sts2.addons.mega_text;
+using MegaCrit.Sts2.Core.Assets;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Nodes.HoverTips;
 using MegaCrit.Sts2.Core.Nodes.Screens.Settings;
@@ -11,9 +12,10 @@ namespace ShinGetterMod.Nodes.Config;
 
 public partial class NShinGetterVoicePaginator : NPaginator
 {
-    private Color _presentationColor = Colors.White;
     private IHoverTip? _presentationHoverTip;
-    private MegaLabel? _vfxPresentationLabel;
+    private readonly List<string> _plainOptions = new();
+    private MegaRichTextLabel? _richPresentationLabel;
+    private Control? _hoverBounds;
     private int _currentFontSize = 28;
 
     public event Action<int>? IndexChanged;
@@ -21,36 +23,34 @@ public partial class NShinGetterVoicePaginator : NPaginator
     public override void _Ready()
     {
         ConnectSignals();
-        _vfxPresentationLabel = GetNode<MegaLabel>("LabelContainer/Mask/VfxLabel");
-        _label.MouseFilter = MouseFilterEnum.Pass;
-        _vfxPresentationLabel.MouseFilter = MouseFilterEnum.Ignore;
-        _label.Connect(Control.SignalName.MouseEntered, Callable.From(ShowHoverTip));
-        _label.Connect(Control.SignalName.MouseExited, Callable.From(HideHoverTip));
+        CreateRichPresentationLayer();
         RefreshLabel();
-        ApplyVfxFontSize(_currentFontSize);
-        ApplyPresentation();
     }
 
-    public void Configure(IReadOnlyList<string> options, int selectedIndex)
+    public void Configure(
+        IReadOnlyList<string> richOptions,
+        IReadOnlyList<string> plainOptions,
+        int selectedIndex)
     {
+        if (richOptions.Count != plainOptions.Count)
+            throw new ArgumentException("Voice display and measurement options must have matching counts.");
+
         _options.Clear();
-        _options.AddRange(options);
+        _options.AddRange(richOptions);
+        _plainOptions.Clear();
+        _plainOptions.AddRange(plainOptions);
         _currentIndex = Mathf.Clamp(selectedIndex, 0, _options.Count - 1);
         if (IsNodeReady())
             RefreshLabel();
     }
 
-    public void SetPresentation(Color color, IHoverTip hoverTip)
+    public void SetHoverTip(IHoverTip hoverTip)
     {
-        _presentationColor = color;
         _presentationHoverTip = hoverTip;
-        if (IsNodeReady())
-            ApplyPresentation();
     }
 
     protected override void OnIndexChanged(int index)
     {
-        ApplyVfxFontSize(_currentFontSize);
         RefreshLabel();
         IndexChanged?.Invoke(index);
     }
@@ -60,32 +60,81 @@ public partial class NShinGetterVoicePaginator : NPaginator
         if (_options.Count == 0)
             return;
 
-        string text = _options[_currentIndex];
-        _currentFontSize = text.Length switch
+        string plainText = _plainOptions[_currentIndex];
+        int baseFontSize = plainText.Length switch
         {
             <= 14 => 28,
             <= 30 => 24,
             <= 44 => 22,
             _ => 20,
         };
+        _currentFontSize = _currentIndex == 2 ? baseFontSize + 2 : baseFontSize;
 
-        _label.AutoSizeEnabled = false;
-        _label.AddThemeFontSizeOverride("font_size", _currentFontSize);
-        _label.Text = text;
-    }
-
-    private void ApplyPresentation()
-    {
-        _label.Modulate = _presentationColor;
-    }
-
-    private void ApplyVfxFontSize(int fontSize)
-    {
-        if (_vfxPresentationLabel == null)
+        _label.Text = plainText;
+        _label.Visible = false;
+        GetNode<MegaLabel>("LabelContainer/Mask/VfxLabel").Visible = false;
+        if (_richPresentationLabel == null)
             return;
 
-        _vfxPresentationLabel.AutoSizeEnabled = false;
-        _vfxPresentationLabel.AddThemeFontSizeOverride("font_size", fontSize);
+        ApplyRichFontSize(_currentFontSize);
+        _richPresentationLabel.Text = _options[_currentIndex];
+        _richPresentationLabel.Visible = true;
+    }
+
+    private void CreateRichPresentationLayer()
+    {
+        Control mask = GetNode<Control>("LabelContainer/Mask");
+        _label.MouseFilter = MouseFilterEnum.Ignore;
+        GetNode<MegaLabel>("LabelContainer/Mask/VfxLabel").MouseFilter = MouseFilterEnum.Ignore;
+
+        _richPresentationLabel = new MegaRichTextLabel
+        {
+            Name = "RichPresentationLabel",
+            BbcodeEnabled = true,
+            FitContent = false,
+            ScrollActive = false,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+            MouseFilter = MouseFilterEnum.Ignore,
+        };
+        _richPresentationLabel.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        FontVariation font = PreloadManager.Cache.GetAsset<FontVariation>(
+            "res://themes/kreon_bold_glyph_space_one.tres");
+        _richPresentationLabel.AddThemeFontOverride("normal_font", font);
+        _richPresentationLabel.AddThemeFontOverride("bold_font", font);
+        _richPresentationLabel.AddThemeColorOverride("default_color", new Color(0.91f, 0.86f, 0.74f));
+        _richPresentationLabel.AddThemeColorOverride("font_shadow_color", new Color(0f, 0f, 0f, 0.25f));
+        _richPresentationLabel.AddThemeConstantOverride("shadow_offset_x", 3);
+        _richPresentationLabel.AddThemeConstantOverride("shadow_offset_y", 2);
+        mask.AddChild(_richPresentationLabel);
+
+        _hoverBounds = new Control
+        {
+            Name = "VoiceOptionHoverBounds",
+            MouseFilter = MouseFilterEnum.Stop,
+        };
+        _hoverBounds.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        _hoverBounds.Connect(Control.SignalName.MouseEntered, Callable.From(ShowHoverTip));
+        _hoverBounds.Connect(Control.SignalName.MouseExited, Callable.From(HideHoverTip));
+        mask.AddChild(_hoverBounds);
+    }
+
+    private void ApplyRichFontSize(int fontSize)
+    {
+        if (_richPresentationLabel == null)
+            return;
+
+        foreach (string themeKey in new[]
+                 {
+                     "normal_font_size",
+                     "bold_font_size",
+                     "bold_italics_font_size",
+                     "italics_font_size",
+                     "mono_font_size",
+                 })
+        {
+            _richPresentationLabel.AddThemeFontSizeOverride(themeKey, fontSize);
+        }
     }
 
     private void ShowHoverTip()
@@ -93,12 +142,18 @@ public partial class NShinGetterVoicePaginator : NPaginator
         if (_presentationHoverTip == null)
             return;
 
-        NHoverTipSet.CreateAndShow(_label, _presentationHoverTip)?
-            .SetGlobalPosition(_label.GlobalPosition + NSettingsScreen.settingTipsOffset);
+        if (_hoverBounds == null)
+            return;
+
+        NHoverTipSet.CreateAndShow(
+            _hoverBounds,
+            _presentationHoverTip,
+            HoverTip.GetHoverTipAlignment(_hoverBounds));
     }
 
     private void HideHoverTip()
     {
-        NHoverTipSet.Remove(_label);
+        if (_hoverBounds != null)
+            NHoverTipSet.Remove(_hoverBounds);
     }
 }

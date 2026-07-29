@@ -15,7 +15,7 @@
   "SHIN_GETTER_CHUNIBYO.VOICE.SILENT_TOOLTIP": "Disables voice lines. Transformation sound effects remain enabled.",
   "SHIN_GETTER_CHUNIBYO.VOICE.ONCE_PER_COMBAT": "I'm an adult, but hot blood still feels pretty good",
   "SHIN_GETTER_CHUNIBYO.VOICE.ONCE_PER_COMBAT_TOOLTIP": "Each voice line plays at most once per combat.",
-  "SHIN_GETTER_CHUNIBYO.VOICE.ALWAYS": "[red]Set Me Ablaze![/red]",
+  "SHIN_GETTER_CHUNIBYO.VOICE.ALWAYS": "[red][sine]Set Me Ablaze![/sine][/red]",
   "SHIN_GETTER_CHUNIBYO.VOICE.ALWAYS_TOOLTIP": "Plays a line every time its trigger condition is met.",
   "SHIN_GETTER_CHUNIBYO.EVENT_INVASION": "Event Invasion",
   "SHIN_GETTER_CHUNIBYO.EVENT_INVASION_NOTE": "Adds extra options to some events in ? rooms.",

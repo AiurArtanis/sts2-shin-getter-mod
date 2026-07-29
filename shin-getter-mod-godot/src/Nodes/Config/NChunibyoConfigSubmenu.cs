@@ -11,6 +11,7 @@ using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
+using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
 using MegaCrit.Sts2.Core.Nodes.Screens.Settings;
 using ShinGetterMod.Config;
@@ -26,6 +27,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
     private const string KreonFontPath = "res://themes/kreon_regular_shared.tres";
     private const string ConfigTickboxScenePath = "res://scenes/screens/settings_tickbox.tscn";
     private const string VoicePaginatorScenePath = "res://scenes/screens/paginator.tscn";
+    private const string ScrollbarScenePath = "res://scenes/ui/scrollbar.tscn";
     private const string LocTable = "settings_ui";
     private const int PageTitleFontSize = 52;
     private const int SidebarTitleFontSize = 48;
@@ -280,12 +282,27 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         ConfigureVoicePaginatorLayout(_voiceModePaginator);
         _voiceModePaginator.SizeFlagsHorizontal = SizeFlags.ShrinkEnd;
         row.AddChild(_voiceModePaginator);
+        string silent = Localize(
+            "SHIN_GETTER_CHUNIBYO.VOICE.SILENT",
+            "[white]Mature Professional[/white]");
+        string oncePerCombat = Localize(
+            "SHIN_GETTER_CHUNIBYO.VOICE.ONCE_PER_COMBAT",
+            "I'm an adult, but hot blood still feels pretty good");
+        string always = Localize(
+            "SHIN_GETTER_CHUNIBYO.VOICE.ALWAYS",
+            "[red][sine]Set Me Ablaze![/sine][/red]");
         _voiceModePaginator.Configure(
             new[]
             {
-                StripColorTags(Localize("SHIN_GETTER_CHUNIBYO.VOICE.SILENT", "[white]Mature Professional[/white]")),
-                Localize("SHIN_GETTER_CHUNIBYO.VOICE.ONCE_PER_COMBAT", "I'm an adult, but hot blood still feels pretty good"),
-                StripColorTags(Localize("SHIN_GETTER_CHUNIBYO.VOICE.ALWAYS", "[red]Set Me Ablaze![/red]")),
+                NormalizeVoiceMarkup(silent),
+                oncePerCombat,
+                always,
+            },
+            new[]
+            {
+                StripVoicePresentationTags(silent),
+                oncePerCombat,
+                StripVoicePresentationTags(always),
             },
             (int)ShinGetterChunibyoConfigService.Current.VoiceMode);
         _voiceModePaginator.IndexChanged += index =>
@@ -446,19 +463,13 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
             return;
 
         ShinGetterVoiceMode mode = ShinGetterChunibyoConfigService.Current.VoiceMode;
-        Color color = mode switch
-        {
-            ShinGetterVoiceMode.Silent => Colors.White,
-            ShinGetterVoiceMode.Always => new Color(0.96f, 0.28f, 0.2f),
-            _ => new Color(0.91f, 0.86f, 0.74f),
-        };
         string tooltipKey = mode switch
         {
             ShinGetterVoiceMode.Silent => "SHIN_GETTER_CHUNIBYO.VOICE.SILENT_TOOLTIP",
             ShinGetterVoiceMode.Always => "SHIN_GETTER_CHUNIBYO.VOICE.ALWAYS_TOOLTIP",
             _ => "SHIN_GETTER_CHUNIBYO.VOICE.ONCE_PER_COMBAT_TOOLTIP",
         };
-        _voiceModePaginator.SetPresentation(color, new HoverTip(new LocString(LocTable, tooltipKey)));
+        _voiceModePaginator.SetHoverTip(new HoverTip(new LocString(LocTable, tooltipKey)));
     }
 
     private static PanelContainer CreatePanel(Vector2 minimumSize)
@@ -694,7 +705,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         verticalPopup.OffsetBottom = 410f;
 
         RichTextLabel description = popup.GetNode<RichTextLabel>("VerticalPopup/Description");
-        var scroll = new ScrollContainer
+        var scroll = new NScrollableContainer
         {
             Name = "UpdateHistoryScroll",
             AnchorLeft = description.AnchorLeft,
@@ -705,19 +716,67 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
             OffsetTop = description.OffsetTop,
             OffsetRight = description.OffsetRight,
             OffsetBottom = description.OffsetBottom,
-            HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled,
-            VerticalScrollMode = ScrollContainer.ScrollMode.Auto,
             ClipContents = true,
+            MouseFilter = MouseFilterEnum.Stop,
         };
-        verticalPopup.AddChild(scroll);
-        description.Reparent(scroll, keepGlobalTransform: false);
+        var mask = new Control
+        {
+            Name = "Mask",
+            ClipContents = true,
+            MouseFilter = MouseFilterEnum.Ignore,
+        };
+        mask.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        scroll.AddChild(mask);
+
+        description.Name = "Content";
+        description.Reparent(mask, keepGlobalTransform: false);
         description.SetAnchorsAndOffsetsPreset(LayoutPreset.TopWide);
+        description.OffsetLeft = 0f;
+        description.OffsetTop = 0f;
+        description.OffsetRight = -58f;
+        description.OffsetBottom = 0f;
         description.SizeFlagsHorizontal = SizeFlags.ExpandFill;
         description.SizeFlagsVertical = SizeFlags.ShrinkBegin;
         description.FitContent = true;
         description.ScrollActive = false;
+        description.MouseFilter = MouseFilterEnum.Ignore;
         description.HorizontalAlignment = HorizontalAlignment.Left;
         description.VerticalAlignment = VerticalAlignment.Top;
+        foreach (string themeKey in new[]
+                 {
+                     "normal_font_size",
+                     "bold_font_size",
+                     "bold_italics_font_size",
+                     "italics_font_size",
+                     "mono_font_size",
+                 })
+        {
+            description.AddThemeFontSizeOverride(themeKey, NoteFontSize);
+        }
+
+        NScrollbar scrollbar = ResourceLoader.Load<PackedScene>(ScrollbarScenePath)
+            .Instantiate<NScrollbar>();
+        scrollbar.Name = "Scrollbar";
+        scrollbar.AnchorLeft = 1f;
+        scrollbar.AnchorTop = 0f;
+        scrollbar.AnchorRight = 1f;
+        scrollbar.AnchorBottom = 1f;
+        scrollbar.OffsetLeft = -48f;
+        scrollbar.OffsetTop = 8f;
+        scrollbar.OffsetRight = 0f;
+        scrollbar.OffsetBottom = -8f;
+        scroll.AddChild(scrollbar);
+        scroll.DisableScrollingIfContentFits();
+        verticalPopup.AddChild(scroll);
+        Callable.From(() =>
+        {
+            if (!GodotObject.IsInstanceValid(scroll) || !GodotObject.IsInstanceValid(description))
+                return;
+
+            description.ResetSize();
+            scroll.SetContent(description);
+            scroll.InstantlyScrollToTop();
+        }).CallDeferred();
     }
 
     private static string Localize(string key, string fallback)
@@ -725,13 +784,24 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         return LocString.GetIfExists(LocTable, key)?.GetFormattedText() ?? fallback;
     }
 
-    private static string StripColorTags(string text)
+    private static string NormalizeVoiceMarkup(string text)
+    {
+        return text
+            .Replace("[white]", "[color=white]", StringComparison.OrdinalIgnoreCase)
+            .Replace("[/white]", "[/color]", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string StripVoicePresentationTags(string text)
     {
         return text
             .Replace("[white]", string.Empty, StringComparison.OrdinalIgnoreCase)
             .Replace("[/white]", string.Empty, StringComparison.OrdinalIgnoreCase)
+            .Replace("[color=white]", string.Empty, StringComparison.OrdinalIgnoreCase)
+            .Replace("[/color]", string.Empty, StringComparison.OrdinalIgnoreCase)
             .Replace("[red]", string.Empty, StringComparison.OrdinalIgnoreCase)
-            .Replace("[/red]", string.Empty, StringComparison.OrdinalIgnoreCase);
+            .Replace("[/red]", string.Empty, StringComparison.OrdinalIgnoreCase)
+            .Replace("[sine]", string.Empty, StringComparison.OrdinalIgnoreCase)
+            .Replace("[/sine]", string.Empty, StringComparison.OrdinalIgnoreCase);
     }
 
     private static string LocalizeWithVariable(
