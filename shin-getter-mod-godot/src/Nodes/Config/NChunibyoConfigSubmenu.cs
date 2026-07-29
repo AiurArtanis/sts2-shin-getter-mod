@@ -294,7 +294,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         _voiceModePaginator.Configure(
             new[]
             {
-                NormalizeVoiceMarkup(silent),
+                silent,
                 oncePerCombat,
                 always,
             },
@@ -782,13 +782,6 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
     private static string Localize(string key, string fallback)
     {
         return LocString.GetIfExists(LocTable, key)?.GetFormattedText() ?? fallback;
-    }
-
-    private static string NormalizeVoiceMarkup(string text)
-    {
-        return text
-            .Replace("[white]", "[color=white]", StringComparison.OrdinalIgnoreCase)
-            .Replace("[/white]", "[/color]", StringComparison.OrdinalIgnoreCase);
     }
 
     private static string StripVoicePresentationTags(string text)
