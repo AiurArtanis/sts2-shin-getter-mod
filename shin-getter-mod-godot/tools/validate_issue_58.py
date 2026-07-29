@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Static acceptance gate for issue #58 event invasion batch 2."""
+"""Static acceptance gate for issue#58 event invasion batch 2."""
 
 from __future__ import annotations
 
@@ -11,6 +11,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SERVICE_PATH = ROOT / "src/Events/ShinGetterEventInvasionService.cs"
 PATCH_PATH = ROOT / "src/Patches/ShinGetterEventInvasionPatch.cs"
+RICH_TEXT_PATCH_PATH = ROOT / "src/Patches/RichTextWhitePatch.cs"
+RICH_TEXT_EFFECT_PATHS = {
+    "white": ROOT / "src/RichTextTags/RichTextWhite.cs",
+    "yellow": ROOT / "src/RichTextTags/RichTextYellow.cs",
+    "getter_ray": ROOT / "src/RichTextTags/RichTextGetterRay.cs",
+}
 LOCALIZATION_ROOT = ROOT / "ShinGetterMod/localization"
 LANGUAGES = ("eng", "jpn", "zhs")
 
@@ -170,6 +176,30 @@ def validate_service() -> None:
         raise AssertionError("The obsolete two-knight encounter must be removed.")
 
 
+def validate_rich_text_registration() -> None:
+    patch = RICH_TEXT_PATCH_PATH.read_text(encoding="utf-8")
+    require(
+        patch,
+        '[HarmonyPatch(typeof(MegaRichTextLabel), "InstallEffectsIfNeeded")]',
+        "if (!__instance.BbcodeEnabled)",
+        "__instance.CustomEffects.Add(WhiteEffect)",
+        "__instance.CustomEffects.Add(YellowEffect)",
+        "__instance.CustomEffects.Add(GetterRayEffect)",
+    )
+
+    expected_effect_contracts = {
+        "white": ('Bbcode => "white"', "charFx.Color = Colors.White"),
+        "yellow": ('Bbcode => "yellow"', 'charFx.Color = new Color("FFE600")'),
+        "getter_ray": (
+            'Bbcode => "getter_ray"',
+            'charFx.Color = new Color("44FCC5")',
+        ),
+    }
+    for tag_name, contracts in expected_effect_contracts.items():
+        effect = RICH_TEXT_EFFECT_PATHS[tag_name].read_text(encoding="utf-8")
+        require(effect, *contracts)
+
+
 def validate_localization() -> None:
     event_key_sets: dict[str, set[str]] = {}
     event_tables: dict[str, dict[str, object]] = {}
@@ -185,6 +215,13 @@ def validate_localization() -> None:
         if event_key_sets[language] != expected_events:
             raise AssertionError(f"Event localization keys differ for {language}.")
 
+    for language, events in event_tables.items():
+        for key, value in events.items():
+            if isinstance(value, str) and "[color=white]" in value:
+                raise AssertionError(
+                    f"Use the registered [white] tag for {language}: {key}"
+                )
+
     rich_text_prefixes = (prefix, "S_G_E_GETTER_MANDALA.")
     rich_text_keys = {
         key
@@ -197,8 +234,6 @@ def validate_localization() -> None:
             text = event_tables[language].get(key)
             if not isinstance(text, str):
                 raise AssertionError(f"Missing rich-text localization key for {language}: {key}")
-            if "[white]" in text or "[/white]" in text:
-                raise AssertionError(f"Use [color=white], not [white], for {language}: {key}")
             if "[cyan]" in text or "[/cyan]" in text:
                 raise AssertionError(f"Use a registered color tag for {language}: {key}")
             validate_tag_nesting(f"{language}:{key}", text)
@@ -210,7 +245,7 @@ def validate_localization() -> None:
 
     actor_colors = {
         "RYOMA": "[red]",
-        "HAYATO": "[color=white]",
+        "HAYATO": "[white]",
         "MUQING": "[yellow]",
     }
     for language in LANGUAGES:
@@ -235,7 +270,7 @@ def validate_localization() -> None:
             text = event_tables[language].get(key)
             if not isinstance(text, str):
                 raise AssertionError(f"Missing triad rich text for {language}: {key}")
-            require(text, "[red]", "[color=white]", "[yellow]")
+            require(text, "[red]", "[white]", "[yellow]")
 
     rich_text_contracts = {
         f"{prefix}BYRDONIS_NEST.pages.RYOMA.description": (
@@ -268,9 +303,19 @@ def validate_localization() -> None:
         ),
         "S_G_E_GETTER_MANDALA.pages.INITIAL.description": (
             "[sine]",
-            "[aqua]",
-            "[/aqua]",
+            "[getter_ray]",
+            "[/getter_ray]",
             "[/sine]",
+        ),
+        "S_G_E_GETTER_MANDALA.pages.PRIMAL_GETTER.description": (
+            "[getter_ray]",
+            "[b]",
+            "[/b]",
+            "[/getter_ray]",
+        ),
+        "S_G_E_GETTER_MANDALA.pages.IGNORE.description": (
+            "[getter_ray]",
+            "[/getter_ray]",
         ),
     }
     for language in LANGUAGES:
@@ -279,6 +324,21 @@ def validate_localization() -> None:
             if not isinstance(text, str):
                 raise AssertionError(f"Missing rich-text contract for {language}: {key}")
             require(text, *required_tags)
+
+    getter_mandala_keys = (
+        "S_G_E_GETTER_MANDALA.pages.INITIAL.description",
+        "S_G_E_GETTER_MANDALA.pages.PRIMAL_GETTER.description",
+        "S_G_E_GETTER_MANDALA.pages.IGNORE.description",
+    )
+    for language in LANGUAGES:
+        for key in getter_mandala_keys:
+            text = event_tables[language].get(key)
+            if not isinstance(text, str):
+                raise AssertionError(f"Missing Getter Mandala text for {language}: {key}")
+            if "[aqua]" in text or "[/aqua]" in text:
+                raise AssertionError(
+                    f"Getter semantics must use [getter_ray], not [aqua], for {language}: {key}"
+                )
 
     for event_name in (
         "BYRDONIS_NEST",
@@ -311,8 +371,9 @@ def validate_localization() -> None:
 
 def main() -> None:
     validate_service()
+    validate_rich_text_registration()
     validate_localization()
-    print("issue #58 static validation passed")
+    print("issue#58 static validation passed")
 
 
 if __name__ == "__main__":
