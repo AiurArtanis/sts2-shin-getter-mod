@@ -16,7 +16,6 @@ public partial class NShinGetterVoicePaginator : NPaginator
     private readonly List<string> _plainOptions = new();
     private MegaRichTextLabel? _richPresentationLabel;
     private Control? _hoverBounds;
-    private int _currentFontSize = 28;
 
     public event Action<int>? IndexChanged;
 
@@ -24,6 +23,7 @@ public partial class NShinGetterVoicePaginator : NPaginator
     {
         ConnectSignals();
         CreateRichPresentationLayer();
+        PrioritizeOriginalArrows();
         RefreshLabel();
     }
 
@@ -61,23 +61,14 @@ public partial class NShinGetterVoicePaginator : NPaginator
             return;
 
         string plainText = _plainOptions[_currentIndex];
-        int baseFontSize = plainText.Length switch
-        {
-            <= 14 => 28,
-            <= 30 => 24,
-            <= 44 => 22,
-            _ => 20,
-        };
-        _currentFontSize = _currentIndex == 2 ? baseFontSize + 2 : baseFontSize;
-
         _label.Text = plainText;
         _label.Visible = false;
         GetNode<MegaLabel>("LabelContainer/Mask/VfxLabel").Visible = false;
         if (_richPresentationLabel == null)
             return;
 
-        ApplyRichFontSize(_currentFontSize);
-        _richPresentationLabel.Text = _options[_currentIndex];
+        _richPresentationLabel.MaxFontSize = _currentIndex == 2 ? 30 : 28;
+        _richPresentationLabel.SetTextAutoSize(_options[_currentIndex]);
         _richPresentationLabel.Visible = true;
     }
 
@@ -96,6 +87,9 @@ public partial class NShinGetterVoicePaginator : NPaginator
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center,
             MouseFilter = MouseFilterEnum.Ignore,
+            AutoSizeEnabled = true,
+            MinFontSize = 16,
+            MaxFontSize = 28,
         };
         _richPresentationLabel.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         FontVariation font = PreloadManager.Cache.GetAsset<FontVariation>(
@@ -119,22 +113,10 @@ public partial class NShinGetterVoicePaginator : NPaginator
         mask.AddChild(_hoverBounds);
     }
 
-    private void ApplyRichFontSize(int fontSize)
+    private void PrioritizeOriginalArrows()
     {
-        if (_richPresentationLabel == null)
-            return;
-
-        foreach (string themeKey in new[]
-                 {
-                     "normal_font_size",
-                     "bold_font_size",
-                     "bold_italics_font_size",
-                     "italics_font_size",
-                     "mono_font_size",
-                 })
-        {
-            _richPresentationLabel.AddThemeFontSizeOverride(themeKey, fontSize);
-        }
+        GetNode<Control>("LeftArrow").MoveToFront();
+        GetNode<Control>("RightArrow").MoveToFront();
     }
 
     private void ShowHoverTip()

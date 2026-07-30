@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using Godot;
+using MegaCrit.Sts2.addons.mega_text;
 using MegaCrit.Sts2.Core.Assets;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.HoverTips;
@@ -704,7 +705,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         verticalPopup.OffsetTop = -410f;
         verticalPopup.OffsetBottom = 410f;
 
-        RichTextLabel description = popup.GetNode<RichTextLabel>("VerticalPopup/Description");
+        MegaRichTextLabel description = popup.GetNode<MegaRichTextLabel>("VerticalPopup/Description");
         var scroll = new NScrollableContainer
         {
             Name = "UpdateHistoryScroll",
@@ -739,6 +740,9 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         description.SizeFlagsVertical = SizeFlags.ShrinkBegin;
         description.FitContent = true;
         description.ScrollActive = false;
+        description.AutoSizeEnabled = false;
+        description.MinFontSize = NoteFontSize;
+        description.MaxFontSize = NoteFontSize;
         description.MouseFilter = MouseFilterEnum.Ignore;
         description.HorizontalAlignment = HorizontalAlignment.Left;
         description.VerticalAlignment = VerticalAlignment.Top;

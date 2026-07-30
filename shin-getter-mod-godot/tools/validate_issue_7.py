@@ -33,6 +33,10 @@ def validate_update_history() -> None:
         "var scroll = new NScrollableContainer",
         'Name = "UpdateHistoryScroll"',
         'description.Name = "Content"',
+        'MegaRichTextLabel description = popup.GetNode<MegaRichTextLabel>',
+        "description.AutoSizeEnabled = false",
+        "description.MinFontSize = NoteFontSize",
+        "description.MaxFontSize = NoteFontSize",
         "description.AddThemeFontSizeOverride(themeKey, NoteFontSize)",
         "Instantiate<NScrollbar>()",
         'scrollbar.Name = "Scrollbar"',
@@ -70,9 +74,11 @@ def validate_voice_markup() -> None:
     rich_text_patch = RICH_TEXT_PATCH_PATH.read_text(encoding="utf-8")
     require(
         paginator,
-        "_currentIndex == 2 ? baseFontSize + 2 : baseFontSize",
+        "_richPresentationLabel.MaxFontSize = _currentIndex == 2 ? 30 : 28",
+        "_richPresentationLabel.SetTextAutoSize(_options[_currentIndex])",
+        'GetNode<Control>("LeftArrow").MoveToFront()',
+        'GetNode<Control>("RightArrow").MoveToFront()',
         "BbcodeEnabled = true",
-        "_richPresentationLabel.Text = _options[_currentIndex]",
     )
     require(
         submenu,
