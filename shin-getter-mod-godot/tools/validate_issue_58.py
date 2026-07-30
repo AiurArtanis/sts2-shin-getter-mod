@@ -103,10 +103,8 @@ def validate_service() -> None:
         "CardFactory.CreateForReward(owner, 2, powerOptions)",
         "CardFactory.CreateForReward(owner, 2, zeroCostOptions)",
         "CardCreationFlags.NoCardPoolModifications",
-        "owner.Creature.CurrentHp > 12",
         "owner.Gold >= 35",
-        "owner.HasOpenPotionSlots",
-        "await LoseHp(owner, 12)",
+        "HasAnyCard<SGC_GetterClaw, SGC_SpiralDrill, SGC_TornadoDrill>(owner)",
         "await PlayerCmd.LoseGold(35, owner, GoldLossType.Spent)",
         "await PotionCmd.TryToProcure<SGR_GetterColdBrew>(owner)",
         "owner.Creature.CurrentHp > 7",
@@ -146,23 +144,100 @@ def validate_service() -> None:
         "SGC_Indomitable",
     )
 
+    byrdonis_options = method_body(service, "private static IEnumerable<EventOption> BuildByrdonisNestOptions")
+    require(
+        byrdonis_options,
+        "owner.Deck.Cards.Any(card => card.IsUpgradable)",
+        "CreateConditionalOption(",
+        '"BYRDONIS_NEST",\n            "MUQING"',
+    )
+    byrdonis_muqing = method_body(service, "private static async Task ByrdonisNestMuqing")
+    require(
+        byrdonis_muqing,
+        "await LoseHp(owner, 6)",
+        "int upgradeCount = Math.Min(3, candidates.Count)",
+        "eventModel.Rng.NextItem(candidates)",
+        "candidates.Remove(card)",
+        "CardCmd.Upgrade(card, CardPreviewStyle.EventLayout)",
+    )
+    if byrdonis_muqing.index("await LoseHp(owner, 6)") > byrdonis_muqing.index("CardCmd.Upgrade"):
+        raise AssertionError("Byrdonis Muqing must lose HP before upgrading cards.")
+
+    legends_options = method_body(
+        service, "private static IEnumerable<EventOption> BuildTheLegendsWereTrueOptions"
+    )
+    require(
+        legends_options,
+        "owner.Gold >= 35",
+        "HasAnyCard<SGC_GetterClaw, SGC_SpiralDrill, SGC_TornadoDrill>(owner)",
+    )
+    for obsolete_gate in (
+        "owner.Creature.CurrentHp",
+        "owner.HasOpenPotionSlots",
+        "SGC_Insight",
+        "SGC_Acceleration",
+    ):
+        if obsolete_gate in legends_options:
+            raise AssertionError(f"Obsolete Legends gate remains: {obsolete_gate}")
+
     legends_ryoma = method_body(
         service, "private static async Task TheLegendsWereTrueRyoma"
     )
     if "AddCurseToDeck" in legends_ryoma:
         raise AssertionError("Ryoma's legend route must not add a curse.")
 
-    ranwid = method_body(service, "private static async Task RanwidTheElderRyoma")
-    if "LoseGold" in ranwid:
+    legends_hayato = method_body(
+        service, "private static async Task TheLegendsWereTrueHayato"
+    )
+    require(
+        legends_hayato,
+        "await PlayerCmd.LoseGold(35, owner, GoldLossType.Spent)",
+        "await PotionCmd.TryToProcure<SGR_GetterColdBrew>(owner)",
+    )
+    if "LoseHp" in legends_hayato:
+        raise AssertionError("Hayato's legend route must not lose HP.")
+
+    ranwid_dialogue = method_body(service, "private static Task RanwidTheElderRyoma")
+    require(
+        ranwid_dialogue,
+        'PageOptionKey("RANWID_THE_ELDER", "RYOMA", "CHOOSE_RELIC")',
+        "SetEventStateMethod.Invoke(",
+        "isProceed: true",
+    )
+    for premature_action in (
+        "RelicFactory.PullNextRelicFromFront",
+        "RelicSelectCmd",
+        "CardPileCmd.RemoveFromDeck",
+        "RelicCmd.Obtain",
+    ):
+        if premature_action in ranwid_dialogue:
+            raise AssertionError(f"Ranwid dialogue performs a premature action: {premature_action}")
+
+    ranwid_selection = method_body(
+        service, "private static async Task RanwidTheElderChooseRelic"
+    )
+    if "LoseGold" in ranwid_selection:
         raise AssertionError("Ranwid's route must not spend Gold.")
     require(
-        ranwid,
+        ranwid_selection,
         ".OrderBy(card => card.IsUpgraded)",
         "do\n        {",
         "while (selected == null);",
+        "await CardPileCmd.RemoveFromDeck(blueprint)",
+        "await RelicCmd.Obtain(selected, owner)",
+        'Finish(eventModel, PageKey("RANWID_THE_ELDER", "RYOMA_RESULT"))',
     )
-    if ranwid.count("RelicFactory.PullNextRelicFromFront(owner)") != 2:
+    if ranwid_selection.count("RelicFactory.PullNextRelicFromFront(owner)") != 2:
         raise AssertionError("Ranwid's route must pull exactly two relic choices once.")
+    ranwid_order = (
+        ranwid_selection.index("RelicFactory.PullNextRelicFromFront"),
+        ranwid_selection.index("RelicSelectCmd.FromChooseARelicScreen"),
+        ranwid_selection.index("CardPileCmd.RemoveFromDeck"),
+        ranwid_selection.index("RelicCmd.Obtain"),
+        ranwid_selection.index("Finish(eventModel"),
+    )
+    if ranwid_order != tuple(sorted(ranwid_order)):
+        raise AssertionError("Ranwid must generate, select, remove blueprint, obtain, then finish.")
 
     require(
         patch,
@@ -295,6 +370,26 @@ def validate_localization() -> None:
             "[/b]",
             "[/red]",
         ),
+        f"{prefix}THE_LEGENDS_WERE_TRUE.pages.RYOMA.description": (
+            "[red]",
+            "[/red]",
+            "[white]",
+            "[/white]",
+            "[yellow]",
+            "[/yellow]",
+        ),
+        f"{prefix}SUNKEN_STATUE.pages.MUQING.description": (
+            "[jitter]",
+            "[/jitter]",
+        ),
+        f"{prefix}SPIRALING_WHIRLPOOL.pages.HAYATO.description": (
+            "[sine]",
+            "[aqua]",
+            "[/aqua]",
+            "[/sine]",
+            "[u]",
+            "[/u]",
+        ),
         f"{prefix}ROUND_TEA_PARTY.pages.RYOMA.description": (
             "[red]",
             "[jitter]",
@@ -324,6 +419,62 @@ def validate_localization() -> None:
             if not isinstance(text, str):
                 raise AssertionError(f"Missing rich-text contract for {language}: {key}")
             require(text, *required_tags)
+
+    exact_localization = {
+        "eng": {
+            f"{prefix}TRIAL.pages.INITIAL.options.RYOMA.title": "[red]You are all guilty.[/red]",
+            f"{prefix}TRIAL.pages.RYOMA.options.START_FIGHT.title": "[red][b]Interrupt the trial.[/b][/red]",
+            f"{prefix}THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.HAYATO.title": "[white]Take another route.[/white]",
+            f"{prefix}THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.HAYATO.description": "Pay [red]35[/red] Gold. Obtain [gold]Getter Cold Brew[/gold].",
+            f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.MUQING_LOCKED.description": "Requires at least 1 upgradable card.",
+            f"{prefix}SUNKEN_STATUE.pages.INITIAL.options.MUQING.description": "Lose [red]7[/red] Max HP. Gain more Gold.",
+            f"{prefix}RANWID_THE_ELDER.pages.RYOMA.options.CHOOSE_RELIC.title": "Continue.",
+        },
+        "jpn": {
+            f"{prefix}TRIAL.pages.INITIAL.options.RYOMA.title": "[red]お前たちは全員有罪だ。[/red]",
+            f"{prefix}TRIAL.pages.RYOMA.options.START_FIGHT.title": "[red][b]裁判を中断する。[/b][/red]",
+            f"{prefix}THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.HAYATO.title": "[white]別の道を行く。[/white]",
+            f"{prefix}THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.HAYATO.description": "[red]35[/red]ゴールドを支払い、[gold]ゲッターコールドブリュー[/gold]を得る。",
+            f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.MUQING_LOCKED.description": "アップグレード可能なカードが1枚以上必要。",
+            f"{prefix}SUNKEN_STATUE.pages.INITIAL.options.MUQING.description": "最大HPを[red]7[/red]失い、より多くのゴールドを得る。",
+            f"{prefix}RANWID_THE_ELDER.pages.RYOMA.options.CHOOSE_RELIC.title": "続ける。",
+        },
+        "zhs": {
+            f"{prefix}TRIAL.pages.INITIAL.options.RYOMA.title": "[red]你们都有罪[/red]",
+            f"{prefix}TRIAL.pages.RYOMA.options.START_FIGHT.title": "[red][b]打断审判。[/b][/red]",
+            f"{prefix}THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.HAYATO.title": "[white]换条路走。[/white]",
+            f"{prefix}THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.HAYATO.description": "支付[red]35[/red]金币，获得[gold]盖塔冷萃[/gold]。",
+            f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.MUQING_LOCKED.description": "需要至少1张可升级牌。",
+            f"{prefix}SUNKEN_STATUE.pages.INITIAL.options.MUQING.description": "失去[red]7[/red]点最大生命，获得更多的金币。",
+            f"{prefix}RANWID_THE_ELDER.pages.RYOMA.options.CHOOSE_RELIC.title": "继续。",
+        },
+    }
+    for language, contracts in exact_localization.items():
+        for key, expected_text in contracts.items():
+            if event_tables[language].get(key) != expected_text:
+                raise AssertionError(f"Unexpected {language} localization for {key}.")
+
+    spiral_key = f"{prefix}SPIRALING_WHIRLPOOL.pages.HAYATO.description"
+    expected_spiral_tags = (
+        "[sine]", "[aqua]", "[/aqua]", "[/sine]",
+        "[sine]", "[aqua]", "[/aqua]", "[/sine]",
+        "[u]", "[/u]",
+        "[sine]", "[aqua]", "[/aqua]", "[/sine]",
+    )
+    for language in LANGUAGES:
+        spiral_text = event_tables[language].get(spiral_key)
+        if not isinstance(spiral_text, str):
+            raise AssertionError(f"Missing Spiraling Whirlpool text for {language}.")
+        if extract_tags(spiral_text) != expected_spiral_tags:
+            raise AssertionError(f"Incorrect aqua/sine/u ranges for {language}: {spiral_key}")
+        if "[getter_ray]" in spiral_text or "[/getter_ray]" in spiral_text:
+            raise AssertionError(f"Water semantics must use [aqua] for {language}: {spiral_key}")
+
+    sunken_option_key = f"{prefix}SUNKEN_STATUE.pages.INITIAL.options.MUQING.description"
+    for language in LANGUAGES:
+        sunken_option = event_tables[language].get(sunken_option_key)
+        if not isinstance(sunken_option, str) or "1.8" in sunken_option:
+            raise AssertionError(f"Sunken Statue option must not expose the multiplier for {language}.")
 
     getter_mandala_keys = (
         "S_G_E_GETTER_MANDALA.pages.INITIAL.description",
