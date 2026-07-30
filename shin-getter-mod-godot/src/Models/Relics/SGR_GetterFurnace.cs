@@ -19,11 +19,15 @@ namespace ShinGetterMod.Models.Relics;
 /// <summary>
 /// 盖塔熔炉 — 起始遗物。在每场战斗开始时获得气力，并初始化一号机形态。
 /// </summary>
-public sealed class SGR_GetterFurnace : ShinGetterRelicBase
+public sealed class SGR_GetterFurnace : ShinGetterRelicBase, IInfiniteEvolutionProgressStore
 {
 	private int _playedVoiceMask;
     private int _combatStartVoiceCount;
     private bool _eventInvasionEnabled = true;
+    private bool _infiniteEvolutionProgressInitialized;
+    private int _infiniteEvolutionStrengthGain;
+    private int _infiniteEvolutionDexterityGain;
+    private int _infiniteEvolutionMaxHpGain;
 
     public override RelicRarity Rarity => RelicRarity.Starter;
 
@@ -63,6 +67,50 @@ public sealed class SGR_GetterFurnace : ShinGetterRelicBase
         {
             AssertMutable();
             _eventInvasionEnabled = value;
+        }
+    }
+
+    [SavedProperty(SerializationCondition.SaveIfNotTypeDefault)]
+    public bool InfiniteEvolutionProgressInitialized
+    {
+        get => _infiniteEvolutionProgressInitialized;
+        set
+        {
+            AssertMutable();
+            _infiniteEvolutionProgressInitialized = value;
+        }
+    }
+
+    [SavedProperty(SerializationCondition.SaveIfNotTypeDefault)]
+    public int InfiniteEvolutionStrengthGain
+    {
+        get => _infiniteEvolutionStrengthGain;
+        set
+        {
+            AssertMutable();
+            _infiniteEvolutionStrengthGain = value;
+        }
+    }
+
+    [SavedProperty(SerializationCondition.SaveIfNotTypeDefault)]
+    public int InfiniteEvolutionDexterityGain
+    {
+        get => _infiniteEvolutionDexterityGain;
+        set
+        {
+            AssertMutable();
+            _infiniteEvolutionDexterityGain = value;
+        }
+    }
+
+    [SavedProperty(SerializationCondition.SaveIfNotTypeDefault)]
+    public int InfiniteEvolutionMaxHpGain
+    {
+        get => _infiniteEvolutionMaxHpGain;
+        set
+        {
+            AssertMutable();
+            _infiniteEvolutionMaxHpGain = value;
         }
     }
 
