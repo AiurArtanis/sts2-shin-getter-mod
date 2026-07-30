@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CARDS = ROOT / "src" / "Models" / "Cards"
 POWERS = ROOT / "src" / "Models" / "Powers"
 COMBAT = ROOT / "src" / "Nodes" / "Combat"
+RELICS = ROOT / "src" / "Models" / "Relics"
 LOCALIZATION = ROOT / "ShinGetterMod" / "localization"
 
 
@@ -42,6 +43,18 @@ def assert_manual_attack_vigor_lifecycle() -> None:
 def assert_infinite_evolution_lifecycle_and_weights() -> None:
     card = read(CARDS / "SGC_InfiniteEvolution.cs")
     assert "DeckVersion == null" in card
+    assert "EnsureSharedProgressInitialized" in card
+    assert "IsPrimaryCombatCopy" in card
+    assert "GetSharedProgress" in card
+
+    furnace = read(RELICS / "SGR_GetterFurnace.cs")
+    fragment = read(RELICS / "SGR_EmperorsFragment.cs")
+    for relic in (furnace, fragment):
+        assert "InfiniteEvolutionProgressInitialized" in relic
+        assert "InfiniteEvolutionStrengthGain" in relic
+        assert "InfiniteEvolutionDexterityGain" in relic
+        assert "InfiniteEvolutionMaxHpGain" in relic
+    assert "InfiniteEvolutionProgressInitialized = getterFurnace.InfiniteEvolutionProgressInitialized" in fragment
 
     power = read(POWERS / "SGP_InfiniteEvolution.cs")
     assert "NextInt(100)" in power
@@ -72,9 +85,20 @@ def assert_animation_fixes() -> None:
     assert "HasTemporaryScale" not in state_machine
 
     star_slash = read(CARDS / "SGC_StarSlash.cs")
-    assert "PlayHeavyCleave" not in star_slash
-    assert "() => Task.CompletedTask" in star_slash
+    assert "PlayHeavyCleave" in star_slash
+    assert "firstHalfDurationOverride: 0.5f" in star_slash
     assert '.WithHitFx("vfx/vfx_giant_horizontal_slash")' in star_slash
+    phased_animation = read(COMBAT / "NShinGetterStaticVisuals.cs")
+    assert "float? firstHalfDurationOverride = null" in phased_animation
+    assert "firstHalfDurationOverride" in phased_animation
+
+
+def assert_ordered_transform_cards() -> None:
+    for name, target in (("SGC_IronWall.cs", "Getter3"), ("SGC_Enable.cs", "Getter1")):
+        source = read(CARDS / name)
+        assert "TransformTo(" not in source
+        assert f"!HasForm(Owner, ShinGetterForm.{target})" in source
+        assert "await Transform(choiceContext, Owner, this)" in source
 
 
 def main() -> None:
@@ -82,6 +106,7 @@ def main() -> None:
     assert_infinite_evolution_lifecycle_and_weights()
     assert_fighting_spirit_and_indomitable_contracts()
     assert_animation_fixes()
+    assert_ordered_transform_cards()
     print("issue#32 static regression: PASS")
 
 

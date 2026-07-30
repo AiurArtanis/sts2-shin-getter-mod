@@ -1,9 +1,11 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
@@ -12,6 +14,7 @@ using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using MegaCrit.Sts2.Core.ValueProps;
 using ShinGetterMod.Models.Powers;
+using ShinGetterMod.Models.Relics;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -63,9 +66,10 @@ public sealed class SGC_InfiniteEvolution : ShinGetterCardBase
         {
             var title = new LocString("static_hover_tips", "SHIN_GETTER_INFINITE_EVOLUTION_TOTAL.title");
             var description = new LocString("static_hover_tips", "SHIN_GETTER_INFINITE_EVOLUTION_TOTAL.description");
-            description.Add("Strength", PermanentStrengthGain);
-            description.Add("Dexterity", PermanentDexterityGain);
-            description.Add("MaxHp", PermanentMaxHpGain);
+            var progress = GetSharedProgress();
+            description.Add("Strength", progress.Strength);
+            description.Add("Dexterity", progress.Dexterity);
+            description.Add("MaxHp", progress.MaxHp);
 
             return WithContextualHoverTips(new IHoverTip[]
             {
@@ -91,18 +95,41 @@ public sealed class SGC_InfiniteEvolution : ShinGetterCardBase
 
     public override async Task BeforeCombatStart()
     {
-        if (DeckVersion == null || Owner?.Creature == null || Owner.PlayerCombatState == null)
+        if (DeckVersion == null || Owner?.Creature == null || Owner.PlayerCombatState == null || !IsPrimaryCombatCopy())
             return;
 
+        EnsureSharedProgressInitialized(Owner);
+        var progress = GetSharedProgress();
         var ctx = new ThrowingPlayerChoiceContext();
-        if (PermanentStrengthGain > 0)
-            await PowerCmd.Apply<StrengthPower>(ctx, Owner.Creature, PermanentStrengthGain, Owner.Creature, this, silent: true);
-        if (PermanentDexterityGain > 0)
-            await PowerCmd.Apply<DexterityPower>(ctx, Owner.Creature, PermanentDexterityGain, Owner.Creature, this, silent: true);
+        if (progress.Strength > 0)
+            await PowerCmd.Apply<StrengthPower>(ctx, Owner.Creature, progress.Strength, Owner.Creature, this, silent: true);
+        if (progress.Dexterity > 0)
+            await PowerCmd.Apply<DexterityPower>(ctx, Owner.Creature, progress.Dexterity, Owner.Creature, this, silent: true);
     }
 
     public void RecordVictoryGain(SGP_InfiniteEvolution.VictoryGain gain)
     {
+        IInfiniteEvolutionProgressStore? progressStore = GetProgressStore(Owner);
+        if (progressStore != null)
+        {
+            EnsureSharedProgressInitialized(Owner);
+            switch (gain)
+            {
+                case SGP_InfiniteEvolution.VictoryGain.Strength:
+                    progressStore.InfiniteEvolutionStrengthGain++;
+                    break;
+                case SGP_InfiniteEvolution.VictoryGain.Dexterity:
+                    progressStore.InfiniteEvolutionDexterityGain++;
+                    break;
+                case SGP_InfiniteEvolution.VictoryGain.MaxHp:
+                    progressStore.InfiniteEvolutionMaxHpGain++;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(gain), gain, null);
+            }
+            return;
+        }
+
         switch (gain)
         {
             case SGP_InfiniteEvolution.VictoryGain.Strength:
@@ -118,4 +145,45 @@ public sealed class SGC_InfiniteEvolution : ShinGetterCardBase
                 throw new ArgumentOutOfRangeException(nameof(gain), gain, null);
         }
     }
+
+    private bool IsPrimaryCombatCopy() =>
+        DeckVersion is SGC_InfiniteEvolution deckVersion
+        && ReferenceEquals(deckVersion, Owner.Deck.Cards.OfType<SGC_InfiniteEvolution>().FirstOrDefault());
+
+    private (int Strength, int Dexterity, int MaxHp) GetSharedProgress()
+    {
+        if (!IsMutable || Owner is not { } player)
+            return (PermanentStrengthGain, PermanentDexterityGain, PermanentMaxHpGain);
+
+        IInfiniteEvolutionProgressStore? progressStore = GetProgressStore(player);
+        if (progressStore?.InfiniteEvolutionProgressInitialized == true)
+        {
+            return (
+                progressStore.InfiniteEvolutionStrengthGain,
+                progressStore.InfiniteEvolutionDexterityGain,
+                progressStore.InfiniteEvolutionMaxHpGain);
+        }
+
+        return (
+            player.Deck.Cards.OfType<SGC_InfiniteEvolution>().Sum(card => card.PermanentStrengthGain),
+            player.Deck.Cards.OfType<SGC_InfiniteEvolution>().Sum(card => card.PermanentDexterityGain),
+            player.Deck.Cards.OfType<SGC_InfiniteEvolution>().Sum(card => card.PermanentMaxHpGain));
+    }
+
+    private static void EnsureSharedProgressInitialized(Player player)
+    {
+        IInfiniteEvolutionProgressStore? progressStore = GetProgressStore(player);
+        if (progressStore == null || progressStore.InfiniteEvolutionProgressInitialized)
+            return;
+
+        List<SGC_InfiniteEvolution> cards = player.Deck.Cards.OfType<SGC_InfiniteEvolution>().ToList();
+        progressStore.InfiniteEvolutionStrengthGain = cards.Sum(card => card.PermanentStrengthGain);
+        progressStore.InfiniteEvolutionDexterityGain = cards.Sum(card => card.PermanentDexterityGain);
+        progressStore.InfiniteEvolutionMaxHpGain = cards.Sum(card => card.PermanentMaxHpGain);
+        progressStore.InfiniteEvolutionProgressInitialized = true;
+    }
+
+    private static IInfiniteEvolutionProgressStore? GetProgressStore(Player player) =>
+        player.GetRelic<SGR_GetterFurnace>() as IInfiniteEvolutionProgressStore
+        ?? player.GetRelic<SGR_EmperorsFragment>();
 }

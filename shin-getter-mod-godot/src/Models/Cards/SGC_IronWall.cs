@@ -28,7 +28,8 @@ public sealed class SGC_IronWall : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await TransformTo(choiceContext, Owner, ShinGetterForm.Getter3, this);
+        for (int i = 0; i < 3 && !HasForm(Owner, ShinGetterForm.Getter3); i++)
+            await Transform(choiceContext, Owner, this);
         await PowerCmd.Apply<SGP_IronWall>(choiceContext, Owner.Creature, DynamicVars["SGP_IronWall"].BaseValue, Owner.Creature, this);
     }
 
