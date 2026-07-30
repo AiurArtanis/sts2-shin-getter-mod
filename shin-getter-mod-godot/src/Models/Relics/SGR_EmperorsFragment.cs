@@ -15,10 +15,14 @@ using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Relics;
 
-public sealed class SGR_EmperorsFragment : ShinGetterRelicBase
+public sealed class SGR_EmperorsFragment : ShinGetterRelicBase, IInfiniteEvolutionProgressStore
 {
     private int _playedVoiceMask;
     private int _combatStartVoiceCount;
+    private bool _infiniteEvolutionProgressInitialized;
+    private int _infiniteEvolutionStrengthGain;
+    private int _infiniteEvolutionDexterityGain;
+    private int _infiniteEvolutionMaxHpGain;
 
     public override RelicRarity Rarity => RelicRarity.Ancient;
 
@@ -50,11 +54,59 @@ public sealed class SGR_EmperorsFragment : ShinGetterRelicBase
         }
     }
 
+    [SavedProperty(SerializationCondition.SaveIfNotTypeDefault)]
+    public bool InfiniteEvolutionProgressInitialized
+    {
+        get => _infiniteEvolutionProgressInitialized;
+        set
+        {
+            AssertMutable();
+            _infiniteEvolutionProgressInitialized = value;
+        }
+    }
+
+    [SavedProperty(SerializationCondition.SaveIfNotTypeDefault)]
+    public int InfiniteEvolutionStrengthGain
+    {
+        get => _infiniteEvolutionStrengthGain;
+        set
+        {
+            AssertMutable();
+            _infiniteEvolutionStrengthGain = value;
+        }
+    }
+
+    [SavedProperty(SerializationCondition.SaveIfNotTypeDefault)]
+    public int InfiniteEvolutionDexterityGain
+    {
+        get => _infiniteEvolutionDexterityGain;
+        set
+        {
+            AssertMutable();
+            _infiniteEvolutionDexterityGain = value;
+        }
+    }
+
+    [SavedProperty(SerializationCondition.SaveIfNotTypeDefault)]
+    public int InfiniteEvolutionMaxHpGain
+    {
+        get => _infiniteEvolutionMaxHpGain;
+        set
+        {
+            AssertMutable();
+            _infiniteEvolutionMaxHpGain = value;
+        }
+    }
+
     internal static SGR_EmperorsFragment CreateFrom(SGR_GetterFurnace getterFurnace)
     {
         var fragment = (SGR_EmperorsFragment)ModelDb.Relic<SGR_EmperorsFragment>().ToMutable();
         fragment.PlayedVoiceMask = getterFurnace.PlayedVoiceMask;
         fragment.CombatStartVoiceCount = getterFurnace.CombatStartVoiceCount;
+        fragment.InfiniteEvolutionProgressInitialized = getterFurnace.InfiniteEvolutionProgressInitialized;
+        fragment.InfiniteEvolutionStrengthGain = getterFurnace.InfiniteEvolutionStrengthGain;
+        fragment.InfiniteEvolutionDexterityGain = getterFurnace.InfiniteEvolutionDexterityGain;
+        fragment.InfiniteEvolutionMaxHpGain = getterFurnace.InfiniteEvolutionMaxHpGain;
         return fragment;
     }
 

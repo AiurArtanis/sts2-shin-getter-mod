@@ -13,6 +13,7 @@ using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
 using ShinGetterMod.Audio;
 using ShinGetterMod.Nodes.Combat;
+using ShinGetterMod.Nodes.Vfx;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -65,7 +66,8 @@ public sealed class SGC_StarSlash : ShinGetterCardBase
                 "Attack",
                 1f,
                 1f,
-                () => Task.CompletedTask))
+                () => ShinGetterCombatVfx.PlayHeavyCleave(Owner.Creature, new[] { cardPlay.Target }),
+                firstHalfDurationOverride: 0.5f))
             .WithHitFx("vfx/vfx_giant_horizontal_slash").Execute(choiceContext);
     }
 

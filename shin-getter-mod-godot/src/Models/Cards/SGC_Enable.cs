@@ -27,7 +27,8 @@ public sealed class SGC_Enable : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await TransformTo(choiceContext, Owner, ShinGetterForm.Getter1, this);
+        for (int i = 0; i < 3 && !HasForm(Owner, ShinGetterForm.Getter1); i++)
+            await Transform(choiceContext, Owner, this);
         var enablePower = await PowerCmd.Apply<SGP_Enable>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
         enablePower?.FlashOnPlay();
         PlayerCmd.EndTurn(Owner, canBackOut: false);
