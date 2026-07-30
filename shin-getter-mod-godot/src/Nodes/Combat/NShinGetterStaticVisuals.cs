@@ -105,7 +105,8 @@ public static class NShinGetterStaticVisuals
         float firstHalfSpeedScale,
         float secondHalfSpeedScale,
         Func<Task> onSecondHalf,
-        float fallbackFirstHalfDuration = 0.56f)
+        float fallbackFirstHalfDuration = 0.56f,
+        float? firstHalfDurationOverride = null)
     {
         var creatureNode = NCombatRoom.Instance?.GetCreatureNode(creature);
         if (creatureNode == null || !TryGetVisibleFormAnimation(creatureNode, out FormAnimation formAnimation))
@@ -129,9 +130,10 @@ public static class NShinGetterStaticVisuals
         int frameCount = frames?.GetFrameCount(animation) ?? 0;
         double framesPerSecond = frames?.GetAnimationSpeed(animation) ?? 0d;
         int secondHalfFrame = Math.Max(1, frameCount / 2);
-        float firstHalfDuration = frameCount > 1 && framesPerSecond > 0d
-            ? (float)(secondHalfFrame / framesPerSecond / Math.Max(0.05f, firstHalfSpeedScale))
-            : fallbackFirstHalfDuration;
+        float firstHalfDuration = firstHalfDurationOverride
+            ?? (frameCount > 1 && framesPerSecond > 0d
+                ? (float)(secondHalfFrame / framesPerSecond / Math.Max(0.05f, firstHalfSpeedScale))
+                : fallbackFirstHalfDuration);
 
         await Cmd.CustomScaledWait(firstHalfDuration, firstHalfDuration);
         if (GodotObject.IsInstanceValid(sprite)
