@@ -306,10 +306,13 @@ internal static class ShinGetterEventInvasionService
     private static IEnumerable<EventOption> BuildByrdonisNestOptions(ByrdonisNest eventModel)
     {
         Player owner = RequireOwner(eventModel);
-        yield return new EventOption(
+        bool muqingAvailable = owner.Deck.Cards.Any(card => card.IsUpgradable);
+        yield return CreateConditionalOption(
             eventModel,
+            muqingAvailable,
             () => ByrdonisNestMuqing(eventModel),
-            Key("BYRDONIS_NEST", "MUQING"));
+            "BYRDONIS_NEST",
+            "MUQING");
 
         bool ryomaAvailable = HasAnyCard<SGC_HotBlood, SGC_FightingSpirit, SGC_SuperKi>(owner);
         yield return CreateConditionalOption(
@@ -346,10 +349,8 @@ internal static class ShinGetterEventInvasionService
             "RYOMA",
             HoverTipFactory.FromRelic<SGR_GoodCitizenCard>());
 
-        bool hayatoAvailable = owner.Creature.CurrentHp > 12
-            && owner.Gold >= 35
-            && owner.HasOpenPotionSlots
-            && HasAnyCard<SGC_Insight, SGC_Acceleration>(owner);
+        bool hayatoAvailable = owner.Gold >= 35
+            && HasAnyCard<SGC_GetterClaw, SGC_SpiralDrill, SGC_TornadoDrill>(owner);
         yield return CreateConditionalOption(
             eventModel,
             hayatoAvailable,
@@ -574,9 +575,13 @@ internal static class ShinGetterEventInvasionService
         Player owner = RequireOwner(eventModel);
         await LoseHp(owner, 6);
         List<CardModel> candidates = owner.Deck.Cards.Where(card => card.IsUpgradable).ToList();
-        CardModel? card = eventModel.Rng.NextItem(candidates);
-        if (card != null)
+        int upgradeCount = Math.Min(3, candidates.Count);
+        for (int index = 0; index < upgradeCount; index++)
+        {
+            CardModel card = eventModel.Rng.NextItem(candidates)!;
+            candidates.Remove(card);
             CardCmd.Upgrade(card, CardPreviewStyle.EventLayout);
+        }
         Finish(eventModel, PageKey("BYRDONIS_NEST", "MUQING"));
     }
 
@@ -641,7 +646,6 @@ internal static class ShinGetterEventInvasionService
     private static async Task TheLegendsWereTrueHayato(TheLegendsWereTrue eventModel)
     {
         Player owner = RequireOwner(eventModel);
-        await LoseHp(owner, 12);
         await PlayerCmd.LoseGold(35, owner, GoldLossType.Spent);
         await PotionCmd.TryToProcure<SGR_GetterColdBrew>(owner);
         Finish(eventModel, PageKey("THE_LEGENDS_WERE_TRUE", "HAYATO"));
@@ -716,7 +720,25 @@ internal static class ShinGetterEventInvasionService
         Finish(eventModel, PageKey("ROUND_TEA_PARTY", "RYOMA"));
     }
 
-    private static async Task RanwidTheElderRyoma(RanwidTheElder eventModel)
+    private static Task RanwidTheElderRyoma(RanwidTheElder eventModel)
+    {
+        EventOption chooseRelic = new(
+            eventModel,
+            () => RanwidTheElderChooseRelic(eventModel),
+            PageOptionKey("RANWID_THE_ELDER", "RYOMA", "CHOOSE_RELIC"),
+            disableOnChosen: true,
+            isProceed: true);
+        SetEventStateMethod.Invoke(
+            eventModel,
+            new object[]
+            {
+                new LocString("events", PageKey("RANWID_THE_ELDER", "RYOMA")),
+                new[] { chooseRelic },
+            });
+        return Task.CompletedTask;
+    }
+
+    private static async Task RanwidTheElderChooseRelic(RanwidTheElder eventModel)
     {
         Player owner = RequireOwner(eventModel);
         SGC_SaotomeBlueprint? blueprint = owner.Deck.Cards
@@ -740,7 +762,7 @@ internal static class ShinGetterEventInvasionService
 
         await CardPileCmd.RemoveFromDeck(blueprint);
         await RelicCmd.Obtain(selected, owner);
-        Finish(eventModel, PageKey("RANWID_THE_ELDER", "RYOMA"));
+        Finish(eventModel, PageKey("RANWID_THE_ELDER", "RYOMA_RESULT"));
     }
 
     private static void ApplySpiralEnchantment(CardModel card)
