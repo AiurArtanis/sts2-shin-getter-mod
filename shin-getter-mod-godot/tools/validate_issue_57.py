@@ -75,7 +75,7 @@ for act in ("Overgrowth", "Underdocks", "Hive", "Glory"):
     for room_type in ("Elite", "Boss"):
         require(f"({act}, RoomType.{room_type})" in service, f"missing {act} {room_type} mapping")
 require("player.Character is ShinGetter" in service, "music replacement must be limited to Shin Getter runs")
-require("RelativeVolume = 0.82f" in service, "custom BGM must remain slightly quieter than the configured BGM")
+require("RelativeVolume = 0.70f" in service, "custom BGM must play at 70% of the configured BGM volume")
 require("StopActiveAndRestore" in service and "SuspendForExecution" in service, "music lifecycle guards are missing")
 
 execution = (ROOT / "src" / "Audio" / "ShinGetterExecutionMusicService.cs").read_text(encoding="utf-8")
