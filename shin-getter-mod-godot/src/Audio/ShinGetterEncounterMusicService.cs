@@ -15,7 +15,7 @@ namespace ShinGetterMod.Audio;
 
 internal static class ShinGetterEncounterMusicService
 {
-    private const float RelativeVolume = 0.82f;
+    private const float RelativeVolume = 0.70f;
     private const float FadeInDurationSeconds = 0.5f;
     private const float SilentVolumeDb = -80f;
 
