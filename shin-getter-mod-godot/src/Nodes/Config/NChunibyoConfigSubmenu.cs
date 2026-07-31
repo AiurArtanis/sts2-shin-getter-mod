@@ -725,6 +725,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         content.OffsetTop = 0f;
         content.OffsetRight = 0f;
         content.OffsetBottom = 1080f;
+        content.CustomMinimumSize = new Vector2(0f, 1080f);
         content.AddThemeConstantOverride("margin_left", 0);
         content.AddThemeConstantOverride("margin_top", 16);
         content.AddThemeConstantOverride("margin_right", 58);
@@ -768,11 +769,9 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         verticalPopup.AddChild(scroll);
         Callable.From(() =>
         {
-            if (!GodotObject.IsInstanceValid(scroll) || !GodotObject.IsInstanceValid(content))
+            if (!GodotObject.IsInstanceValid(scroll))
                 return;
 
-            content.ResetSize();
-            scroll.SetContent(content);
             scroll.InstantlyScrollToTop();
         }).CallDeferred();
     }

@@ -35,6 +35,7 @@ def validate_update_history() -> None:
         'Name = "UpdateHistoryScroll"',
         'MegaRichTextLabel description = popup.GetNode<MegaRichTextLabel>',
         'MarginContainer content = scroll.GetNode<MarginContainer>("Content")',
+        "content.CustomMinimumSize = new Vector2(0f, 1080f)",
         'MegaRichTextLabel patchText = content.GetNode<MegaRichTextLabel>("PatchText")',
         'patchText.GetNode<Control>("DateLabel").Visible = false',
         "patchText.AutoSizeEnabled = false",
@@ -44,12 +45,12 @@ def validate_update_history() -> None:
         "patchText.Text = description.Text",
         "description.Visible = false",
         'scroll.GetNode<NScrollbar>("Scrollbar")',
-        "scroll.SetContent(content)",
-        "content.ResetSize()",
         "scroll.InstantlyScrollToTop()",
     )
     if "new NScrollableContainer" in history_popup or "description.Reparent" in history_popup:
         raise AssertionError("Update history must instantiate the original patch-notes scroll hierarchy.")
+    if "content.ResetSize()" in history_popup or "scroll.SetContent(content)" in history_popup:
+        raise AssertionError("Update history content width must not be collapsed after entering the popup.")
 
 
 def validate_hover_tips() -> None:
@@ -78,7 +79,13 @@ def validate_voice_markup() -> None:
     rich_text_patch = RICH_TEXT_PATCH_PATH.read_text(encoding="utf-8")
     require(
         paginator,
-        "_richPresentationLabel.MaxFontSize = _currentIndex == 2 ? 32 : 28",
+        "SilentMaxFontSize = 25",
+        "DefaultMaxFontSize = 28",
+        "AlwaysMaxFontSize = 35",
+        "_richPresentationLabel.MaxFontSize = _currentIndex switch",
+        "0 => SilentMaxFontSize",
+        "2 => AlwaysMaxFontSize",
+        "_ => DefaultMaxFontSize",
         "_richPresentationLabel.SetTextAutoSize(_options[_currentIndex])",
         "IsHorizontallyBound = true",
         "IsVerticallyBound = true",
