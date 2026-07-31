@@ -92,6 +92,10 @@ require("StopActiveAndRestore" in service and "SuspendForExecution" in service, 
 execution = (ROOT / "src" / "Audio" / "ShinGetterExecutionMusicService.cs").read_text(encoding="utf-8")
 require("ShinGetterEncounterMusicService.SuspendForExecution()" in execution, "execution music must replace encounter music")
 require("StopImmediatelyAndRestore" in execution, "new combats must cancel a pending execution-music fade")
+require(
+    "owner.PlayerCombatState is not { TurnNumber: >= 2 }" in execution,
+    "execution music must not replace encounter music during the first player turn",
+)
 
 lifecycle = (ROOT / "src" / "Patches" / "ShinGetterCombatLifecyclePatch.cs").read_text(encoding="utf-8")
 require("ShinGetterEncounterMusicService.StopActiveAndRestore()" in lifecycle, "CombatManager.Reset must restore original BGM")
