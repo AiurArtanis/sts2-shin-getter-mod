@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Relics;
 
@@ -33,7 +34,7 @@ internal static class ShinGetterByrdpipAfterObtainedPatch
             return true;
 
         return CombatManager.Instance.IsInProgress
-            && player.PlayerCombatState.AllCards.Any(card => card is ByrdonisEgg);
+            && player.PlayerCombatState?.AllCards.Any(card => card is ByrdonisEgg) == true;
     }
 
     private static async Task AddByrdSwoopAfterObtained(Task originalTask, Player owner)

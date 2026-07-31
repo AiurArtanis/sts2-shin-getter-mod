@@ -182,7 +182,7 @@ def validate_service() -> None:
         "__state = HasByrdonisEgg(__instance.Owner)",
         "PileType.Deck.GetPile(player).Cards.Any(card => card is ByrdonisEgg)",
         "CombatManager.Instance.IsInProgress",
-        "player.PlayerCombatState.AllCards.Any(card => card is ByrdonisEgg)",
+        "player.PlayerCombatState?.AllCards.Any(card => card is ByrdonisEgg) == true",
         "private static void Postfix(Byrdpip __instance, bool __state, ref Task __result)",
         "if (__state)",
         "__result = AddByrdSwoopAfterObtained(__result, __instance.Owner)",
