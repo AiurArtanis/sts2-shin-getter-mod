@@ -28,7 +28,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
     private const string KreonFontPath = "res://themes/kreon_regular_shared.tres";
     private const string ConfigTickboxScenePath = "res://scenes/screens/settings_tickbox.tscn";
     private const string VoicePaginatorScenePath = "res://scenes/screens/paginator.tscn";
-    private const string ScrollbarScenePath = "res://scenes/ui/scrollbar.tscn";
+    private const string PatchScreenContentsScenePath = "res://scenes/screens/patch_screen_contents.tscn";
     private const string LocTable = "settings_ui";
     private const int PageTitleFontSize = 52;
     private const int SidebarTitleFontSize = 48;
@@ -706,46 +706,41 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         verticalPopup.OffsetBottom = 410f;
 
         MegaRichTextLabel description = popup.GetNode<MegaRichTextLabel>("VerticalPopup/Description");
-        var scroll = new NScrollableContainer
-        {
-            Name = "UpdateHistoryScroll",
-            AnchorLeft = description.AnchorLeft,
-            AnchorTop = description.AnchorTop,
-            AnchorRight = description.AnchorRight,
-            AnchorBottom = description.AnchorBottom,
-            OffsetLeft = description.OffsetLeft,
-            OffsetTop = description.OffsetTop,
-            OffsetRight = description.OffsetRight,
-            OffsetBottom = description.OffsetBottom,
-            ClipContents = true,
-            MouseFilter = MouseFilterEnum.Stop,
-        };
-        var mask = new Control
-        {
-            Name = "Mask",
-            ClipContents = true,
-            MouseFilter = MouseFilterEnum.Ignore,
-        };
-        mask.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
-        scroll.AddChild(mask);
+        NScrollableContainer scroll = ResourceLoader.Load<PackedScene>(PatchScreenContentsScenePath)
+            .Instantiate<NScrollableContainer>();
+        scroll.Name = "UpdateHistoryScroll";
+        scroll.AnchorLeft = description.AnchorLeft;
+        scroll.AnchorTop = description.AnchorTop;
+        scroll.AnchorRight = description.AnchorRight;
+        scroll.AnchorBottom = description.AnchorBottom;
+        scroll.OffsetLeft = description.OffsetLeft;
+        scroll.OffsetTop = description.OffsetTop;
+        scroll.OffsetRight = description.OffsetRight;
+        scroll.OffsetBottom = description.OffsetBottom;
+        scroll.MouseFilter = MouseFilterEnum.Stop;
 
-        description.Name = "Content";
-        description.Reparent(mask, keepGlobalTransform: false);
-        description.SetAnchorsAndOffsetsPreset(LayoutPreset.TopWide);
-        description.OffsetLeft = 0f;
-        description.OffsetTop = 0f;
-        description.OffsetRight = -58f;
-        description.OffsetBottom = 0f;
-        description.SizeFlagsHorizontal = SizeFlags.ExpandFill;
-        description.SizeFlagsVertical = SizeFlags.ShrinkBegin;
-        description.FitContent = true;
-        description.ScrollActive = false;
-        description.AutoSizeEnabled = false;
-        description.MinFontSize = NoteFontSize;
-        description.MaxFontSize = NoteFontSize;
-        description.MouseFilter = MouseFilterEnum.Ignore;
-        description.HorizontalAlignment = HorizontalAlignment.Left;
-        description.VerticalAlignment = VerticalAlignment.Top;
+        MarginContainer content = scroll.GetNode<MarginContainer>("Content");
+        content.SetAnchorsPreset(LayoutPreset.TopWide);
+        content.OffsetLeft = 0f;
+        content.OffsetTop = 0f;
+        content.OffsetRight = 0f;
+        content.OffsetBottom = 1080f;
+        content.AddThemeConstantOverride("margin_left", 0);
+        content.AddThemeConstantOverride("margin_top", 16);
+        content.AddThemeConstantOverride("margin_right", 58);
+        content.AddThemeConstantOverride("margin_bottom", 16);
+
+        MegaRichTextLabel patchText = content.GetNode<MegaRichTextLabel>("PatchText");
+        patchText.GetNode<Control>("DateLabel").Visible = false;
+        patchText.CustomMinimumSize = Vector2.Zero;
+        patchText.FitContent = true;
+        patchText.ScrollActive = false;
+        patchText.AutoSizeEnabled = false;
+        patchText.MinFontSize = NoteFontSize;
+        patchText.MaxFontSize = NoteFontSize;
+        patchText.MouseFilter = MouseFilterEnum.Ignore;
+        patchText.HorizontalAlignment = HorizontalAlignment.Left;
+        patchText.VerticalAlignment = VerticalAlignment.Top;
         foreach (string themeKey in new[]
                  {
                      "normal_font_size",
@@ -755,12 +750,12 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
                      "mono_font_size",
                  })
         {
-            description.AddThemeFontSizeOverride(themeKey, NoteFontSize);
+            patchText.AddThemeFontSizeOverride(themeKey, NoteFontSize);
         }
+        patchText.Text = description.Text;
+        description.Visible = false;
 
-        NScrollbar scrollbar = ResourceLoader.Load<PackedScene>(ScrollbarScenePath)
-            .Instantiate<NScrollbar>();
-        scrollbar.Name = "Scrollbar";
+        NScrollbar scrollbar = scroll.GetNode<NScrollbar>("Scrollbar");
         scrollbar.AnchorLeft = 1f;
         scrollbar.AnchorTop = 0f;
         scrollbar.AnchorRight = 1f;
@@ -769,16 +764,15 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         scrollbar.OffsetTop = 8f;
         scrollbar.OffsetRight = 0f;
         scrollbar.OffsetBottom = -8f;
-        scroll.AddChild(scrollbar);
         scroll.DisableScrollingIfContentFits();
         verticalPopup.AddChild(scroll);
         Callable.From(() =>
         {
-            if (!GodotObject.IsInstanceValid(scroll) || !GodotObject.IsInstanceValid(description))
+            if (!GodotObject.IsInstanceValid(scroll) || !GodotObject.IsInstanceValid(content))
                 return;
 
-            description.ResetSize();
-            scroll.SetContent(description);
+            content.ResetSize();
+            scroll.SetContent(content);
             scroll.InstantlyScrollToTop();
         }).CallDeferred();
     }
