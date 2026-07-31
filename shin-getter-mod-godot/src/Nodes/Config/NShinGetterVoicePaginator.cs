@@ -67,7 +67,7 @@ public partial class NShinGetterVoicePaginator : NPaginator
         if (_richPresentationLabel == null)
             return;
 
-        _richPresentationLabel.MaxFontSize = _currentIndex == 2 ? 30 : 28;
+        _richPresentationLabel.MaxFontSize = _currentIndex == 2 ? 32 : 28;
         _richPresentationLabel.SetTextAutoSize(_options[_currentIndex]);
         _richPresentationLabel.Visible = true;
     }
@@ -90,6 +90,9 @@ public partial class NShinGetterVoicePaginator : NPaginator
             AutoSizeEnabled = true,
             MinFontSize = 16,
             MaxFontSize = 28,
+            IsHorizontallyBound = true,
+            IsVerticallyBound = true,
+            AutowrapMode = TextServer.AutowrapMode.Off,
         };
         _richPresentationLabel.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         FontVariation font = PreloadManager.Cache.GetAsset<FontVariation>(

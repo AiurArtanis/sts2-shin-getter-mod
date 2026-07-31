@@ -29,23 +29,27 @@ def validate_update_history() -> None:
     )[1].split("private static string Localize", 1)[0]
     require(
         submenu,
-        'private const string ScrollbarScenePath = "res://scenes/ui/scrollbar.tscn";',
-        "var scroll = new NScrollableContainer",
+        'private const string PatchScreenContentsScenePath = "res://scenes/screens/patch_screen_contents.tscn";',
+        "ResourceLoader.Load<PackedScene>(PatchScreenContentsScenePath)",
+        ".Instantiate<NScrollableContainer>()",
         'Name = "UpdateHistoryScroll"',
-        'description.Name = "Content"',
         'MegaRichTextLabel description = popup.GetNode<MegaRichTextLabel>',
-        "description.AutoSizeEnabled = false",
-        "description.MinFontSize = NoteFontSize",
-        "description.MaxFontSize = NoteFontSize",
-        "description.AddThemeFontSizeOverride(themeKey, NoteFontSize)",
-        "Instantiate<NScrollbar>()",
-        'scrollbar.Name = "Scrollbar"',
-        "scroll.SetContent(description)",
-        "description.ResetSize()",
+        'MarginContainer content = scroll.GetNode<MarginContainer>("Content")',
+        'MegaRichTextLabel patchText = content.GetNode<MegaRichTextLabel>("PatchText")',
+        'patchText.GetNode<Control>("DateLabel").Visible = false',
+        "patchText.AutoSizeEnabled = false",
+        "patchText.MinFontSize = NoteFontSize",
+        "patchText.MaxFontSize = NoteFontSize",
+        "patchText.AddThemeFontSizeOverride(themeKey, NoteFontSize)",
+        "patchText.Text = description.Text",
+        "description.Visible = false",
+        'scroll.GetNode<NScrollbar>("Scrollbar")',
+        "scroll.SetContent(content)",
+        "content.ResetSize()",
         "scroll.InstantlyScrollToTop()",
     )
-    if "var scroll = new ScrollContainer" in history_popup:
-        raise AssertionError("Update history must use the original NScrollableContainer stack.")
+    if "new NScrollableContainer" in history_popup or "description.Reparent" in history_popup:
+        raise AssertionError("Update history must instantiate the original patch-notes scroll hierarchy.")
 
 
 def validate_hover_tips() -> None:
@@ -74,8 +78,11 @@ def validate_voice_markup() -> None:
     rich_text_patch = RICH_TEXT_PATCH_PATH.read_text(encoding="utf-8")
     require(
         paginator,
-        "_richPresentationLabel.MaxFontSize = _currentIndex == 2 ? 30 : 28",
+        "_richPresentationLabel.MaxFontSize = _currentIndex == 2 ? 32 : 28",
         "_richPresentationLabel.SetTextAutoSize(_options[_currentIndex])",
+        "IsHorizontallyBound = true",
+        "IsVerticallyBound = true",
+        "AutowrapMode = TextServer.AutowrapMode.Off",
         'GetNode<Control>("LeftArrow").MoveToFront()',
         'GetNode<Control>("RightArrow").MoveToFront()',
         "BbcodeEnabled = true",
