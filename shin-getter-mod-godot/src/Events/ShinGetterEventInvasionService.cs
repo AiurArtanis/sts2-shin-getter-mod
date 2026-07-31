@@ -597,9 +597,6 @@ internal static class ShinGetterEventInvasionService
             new Reward[]
             {
                 new RelicReward(ModelDb.Relic<ByrdpipRelic>().ToMutable(), owner),
-                new SpecialCardReward(
-                    owner.RunState.CreateCard<ByrdSwoop>(owner),
-                    owner),
             },
             PendingBattleSetup.ByrdonisNest);
         return Task.CompletedTask;
