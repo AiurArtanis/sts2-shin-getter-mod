@@ -36,6 +36,7 @@ internal static class ShinGetterExecutionMusicService
             || card.Pile?.Type != PileType.Hand
             || card.CombatState is not CombatState combatState
             || card is not (SGC_StonerSunshine or SGC_StarSlash or SGC_ShiningSpark)
+            || owner.PlayerCombatState is not { TurnNumber: >= 2 }
             || !CombatManager.Instance.IsInProgress
             || CombatManager.Instance.IsOverOrEnding
             || !ReferenceEquals(CombatManager.Instance.DebugOnlyGetState(), combatState))
