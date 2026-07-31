@@ -11,6 +11,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SERVICE_PATH = ROOT / "src/Events/ShinGetterEventInvasionService.cs"
 PATCH_PATH = ROOT / "src/Patches/ShinGetterEventInvasionPatch.cs"
+BYRDPIP_REWARD_PATCH_PATH = ROOT / "src/Patches/ShinGetterByrdpipRewardPatch.cs"
 RICH_TEXT_PATCH_PATH = ROOT / "src/Patches/RichTextWhitePatch.cs"
 RICH_TEXT_EFFECT_PATHS = {
     "white": ROOT / "src/RichTextTags/RichTextWhite.cs",
@@ -85,6 +86,7 @@ def validate_tag_nesting(key: str, text: str) -> None:
 def validate_service() -> None:
     service = SERVICE_PATH.read_text(encoding="utf-8")
     patch = PATCH_PATH.read_text(encoding="utf-8")
+    byrdpip_patch = BYRDPIP_REWARD_PATCH_PATH.read_text(encoding="utf-8")
 
     for event_type in EVENT_TYPES:
         require(service, f"{event_type} ")
@@ -100,8 +102,6 @@ def validate_service() -> None:
         "ModelDb.Encounter<ByrdonisElite>().ToMutable()",
         "using ByrdpipRelic = MegaCrit.Sts2.Core.Models.Relics.Byrdpip;",
         "ModelDb.Relic<ByrdpipRelic>().ToMutable()",
-        "new SpecialCardReward(",
-        "owner.RunState.CreateCard<ByrdSwoop>(owner)",
         "CardFactory.CreateForReward(owner, 2, powerOptions)",
         "CardFactory.CreateForReward(owner, 2, zeroCostOptions)",
         "CardCreationFlags.NoCardPoolModifications",
@@ -171,8 +171,24 @@ def validate_service() -> None:
     require(
         byrdonis_ryoma,
         "ModelDb.Relic<ByrdpipRelic>().ToMutable()",
-        "new SpecialCardReward(",
+    )
+    if "SpecialCardReward" in byrdonis_ryoma or "CreateCard<ByrdSwoop>" in byrdonis_ryoma:
+        raise AssertionError("Byrd Swoop must not be granted as an independent combat reward.")
+
+    require(
+        byrdpip_patch,
+        "[HarmonyPatch(typeof(Byrdpip), nameof(Byrdpip.AfterObtained))]",
+        "private static void Prefix(Byrdpip __instance, out bool __state)",
+        "__state = HasByrdonisEgg(__instance.Owner)",
+        "PileType.Deck.GetPile(player).Cards.Any(card => card is ByrdonisEgg)",
+        "CombatManager.Instance.IsInProgress",
+        "player.PlayerCombatState.AllCards.Any(card => card is ByrdonisEgg)",
+        "private static void Postfix(Byrdpip __instance, bool __state, ref Task __result)",
+        "if (__state)",
+        "__result = AddByrdSwoopAfterObtained(__result, __instance.Owner)",
+        "await originalTask",
         "owner.RunState.CreateCard<ByrdSwoop>(owner)",
+        "CardCmd.PreviewCardPileAdd(await CardPileCmd.Add(byrdSwoop, PileType.Deck))",
     )
 
     legends_options = method_body(
