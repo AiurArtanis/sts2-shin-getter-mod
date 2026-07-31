@@ -12,6 +12,10 @@ namespace ShinGetterMod.Nodes.Config;
 
 public partial class NShinGetterVoicePaginator : NPaginator
 {
+    private const int SilentMaxFontSize = 25;
+    private const int DefaultMaxFontSize = 28;
+    private const int AlwaysMaxFontSize = 35;
+
     private IHoverTip? _presentationHoverTip;
     private readonly List<string> _plainOptions = new();
     private MegaRichTextLabel? _richPresentationLabel;
@@ -67,7 +71,12 @@ public partial class NShinGetterVoicePaginator : NPaginator
         if (_richPresentationLabel == null)
             return;
 
-        _richPresentationLabel.MaxFontSize = _currentIndex == 2 ? 32 : 28;
+        _richPresentationLabel.MaxFontSize = _currentIndex switch
+        {
+            0 => SilentMaxFontSize,
+            2 => AlwaysMaxFontSize,
+            _ => DefaultMaxFontSize,
+        };
         _richPresentationLabel.SetTextAutoSize(_options[_currentIndex]);
         _richPresentationLabel.Visible = true;
     }
