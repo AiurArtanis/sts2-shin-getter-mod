@@ -1,8 +1,9 @@
 #nullable enable
-using System.Linq;
 using Godot;
 using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Helpers;
+using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Acts;
 using MegaCrit.Sts2.Core.Nodes.Audio;
@@ -42,7 +43,7 @@ internal static class ShinGetterEncounterMusicService
 
         if (runState is null || NonInteractiveMode.IsActive)
             return;
-        if (!runState.Players.Any(player => player.Character is ShinGetter))
+        if (!ShouldReplaceForLocalPlayer(runState))
             return;
         if (!TryResolveTrack(runState.Act.CanonicalInstance, room.RoomType, out string trackPath))
             return;
@@ -116,6 +117,14 @@ internal static class ShinGetterEncounterMusicService
             _ => string.Empty,
         };
         return trackPath.Length > 0;
+    }
+
+    private static bool ShouldReplaceForLocalPlayer(IRunState runState)
+    {
+        if (runState.CurrentMapPointHistoryEntry?.MapPointType == MapPointType.Ancient)
+            return false;
+
+        return LocalContext.GetMe(runState)?.Character is ShinGetter;
     }
 
     private static void OnCombatEnded(CombatRoom room)

@@ -74,7 +74,18 @@ service = (ROOT / "src" / "Audio" / "ShinGetterEncounterMusicService.cs").read_t
 for act in ("Overgrowth", "Underdocks", "Hive", "Glory"):
     for room_type in ("Elite", "Boss"):
         require(f"({act}, RoomType.{room_type})" in service, f"missing {act} {room_type} mapping")
-require("player.Character is ShinGetter" in service, "music replacement must be limited to Shin Getter runs")
+require(
+    "LocalContext.GetMe(runState)?.Character is ShinGetter" in service,
+    "music replacement must be limited to the local Shin Getter player",
+)
+require(
+    "runState.CurrentMapPointHistoryEntry?.MapPointType == MapPointType.Ancient" in service,
+    "Ancient map points must keep their original music",
+)
+require(
+    "runState.Players.Any" not in service,
+    "a remote Shin Getter player must not change this client's music",
+)
 require("RelativeVolume = 0.70f" in service, "custom BGM must play at 70% of the configured BGM volume")
 require("StopActiveAndRestore" in service and "SuspendForExecution" in service, "music lifecycle guards are missing")
 
