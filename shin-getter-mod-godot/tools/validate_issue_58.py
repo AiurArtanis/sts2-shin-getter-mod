@@ -100,13 +100,16 @@ def validate_service() -> None:
         "ModelDb.Encounter<ByrdonisElite>().ToMutable()",
         "using ByrdpipRelic = MegaCrit.Sts2.Core.Models.Relics.Byrdpip;",
         "ModelDb.Relic<ByrdpipRelic>().ToMutable()",
+        "new SpecialCardReward(",
+        "owner.RunState.CreateCard<ByrdSwoop>(owner)",
         "CardFactory.CreateForReward(owner, 2, powerOptions)",
         "CardFactory.CreateForReward(owner, 2, zeroCostOptions)",
         "CardCreationFlags.NoCardPoolModifications",
         "owner.Gold >= 35",
         "HasAnyCard<SGC_GetterClaw, SGC_SpiralDrill, SGC_TornadoDrill>(owner)",
         "await PlayerCmd.LoseGold(35, owner, GoldLossType.Spent)",
-        "await PotionCmd.TryToProcure<SGR_GetterColdBrew>(owner)",
+        "await RewardsCmd.OfferCustom(owner",
+        "new PotionReward(ModelDb.Potion<SGR_GetterColdBrew>().ToMutable(), owner)",
         "owner.Creature.CurrentHp > 7",
         "owner.Creature,\n            7,",
         "eventModel.DynamicVars.Gold.BaseValue * 1.8m",
@@ -124,6 +127,7 @@ def validate_service() -> None:
         "ModelDb.Encounter<KnightsElite>().ToMutable()",
         "await CreatureCmd.Stun(byrdonis",
         "ReferenceEquals(combatCard.DeckVersion, deckCard)",
+        "card.SetToFreeThisCombat()",
         "await CardCmd.AutoPlay(",
         "SGC_TornadoDrill or SGC_SpiralDrill",
         "card.Enchantment == null",
@@ -163,6 +167,14 @@ def validate_service() -> None:
     if byrdonis_muqing.index("await LoseHp(owner, 6)") > byrdonis_muqing.index("CardCmd.Upgrade"):
         raise AssertionError("Byrdonis Muqing must lose HP before upgrading cards.")
 
+    byrdonis_ryoma = method_body(service, "private static Task ByrdonisNestRyoma")
+    require(
+        byrdonis_ryoma,
+        "ModelDb.Relic<ByrdpipRelic>().ToMutable()",
+        "new SpecialCardReward(",
+        "owner.RunState.CreateCard<ByrdSwoop>(owner)",
+    )
+
     legends_options = method_body(
         service, "private static IEnumerable<EventOption> BuildTheLegendsWereTrueOptions"
     )
@@ -192,10 +204,20 @@ def validate_service() -> None:
     require(
         legends_hayato,
         "await PlayerCmd.LoseGold(35, owner, GoldLossType.Spent)",
-        "await PotionCmd.TryToProcure<SGR_GetterColdBrew>(owner)",
+        "await RewardsCmd.OfferCustom(owner",
+        "new PotionReward(ModelDb.Potion<SGR_GetterColdBrew>().ToMutable(), owner)",
     )
+    if "PotionCmd.TryToProcure" in legends_hayato:
+        raise AssertionError("Hayato's cold brew must use the original potion reward screen.")
     if "LoseHp" in legends_hayato:
         raise AssertionError("Hayato's legend route must not lose HP.")
+
+    trial_setup_start = service.index("List<CardModel> cardsToPlay")
+    trial_setup_end = service.index("\n    }", trial_setup_start)
+    trial_setup = service[trial_setup_start:trial_setup_end]
+    require(trial_setup, "card.SetToFreeThisCombat()", "await CardCmd.AutoPlay(")
+    if trial_setup.index("card.SetToFreeThisCombat()") > trial_setup.index("await CardCmd.AutoPlay("):
+        raise AssertionError("Trial Spirit cards must become free before they are auto-played.")
 
     ranwid_dialogue = method_body(service, "private static Task RanwidTheElderRyoma")
     require(
@@ -427,6 +449,8 @@ def validate_localization() -> None:
             f"{prefix}THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.HAYATO.title": "[white]Take another route.[/white]",
             f"{prefix}THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.HAYATO.description": "Pay [red]35[/red] Gold. Obtain [gold]Getter Cold Brew[/gold].",
             f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.MUQING_LOCKED.description": "Requires at least 1 upgradable card.",
+            f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.MUQING.description": "Lose [red]6[/red] HP. Randomly upgrade 3 cards.",
+            f"{prefix}SPIRALING_WHIRLPOOL.pages.INITIAL.options.HAYATO.title": "[white]Unmake one completed record and reverse-engineer its structure.[/white]",
             f"{prefix}SUNKEN_STATUE.pages.INITIAL.options.MUQING.description": "Lose [red]7[/red] Max HP. Gain more Gold.",
             f"{prefix}RANWID_THE_ELDER.pages.RYOMA.options.CHOOSE_RELIC.title": "Continue.",
         },
@@ -436,6 +460,8 @@ def validate_localization() -> None:
             f"{prefix}THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.HAYATO.title": "[white]別の道を行く。[/white]",
             f"{prefix}THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.HAYATO.description": "[red]35[/red]ゴールドを支払い、[gold]ゲッターコールドブリュー[/gold]を得る。",
             f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.MUQING_LOCKED.description": "アップグレード可能なカードが1枚以上必要。",
+            f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.MUQING.description": "HPを[red]6[/red]失い、カードをランダムに3枚アップグレードする。",
+            f"{prefix}SPIRALING_WHIRLPOOL.pages.INITIAL.options.HAYATO.title": "[white]完成した記録を一つ解き、その構造を逆算する。[/white]",
             f"{prefix}SUNKEN_STATUE.pages.INITIAL.options.MUQING.description": "最大HPを[red]7[/red]失い、より多くのゴールドを得る。",
             f"{prefix}RANWID_THE_ELDER.pages.RYOMA.options.CHOOSE_RELIC.title": "続ける。",
         },
@@ -445,6 +471,8 @@ def validate_localization() -> None:
             f"{prefix}THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.HAYATO.title": "[white]换条路走。[/white]",
             f"{prefix}THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.HAYATO.description": "支付[red]35[/red]金币，获得[gold]盖塔冷萃[/gold]。",
             f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.MUQING_LOCKED.description": "需要至少1张可升级牌。",
+            f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.MUQING.description": "失去[red]6[/red]点生命，随机升级3张牌。",
+            f"{prefix}SPIRALING_WHIRLPOOL.pages.INITIAL.options.HAYATO.title": "[white]拆开一段完成记录，反推它的结构。[/white]",
             f"{prefix}SUNKEN_STATUE.pages.INITIAL.options.MUQING.description": "失去[red]7[/red]点最大生命，获得更多的金币。",
             f"{prefix}RANWID_THE_ELDER.pages.RYOMA.options.CHOOSE_RELIC.title": "继续。",
         },

@@ -173,6 +173,7 @@ internal static class ShinGetterEventInvasionService
             .ToList();
         foreach (CardModel card in cardsToPlay)
         {
+            card.SetToFreeThisCombat();
             await CardCmd.AutoPlay(
                 new ThrowingPlayerChoiceContext(),
                 card,
@@ -587,6 +588,7 @@ internal static class ShinGetterEventInvasionService
 
     private static Task ByrdonisNestRyoma(ByrdonisNest eventModel)
     {
+        Player owner = RequireOwner(eventModel);
         BeginEventBattle(
             eventModel,
             "BYRDONIS_NEST",
@@ -594,7 +596,10 @@ internal static class ShinGetterEventInvasionService
             ModelDb.Encounter<ByrdonisElite>().ToMutable(),
             new Reward[]
             {
-                new RelicReward(ModelDb.Relic<ByrdpipRelic>().ToMutable(), RequireOwner(eventModel)),
+                new RelicReward(ModelDb.Relic<ByrdpipRelic>().ToMutable(), owner),
+                new SpecialCardReward(
+                    owner.RunState.CreateCard<ByrdSwoop>(owner),
+                    owner),
             },
             PendingBattleSetup.ByrdonisNest);
         return Task.CompletedTask;
@@ -647,7 +652,10 @@ internal static class ShinGetterEventInvasionService
     {
         Player owner = RequireOwner(eventModel);
         await PlayerCmd.LoseGold(35, owner, GoldLossType.Spent);
-        await PotionCmd.TryToProcure<SGR_GetterColdBrew>(owner);
+        await RewardsCmd.OfferCustom(owner, new List<Reward>
+        {
+            new PotionReward(ModelDb.Potion<SGR_GetterColdBrew>().ToMutable(), owner),
+        });
         Finish(eventModel, PageKey("THE_LEGENDS_WERE_TRUE", "HAYATO"));
     }
 
