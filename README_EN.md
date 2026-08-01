@@ -33,8 +33,8 @@ Morale supports several high-impact effects. Evolution and Radiation create addi
 The content currently registered in `v1.1.0` includes:
 
 - **72 cards** spanning four forms and several core mechanics
-- **10 relics**, **3 potions**, and **2 enchantments**
-- **1 exclusive event** plus dedicated Ancient dialogue
+- **11 relics**, **3 potions**, and **2 enchantments**
+- Multiple **event invasions**, **1 exclusive event**, and dedicated Ancient dialogue
 - Simplified Chinese, English, and Japanese localization
 - A complete character mod loaded through DLL, PCK, and JSON artifacts
 
@@ -58,7 +58,7 @@ The content currently registered in `v1.1.0` includes:
 ### Install the release
 
 1. Download `shin-getter-mod-v1.1.0.zip` from the [v1.1.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.1.0), then extract `ShinGetterMod.pck`, `ShinGetterMod.dll`, `ShinGetterMod.json`, and `mod_image.png`.
-2. Create a `ShinGetterMod` folder inside the game's mod-loading directory and place all three files together.
+2. Create a `ShinGetterMod` folder inside the game's mod-loading directory and place all four files together.
 3. Launch the game, open **Settings → Mod Settings**, and enable “真盖塔模组” (Shin Getter Mod) under **Installed Mods**.
 4. Accept the load prompt, fully quit, and relaunch the game. Start a new run and select **Shin Getter**.
 
