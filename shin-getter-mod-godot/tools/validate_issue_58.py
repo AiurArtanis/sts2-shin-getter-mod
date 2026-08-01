@@ -589,6 +589,7 @@ def validate_localization() -> None:
     exact_localization = {
         "eng": {
             f"{prefix}TRIAL.pages.INITIAL.options.RYOMA.title": "[red]You are all guilty.[/red]",
+            f"{prefix}TRIAL.pages.INITIAL.options.RYOMA.description": "Challenge the three elite Knights. Gain buffs at combat start.",
             f"{prefix}TRIAL.pages.RYOMA.options.START_FIGHT.title": "[red][b]Interrupt the trial.[/b][/red]",
             f"{prefix}THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.HAYATO.title": "[white]Take another route.[/white]",
             f"{prefix}THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.HAYATO.description": "Pay [red]35[/red] Gold. Obtain [gold]Getter Cold Brew[/gold].",
@@ -601,6 +602,7 @@ def validate_localization() -> None:
         },
         "jpn": {
             f"{prefix}TRIAL.pages.INITIAL.options.RYOMA.title": "[red]お前たちは全員有罪だ。[/red]",
+            f"{prefix}TRIAL.pages.INITIAL.options.RYOMA.description": "精鋭の三騎士に挑み、戦闘開始時に強化を得る。",
             f"{prefix}TRIAL.pages.RYOMA.options.START_FIGHT.title": "[red][b]裁判を中断する。[/b][/red]",
             f"{prefix}THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.HAYATO.title": "[white]別の道を行く。[/white]",
             f"{prefix}THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.HAYATO.description": "[red]35[/red]ゴールドを支払い、[gold]ゲッターコールドブリュー[/gold]を得る。",
@@ -613,6 +615,7 @@ def validate_localization() -> None:
         },
         "zhs": {
             f"{prefix}TRIAL.pages.INITIAL.options.RYOMA.title": "[red]你们都有罪[/red]",
+            f"{prefix}TRIAL.pages.INITIAL.options.RYOMA.description": "挑战精英三骑士，战斗开始时获得增益。",
             f"{prefix}TRIAL.pages.RYOMA.options.START_FIGHT.title": "[red][b]打断审判。[/b][/red]",
             f"{prefix}THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.HAYATO.title": "[white]换条路走。[/white]",
             f"{prefix}THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.HAYATO.description": "支付[red]35[/red]金币，获得[gold]盖塔冷萃[/gold]。",
