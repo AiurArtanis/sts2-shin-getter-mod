@@ -25,6 +25,7 @@ using MegaCrit.Sts2.Core.Models.Monsters;
 using MegaCrit.Sts2.Core.Models.Relics;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Rewards;
+using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Runs.History;
 using MegaCrit.Sts2.Core.ValueProps;
@@ -181,6 +182,29 @@ internal static class ShinGetterEventInvasionService
         }
     }
 
+    internal static async Task ResumeByrdonisNest(
+        ByrdonisNest eventModel,
+        AbstractRoom exitedRoom,
+        Task originalTask)
+    {
+        await originalTask;
+        if (exitedRoom is not CombatRoom combatRoom
+            || !combatRoom.IsPreFinished
+            || !combatRoom.ShouldResumeParentEventAfterCombat
+            || combatRoom.ParentEventId != eventModel.Id
+            || combatRoom.Encounter is not ByrdonisElite)
+        {
+            return;
+        }
+
+        Player owner = RequireOwner(eventModel);
+        if (!owner.Deck.Cards.Any(card => card is ByrdonisEgg))
+            return;
+
+        Finish(eventModel, PageKey("BYRDONIS_NEST", "RYOMA_HATCH"));
+        await RelicCmd.Obtain<ByrdpipRelic>(owner);
+    }
+
     private static IEnumerable<EventOption> BuildTeaMasterOptions(TeaMaster eventModel)
     {
         Player owner = RequireOwner(eventModel);
@@ -322,7 +346,8 @@ internal static class ShinGetterEventInvasionService
             () => ByrdonisNestRyoma(eventModel),
             "BYRDONIS_NEST",
             "RYOMA",
-            HoverTipFactory.FromRelic<ByrdpipRelic>());
+            HoverTipFactory.FromCardWithCardHoverTips<ByrdonisEgg>()
+                .Concat(HoverTipFactory.FromRelic<ByrdpipRelic>()));
     }
 
     private static IEnumerable<EventOption> BuildInfestedAutomatonOptions(InfestedAutomaton eventModel)
@@ -586,20 +611,19 @@ internal static class ShinGetterEventInvasionService
         Finish(eventModel, PageKey("BYRDONIS_NEST", "MUQING"));
     }
 
-    private static Task ByrdonisNestRyoma(ByrdonisNest eventModel)
+    private static async Task ByrdonisNestRyoma(ByrdonisNest eventModel)
     {
         Player owner = RequireOwner(eventModel);
+        CardModel byrdonisEgg = owner.RunState.CreateCard<ByrdonisEgg>(owner);
+        CardCmd.PreviewCardPileAdd(await CardPileCmd.Add(byrdonisEgg, PileType.Deck), 2f);
         BeginEventBattle(
             eventModel,
             "BYRDONIS_NEST",
             "RYOMA",
             ModelDb.Encounter<ByrdonisElite>().ToMutable(),
-            new Reward[]
-            {
-                new RelicReward(ModelDb.Relic<ByrdpipRelic>().ToMutable(), owner),
-            },
-            PendingBattleSetup.ByrdonisNest);
-        return Task.CompletedTask;
+            Array.Empty<Reward>(),
+            PendingBattleSetup.ByrdonisNest,
+            shouldResumeAfterCombat: true);
     }
 
     private static async Task InfestedAutomatonHayato(InfestedAutomaton eventModel)
@@ -787,11 +811,17 @@ internal static class ShinGetterEventInvasionService
         string pageName,
         EncounterModel encounter,
         IReadOnlyList<Reward> extraRewards,
-        PendingBattleSetup setup)
+        PendingBattleSetup setup,
+        bool shouldResumeAfterCombat = false)
     {
         EventOption startFight = new(
             eventModel,
-            () => StartEventBattle(eventModel, encounter, extraRewards, setup),
+            () => StartEventBattle(
+                eventModel,
+                encounter,
+                extraRewards,
+                setup,
+                shouldResumeAfterCombat),
             PageOptionKey(eventName, pageName, "START_FIGHT"),
             disableOnChosen: true,
             isProceed: true);
@@ -808,7 +838,8 @@ internal static class ShinGetterEventInvasionService
         EventModel eventModel,
         EncounterModel encounter,
         IReadOnlyList<Reward> extraRewards,
-        PendingBattleSetup setup)
+        PendingBattleSetup setup,
+        bool shouldResumeAfterCombat)
     {
         Player owner = RequireOwner(eventModel);
         PendingBattleSetups[owner] = (setup, encounter);
@@ -817,7 +848,7 @@ internal static class ShinGetterEventInvasionService
         {
             EnterCombatWithoutExitingEventMethod.Invoke(
                 eventModel,
-                new object[] { encounter, extraRewards, false });
+                new object[] { encounter, extraRewards, shouldResumeAfterCombat });
         }
         catch
         {

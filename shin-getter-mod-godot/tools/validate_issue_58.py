@@ -101,7 +101,6 @@ def validate_service() -> None:
         "await LoseHp(owner, 6)",
         "ModelDb.Encounter<ByrdonisElite>().ToMutable()",
         "using ByrdpipRelic = MegaCrit.Sts2.Core.Models.Relics.Byrdpip;",
-        "ModelDb.Relic<ByrdpipRelic>().ToMutable()",
         "CardFactory.CreateForReward(owner, 2, powerOptions)",
         "CardFactory.CreateForReward(owner, 2, zeroCostOptions)",
         "CardCreationFlags.NoCardPoolModifications",
@@ -122,6 +121,8 @@ def validate_service() -> None:
         "PendingBattleSetup.Trial",
         "ReferenceEquals(combatState.Encounter, pending.Encounter)",
         "PendingBattleSetups[owner] = (setup, encounter)",
+        "bool shouldResumeAfterCombat = false",
+        "shouldResumeAfterCombat: true",
         "combatState.Encounter is not ByrdonisElite",
         "combatState.Encounter is not KnightsElite",
         "ModelDb.Encounter<KnightsElite>().ToMutable()",
@@ -167,13 +168,64 @@ def validate_service() -> None:
     if byrdonis_muqing.index("await LoseHp(owner, 6)") > byrdonis_muqing.index("CardCmd.Upgrade"):
         raise AssertionError("Byrdonis Muqing must lose HP before upgrading cards.")
 
-    byrdonis_ryoma = method_body(service, "private static Task ByrdonisNestRyoma")
+    byrdonis_ryoma = method_body(service, "private static async Task ByrdonisNestRyoma")
     require(
         byrdonis_ryoma,
-        "ModelDb.Relic<ByrdpipRelic>().ToMutable()",
+        "owner.RunState.CreateCard<ByrdonisEgg>(owner)",
+        "CardPileCmd.Add(byrdonisEgg, PileType.Deck)",
+        "CardCmd.PreviewCardPileAdd",
+        "Array.Empty<Reward>()",
+        "PendingBattleSetup.ByrdonisNest",
+        "shouldResumeAfterCombat: true",
     )
-    if "SpecialCardReward" in byrdonis_ryoma or "CreateCard<ByrdSwoop>" in byrdonis_ryoma:
-        raise AssertionError("Byrd Swoop must not be granted as an independent combat reward.")
+    for forbidden_reward in (
+        "RelicReward",
+        "SpecialCardReward",
+        "CreateCard<ByrdSwoop>",
+    ):
+        if forbidden_reward in byrdonis_ryoma:
+            raise AssertionError(
+                f"Byrdonis combat must not grant {forbidden_reward} as a battle reward."
+            )
+    if byrdonis_ryoma.index("CardPileCmd.Add") > byrdonis_ryoma.index("BeginEventBattle"):
+        raise AssertionError("Byrdonis Egg must enter the deck before combat is prepared.")
+
+    begin_event_battle = method_body(service, "private static void BeginEventBattle")
+    require(
+        begin_event_battle,
+        "shouldResumeAfterCombat)",
+    )
+    start_event_battle = method_body(service, "private static Task StartEventBattle")
+    require(
+        start_event_battle,
+        "new object[] { encounter, extraRewards, shouldResumeAfterCombat }",
+    )
+
+    byrdonis_resume = method_body(service, "internal static async Task ResumeByrdonisNest")
+    require(
+        byrdonis_resume,
+        "await originalTask",
+        "exitedRoom is not CombatRoom combatRoom",
+        "!combatRoom.IsPreFinished",
+        "!combatRoom.ShouldResumeParentEventAfterCombat",
+        "combatRoom.ParentEventId != eventModel.Id",
+        "combatRoom.Encounter is not ByrdonisElite",
+        "owner.Deck.Cards.Any(card => card is ByrdonisEgg)",
+        'Finish(eventModel, PageKey("BYRDONIS_NEST", "RYOMA_HATCH"))',
+        "await RelicCmd.Obtain<ByrdpipRelic>(owner)",
+    )
+    if byrdonis_resume.index("Finish(eventModel") > byrdonis_resume.index("RelicCmd.Obtain"):
+        raise AssertionError("Hatching narration must be set before the original hatch effect runs.")
+    if "RemoveFromDeck" in byrdonis_resume:
+        raise AssertionError("Byrdonis Egg must be transformed by the original Byrdpip pickup effect.")
+
+    require(
+        patch,
+        "[HarmonyPatch(typeof(EventModel), nameof(EventModel.Resume))]",
+        "__instance is ByrdonisNest byrdonisNest",
+        "ref Task __result",
+        "ShinGetterEventInvasionService.ResumeByrdonisNest(",
+    )
 
     require(
         byrdpip_patch,
@@ -387,9 +439,25 @@ def validate_localization() -> None:
 
     rich_text_contracts = {
         f"{prefix}BYRDONIS_NEST.pages.RYOMA.description": (
+            "[white]",
+            "[/white]",
+            "[yellow]",
+            "[/yellow]",
             "[red]",
             "[jitter]",
             "[/jitter]",
+            "[/red]",
+        ),
+        f"{prefix}BYRDONIS_NEST.pages.RYOMA_HATCH.description": (
+            "[getter_ray]",
+            "[/getter_ray]",
+            "[white]",
+            "[getter_ray]",
+            "[/getter_ray]",
+            "[/white]",
+            "[yellow]",
+            "[/yellow]",
+            "[red]",
             "[/red]",
         ),
         f"{prefix}SPIRIT_GRAFTER.pages.TRIPLE_UNITY.description": (
@@ -466,6 +534,7 @@ def validate_localization() -> None:
             f"{prefix}THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.HAYATO.description": "Pay [red]35[/red] Gold. Obtain [gold]Getter Cold Brew[/gold].",
             f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.MUQING_LOCKED.description": "Requires at least 1 upgradable card.",
             f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.MUQING.description": "Lose [red]6[/red] HP. Randomly upgrade 3 cards.",
+            f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.RYOMA.description": "Add [gold]{Card}[/gold] to your Deck and fight Byrdonis. Hatch it early after winning.",
             f"{prefix}SPIRALING_WHIRLPOOL.pages.INITIAL.options.HAYATO.title": "[white]Unmake one completed record and reverse-engineer its structure.[/white]",
             f"{prefix}SUNKEN_STATUE.pages.INITIAL.options.MUQING.description": "Lose [red]7[/red] Max HP. Gain more Gold.",
             f"{prefix}RANWID_THE_ELDER.pages.RYOMA.options.CHOOSE_RELIC.title": "Continue.",
@@ -477,6 +546,7 @@ def validate_localization() -> None:
             f"{prefix}THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.HAYATO.description": "[red]35[/red]ゴールドを支払い、[gold]ゲッターコールドブリュー[/gold]を得る。",
             f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.MUQING_LOCKED.description": "アップグレード可能なカードが1枚以上必要。",
             f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.MUQING.description": "HPを[red]6[/red]失い、カードをランダムに3枚アップグレードする。",
+            f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.RYOMA.description": "[gold]{Card}[/gold]をデッキに加えてバードニスと戦う。勝利後、卵を早くふ化させる。",
             f"{prefix}SPIRALING_WHIRLPOOL.pages.INITIAL.options.HAYATO.title": "[white]完成した記録を一つ解き、その構造を逆算する。[/white]",
             f"{prefix}SUNKEN_STATUE.pages.INITIAL.options.MUQING.description": "最大HPを[red]7[/red]失い、より多くのゴールドを得る。",
             f"{prefix}RANWID_THE_ELDER.pages.RYOMA.options.CHOOSE_RELIC.title": "続ける。",
@@ -488,6 +558,7 @@ def validate_localization() -> None:
             f"{prefix}THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.HAYATO.description": "支付[red]35[/red]金币，获得[gold]盖塔冷萃[/gold]。",
             f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.MUQING_LOCKED.description": "需要至少1张可升级牌。",
             f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.MUQING.description": "失去[red]6[/red]点生命，随机升级3张牌。",
+            f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.RYOMA.description": "将[gold]{Card}[/gold]加入牌组，迎战多尼斯异鸟。胜利后使它提前孵化。",
             f"{prefix}SPIRALING_WHIRLPOOL.pages.INITIAL.options.HAYATO.title": "[white]拆开一段完成记录，反推它的结构。[/white]",
             f"{prefix}SUNKEN_STATUE.pages.INITIAL.options.MUQING.description": "失去[red]7[/red]点最大生命，获得更多的金币。",
             f"{prefix}RANWID_THE_ELDER.pages.RYOMA.options.CHOOSE_RELIC.title": "继续。",

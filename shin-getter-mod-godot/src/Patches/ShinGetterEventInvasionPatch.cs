@@ -1,13 +1,16 @@
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Events;
 using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.Events;
+using MegaCrit.Sts2.Core.Rooms;
 using ShinGetterMod.Events;
 
 namespace ShinGetterMod.Patches;
@@ -34,6 +37,24 @@ internal static class ShinGetterSinglePlayerEventCombatPatch
 
         __result = true;
         return false;
+    }
+}
+
+[HarmonyPatch(typeof(EventModel), nameof(EventModel.Resume))]
+internal static class ShinGetterByrdonisNestResumePatch
+{
+    private static void Postfix(
+        EventModel __instance,
+        AbstractRoom exitedRoom,
+        ref Task __result)
+    {
+        if (__instance is ByrdonisNest byrdonisNest)
+        {
+            __result = ShinGetterEventInvasionService.ResumeByrdonisNest(
+                byrdonisNest,
+                exitedRoom,
+                __result);
+        }
     }
 }
 
