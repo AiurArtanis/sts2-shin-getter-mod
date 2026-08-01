@@ -6,19 +6,19 @@ Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter
 
 [hr][/hr]
 
-[h2]🆕 v1.0.7 release notes[/h2]
+[h2]🆕 v1.1.0 release notes[/h2]
 
-[b]Current version: v1.0.7[/b]
+[b]Current version: v1.1.0[/b]
 
-[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.0.7]Download v1.0.7 (shin-getter-mod-v1.0.7.zip)[/url]
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.1.0]Download v1.1.0 (shin-getter-mod-v1.1.0.zip)[/url]
 
 [list]
-[*][b]Shin Getter 2 reward adjustment:[/b] [i]Hurricane Strike[/i] now grants 1 stack of [i]Shade[/i] in Shin Getter 2 form.
-[*][b]Recursive damage fix:[/b] Fixed the self-growing effects of [i]Sleight of Flesh[/i] and [i]Wane[/i] triggering each other, which could cause recursive damage or unintended one-shot kills.
-[*][b]External-card actions:[/b] Cards from outside the mod now select Attack, Block, Cast, or Movement actions according to their actual effects.
-[*][b]Animation-loading optimization:[/b] Optimized four-form animation asset loading and action caching to reduce first-combat hitching and persistent VRAM usage.
-[*][b]Dragon beam correction:[/b] [i]Getter Beam[/i] and [i]Final Getter Beam[/i] in Shin Getter Dragon now fire from the head.
-[*][b]Three-language text cleanup:[/b] Cleaned up repeated keywords, blank lines, and phrasing in the Simplified Chinese, English, and Japanese descriptions for [i]Getter Will[/i], [i]Insect-Human Virus[/i], and [i]Getter Ray Burst[/i].
+[*][b]Event invasions:[/b] Multiple base-game events now include Shin Getter options, conditions, story branches, combats, and rewards, plus the new [i]Triple Wood Carving[/i] relic.
+[*][b]Chunibyo settings:[/b] Added in-game independent toggles, three voice-line levels, update history, and persistent configuration.
+[*][b]Encounter music:[/b] Added eight Shin Getter tracks for Elite and Boss combats in the Overgrowth, Underdocks, Hive, and Glory.
+[*][b]Flow and resolution fixes:[/b] Fixed transformation, card resolution, event rewards and return flow, autoplay, execution-music takeover, and multiplayer music scope.
+[*][b]Balance and rules:[/b] Updated card values, form rewards, Evolution mechanics, and Spirit Command rules.
+[*][b]Animation and scene polish:[/b] Optimized 24 actions and 920 animation frames for smoother transitions, smaller packages, and lower memory use, while improving the character's fit in shop and campfire scenes.
 [/list]
 
 [hr][/hr]
@@ -74,7 +74,7 @@ On your first run, follow the highlighted form-specific cards to establish a rhy
 
 [h2]Current status[/h2]
 
-[b]Current version: v1.0.7[/b]
+[b]Current version: v1.1.0[/b]
 
 The mod will continue to be maintained. Future game updates may affect compatibility. Please report issues on GitHub with the game version, mod version, reproduction steps, and relevant logs.
 
