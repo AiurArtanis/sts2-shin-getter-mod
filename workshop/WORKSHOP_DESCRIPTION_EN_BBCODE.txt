@@ -44,8 +44,8 @@ Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter
 
 [list]
 [*]72 cards
-[*]10 relics, 3 potions, and 2 enchantments
-[*]1 exclusive event plus dedicated Ancient dialogue
+[*]11 relics, 3 potions, and 2 enchantments
+[*]Multiple event invasions, 1 exclusive event, and dedicated Ancient dialogue
 [*]Simplified Chinese, English, and Japanese localization
 [/list]
 
