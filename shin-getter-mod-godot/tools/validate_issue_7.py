@@ -12,6 +12,7 @@ SUBMENU_PATH = ROOT / "src/Nodes/Config/NChunibyoConfigSubmenu.cs"
 PAGINATOR_PATH = ROOT / "src/Nodes/Config/NShinGetterVoicePaginator.cs"
 ACTION_BUTTON_PATH = ROOT / "src/Nodes/Config/NShinGetterConfigActionButton.cs"
 RICH_TEXT_PATCH_PATH = ROOT / "src/Patches/RichTextWhitePatch.cs"
+UPDATE_HISTORY_PATH = ROOT / "ShinGetterMod/update_history.json"
 LOCALIZATION_ROOT = ROOT / "ShinGetterMod/localization"
 LANGUAGES = ("eng", "jpn", "zhs")
 
@@ -24,6 +25,7 @@ def require(text: str, *needles: str) -> None:
 
 def validate_update_history() -> None:
     submenu = SUBMENU_PATH.read_text(encoding="utf-8")
+    entries = json.loads(UPDATE_HISTORY_PATH.read_text(encoding="utf-8"))
     history_popup = submenu.split(
         "private static void ConfigureUpdateHistoryPopup", 1
     )[1].split("private static string Localize", 1)[0]
@@ -51,6 +53,53 @@ def validate_update_history() -> None:
         raise AssertionError("Update history must instantiate the original patch-notes scroll hierarchy.")
     if "content.ResetSize()" in history_popup or "scroll.SetContent(content)" in history_popup:
         raise AssertionError("Update history content width must not be collapsed after entering the popup.")
+
+    versions = {entry["version"]: entry for entry in entries}
+    if len(versions) != len(entries):
+        raise AssertionError("Update history versions must be unique.")
+    expected_entries = {
+        "v1.1.0": ("2026-08-02", "SHIN_GETTER_CHUNIBYO.UPDATE.v1_1_0"),
+        "v1.0.7": ("2026-07-21", "SHIN_GETTER_CHUNIBYO.UPDATE.v1_0_7"),
+    }
+    for version, (date, key) in expected_entries.items():
+        entry = versions.get(version)
+        if entry is None or entry["date"] != date or entry["localization_key"] != key:
+            raise AssertionError(f"Incorrect update history metadata for {version}: {entry}")
+
+    history_keys = {entry["localization_key"] for entry in entries}
+    localized_tables: dict[str, dict[str, str]] = {}
+    for language in LANGUAGES:
+        path = LOCALIZATION_ROOT / language / "settings_ui.json"
+        table = json.loads(path.read_text(encoding="utf-8"))
+        localized_tables[language] = table
+        missing = history_keys - table.keys()
+        if missing:
+            raise AssertionError(f"Missing update history localization for {language}: {sorted(missing)}")
+
+        latest = table["SHIN_GETTER_CHUNIBYO.UPDATE.v1_1_0"]
+        if len(latest.splitlines()) < 15 or latest.count("- ") < 10:
+            raise AssertionError(
+                f"v1.1.0 history must remain long enough to exercise scrolling for {language}."
+            )
+
+        sorted_entries = sorted(
+            entries,
+            key=lambda entry: (entry["date"], entry["version"]),
+            reverse=True,
+        )
+        rendered = "\n\n".join(
+            f'{entry["version"]}  {entry["date"]}\n{table[entry["localization_key"]]}'
+            for entry in sorted_entries
+        )
+        if len(rendered.splitlines()) < 24:
+            raise AssertionError(
+                f"Rendered update history must overflow the popup and exercise scrolling for {language}."
+            )
+
+    reference_keys = set(localized_tables[LANGUAGES[0]])
+    for language in LANGUAGES[1:]:
+        if set(localized_tables[language]) != reference_keys:
+            raise AssertionError(f"settings_ui localization keys differ for {language}.")
 
 
 def validate_hover_tips() -> None:
