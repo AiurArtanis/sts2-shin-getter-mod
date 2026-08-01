@@ -12,6 +12,9 @@ ROOT = Path(__file__).resolve().parents[1]
 SERVICE_PATH = ROOT / "src/Events/ShinGetterEventInvasionService.cs"
 PATCH_PATH = ROOT / "src/Patches/ShinGetterEventInvasionPatch.cs"
 BYRDPIP_REWARD_PATCH_PATH = ROOT / "src/Patches/ShinGetterByrdpipRewardPatch.cs"
+GETTER_FURNACE_PATH = ROOT / "src/Models/Relics/SGR_GetterFurnace.cs"
+EMPERORS_FRAGMENT_PATH = ROOT / "src/Models/Relics/SGR_EmperorsFragment.cs"
+SPIRIT_CARD_PATH = ROOT / "src/Models/Cards/SGC_Spirit.cs"
 RICH_TEXT_PATCH_PATH = ROOT / "src/Patches/RichTextWhitePatch.cs"
 RICH_TEXT_EFFECT_PATHS = {
     "white": ROOT / "src/RichTextTags/RichTextWhite.cs",
@@ -87,6 +90,9 @@ def validate_service() -> None:
     service = SERVICE_PATH.read_text(encoding="utf-8")
     patch = PATCH_PATH.read_text(encoding="utf-8")
     byrdpip_patch = BYRDPIP_REWARD_PATCH_PATH.read_text(encoding="utf-8")
+    getter_furnace = GETTER_FURNACE_PATH.read_text(encoding="utf-8")
+    emperors_fragment = EMPERORS_FRAGMENT_PATH.read_text(encoding="utf-8")
+    spirit_card = SPIRIT_CARD_PATH.read_text(encoding="utf-8")
 
     for event_type in EVENT_TYPES:
         require(service, f"{event_type} ")
@@ -283,9 +289,63 @@ def validate_service() -> None:
     trial_setup_start = service.index("List<CardModel> cardsToPlay")
     trial_setup_end = service.index("\n    }", trial_setup_start)
     trial_setup = service[trial_setup_start:trial_setup_end]
-    require(trial_setup, "card.SetToFreeThisCombat()", "await CardCmd.AutoPlay(")
+    require(
+        trial_setup,
+        "card.SetToFreeThisCombat()",
+        "await CardCmd.AutoPlay(\n                choiceContext,",
+    )
     if trial_setup.index("card.SetToFreeThisCombat()") > trial_setup.index("await CardCmd.AutoPlay("):
         raise AssertionError("Trial Spirit cards must become free before they are auto-played.")
+
+    precombat_setup = method_body(service, "internal static async Task ApplyPendingPreCombatSetup")
+    require(
+        precombat_setup,
+        "pending.Setup != PendingBattleSetup.ByrdonisNest",
+        "PendingBattleSetups.Remove(owner)",
+        "combatState.Encounter is not ByrdonisElite",
+        "await CreatureCmd.Stun(byrdonis",
+    )
+    if "PendingBattleSetup.Trial" in precombat_setup:
+        raise AssertionError("Trial setup must remain pending until the first hand draw completes.")
+
+    trial_after_draw = method_body(
+        service, "internal static async Task ApplyPendingTrialAfterHandDraw"
+    )
+    require(
+        trial_after_draw,
+        "pending.Setup != PendingBattleSetup.Trial",
+        "PendingBattleSetups.Remove(owner)",
+        "combatState.Encounter is not KnightsElite",
+        "playerCombatState == null",
+        "playerCombatState.TurnNumber != 1",
+        "ReferenceEquals(combatState.Encounter, pending.Encounter)",
+        "await CardCmd.AutoPlay(\n                choiceContext,",
+    )
+    if "ThrowingPlayerChoiceContext" in trial_after_draw:
+        raise AssertionError("Trial autoplay must reuse the start-of-turn player choice context.")
+
+    for relic_name, relic_source in (
+        ("SGR_GetterFurnace", getter_furnace),
+        ("SGR_EmperorsFragment", emperors_fragment),
+    ):
+        before_combat = method_body(relic_source, "public override async Task BeforeCombatStart")
+        require(before_combat, "ApplyPendingPreCombatSetup(Owner)")
+        after_draw = method_body(relic_source, "public override Task AfterPlayerTurnStart")
+        require(
+            after_draw,
+            "if (player != Owner)",
+            "ApplyPendingTrialAfterHandDraw(choiceContext, Owner)",
+        )
+
+    spirit_play = method_body(spirit_card, "protected override async Task OnPlay")
+    require(
+        spirit_play,
+        "Cards.Count(card => card != this)",
+        "if (max <= 0)\n            return;",
+        "CardSelectCmd.FromHand",
+    )
+    if spirit_play.index("if (max <= 0)") > spirit_play.index("CardSelectCmd.FromHand"):
+        raise AssertionError("Spirit must skip its hand selection before opening an empty picker.")
 
     ranwid_dialogue = method_body(service, "private static Task RanwidTheElderRyoma")
     require(

@@ -33,13 +33,13 @@ public sealed class SGC_Spirit : ShinGetterCardBase
         await ShinGetterCombatVfx.PlaySpiritAura(Owner.Creature);
         await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, DynamicVars["VigorPower"].BaseValue, Owner.Creature, this);
         int max = System.Math.Min(DynamicVars.Cards.IntValue, PileType.Hand.GetPile(Owner).Cards.Count(card => card != this));
-        if (max > 0)
-        {
-            var selected = await CardSelectCmd.FromHand(choiceContext, Owner,
-                new CardSelectorPrefs(SelectionScreenPrompt, 0, max), card => card != this, this);
-            foreach (var card in selected.ToList())
-                await CardCmd.Transform(card, CreateKiCard());
-        }
+        if (max <= 0)
+            return;
+
+        var selected = await CardSelectCmd.FromHand(choiceContext, Owner,
+            new CardSelectorPrefs(SelectionScreenPrompt, 0, max), card => card != this, this);
+        foreach (var card in selected.ToList())
+            await CardCmd.Transform(card, CreateKiCard());
     }
 
     protected override void OnUpgrade()

@@ -122,7 +122,15 @@ public sealed class SGR_GetterFurnace : ShinGetterRelicBase, IInfiniteEvolutionP
         await PowerCmd.Apply<SGP_Ki>(
             new ThrowingPlayerChoiceContext(), Owner.Creature,
             DynamicVars["SGP_Ki"].BaseValue, Owner.Creature, null);
-        await ShinGetterEventInvasionService.ApplyPendingBattleSetup(Owner);
+        await ShinGetterEventInvasionService.ApplyPendingPreCombatSetup(Owner);
+    }
+
+    public override Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
+    {
+        if (player != Owner)
+            return Task.CompletedTask;
+
+        return ShinGetterEventInvasionService.ApplyPendingTrialAfterHandDraw(choiceContext, Owner);
     }
 
     public override Task AfterCardChangedPiles(CardModel card, PileType oldPileType, AbstractModel? clonedBy)

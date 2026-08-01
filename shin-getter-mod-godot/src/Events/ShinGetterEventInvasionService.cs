@@ -135,34 +135,46 @@ internal static class ShinGetterEventInvasionService
     internal static bool IsEnteringSinglePlayerEventCombat(EventModel eventModel) =>
         EventsEnteringSinglePlayerCombat.Contains(eventModel);
 
-    internal static async Task ApplyPendingBattleSetup(Player owner)
+    internal static async Task ApplyPendingPreCombatSetup(Player owner)
     {
-        if (!PendingBattleSetups.Remove(
+        if (!PendingBattleSetups.TryGetValue(
                 owner,
-                out (PendingBattleSetup Setup, EncounterModel Encounter) pending))
+                out (PendingBattleSetup Setup, EncounterModel Encounter) pending)
+            || pending.Setup != PendingBattleSetup.ByrdonisNest)
             return;
 
+        PendingBattleSetups.Remove(owner);
         var combatState = owner.Creature.CombatState;
         if (combatState == null || !ReferenceEquals(combatState.Encounter, pending.Encounter))
             return;
 
-        if (pending.Setup == PendingBattleSetup.ByrdonisNest)
-        {
-            if (combatState.Encounter is not ByrdonisElite)
-                return;
-
-            Creature? byrdonis = combatState.Enemies
-                .FirstOrDefault(creature => creature.Monster is Byrdonis);
-            if (byrdonis != null)
-                await CreatureCmd.Stun(byrdonis, _ => Task.CompletedTask);
-            return;
-        }
-
-        if (combatState.Encounter is not KnightsElite)
+        if (combatState.Encounter is not ByrdonisElite)
             return;
 
+        Creature? byrdonis = combatState.Enemies
+            .FirstOrDefault(creature => creature.Monster is Byrdonis);
+        if (byrdonis != null)
+            await CreatureCmd.Stun(byrdonis, _ => Task.CompletedTask);
+    }
+
+    internal static async Task ApplyPendingTrialAfterHandDraw(
+        PlayerChoiceContext choiceContext,
+        Player owner)
+    {
+        if (!PendingBattleSetups.TryGetValue(
+                owner,
+                out (PendingBattleSetup Setup, EncounterModel Encounter) pending)
+            || pending.Setup != PendingBattleSetup.Trial)
+            return;
+
+        PendingBattleSetups.Remove(owner);
+        var combatState = owner.Creature.CombatState;
         PlayerCombatState? playerCombatState = owner.PlayerCombatState;
-        if (playerCombatState == null)
+        if (combatState == null
+            || !ReferenceEquals(combatState.Encounter, pending.Encounter)
+            || combatState.Encounter is not KnightsElite
+            || playerCombatState == null
+            || playerCombatState.TurnNumber != 1)
             return;
 
         List<CardModel> cardsToPlay = owner.Deck.Cards
@@ -176,7 +188,7 @@ internal static class ShinGetterEventInvasionService
         {
             card.SetToFreeThisCombat();
             await CardCmd.AutoPlay(
-                new ThrowingPlayerChoiceContext(),
+                choiceContext,
                 card,
                 null);
         }
