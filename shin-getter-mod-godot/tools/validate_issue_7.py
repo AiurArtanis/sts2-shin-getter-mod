@@ -9,6 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SUBMENU_PATH = ROOT / "src/Nodes/Config/NChunibyoConfigSubmenu.cs"
+UPDATE_HISTORY_POPUP_PATH = ROOT / "src/Nodes/Config/NChunibyoUpdateHistoryPopup.cs"
 PAGINATOR_PATH = ROOT / "src/Nodes/Config/NShinGetterVoicePaginator.cs"
 ACTION_BUTTON_PATH = ROOT / "src/Nodes/Config/NShinGetterConfigActionButton.cs"
 RICH_TEXT_PATCH_PATH = ROOT / "src/Patches/RichTextWhitePatch.cs"
@@ -25,34 +26,63 @@ def require(text: str, *needles: str) -> None:
 
 def validate_update_history() -> None:
     submenu = SUBMENU_PATH.read_text(encoding="utf-8")
+    popup = UPDATE_HISTORY_POPUP_PATH.read_text(encoding="utf-8")
     entries = json.loads(UPDATE_HISTORY_PATH.read_text(encoding="utf-8"))
     history_popup = submenu.split(
-        "private static void ConfigureUpdateHistoryPopup", 1
+        "private void ShowUpdateHistoryPopup", 1
     )[1].split("private static string Localize", 1)[0]
     require(
         submenu,
-        'private const string PatchScreenContentsScenePath = "res://scenes/screens/patch_screen_contents.tscn";',
-        "ResourceLoader.Load<PackedScene>(PatchScreenContentsScenePath)",
-        ".Instantiate<NScrollableContainer>()",
-        'Name = "UpdateHistoryScroll"',
-        'MegaRichTextLabel description = popup.GetNode<MegaRichTextLabel>',
-        'MarginContainer content = scroll.GetNode<MarginContainer>("Content")',
-        "content.CustomMinimumSize = new Vector2(0f, 1080f)",
-        'MegaRichTextLabel patchText = content.GetNode<MegaRichTextLabel>("PatchText")',
-        'patchText.GetNode<Control>("DateLabel").Visible = false',
-        "patchText.AutoSizeEnabled = false",
-        "patchText.MinFontSize = NoteFontSize",
-        "patchText.MaxFontSize = NoteFontSize",
-        "patchText.AddThemeFontSizeOverride(themeKey, NoteFontSize)",
-        "patchText.Text = description.Text",
-        "description.Visible = false",
-        'scroll.GetNode<NScrollbar>("Scrollbar")',
-        "scroll.InstantlyScrollToTop()",
+        "private void ShowUpdateHistoryPopup(string title, string body)",
+        "Control? returnFocus = GetViewport().GuiGetFocusOwner()",
+        "modalContainer.Add(NChunibyoUpdateHistoryPopup.Create(title, body, returnFocus))",
     )
-    if "new NScrollableContainer" in history_popup or "description.Reparent" in history_popup:
-        raise AssertionError("Update history must instantiate the original patch-notes scroll hierarchy.")
-    if "content.ResetSize()" in history_popup or "scroll.SetContent(content)" in history_popup:
-        raise AssertionError("Update history content width must not be collapsed after entering the popup.")
+    require(
+        popup,
+        "public partial class NChunibyoUpdateHistoryPopup : Control, IScreenContext",
+        "private const float PopupWidth = 1120f",
+        "private const float PopupHeight = 820f",
+        "private const float BodyMinimumWidth = 956f",
+        'Name = "HistoryScroll"',
+        "HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled",
+        "VerticalScrollMode = ScrollContainer.ScrollMode.ShowAlways",
+        'Name = "HistoryTextMargin"',
+        "CustomMinimumSize = new Vector2(BodyMinimumWidth, 0f)",
+        'Name = "HistoryText"',
+        "BbcodeEnabled = true",
+        "FitContent = true",
+        "ScrollActive = false",
+        "AutowrapMode = TextServer.AutowrapMode.WordSmart",
+        "SizeFlagsHorizontal = SizeFlags.ExpandFill",
+        "VScrollBar scrollBar = _scrollContainer.GetVScrollBar()",
+        'scrollBar.Name = "HistoryScrollbar"',
+        "scrollBar.CustomMinimumSize = new Vector2(26f, 0f)",
+        "scrollBar.MouseFilter = MouseFilterEnum.Stop",
+        'inputEvent.IsActionPressed("ui_page_down")',
+        'inputEvent.IsActionPressed("ui_page_up")',
+        'inputEvent.IsActionPressed("ui_down")',
+        'inputEvent.IsActionPressed("ui_up")',
+        "NModalContainer.Instance?.Clear()",
+        "returnFocus.CallDeferred(Control.MethodName.GrabFocus)",
+    )
+    for obsolete_contract in (
+        "PatchScreenContentsScenePath",
+        "patch_screen_contents.tscn",
+        "ConfigureUpdateHistoryPopup",
+        "NScrollableContainer",
+        "NScrollbar",
+        "description.Reparent",
+        "content.ResetSize()",
+        "scroll.SetContent(content)",
+    ):
+        if obsolete_contract in submenu + popup:
+            raise AssertionError(
+                f"Obsolete update-history layout contract remains: {obsolete_contract}"
+            )
+    if "NErrorPopup.Create" in history_popup or "CallDeferred" in history_popup:
+        raise AssertionError(
+            "Update history must open its dedicated modal without deferred popup surgery."
+        )
 
     versions = {entry["version"]: entry for entry in entries}
     if len(versions) != len(entries):
