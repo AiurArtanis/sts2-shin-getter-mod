@@ -28,6 +28,7 @@
   "SHIN_GETTER_CHUNIBYO.EXPORT_ERROR_TITLE": "Unable to export cards",
   "SHIN_GETTER_CHUNIBYO.SAVE_ERROR_TITLE": "Unable to save config",
   "SHIN_GETTER_CHUNIBYO.UPDATE_TITLE": "Shin Getter Update History",
+  "SHIN_GETTER_CHUNIBYO.UPDATE.v1_1_0": "Features:\n- Added Event Invasions.\n- Added the Chunibyo Config entry for mod settings.\n- Added elite and boss battle BGM switching.\n\nBug fixes:\n- Fixed issues in transformations, card resolution, and end-of-combat flow.\n- Fixed event rewards, automatic card play, and event return flow.\n- Fixed blank content, layout, scrolling, hover tips, and localization in the config UI.\n- Fixed encounter-music timing and multiplayer scope.\n\nQoL / Balance:\n- Improved values and form rewards for Transform Attack, Seize the Future, Triple Unity, and other cards.\n- Reworked Evolution into a persistent conversion mechanic and refined Spirit Command rules.\n- Improved animation transition smoothness and memory usage.",
   "SHIN_GETTER_CHUNIBYO.UPDATE.v1_0_7": "Fixed Getter Beam origins, card text, Wane recursion, and improved animation preloading.",
   "SHIN_GETTER_CHUNIBYO.UPDATE.v1_0_6": "Fixed Flesh Trick and Wane recursion and improved external-card animation dispatch.",
   "SHIN_GETTER_CHUNIBYO.UPDATE.v1_0_5": "Changed Getter-2's Hurricane Strike reward to Shade."
