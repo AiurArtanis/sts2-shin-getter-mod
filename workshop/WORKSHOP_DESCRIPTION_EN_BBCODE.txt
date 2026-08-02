@@ -12,13 +12,32 @@ Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter
 
 [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.1.0]Download v1.1.0 (shin-getter-mod-v1.1.0.zip)[/url]
 
+[h3]Features[/h3]
+
 [list]
-[*][b]Event invasions:[/b] Multiple base-game events now include Shin Getter options, conditions, story branches, combats, and rewards, plus the new [i]Triple Wood Carving[/i] relic.
-[*][b]Chunibyo settings:[/b] Added in-game independent toggles, three voice-line levels, update history, and persistent configuration.
-[*][b]Encounter music:[/b] Added eight Shin Getter tracks for Elite and Boss combats in the Overgrowth, Underdocks, Hive, and Glory.
-[*][b]Flow and resolution fixes:[/b] Fixed transformation, card resolution, event rewards and return flow, autoplay, execution-music takeover, and multiplayer music scope.
-[*][b]Balance and rules:[/b] Updated card values, form rewards, Evolution mechanics, and Spirit Command rules.
-[*][b]Animation and scene polish:[/b] Optimized 24 actions and 920 animation frames for smoother transitions, smaller packages, and lower memory use, while improving the character's fit in shop and campfire scenes.
+[*]Added the Event Invasion mechanic: multiple base-game events now include Shin Getter-exclusive options, locked conditions, story branches, and trilingual text, along with the new [i]Triple Wood Carving[/i] relic.
+[*]Expanded Donu's Bird Nest, Judgment, and other events with exclusive combats, rewards, and return flows.
+[*]Added eight Shin Getter tracks for Elite and Boss combats in the Overgrowth, Underdocks, Hive, and Glory; other characters and the Ancient Ones continue to use the original music.
+[/list]
+
+[h3]Bug Fixes[/h3]
+
+[list]
+[*]Fixed issues after transformations, card resolution, and combat end so leftover animations, voice lines, statuses, or music do not affect later combats.
+[*]Fixed Getter Missile and Spiral Drill consuming Vigor / Valor, plus duplicate Infinite Evolution tracking, shared accumulation, and reward-weight issues.
+[*]Fixed event rewards, autoplay, and page return flows. Donu's Egg now hatches at the correct time, and Byrdpip's Pounce is only granted when claiming the Byrdpip Hatchling.
+[*]Fixed Judgment autoplay timing and the soft lock caused when no cards can be selected.
+[*]Fixed exclusive encounter-music timing, Execution Theme takeover, post-combat restoration, and multiplayer scope.
+[/list]
+
+[h3]QoL / Balance[/h3]
+
+[list]
+[*]Improved the values and form rewards of cards such as Transformation Attack, Seize the Future, and Three Bodies, One Heart.
+[*]Reworked Evolution into a persistent resource-conversion mechanic and corrected consecutive triggers, Evolution Engine energy resolution, and stack-consumption rules.
+[*]Spirit Command cards no longer depend on Retain; they are now governed consistently by Spirit thresholds and cost-reduction rules.
+[*]Improved transition smoothness, package size, and memory use for 24 actions and 920 animation frames.
+[*]Updated Ryoma's art, ground shadows, and campfire lighting in shops and campfires.
 [/list]
 
 [hr][/hr]
