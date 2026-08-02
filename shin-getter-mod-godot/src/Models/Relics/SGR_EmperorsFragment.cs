@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -11,6 +12,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Saves.Runs;
+using MegaCrit.Sts2.Core.ValueProps;
 using ShinGetterMod.Audio;
 using ShinGetterMod.Events;
 using ShinGetterMod.Models.Powers;
@@ -20,6 +22,8 @@ namespace ShinGetterMod.Models.Relics;
 public sealed class SGR_EmperorsFragment : ShinGetterRelicBase, IInfiniteEvolutionProgressStore
 {
     private int _playedVoiceMask;
+    private int _playedVoiceMaskHigh;
+    private int _openingVoiceMask;
     private int _combatStartVoiceCount;
     private bool _eventInvasionEnabled = true;
     private bool _infiniteEvolutionProgressInitialized;
@@ -43,6 +47,28 @@ public sealed class SGR_EmperorsFragment : ShinGetterRelicBase, IInfiniteEvoluti
         {
             AssertMutable();
             _playedVoiceMask = value;
+        }
+    }
+
+    [SavedProperty(SerializationCondition.SaveIfNotTypeDefault)]
+    public int PlayedVoiceMaskHigh
+    {
+        get => _playedVoiceMaskHigh;
+        set
+        {
+            AssertMutable();
+            _playedVoiceMaskHigh = value;
+        }
+    }
+
+    [SavedProperty(SerializationCondition.SaveIfNotTypeDefault)]
+    public int OpeningVoiceMask
+    {
+        get => _openingVoiceMask;
+        set
+        {
+            AssertMutable();
+            _openingVoiceMask = value;
         }
     }
 
@@ -116,6 +142,8 @@ public sealed class SGR_EmperorsFragment : ShinGetterRelicBase, IInfiniteEvoluti
     {
         var fragment = (SGR_EmperorsFragment)ModelDb.Relic<SGR_EmperorsFragment>().ToMutable();
         fragment.PlayedVoiceMask = getterFurnace.PlayedVoiceMask;
+        fragment.PlayedVoiceMaskHigh = getterFurnace.PlayedVoiceMaskHigh;
+        fragment.OpeningVoiceMask = getterFurnace.OpeningVoiceMask;
         fragment.CombatStartVoiceCount = getterFurnace.CombatStartVoiceCount;
         fragment.EventInvasionEnabled = getterFurnace.EventInvasionEnabled;
         fragment.InfiniteEvolutionProgressInitialized = getterFurnace.InfiniteEvolutionProgressInitialized;
@@ -134,6 +162,31 @@ public sealed class SGR_EmperorsFragment : ShinGetterRelicBase, IInfiniteEvoluti
             new ThrowingPlayerChoiceContext(), Owner.Creature,
             DynamicVars["SGP_Ki"].BaseValue, Owner.Creature, null);
         await ShinGetterEventInvasionService.ApplyPendingPreCombatSetup(Owner);
+        ShinGetterVoiceService.PlayPreparedCombatStart(Owner);
+    }
+
+    public override Task AfterDamageGiven(
+        PlayerChoiceContext choiceContext,
+        Creature? dealer,
+        DamageResult result,
+        ValueProp props,
+        Creature target,
+        CardModel? cardSource)
+    {
+        ShinGetterVoiceService.OnAfterDamageGiven(Owner, dealer, result, target);
+        return Task.CompletedTask;
+    }
+
+    public override Task AfterDamageReceived(
+        PlayerChoiceContext choiceContext,
+        Creature target,
+        DamageResult result,
+        ValueProp props,
+        Creature? dealer,
+        CardModel? cardSource)
+    {
+        ShinGetterVoiceService.OnAfterDamageReceived(Owner, target, result, props, dealer);
+        return Task.CompletedTask;
     }
 
     public override Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
