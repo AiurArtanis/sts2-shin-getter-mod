@@ -8,6 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SERVICE_PATH = ROOT / "src" / "Audio" / "ShinGetterVoiceService.cs"
 VOICE_DIR = ROOT / "audio" / "sfx" / "characters" / "shin_getter" / "voices"
+PCK_VALIDATOR_PATH = ROOT / "tools" / "validate-mod-resources.gd"
 
 EXPECTED_AUDIO = {
     "001": "change_getter_1.wav",
@@ -90,6 +91,18 @@ actual_imports = {path.name for path in VOICE_DIR.glob("*.wav.import")}
 require(
     actual_imports == {f"{name}.import" for name in EXPECTED_AUDIO.values()},
     "voice directory must contain exactly 47 matching WAV import sidecars",
+)
+
+pck_validator = PCK_VALIDATOR_PATH.read_text(encoding="utf-8")
+pck_voice_resources = set(
+    re.findall(
+        r'"res://audio/sfx/characters/shin_getter/voices/([^"/]+\.wav)": false',
+        pck_validator,
+    )
+)
+require(
+    pck_voice_resources == set(EXPECTED_AUDIO.values()),
+    "PCK validator voice resources must match the 47 workbook WAVs exactly",
 )
 
 required_card_mappings = (
