@@ -13,6 +13,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.MonsterMoves.Intents;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Audio;
 using ShinGetterMod.Nodes.Combat;
 using ShinGetterMod.Nodes.Vfx;
 
@@ -60,8 +61,19 @@ public sealed class SGC_HolyDragonRoar : ShinGetterCardBase
             .Where(card => card != this
                 && card.GetType().Name.Contains("Getter", StringComparison.Ordinal))
             .ToList();
-        foreach (CardModel card in getterCards)
-            await CardCmd.Exhaust(choiceContext, card);
+        if (getterCards.Count == 0)
+        {
+            ShinGetterVoiceService.TryPlayCardVoiceAtCustomTiming(this, out _);
+        }
+        else
+        {
+            for (int index = 0; index < getterCards.Count; index++)
+            {
+                await CardCmd.Exhaust(choiceContext, getterCards[index]);
+                if (index == getterCards.Count - 1)
+                    ShinGetterVoiceService.TryPlayCardVoiceAtCustomTiming(this, out _);
+            }
+        }
 
         NShinGetterStaticVisuals.TryPlayCreatureActionAnimation(Owner.Creature, "Cast");
         decimal totalDamage = DynamicVars.Damage.BaseValue

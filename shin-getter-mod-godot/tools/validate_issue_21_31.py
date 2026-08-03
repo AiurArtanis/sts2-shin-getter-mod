@@ -9,6 +9,8 @@ ROOT = Path(__file__).resolve().parents[1]
 SERVICE_PATH = ROOT / "src" / "Audio" / "ShinGetterVoiceService.cs"
 VOICE_DIR = ROOT / "audio" / "sfx" / "characters" / "shin_getter" / "voices"
 PCK_VALIDATOR_PATH = ROOT / "tools" / "validate-mod-resources.gd"
+RICH_TEXT_PATCH_PATH = ROOT / "src" / "Patches" / "RichTextWhitePatch.cs"
+PINK_EFFECT_PATH = ROOT / "src" / "RichTextTags" / "RichTextPink.cs"
 
 EXPECTED_AUDIO = {
     "001": "change_getter_1.wav",
@@ -122,6 +124,40 @@ required_card_mappings = (
 for mapping in required_card_mappings:
     require(mapping in service, f"missing workbook card mapping: {mapping}")
 
+for custom_card in ("SGC_GetterWill", "SGC_HolyDragonRoar", "SGC_PoseidonThunder"):
+    require(custom_card in service.split("UsesCustomCardVoiceTiming", 1)[1], f"missing custom voice timing: {custom_card}")
+
+getter_will = (ROOT / "src" / "Models" / "Cards" / "SGC_GetterWill.cs").read_text(encoding="utf-8")
+require(
+    getter_will.index("await CardPileCmd.Add")
+    < getter_will.index("TryPlayCardVoiceAtCustomTiming")
+    < getter_will.index("PowerCmd.Apply<SGP_Evolution>"),
+    "Getter Will voice must play after card selection and before its form bonus",
+)
+
+holy_dragon_roar = (ROOT / "src" / "Models" / "Cards" / "SGC_HolyDragonRoar.cs").read_text(encoding="utf-8")
+for timing_guard in (
+    "if (getterCards.Count == 0)",
+    "await CardCmd.Exhaust(choiceContext, getterCards[index])",
+    "if (index == getterCards.Count - 1)",
+    "ShinGetterVoiceService.TryPlayCardVoiceAtCustomTiming(this, out _)",
+):
+    require(timing_guard in holy_dragon_roar, f"Holy Dragon Roar timing guard is missing: {timing_guard}")
+require(
+    holy_dragon_roar.index("if (getterCards.Count == 0)")
+    < holy_dragon_roar.index("await CardCmd.Exhaust")
+    < holy_dragon_roar.index("if (index == getterCards.Count - 1)"),
+    "Holy Dragon Roar voice must play immediately with no Getter cards or at the last exhaust",
+)
+
+poseidon_thunder = (ROOT / "src" / "Models" / "Cards" / "SGC_PoseidonThunder.cs").read_text(encoding="utf-8")
+require(
+    poseidon_thunder.index("TryPlayCardVoiceAtCustomTiming")
+    < poseidon_thunder.index("voiceDurationSeconds * 3f / 5f")
+    < poseidon_thunder.index("ShinGetterCombatVfx.PlayThunderField"),
+    "Poseidon Thunder VFX must wait until three fifths of a triggered voice line",
+)
+
 require(
     "SGC_GetterTomahawk or SGC_GetterFlash" not in service,
     "Getter Tomahawk must not absorb Battle Wing cards",
@@ -185,15 +221,48 @@ require('Args => "<001-047>"' in console_cmd and "TryPlayCode" in console_cmd, "
 service_keys = set(re.findall(r'"(SHIN_GETTER\.voice\.[A-Za-z0-9]+)"', service))
 require(len(service_keys) == 46, f"expected 46 subtitle keys, found {len(service_keys)}")
 language_voice_keys: dict[str, set[str]] = {}
+language_data: dict[str, dict[str, str]] = {}
 for language in ("zhs", "eng", "jpn"):
     path = ROOT / "ShinGetterMod" / "localization" / language / "characters.json"
     data = json.loads(path.read_text(encoding="utf-8"))
+    language_data[language] = data
     language_voice_keys[language] = {key for key in data if key.startswith("SHIN_GETTER.voice.")}
     require(service_keys <= language_voice_keys[language], f"{language} is missing voice subtitle keys")
 
 require(
     language_voice_keys["zhs"] == language_voice_keys["eng"] == language_voice_keys["jpn"],
     "trilingual voice key sets differ",
+)
+
+expected_shared_subtitles = {
+    "SHIN_GETTER.voice.combatStartFirst": "CHANGE ! [red]GETTER ONE[/red] !\nSwitch On",
+    "SHIN_GETTER.voice.getterBeam": "Getter [pink]Beeeeeeeeeam[/pink] !",
+    "SHIN_GETTER.voice.battleWing": "Battle Wiiiiing",
+    "SHIN_GETTER.voice.stonerSunshine": "[red]Stonerrrrrr[/red]\n[yellow]Sun · shine[/yellow]",
+    "SHIN_GETTER.voice.drillArm": "[white]Drill Arrrrrm[/white]",
+}
+for language, data in language_data.items():
+    for key, expected in expected_shared_subtitles.items():
+        require(data.get(key) == expected, f"{language} workbook subtitle mismatch: {key}")
+    require("[gold]" in data["SHIN_GETTER.voice.combineBlind"], f"{language} combine subtitle must use [gold]")
+    require("[/gold]" in data["SHIN_GETTER.voice.combineBlind"], f"{language} combine subtitle must close [gold]")
+    require(
+        all("[black]" not in value and "[/black]" not in value for key, value in data.items() if key.startswith("SHIN_GETTER.voice.")),
+        f"{language} voice subtitles must not use the unsupported [black] tag",
+    )
+
+pink_effect = PINK_EFFECT_PATH.read_text(encoding="utf-8")
+require('Bbcode => "pink"' in pink_effect, "pink MegaText tag is not registered")
+require('new Color("FF69B4")' in pink_effect, "pink MegaText color must remain #FF69B4")
+rich_text_patch = RICH_TEXT_PATCH_PATH.read_text(encoding="utf-8")
+require("RichTextPink PinkEffect" in rich_text_patch, "pink effect instance is missing")
+require('effect.bbcode == "pink"' in rich_text_patch, "existing pink effects must be identified by bbcode")
+require("!ReferenceEquals(effect, PinkEffect)" in rich_text_patch, "the mod pink effect must survive replacement")
+require("CustomEffects.RemoveAt(i)" in rich_text_patch, "the built-in pink effect must be removed before replacement")
+require("CustomEffects.Add(PinkEffect)" in rich_text_patch, "pink effect is not installed on MegaText labels")
+require(
+    rich_text_patch.index('effect.bbcode == "pink"') < rich_text_patch.index("CustomEffects.Add(PinkEffect)"),
+    "existing pink effects must be removed before the mod pink effect is installed",
 )
 
 print("issue#21/#31 static validation PASS: 47 codes, 47 WAVs, triggers, masks, timing, sgs, trilingual keys")

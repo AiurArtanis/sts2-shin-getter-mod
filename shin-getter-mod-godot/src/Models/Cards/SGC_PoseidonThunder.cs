@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Audio;
 using ShinGetterMod.Nodes.Vfx;
 
 namespace ShinGetterMod.Models.Cards;
@@ -37,6 +38,9 @@ public sealed class SGC_PoseidonThunder : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        if (ShinGetterVoiceService.TryPlayCardVoiceAtCustomTiming(this, out float voiceDurationSeconds))
+            await Cmd.Wait(voiceDurationSeconds * 3f / 5f);
+
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this)
             .WithNoAttackerAnim()
             .TargetingAllOpponents(CombatState)
