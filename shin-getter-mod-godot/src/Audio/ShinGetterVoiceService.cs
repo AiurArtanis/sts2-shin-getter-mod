@@ -186,6 +186,9 @@ internal static class ShinGetterVoiceService
 
     private static void TryPlayCardVoice(CardModel card, bool requireCardPlayStart)
     {
+        if (requireCardPlayStart && UsesCustomCardVoiceTiming(card))
+            return;
+
         if (card.Owner is not { Character: ShinGetter } player)
             return;
 
@@ -195,6 +198,21 @@ internal static class ShinGetterVoiceService
 
         TryPlayOneTime(player, line);
     }
+
+    internal static bool TryPlayCardVoiceAtCustomTiming(CardModel card, out float durationSeconds)
+    {
+        durationSeconds = 0f;
+        if (card.Owner is not { Character: ShinGetter } player
+            || ResolveCardVoice(card) is not { } line)
+        {
+            return false;
+        }
+
+        return TryPlayOneTime(player, line, out durationSeconds);
+    }
+
+    private static bool UsesCustomCardVoiceTiming(CardModel card) =>
+        card is SGC_GetterWill or SGC_HolyDragonRoar or SGC_PoseidonThunder;
 
     private static VoiceLine? ResolveCardVoice(CardModel card) => card switch
     {
