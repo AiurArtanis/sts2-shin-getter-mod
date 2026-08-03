@@ -256,6 +256,13 @@ require('Bbcode => "pink"' in pink_effect, "pink MegaText tag is not registered"
 require('new Color("FF69B4")' in pink_effect, "pink MegaText color must remain #FF69B4")
 rich_text_patch = RICH_TEXT_PATCH_PATH.read_text(encoding="utf-8")
 require("RichTextPink PinkEffect" in rich_text_patch, "pink effect instance is missing")
+require('effect.bbcode == "pink"' in rich_text_patch, "existing pink effects must be identified by bbcode")
+require("!ReferenceEquals(effect, PinkEffect)" in rich_text_patch, "the mod pink effect must survive replacement")
+require("CustomEffects.RemoveAt(i)" in rich_text_patch, "the built-in pink effect must be removed before replacement")
 require("CustomEffects.Add(PinkEffect)" in rich_text_patch, "pink effect is not installed on MegaText labels")
+require(
+    rich_text_patch.index('effect.bbcode == "pink"') < rich_text_patch.index("CustomEffects.Add(PinkEffect)"),
+    "existing pink effects must be removed before the mod pink effect is installed",
+)
 
 print("issue#21/#31 static validation PASS: 47 codes, 47 WAVs, triggers, masks, timing, sgs, trilingual keys")

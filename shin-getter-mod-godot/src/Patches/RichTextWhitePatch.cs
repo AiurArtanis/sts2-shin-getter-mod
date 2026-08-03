@@ -31,6 +31,16 @@ internal static class RichTextWhitePatch
         {
             __instance.CustomEffects.Add(GetterRayEffect);
         }
+
+        for (int i = __instance.CustomEffects.Count - 1; i >= 0; i--)
+        {
+            if (__instance.CustomEffects[i].AsGodotObject() is MegaCrit.Sts2.Core.RichTextTags.AbstractMegaRichTextEffect effect
+                && effect.bbcode == "pink"
+                && !ReferenceEquals(effect, PinkEffect))
+            {
+                __instance.CustomEffects.RemoveAt(i);
+            }
+        }
         if (!__instance.CustomEffects.Contains(PinkEffect))
         {
             __instance.CustomEffects.Add(PinkEffect);
