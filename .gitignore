@@ -13,6 +13,8 @@ obj/
 *.tmp
 *.Backup.tmp
 tmp/
+__pycache__/
+*.py[cod]
 
 # Mod build/export output
 /shin-getter-mod-godot/build/

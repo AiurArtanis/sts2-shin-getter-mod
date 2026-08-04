@@ -22,7 +22,7 @@ public sealed class SGC_FinalGetterBeam : ShinGetterCardBase
     {
         new DamageVar(25m, ValueProp.Move),
         new PowerVar<SGP_Wane>(4m),
-        new PowerVar<SGP_FinalGetterBeam>(2m),
+        new DynamicVar("WaneMultiplier", 2m),
     };
 
     public SGC_FinalGetterBeam()
@@ -43,11 +43,11 @@ public sealed class SGC_FinalGetterBeam : ShinGetterCardBase
         await PowerCmd.Apply<SGP_Wane>(choiceContext, cardPlay.Target,
             DynamicVars["SGP_Wane"].BaseValue, Owner.Creature, this);
         await PowerCmd.Apply<SGP_FinalGetterBeam>(choiceContext, cardPlay.Target,
-            DynamicVars["SGP_FinalGetterBeam"].BaseValue, Owner.Creature, this);
+            DynamicVars["WaneMultiplier"].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars["SGP_FinalGetterBeam"].UpgradeValueBy(1m);
+        DynamicVars["WaneMultiplier"].UpgradeValueBy(1m);
     }
 }
