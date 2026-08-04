@@ -34,9 +34,12 @@ def validate_code() -> None:
         "src/Models/Cards/SGC_BoldPlan.cs",
         "IEnumerable<CardModel> drawnCards = await CardPileCmd.Draw",
         "CardCmd.ApplyKeyword(drawnCard, CardKeyword.Retain)",
+        "HoverTipFactory.FromKeyword(CardKeyword.Retain)",
+        ".Concat(HoverTipFactory.FromEnchantment<SGE_Adaptation>())",
     )
     require(
         "src/Models/Cards/SGC_GetterWill.cs",
+        "using MegaCrit.Sts2.Core.Models;",
         "new CardsVar(1)",
         "DynamicVars.Cards.IntValue",
         "await CardPileCmd.Add(selected, PileType.Hand)",
