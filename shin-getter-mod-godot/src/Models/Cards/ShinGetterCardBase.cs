@@ -96,7 +96,7 @@ public abstract class ShinGetterCardBase : CardModel
             ["SGC_EvolutionResonance"] = new[] { "进化" },
             ["SGC_ExpansionStrike"] = new[] { "三号机", "覆甲" },
             ["SGC_FightingSpirit"] = new[] { "精神" },
-            ["SGC_FinalGetterBeam"] = new[] { "力量" },
+            ["SGC_FinalGetterBeam"] = new[] { "衰退" },
             ["SGC_ShiningSpark"] = new[] { "易伤", "脆弱", "气力" },
             ["SGC_GetterBeam"] = new[] { "衰退", "一号机", "活力" },
             ["SGC_GetterChop"] = new[] { "格挡" },
@@ -203,6 +203,7 @@ public abstract class ShinGetterCardBase : CardModel
             "SGC_HolyDragonRoar",
             "SGC_ShiningSpark",
             "SGC_StarSlash",
+            "SGC_StonerSunshine",
             "SGC_TacticalRetreat",
         };
 

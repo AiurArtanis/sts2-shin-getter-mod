@@ -100,7 +100,7 @@
   "S_G_C_STAR_SLASH.title": "Star-Slashing Axe",
   "S_G_C_STAR_SLASH.description": "Exhaust {Cards:diff()} card(s) from your draw pile and [gold]stack[/gold] their printed values onto this card. Deal {Damage:diff()} base damage.\n[red]Shin Getter 1[/red]: Gain {Vigor:diff()} [gold]Vigor[/gold] for each card exhausted this way.",
   "S_G_C_FINAL_GETTER_BEAM.title": "Final Getter Beam",
-  "S_G_C_FINAL_GETTER_BEAM.description": "Deal {Damage:diff()} damage. That enemy loses {StrengthLoss:diff()} [gold]Strength[/gold] this turn.",
+  "S_G_C_FINAL_GETTER_BEAM.description": "Deal {Damage:diff()} damage. Apply {SGP_Wane:diff()} [gold]Wane[/gold]. Whenever that enemy takes unblocked damage, its [gold]Wane[/gold] increases by {SGP_FinalGetterBeam:diff()}.",
   "S_G_C_SHINING_SPARK.title": "Shining Spark",
   "S_G_C_SHINING_SPARK.description": "Gain 1 [gold]Vulnerable[/gold] and 1 [gold]Frail[/gold]. Deal {Damage:diff()} damage. For each [gold]Ki[/gold], deal {KiDamage:diff()} damage to a random enemy.",
   "S_G_C_LIGER_ASSAULT.title": "Liger Assault",

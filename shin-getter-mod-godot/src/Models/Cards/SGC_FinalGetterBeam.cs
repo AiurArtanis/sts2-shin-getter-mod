@@ -13,19 +13,20 @@ using ShinGetterMod.Models.Powers;
 namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
-/// 终极盖塔射线 | 攻击 | 稀有 | 4费 | 攻防一体
-/// 造成 40 伤害，该敌人本回合失去 10 力量
+/// 终极盖塔射线 | 攻击 | 稀有 | 3费
+/// 造成 25 伤害，施加 4 衰退，并强化衰退受伤后的增长量
 /// </summary>
 public sealed class SGC_FinalGetterBeam : ShinGetterCardBase
 {
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new DamageVar(40m, ValueProp.Move),
-        new DynamicVar("StrengthLoss", 10m),
+        new DamageVar(25m, ValueProp.Move),
+        new PowerVar<SGP_Wane>(4m),
+        new PowerVar<SGP_FinalGetterBeam>(2m),
     };
 
     public SGC_FinalGetterBeam()
-        : base(4, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)
+        : base(3, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)
     {
     }
 
@@ -36,14 +37,17 @@ public sealed class SGC_FinalGetterBeam : ShinGetterCardBase
             .WithAttackerAnim("Cast", 0.5f)
             .BeforeDamage(() => ShinGetterBeamVfx.Play(Owner.Creature, new[] { cardPlay.Target }, ShinGetterBeamStyle.FinalGetterBeam))
             .Execute(choiceContext);
-        if (cardPlay.Target.IsAlive)
-        {
-            await PowerCmd.Apply<SGP_FinalGetterBeamStrengthDown>(choiceContext, cardPlay.Target, DynamicVars["StrengthLoss"].BaseValue, Owner.Creature, this);
-        }
+        if (!cardPlay.Target.IsAlive)
+            return;
+
+        await PowerCmd.Apply<SGP_Wane>(choiceContext, cardPlay.Target,
+            DynamicVars["SGP_Wane"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<SGP_FinalGetterBeam>(choiceContext, cardPlay.Target,
+            DynamicVars["SGP_FinalGetterBeam"].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
     {
-        EnergyCost.UpgradeBy(-1);
+        DynamicVars["SGP_FinalGetterBeam"].UpgradeValueBy(1m);
     }
 }

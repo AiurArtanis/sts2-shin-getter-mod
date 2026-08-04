@@ -100,7 +100,7 @@
   "S_G_C_STAR_SLASH.title": "斩星斧",
   "S_G_C_STAR_SLASH.description": "消耗抽牌堆中的{Cards:diff()}张牌，将其数值[gold]叠加[/gold]在此卡上，造成{Damage:diff()}点基础伤害。\n[red]一号机[/red]：每消耗1张牌，获得{Vigor:diff()}点[gold]活力[/gold]。",
   "S_G_C_FINAL_GETTER_BEAM.title": "终极盖塔射线",
-  "S_G_C_FINAL_GETTER_BEAM.description": "造成{Damage:diff()}点伤害，令该敌人本回合失去{StrengthLoss:diff()}点[gold]力量[/gold]。",
+	"S_G_C_FINAL_GETTER_BEAM.description": "造成{Damage:diff()}点伤害。施加{SGP_Wane:diff()}层[gold]衰退[/gold]。使该敌人的[gold]衰退[/gold]每次受到未被格挡的伤害后增加{SGP_FinalGetterBeam:diff()}层。",
   "S_G_C_SHINING_SPARK.title": "闪光爆裂",
   "S_G_C_SHINING_SPARK.description": "获得1层[gold]易伤[/gold]和1层[gold]脆弱[/gold]，造成{Damage:diff()}点伤害。每点[gold]气力[/gold]对随机敌人造成{KiDamage:diff()}点伤害。",
   "S_G_C_LIGER_ASSAULT.title": "狮虎突击",
