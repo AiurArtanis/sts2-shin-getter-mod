@@ -35,11 +35,12 @@ def validate_final_getter_beam() -> None:
         card_path,
         "new DamageVar(25m, ValueProp.Move)",
         "new PowerVar<SGP_Wane>(4m)",
-        "new PowerVar<SGP_FinalGetterBeam>(2m)",
+        'new DynamicVar("WaneMultiplier", 2m)',
         ": base(3, CardType.Attack",
         "PowerCmd.Apply<SGP_Wane>",
         "PowerCmd.Apply<SGP_FinalGetterBeam>",
-        'DynamicVars["SGP_FinalGetterBeam"].UpgradeValueBy(1m)',
+        'DynamicVars["WaneMultiplier"].BaseValue',
+        'DynamicVars["WaneMultiplier"].UpgradeValueBy(1m)',
     )
     reject(card_path, "StrengthLoss", "EnergyCost.UpgradeBy(-1)")
     require(
@@ -81,7 +82,11 @@ def validate_stoner_sunshine() -> None:
         "Vector2.Up * 150f",
         "firstGrowthDuration",
         "secondGrowthDuration",
-        "CreateAuraLightning(",
+        "CreateSolarCoronaRay(",
+        "AddSolarGradientLayers(",
+        "CreateSolarGloss(",
+        "CreateSolarLightning(",
+        "const int layerCount = 22",
         "flightDurationSeconds",
     )
 
@@ -109,8 +114,10 @@ def validate_localization() -> None:
             raise AssertionError(f"{language}: Final Getter Beam damage is missing")
         if "{SGP_Wane:diff()}" not in beam_description:
             raise AssertionError(f"{language}: Final Getter Beam Wane is missing")
-        if "{SGP_FinalGetterBeam:diff()}" not in beam_description:
-            raise AssertionError(f"{language}: Final Getter Beam growth is missing")
+        if "{WaneMultiplier:diff()}" not in beam_description:
+            raise AssertionError(f"{language}: Final Getter Beam multiplier is not dynamic")
+        if "{SGP_FinalGetterBeam:diff()}" in beam_description:
+            raise AssertionError(f"{language}: stale Final Getter Beam power variable")
         if "S_G_P_FINAL_GETTER_BEAM.description" not in powers:
             raise AssertionError(f"{language}: Final Getter Beam power text is missing")
         if characters["SHIN_GETTER.voice.stonerSunshine"] != (

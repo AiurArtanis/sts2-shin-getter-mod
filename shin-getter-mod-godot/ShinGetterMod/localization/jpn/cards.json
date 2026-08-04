@@ -100,7 +100,7 @@
   "S_G_C_STAR_SLASH.title": "斬星斧",
   "S_G_C_STAR_SLASH.description": "山札のカード{Cards:diff()}枚を廃棄し、そのカード面の数値をこのカードに[gold]加算[/gold]する。{Damage:diff()}基礎ダメージを与える。\n[red]真ゲッター1[/red]：この効果でカードを1枚廃棄するたび、[gold]活力[/gold]を{Vigor:diff()}得る。",
   "S_G_C_FINAL_GETTER_BEAM.title": "ファイナルゲッタービーム",
-  "S_G_C_FINAL_GETTER_BEAM.description": "{Damage:diff()}ダメージを与え、[gold]衰退[/gold]を{SGP_Wane:diff()}与える。その敵がブロックされていないダメージを受けるたび、[gold]衰退[/gold]が{SGP_FinalGetterBeam:diff()}増える。",
+  "S_G_C_FINAL_GETTER_BEAM.description": "{Damage:diff()}ダメージを与え、[gold]衰退[/gold]を{SGP_Wane:diff()}与える。その敵に対する[gold]衰退[/gold]の効果が{WaneMultiplier:diff()}倍になる。",
   "S_G_C_SHINING_SPARK.title": "シャインスパーク",
   "S_G_C_SHINING_SPARK.description": "[gold]弱体[/gold]を1、[gold]脆弱[/gold]を1得て、{Damage:diff()}ダメージを与える。[gold]気力[/gold]1につき、ランダムな敵に{KiDamage:diff()}ダメージを与える。",
   "S_G_C_LIGER_ASSAULT.title": "ライガーアサルト",
