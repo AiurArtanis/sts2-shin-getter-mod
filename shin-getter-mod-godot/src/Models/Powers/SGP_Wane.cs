@@ -14,7 +14,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 namespace ShinGetterMod.Models.Powers;
 
 /// <summary>
-/// 衰退。受等同层数额外伤害，每次受未被格挡伤害层数+1，回合初层数减半。
+/// 衰退。受等同层数额外伤害，每次受未被格挡伤害后增长，回合初层数减半。
 /// </summary>
 public sealed class SGP_Wane : PowerModel
 {
@@ -42,9 +42,10 @@ public sealed class SGP_Wane : PowerModel
         if (target == Owner && result.UnblockedDamage > 0)
         {
             Flash();
+            int growthAmount = Owner.GetPower<SGP_FinalGetterBeam>()?.Amount ?? 1;
             // Wane grows from its own trigger, not from the creature that dealt the hit.
             // Keeping the dealer as applier recursively triggers effects such as Sleight of Flesh.
-            await PowerCmd.Apply<SGP_Wane>(choiceContext, Owner, 1m, null, cardSource);
+            await PowerCmd.Apply<SGP_Wane>(choiceContext, Owner, growthAmount, null, cardSource);
         }
     }
 

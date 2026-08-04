@@ -202,6 +202,82 @@ internal static partial class ShinGetterCombatVfx
         NGame.Instance?.ScreenShake(ShakeStrength.Strong, ShakeDuration.Short);
     }
 
+    public static async Task PlayStonerSunshine(
+        Creature owner,
+        IEnumerable<Creature> targets,
+        float sequenceDurationSeconds)
+    {
+        NCreature? ownerNode = NCombatRoom.Instance?.GetCreatureNode(owner);
+        List<Vector2> targetPositions = targets
+            .Where(target => target.IsAlive)
+            .Select(target => NCombatRoom.Instance?.GetCreatureNode(target)?.VfxSpawnPosition)
+            .OfType<Vector2>()
+            .ToList();
+        if (ownerNode == null || targetPositions.Count == 0)
+            return;
+
+        const float flightDurationSeconds = 0.4f;
+        float totalDuration = Math.Max(2.6f, sequenceDurationSeconds);
+        float firstGrowthDuration = Math.Min(2f, totalDuration - flightDurationSeconds - 0.2f);
+        float secondGrowthDuration = Math.Max(0.2f,
+            totalDuration - firstGrowthDuration - flightDurationSeconds);
+        Vector2 ownerOrigin = ownerNode.GlobalPosition;
+        Vector2 destination = targetPositions.Aggregate(Vector2.Zero, (sum, pos) => sum + pos)
+            / targetPositions.Count;
+
+        Tween movementTween = ownerNode.CreateTween();
+        movementTween.TweenProperty(ownerNode, "global_position", ownerOrigin + Vector2.Up * 150f, 0.42f)
+            .SetEase(Tween.EaseType.Out)
+            .SetTrans(Tween.TransitionType.Cubic);
+        movementTween.TweenInterval(Math.Max(0f, totalDuration - 0.82f));
+        movementTween.TweenProperty(ownerNode, "global_position", ownerOrigin, 0.4f)
+            .SetEase(Tween.EaseType.In)
+            .SetTrans(Tween.TransitionType.Cubic);
+
+        Node2D ball = CreateSolarEnergyBall();
+        ball.GlobalPosition = ownerNode.VfxSpawnPosition + Vector2.Up * 168f;
+        NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(ball);
+
+        Tween firstGrowthTween = ball.CreateTween().SetParallel();
+        firstGrowthTween.TweenProperty(ball, "scale", Vector2.One * 1.31f, firstGrowthDuration)
+            .From(Vector2.One * 0.08f)
+            .SetEase(Tween.EaseType.Out)
+            .SetTrans(Tween.TransitionType.Cubic);
+        firstGrowthTween.TweenProperty(ball, "rotation", Mathf.Tau * 0.35f, firstGrowthDuration)
+            .AsRelative();
+        await Cmd.Wait(firstGrowthDuration);
+
+        for (int index = 0; index < 12; index++)
+        {
+            ball.AddChild(CreateAuraLightning(
+                index,
+                12,
+                180f,
+                index % 2 == 0 ? SolarGold : WhiteFlash));
+        }
+        AddFlash(ball.GlobalPosition, SolarCore, 220f, 0.28f);
+
+        Tween secondGrowthTween = ball.CreateTween().SetParallel();
+        secondGrowthTween.TweenProperty(ball, "scale", Vector2.One * 1.75f, secondGrowthDuration)
+            .SetEase(Tween.EaseType.Out)
+            .SetTrans(Tween.TransitionType.Cubic);
+        secondGrowthTween.TweenProperty(ball, "rotation", Mathf.Tau * 0.55f, secondGrowthDuration)
+            .AsRelative();
+        await Cmd.Wait(secondGrowthDuration);
+
+        Tween flightTween = ball.CreateTween().SetParallel();
+        flightTween.TweenProperty(ball, "global_position", destination, flightDurationSeconds)
+            .SetEase(Tween.EaseType.In)
+            .SetTrans(Tween.TransitionType.Cubic);
+        flightTween.TweenProperty(ball, "scale", Vector2.One * 1.1f, flightDurationSeconds);
+        flightTween.Chain().TweenCallback(Callable.From(ball.QueueFreeSafely));
+        await Cmd.Wait(flightDurationSeconds);
+
+        foreach (Vector2 position in targetPositions)
+            AddFlash(position, SolarOrange, 210f, 0.32f);
+        NGame.Instance?.ScreenShake(ShakeStrength.Strong, ShakeDuration.Normal);
+    }
+
     public static Task PlayWhiteFlash(Creature creature)
     {
         NCreature? node = NCombatRoom.Instance?.GetCreatureNode(creature);

@@ -22,7 +22,7 @@
   "S_G_P_RADIATION.title": "放射線",
   "S_G_P_RADIATION.description": "1スタックにつき受けるダメージが25%増加する。現在の増加量：{DamageIncreasePercent}%。",
   "S_G_P_WANE.title": "衰退",
-  "S_G_P_WANE.description": "スタック数に等しい追加ダメージを受ける。ブロックされていないダメージを受けるたび1増え、ターン開始時に半減する。",
+  "S_G_P_WANE.description": "スタック数に等しい追加ダメージを受ける。ブロックされていないダメージを受けるたび通常1増え、ターン開始時に半減する。",
   "S_G_P_SEAL.title": "封印",
   "S_G_P_SEAL.description": "このターン、状態のスタック数は増減しない。",
   "S_G_P_SHADE.title": "分身",
@@ -68,6 +68,8 @@
   "S_G_P_ENABLE.title": "再動",
   "S_G_P_ENABLE.description": "現在のターン終了後、追加ターンを{Amount}得る。",
   "S_G_P_FINAL_GETTER_BEAM_STRENGTH_DOWN.title": "筋力低下",
+  "S_G_P_FINAL_GETTER_BEAM.title": "ファイナルゲッタービーム",
+  "S_G_P_FINAL_GETTER_BEAM.description": "ブロックされていないダメージを受けるたび、[gold]衰退[/gold]が1ではなく{Amount}増える。",
   "S_G_P_KUSUHA_JUICE.title": "クスハ汁",
   "S_G_P_KUSUHA_JUICE.description": "このターン、精神コマンドカードは気力条件を無視し、コストが0になる。"
 }

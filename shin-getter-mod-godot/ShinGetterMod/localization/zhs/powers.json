@@ -22,7 +22,7 @@
   "S_G_P_RADIATION.title": "辐射",
   "S_G_P_RADIATION.description": "每层使受到的伤害增加25%，当前共增加{DamageIncreasePercent}%。",
   "S_G_P_WANE.title": "衰退",
-  "S_G_P_WANE.description": "受到等同于层数的额外伤害；每次受到未被格挡的伤害增加1层，回合开始时层数减半。",
+	"S_G_P_WANE.description": "受到等同于层数的额外伤害；每次受到未被格挡的伤害通常增加1层，回合开始时层数减半。",
   "S_G_P_SEAL.title": "封印",
   "S_G_P_SEAL.description": "本回合不会增减状态层数。",
   "S_G_P_SHADE.title": "分身",
@@ -67,7 +67,9 @@
   "S_G_P_DARK_CAPE.description": "本回合每次用格挡完全抵挡伤害后，对所有敌人造成{Amount}点伤害。",
   "S_G_P_ENABLE.title": "再动",
   "S_G_P_ENABLE.description": "当前回合结束后，获得{Amount}个额外回合。",
-  "S_G_P_FINAL_GETTER_BEAM_STRENGTH_DOWN.title": "力量下降",
+	"S_G_P_FINAL_GETTER_BEAM_STRENGTH_DOWN.title": "力量下降",
+	"S_G_P_FINAL_GETTER_BEAM.title": "终极盖塔射线",
+	"S_G_P_FINAL_GETTER_BEAM.description": "[gold]衰退[/gold]每次受到未被格挡的伤害后增加{Amount}层，而不是1层。",
   "S_G_P_KUSUHA_JUICE.title": "楠叶汁",
   "S_G_P_KUSUHA_JUICE.description": "本回合精神指令卡无视气力要求，耗能变为0"
 }
