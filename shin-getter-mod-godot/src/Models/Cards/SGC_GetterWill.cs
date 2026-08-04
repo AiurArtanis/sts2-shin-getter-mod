@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
@@ -15,7 +14,7 @@ namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
 /// 盖塔意志 | 技能 | 稀有 | 0费
-/// 选择抽牌堆 1 张能力卡加入手牌
+/// 选择抽牌堆 1 张能力卡加入手牌；升级后选择 2 张
 /// 一号机：获得 2 进化
 /// </summary>
 public sealed class SGC_GetterWill : ShinGetterCardBase
@@ -25,6 +24,7 @@ public sealed class SGC_GetterWill : ShinGetterCardBase
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
         new PowerVar<SGP_Evolution>(2m),
+        new CardsVar(1),
     };
 
     public SGC_GetterWill()
@@ -34,10 +34,13 @@ public sealed class SGC_GetterWill : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        var selected = (await CardSelectCmd.FromCombatPile(choiceContext, PileType.Draw.GetPile(Owner), Owner,
-            new CardSelectorPrefs(SelectionScreenPrompt, 1), card => card.Type == CardType.Power)).FirstOrDefault();
-        if (selected != null)
-            await CardPileCmd.Add(selected, PileType.Hand);
+        IEnumerable<CardModel> selected = await CardSelectCmd.FromCombatPile(
+            choiceContext,
+            PileType.Draw.GetPile(Owner),
+            Owner,
+            new CardSelectorPrefs(SelectionScreenPrompt, DynamicVars.Cards.IntValue),
+            card => card.Type == CardType.Power);
+        await CardPileCmd.Add(selected, PileType.Hand);
 
         ShinGetterVoiceService.TryPlayCardVoiceAtCustomTiming(this, out _);
 
@@ -54,6 +57,6 @@ public sealed class SGC_GetterWill : ShinGetterCardBase
 
     protected override void OnUpgrade()
     {
-        RemoveKeyword(CardKeyword.Exhaust);
+        DynamicVars.Cards.UpgradeValueBy(1m);
     }
 }

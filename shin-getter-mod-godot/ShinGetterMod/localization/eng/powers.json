@@ -16,7 +16,7 @@
   "S_G_P_EVOLUTION.title": "Evolution",
   "S_G_P_EVOLUTION.description": "At the start of your turn, after Ki resolves, convert up to this amount of Vigor, Regen, and Plating into Strength, Max HP, and Dexterity respectively. If at least one resource is converted, lose 1 Evolution.",
   "S_G_P_EVOLUTION_ENGINE.title": "Evolution Engine",
-  "S_G_P_EVOLUTION_ENGINE.description": "The turn after Evolution triggers, gain {Amount:energyIcons()}.",
+  "S_G_P_EVOLUTION_ENGINE.description": "Whenever your Evolution changes, Transform.",
   "S_G_P_AIRBORNE.title": "Airborne",
   "S_G_P_AIRBORNE.description": "Damage taken is halved. At the end of your turn, reduce by 1. When this status is lost, gain 1 Vulnerable.",
   "S_G_P_RADIATION.title": "Radiation",

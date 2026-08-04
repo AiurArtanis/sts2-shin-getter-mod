@@ -16,7 +16,7 @@
   "S_G_P_EVOLUTION.title": "进化",
   "S_G_P_EVOLUTION.description": "回合开始时，在气力生效后，将活力、再生和覆甲各自最多等同于进化层数的数值转化为力量、最大生命和敏捷。至少成功转化一种资源时，失去1层进化。",
   "S_G_P_EVOLUTION_ENGINE.title": "进化引擎",
-  "S_G_P_EVOLUTION_ENGINE.description": "触发进化后的下一回合获得{Amount:energyIcons()}。",
+  "S_G_P_EVOLUTION_ENGINE.description": "每当进化层数变更时，变形。",
   "S_G_P_AIRBORNE.title": "腾空",
   "S_G_P_AIRBORNE.description": "受到的伤害减半；回合结束时减少1层，失去该状态时获得1层易伤。",
   "S_G_P_RADIATION.title": "辐射",

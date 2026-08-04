@@ -77,8 +77,6 @@ public sealed class SGP_Evolution : PowerModel
 
         if (strengthGain > 0 || maxHpGain > 0 || dexterityGain > 0)
         {
-            var engine = Owner.GetPower<SGP_EvolutionEngine>();
-            engine?.MarkPendingEnergyGain();
             await PowerCmd.ModifyAmount(choiceContext, this, -1m, null, null);
         }
     }

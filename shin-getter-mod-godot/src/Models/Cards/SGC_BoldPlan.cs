@@ -24,7 +24,11 @@ public sealed class SGC_BoldPlan : ShinGetterCardBase
 {
     protected override bool HasEnergyCostX => true;
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
-        WithContextualHoverTips(HoverTipFactory.FromEnchantment<SGE_Adaptation>());
+        WithContextualHoverTips(new IHoverTip[]
+        {
+            HoverTipFactory.FromKeyword(CardKeyword.Retain),
+            HoverTipFactory.FromEnchantment<SGE_Adaptation>(),
+        });
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
@@ -45,7 +49,9 @@ public sealed class SGC_BoldPlan : ShinGetterCardBase
         {
             await PowerCmd.Apply<SGP_Radiation>(choiceContext, Owner.Creature, x, Owner.Creature, this);
             await PowerCmd.Apply<SGP_Ki>(choiceContext, Owner.Creature, x, Owner.Creature, this);
-            await CardPileCmd.Draw(choiceContext, x, Owner);
+            IEnumerable<CardModel> drawnCards = await CardPileCmd.Draw(choiceContext, x, Owner);
+            foreach (CardModel drawnCard in drawnCards)
+                CardCmd.ApplyKeyword(drawnCard, CardKeyword.Retain);
         }
 
         if (HasForm(Owner, ShinGetterForm.Getter2))
