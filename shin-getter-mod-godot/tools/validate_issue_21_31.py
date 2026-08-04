@@ -244,7 +244,7 @@ expected_shared_subtitles = {
     "SHIN_GETTER.voice.combatStartFirst": "CHANGE ! [red]GETTER ONE[/red] !\nSwitch On",
     "SHIN_GETTER.voice.getterBeam": "Getter [pink]Beeeeeeeeeam[/pink] !",
     "SHIN_GETTER.voice.battleWing": "Battle [black]Wiiiiing[/black]",
-    "SHIN_GETTER.voice.stonerSunshine": "[red]Stonerrrrrr[/red]\n[yellow]Sun · shine[/yellow]",
+    "SHIN_GETTER.voice.stonerSunshine": "[red]Stoner[/red]\n[yellow]Sunshine[/yellow]",
     "SHIN_GETTER.voice.drillArm": "[white]Drill Arrrrrm[/white]",
 }
 for language, data in language_data.items():
