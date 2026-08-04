@@ -16,7 +16,7 @@
   "S_G_P_EVOLUTION.title": "進化",
   "S_G_P_EVOLUTION.description": "ターン開始時、気力の効果後に、活力、再生、プレートをそれぞれ進化のスタック数まで筋力、最大HP、敏捷に変換する。いずれかのリソースを変換した場合、進化を1失う。",
   "S_G_P_EVOLUTION_ENGINE.title": "進化エンジン",
-  "S_G_P_EVOLUTION_ENGINE.description": "進化が発動した次のターン、{Amount:energyIcons()}を得る。",
+  "S_G_P_EVOLUTION_ENGINE.description": "進化の数値が変化するたび、変形する。",
   "S_G_P_AIRBORNE.title": "空中",
   "S_G_P_AIRBORNE.description": "受けるダメージが半減する。ターン終了時に1減る。この状態を失った時、弱体を1得る。",
   "S_G_P_RADIATION.title": "放射線",
