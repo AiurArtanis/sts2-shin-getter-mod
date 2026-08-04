@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using ShinGetterMod.Audio;
 using ShinGetterMod.Models.Powers;
+using ShinGetterMod.Nodes.Combat;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -40,6 +41,7 @@ public sealed class SGC_GetterWill : ShinGetterCardBase
             await CardPileCmd.Add(selected, PileType.Hand);
 
         ShinGetterVoiceService.TryPlayCardVoiceAtCustomTiming(this, out _);
+        NShinGetterStaticVisuals.TryPlayCreatureActionAnimation(Owner.Creature, "Cast");
 
         if (HasForm(Owner, ShinGetterForm.Getter1))
         {

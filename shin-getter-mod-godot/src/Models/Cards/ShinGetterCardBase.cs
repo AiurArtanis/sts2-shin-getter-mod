@@ -200,6 +200,7 @@ public abstract class ShinGetterCardBase : CardModel
             "SGC_GetterElbow",
             "SGC_GetterFlash",
             "SGC_GetterRush",
+            "SGC_GetterWill",
             "SGC_HolyDragonRoar",
             "SGC_ShiningSpark",
             "SGC_StarSlash",

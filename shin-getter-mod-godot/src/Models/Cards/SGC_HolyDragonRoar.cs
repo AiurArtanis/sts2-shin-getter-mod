@@ -61,18 +61,15 @@ public sealed class SGC_HolyDragonRoar : ShinGetterCardBase
             .Where(card => card != this
                 && card.GetType().Name.Contains("Getter", StringComparison.Ordinal))
             .ToList();
-        if (getterCards.Count == 0)
-        {
+        if (getterCards.Count < 3)
             ShinGetterVoiceService.TryPlayCardVoiceAtCustomTiming(this, out _);
-        }
-        else
+
+        for (int index = 0; index < getterCards.Count; index++)
         {
-            for (int index = 0; index < getterCards.Count; index++)
-            {
-                await CardCmd.Exhaust(choiceContext, getterCards[index]);
-                if (index == getterCards.Count - 1)
-                    ShinGetterVoiceService.TryPlayCardVoiceAtCustomTiming(this, out _);
-            }
+            if (getterCards.Count >= 3 && index == getterCards.Count - 3)
+                ShinGetterVoiceService.TryPlayCardVoiceAtCustomTiming(this, out _);
+
+            await CardCmd.Exhaust(choiceContext, getterCards[index]);
         }
 
         NShinGetterStaticVisuals.TryPlayCreatureActionAnimation(Owner.Creature, "Cast");
