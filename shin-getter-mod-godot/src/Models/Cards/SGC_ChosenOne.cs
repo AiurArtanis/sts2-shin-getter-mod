@@ -12,7 +12,7 @@ using ShinGetterMod.Models.Powers;
 namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
-/// 天选之子 | 能力 | 罕见 | 1费 | 钢之魂流/变形流
+/// 天选之子 | 能力 | 罕见 | 2费 | 钢之魂流/变形流
 /// 每次变形获得 1 气力和 4 格挡
 /// </summary>
 public sealed class SGC_ChosenOne : ShinGetterCardBase
@@ -26,7 +26,7 @@ public sealed class SGC_ChosenOne : ShinGetterCardBase
     };
 
     public SGC_ChosenOne()
-        : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
+        : base(2, CardType.Power, CardRarity.Uncommon, TargetType.Self)
     {
     }
 

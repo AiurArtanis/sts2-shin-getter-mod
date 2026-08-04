@@ -14,6 +14,8 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
+using ShinGetterMod.Audio;
+using ShinGetterMod.Nodes.Combat;
 using ShinGetterMod.Nodes.Vfx;
 
 namespace ShinGetterMod.Models.Cards;
@@ -53,10 +55,23 @@ public sealed class SGC_StonerSunshine : ShinGetterCardBase
         ArgumentNullException.ThrowIfNull(CombatState);
         var combatState = CombatState;
 
+        float sequenceDurationSeconds = 4f;
+        if (ShinGetterVoiceService.TryPlayCardVoiceAtCustomTiming(this, out float voiceDurationSeconds)
+            && voiceDurationSeconds > 0f)
+        {
+            sequenceDurationSeconds = voiceDurationSeconds;
+        }
+
+        NShinGetterStaticVisuals.QueueNextActionSpeed(Owner.Creature, 0.3f);
+        NShinGetterStaticVisuals.TryPlayCreatureActionAnimation(Owner.Creature, "Cast");
+
         await DamageCmd.Attack(DynamicVars.CalculatedDamage).FromCard(this)
             .TargetingAllOpponents(combatState)
-            .WithAttackerAnim("Cast", 0.5f)
-            .BeforeDamage(() => ShinGetterCombatVfx.PlayEnergyBall(Owner.Creature, combatState.GetOpponentsOf(Owner.Creature)))
+            .WithNoAttackerAnim()
+            .BeforeDamage(() => ShinGetterCombatVfx.PlayStonerSunshine(
+                Owner.Creature,
+                combatState.GetOpponentsOf(Owner.Creature),
+                sequenceDurationSeconds))
             .WithHitFx("vfx/vfx_starry_impact").Execute(choiceContext);
         foreach (var enemy in combatState.GetOpponentsOf(Owner.Creature).Where(creature => creature.IsAlive))
             await PowerCmd.Apply<SGP_Wane>(choiceContext, enemy, DynamicVars["Wane"].BaseValue, Owner.Creature, this);

@@ -1,54 +1,43 @@
 #nullable enable
 using System.Threading.Tasks;
-using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using ShinGetterMod.Models.Cards;
 
 namespace ShinGetterMod.Models.Powers;
 
 /// <summary>
-/// 进化引擎。触发进化后的下一回合获得1能量。
+/// 进化引擎。进化层数每次增减时变形一次。
 /// </summary>
 public sealed class SGP_EvolutionEngine : PowerModel
 {
-    private class Data
-    {
-        public bool pendingEnergyGain;
-    }
-
     public override PowerType Type => PowerType.Buff;
-    public override PowerStackType StackType => PowerStackType.Counter;
+    public override PowerStackType StackType => PowerStackType.Single;
 
     protected override System.Collections.Generic.IEnumerable<DynamicVar> CanonicalVars =>
         System.Array.Empty<DynamicVar>();
 
-    protected override object InitInternalData() => new Data();
-
-    public override async Task AfterPlayerTurnStartEarly(
+    public override async Task AfterPowerAmountChanged(
         PlayerChoiceContext choiceContext,
-        Player player)
+        PowerModel power,
+        decimal amount,
+        Creature? applier,
+        CardModel? cardSource)
     {
-        if (player.Creature != Owner || Owner.IsDead)
+        if (power is not SGP_Evolution
+            || power.Owner != Owner
+            || amount == 0m
+            || Owner.IsDead
+            || Owner.Player is not { } player)
+        {
             return;
+        }
 
-        var data = GetInternalData<Data>();
-        if (!data.pendingEnergyGain)
-            return;
-
-        data.pendingEnergyGain = false;
         Flash();
-        await PlayerCmd.GainEnergy(Amount, player);
-    }
-
-    /// <summary>
-    /// 由 SGP_Evolution 触发时调用，标记下回合获得能量。
-    /// </summary>
-    public void MarkPendingEnergyGain()
-    {
-        var data = GetInternalData<Data>();
-        data.pendingEnergyGain = true;
+        await ShinGetterCardBase.Transform(choiceContext, player, cardSource);
     }
 }
