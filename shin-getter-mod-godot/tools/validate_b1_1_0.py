@@ -59,20 +59,7 @@ def validate_balance() -> None:
         "PowerCmd.ModifyAmount(choiceContext, this, -1m",
     )
     reject("src/Models/Powers/SGP_Evolution.cs", "BeforeSideTurnEnd")
-    require(
-        "src/Models/Powers/SGP_EvolutionEngine.cs",
-        "AfterPlayerTurnStartEarly",
-        "if (!data.pendingEnergyGain)",
-        "data.pendingEnergyGain = false;",
-        "MarkPendingEnergyGain()",
-        "data.pendingEnergyGain = true;",
-    )
-    reject(
-        "src/Models/Powers/SGP_EvolutionEngine.cs",
-        "AfterSideTurnStart",
-        "markedTurnNumber",
-        "TurnNumber",
-    )
+    # Evolution Engine was superseded by B1.1.1 and is gated by validate_issue_47.py.
     if (ROOT / "src/Patches/ShinGetterSpiritCommandRetainPatch.cs").exists():
         raise AssertionError("spirit command cards must not be retained by a Harmony patch")
     spirit_commands = (
@@ -88,22 +75,6 @@ def validate_balance() -> None:
     )
     for filename in spirit_commands:
         reject(f"src/Models/Cards/{filename}", "保留", "CardKeyword.Retain", "ShouldRetainThisTurn")
-
-
-def validate_evolution_engine_sequence() -> None:
-    pending_energy_gain = False
-
-    # T1 late: Evolution succeeds and schedules T2 energy.
-    pending_energy_gain = True
-
-    # T2 early: the previous reward is paid before T2 late can schedule another one.
-    gained_energy_on_t2 = pending_energy_gain
-    pending_energy_gain = False
-    assert gained_energy_on_t2
-
-    # T2 late: a second consecutive Evolution keeps a distinct reward pending for T3.
-    pending_energy_gain = True
-    assert pending_energy_gain
 
 
 def validate_localization() -> None:
@@ -218,7 +189,6 @@ def validate_sprite_sheets() -> None:
 
 def main() -> None:
     validate_balance()
-    validate_evolution_engine_sequence()
     validate_localization()
     validate_sprite_sheets()
     print("B1.1.0 static validation passed")
