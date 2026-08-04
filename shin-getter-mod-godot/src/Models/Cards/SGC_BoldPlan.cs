@@ -24,11 +24,9 @@ public sealed class SGC_BoldPlan : ShinGetterCardBase
 {
     protected override bool HasEnergyCostX => true;
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
-        WithContextualHoverTips(new IHoverTip[]
-        {
-            HoverTipFactory.FromKeyword(CardKeyword.Retain),
-            HoverTipFactory.FromEnchantment<SGE_Adaptation>(),
-        });
+        WithContextualHoverTips(
+            new[] { HoverTipFactory.FromKeyword(CardKeyword.Retain) }
+                .Concat(HoverTipFactory.FromEnchantment<SGE_Adaptation>()));
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
