@@ -89,6 +89,13 @@ def validate_tag_nesting(key: str, text: str) -> None:
 def validate_service() -> None:
     service = SERVICE_PATH.read_text(encoding="utf-8")
     patch = PATCH_PATH.read_text(encoding="utf-8")
+    legacy_pilot_terms = ("MU" + "QING", "Mu" + "qing", "mu" + "qing", "牟" + "庆")
+    for path, text in ((SERVICE_PATH, service), (PATCH_PATH, patch)):
+        for term in legacy_pilot_terms:
+            if term in text:
+                raise AssertionError(f"Legacy Getter 3 pilot name remains in {path}: {term}")
+    require(service, "BENKEI", "TeaMasterBenkei", "AmalgamatorBenkei", "ByrdonisNestBenkei", "SunkenStatueBenkei")
+    require(patch, 'key.Contains(".BENKEI", StringComparison.Ordinal)')
     byrdpip_patch = BYRDPIP_REWARD_PATCH_PATH.read_text(encoding="utf-8")
     getter_furnace = GETTER_FURNACE_PATH.read_text(encoding="utf-8")
     emperors_fragment = EMPERORS_FRAGMENT_PATH.read_text(encoding="utf-8")
@@ -160,19 +167,19 @@ def validate_service() -> None:
         byrdonis_options,
         "owner.Deck.Cards.Any(card => card.IsUpgradable)",
         "CreateConditionalOption(",
-        '"BYRDONIS_NEST",\n            "MUQING"',
+        '"BYRDONIS_NEST",\n            "BENKEI"',
     )
-    byrdonis_muqing = method_body(service, "private static async Task ByrdonisNestMuqing")
+    byrdonis_benkei = method_body(service, "private static async Task ByrdonisNestBenkei")
     require(
-        byrdonis_muqing,
+        byrdonis_benkei,
         "await LoseHp(owner, 6)",
         "int upgradeCount = Math.Min(3, candidates.Count)",
         "eventModel.Rng.NextItem(candidates)",
         "candidates.Remove(card)",
         "CardCmd.Upgrade(card, CardPreviewStyle.EventLayout)",
     )
-    if byrdonis_muqing.index("await LoseHp(owner, 6)") > byrdonis_muqing.index("CardCmd.Upgrade"):
-        raise AssertionError("Byrdonis Muqing must lose HP before upgrading cards.")
+    if byrdonis_benkei.index("await LoseHp(owner, 6)") > byrdonis_benkei.index("CardCmd.Upgrade"):
+        raise AssertionError("Byrdonis Benkei must lose HP before upgrading cards.")
 
     byrdonis_ryoma = method_body(service, "private static async Task ByrdonisNestRyoma")
     require(
@@ -435,6 +442,16 @@ def validate_localization() -> None:
         event_tables[language] = events
         event_key_sets[language] = {key for key in events if key.startswith(prefix)}
 
+    legacy_pilot_terms = ("MU" + "QING", "Mu" + "qing", "mu" + "qing", "牟" + "庆")
+    expected_pilot_names = {"eng": "Benkei", "jpn": "弁慶", "zhs": "弁庆"}
+    for language, events in event_tables.items():
+        serialized = json.dumps(events, ensure_ascii=False)
+        for term in legacy_pilot_terms:
+            if term in serialized:
+                raise AssertionError(f"Legacy Getter 3 pilot name remains in {language}: {term}")
+        if expected_pilot_names[language] not in serialized:
+            raise AssertionError(f"Getter 3 pilot name is missing in {language} localization.")
+
     expected_events = event_key_sets[LANGUAGES[0]]
     for language in LANGUAGES[1:]:
         if event_key_sets[language] != expected_events:
@@ -471,7 +488,7 @@ def validate_localization() -> None:
     actor_colors = {
         "RYOMA": "[red]",
         "HAYATO": "[white]",
-        "MUQING": "[yellow]",
+        "BENKEI": "[yellow]",
     }
     for language in LANGUAGES:
         events = event_tables[language]
@@ -544,7 +561,7 @@ def validate_localization() -> None:
             "[yellow]",
             "[/yellow]",
         ),
-        f"{prefix}SUNKEN_STATUE.pages.MUQING.description": (
+        f"{prefix}SUNKEN_STATUE.pages.BENKEI.description": (
             "[jitter]",
             "[/jitter]",
         ),
@@ -593,11 +610,11 @@ def validate_localization() -> None:
             f"{prefix}TRIAL.pages.RYOMA.options.START_FIGHT.title": "[red][b]Interrupt the trial.[/b][/red]",
             f"{prefix}THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.HAYATO.title": "[white]Take another route.[/white]",
             f"{prefix}THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.HAYATO.description": "Pay [red]35[/red] Gold. Obtain [gold]Getter Cold Brew[/gold].",
-            f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.MUQING_LOCKED.description": "Requires at least 1 upgradable card.",
-            f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.MUQING.description": "Lose [red]6[/red] HP. Randomly upgrade 3 cards.",
+            f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.BENKEI_LOCKED.description": "Requires at least 1 upgradable card.",
+            f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.BENKEI.description": "Lose [red]6[/red] HP. Randomly upgrade 3 cards.",
             f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.RYOMA.description": "Add [gold]{Card}[/gold] to your Deck and fight Byrdonis. Hatch it early after winning.",
             f"{prefix}SPIRALING_WHIRLPOOL.pages.INITIAL.options.HAYATO.title": "[white]Unmake one completed record and reverse-engineer its structure.[/white]",
-            f"{prefix}SUNKEN_STATUE.pages.INITIAL.options.MUQING.description": "Lose [red]7[/red] Max HP. Gain more Gold.",
+            f"{prefix}SUNKEN_STATUE.pages.INITIAL.options.BENKEI.description": "Lose [red]7[/red] Max HP. Gain more Gold.",
             f"{prefix}RANWID_THE_ELDER.pages.RYOMA.options.CHOOSE_RELIC.title": "Continue.",
         },
         "jpn": {
@@ -606,11 +623,11 @@ def validate_localization() -> None:
             f"{prefix}TRIAL.pages.RYOMA.options.START_FIGHT.title": "[red][b]裁判を中断する。[/b][/red]",
             f"{prefix}THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.HAYATO.title": "[white]別の道を行く。[/white]",
             f"{prefix}THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.HAYATO.description": "[red]35[/red]ゴールドを支払い、[gold]ゲッターコールドブリュー[/gold]を得る。",
-            f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.MUQING_LOCKED.description": "アップグレード可能なカードが1枚以上必要。",
-            f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.MUQING.description": "HPを[red]6[/red]失い、カードをランダムに3枚アップグレードする。",
+            f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.BENKEI_LOCKED.description": "アップグレード可能なカードが1枚以上必要。",
+            f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.BENKEI.description": "HPを[red]6[/red]失い、カードをランダムに3枚アップグレードする。",
             f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.RYOMA.description": "[gold]{Card}[/gold]をデッキに加えてバードニスと戦う。勝利後、卵を早くふ化させる。",
             f"{prefix}SPIRALING_WHIRLPOOL.pages.INITIAL.options.HAYATO.title": "[white]完成した記録を一つ解き、その構造を逆算する。[/white]",
-            f"{prefix}SUNKEN_STATUE.pages.INITIAL.options.MUQING.description": "最大HPを[red]7[/red]失い、より多くのゴールドを得る。",
+            f"{prefix}SUNKEN_STATUE.pages.INITIAL.options.BENKEI.description": "最大HPを[red]7[/red]失い、より多くのゴールドを得る。",
             f"{prefix}RANWID_THE_ELDER.pages.RYOMA.options.CHOOSE_RELIC.title": "続ける。",
         },
         "zhs": {
@@ -619,11 +636,11 @@ def validate_localization() -> None:
             f"{prefix}TRIAL.pages.RYOMA.options.START_FIGHT.title": "[red][b]打断审判。[/b][/red]",
             f"{prefix}THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.HAYATO.title": "[white]换条路走。[/white]",
             f"{prefix}THE_LEGENDS_WERE_TRUE.pages.INITIAL.options.HAYATO.description": "支付[red]35[/red]金币，获得[gold]盖塔冷萃[/gold]。",
-            f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.MUQING_LOCKED.description": "需要至少1张可升级牌。",
-            f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.MUQING.description": "失去[red]6[/red]点生命，随机升级3张牌。",
+            f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.BENKEI_LOCKED.description": "需要至少1张可升级牌。",
+            f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.BENKEI.description": "失去[red]6[/red]点生命，随机升级3张牌。",
             f"{prefix}BYRDONIS_NEST.pages.INITIAL.options.RYOMA.description": "将[gold]{Card}[/gold]加入牌组，迎战多尼斯异鸟。胜利后使它提前孵化。",
             f"{prefix}SPIRALING_WHIRLPOOL.pages.INITIAL.options.HAYATO.title": "[white]拆开一段完成记录，反推它的结构。[/white]",
-            f"{prefix}SUNKEN_STATUE.pages.INITIAL.options.MUQING.description": "失去[red]7[/red]点最大生命，获得更多的金币。",
+            f"{prefix}SUNKEN_STATUE.pages.INITIAL.options.BENKEI.description": "失去[red]7[/red]点最大生命，获得更多的金币。",
             f"{prefix}RANWID_THE_ELDER.pages.RYOMA.options.CHOOSE_RELIC.title": "继续。",
         },
     }
@@ -648,7 +665,7 @@ def validate_localization() -> None:
         if "[getter_ray]" in spiral_text or "[/getter_ray]" in spiral_text:
             raise AssertionError(f"Water semantics must use [aqua] for {language}: {spiral_key}")
 
-    sunken_option_key = f"{prefix}SUNKEN_STATUE.pages.INITIAL.options.MUQING.description"
+    sunken_option_key = f"{prefix}SUNKEN_STATUE.pages.INITIAL.options.BENKEI.description"
     for language in LANGUAGES:
         sunken_option = event_tables[language].get(sunken_option_key)
         if not isinstance(sunken_option, str) or "1.8" in sunken_option:

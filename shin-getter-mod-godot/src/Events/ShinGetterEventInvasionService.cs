@@ -233,16 +233,16 @@ internal static class ShinGetterEventInvasionService
             ryoma.ThatDoesDamage(5);
         yield return ryoma;
 
-        bool muqingAvailable = owner.Gold >= 100;
+        bool benkeiAvailable = owner.Gold >= 100;
         IHoverTip[] hovers = HoverTipFactory.FromRelicExcludingItself<BoneTea>()
             .Concat(HoverTipFactory.FromRelicExcludingItself<EmberTea>())
             .ToArray();
         yield return CreateConditionalOption(
             eventModel,
-            muqingAvailable,
-            () => TeaMasterMuqing(eventModel),
+            benkeiAvailable,
+            () => TeaMasterBenkei(eventModel),
             "TEA_MASTER",
-            "MUQING",
+            "BENKEI",
             hovers,
             disableOnChosen: false);
     }
@@ -325,7 +325,7 @@ internal static class ShinGetterEventInvasionService
             "AMALGAMATOR",
             "RYOMA");
 
-        bool muqingAvailable = owner.Gold >= 100
+        bool benkeiAvailable = owner.Gold >= 100
             && owner.Deck.Cards.Count(card => card is SGC_Strike && card.IsRemovable) >= 2
             && owner.Deck.Cards.Count(card => card is SGC_Defend && card.IsRemovable) >= 2;
         IHoverTip[] hovers = HoverTipFactory.FromCardWithCardHoverTips<UltimateStrike>()
@@ -333,23 +333,23 @@ internal static class ShinGetterEventInvasionService
             .ToArray();
         yield return CreateConditionalOption(
             eventModel,
-            muqingAvailable,
-            () => AmalgamatorMuqing(eventModel),
+            benkeiAvailable,
+            () => AmalgamatorBenkei(eventModel),
             "AMALGAMATOR",
-            "MUQING",
+            "BENKEI",
             hovers);
     }
 
     private static IEnumerable<EventOption> BuildByrdonisNestOptions(ByrdonisNest eventModel)
     {
         Player owner = RequireOwner(eventModel);
-        bool muqingAvailable = owner.Deck.Cards.Any(card => card.IsUpgradable);
+        bool benkeiAvailable = owner.Deck.Cards.Any(card => card.IsUpgradable);
         yield return CreateConditionalOption(
             eventModel,
-            muqingAvailable,
-            () => ByrdonisNestMuqing(eventModel),
+            benkeiAvailable,
+            () => ByrdonisNestBenkei(eventModel),
             "BYRDONIS_NEST",
-            "MUQING");
+            "BENKEI");
 
         bool ryomaAvailable = HasAnyCard<SGC_HotBlood, SGC_FightingSpirit, SGC_SuperKi>(owner);
         yield return CreateConditionalOption(
@@ -427,9 +427,9 @@ internal static class ShinGetterEventInvasionService
         yield return CreateConditionalOption(
             eventModel,
             available,
-            () => SunkenStatueMuqing(eventModel),
+            () => SunkenStatueBenkei(eventModel),
             "SUNKEN_STATUE",
-            "MUQING");
+            "BENKEI");
     }
 
     private static IEnumerable<EventOption> BuildSpiralingWhirlpoolOptions(SpiralingWhirlpool eventModel)
@@ -480,7 +480,7 @@ internal static class ShinGetterEventInvasionService
         Finish(eventModel, PageKey("TEA_MASTER", "RYOMA"));
     }
 
-    private static async Task TeaMasterMuqing(TeaMaster eventModel)
+    private static async Task TeaMasterBenkei(TeaMaster eventModel)
     {
         Player owner = RequireOwner(eventModel);
         RelicModel? selected = await RelicSelectCmd.FromChooseARelicScreen(owner, new RelicModel[]
@@ -493,7 +493,7 @@ internal static class ShinGetterEventInvasionService
 
         await PlayerCmd.LoseGold(100, owner, GoldLossType.Spent);
         await RelicCmd.Obtain(selected, owner);
-        Finish(eventModel, PageKey("TEA_MASTER", "MUQING"));
+        Finish(eventModel, PageKey("TEA_MASTER", "BENKEI"));
     }
 
     private static async Task SlipperyBridgeRyoma(SlipperyBridge eventModel)
@@ -574,7 +574,7 @@ internal static class ShinGetterEventInvasionService
         Finish(eventModel, PageKey("AMALGAMATOR", "RYOMA"));
     }
 
-    private static async Task AmalgamatorMuqing(Amalgamator eventModel)
+    private static async Task AmalgamatorBenkei(Amalgamator eventModel)
     {
         Player owner = RequireOwner(eventModel);
         List<CardModel> strikes = (await CardSelectCmd.FromDeckForRemoval(
@@ -605,10 +605,10 @@ internal static class ShinGetterEventInvasionService
 
         CardCmd.PreviewCardPileAdd(await CardPileCmd.Add(ultimateStrike, PileType.Deck));
         CardCmd.PreviewCardPileAdd(await CardPileCmd.Add(ultimateDefend, PileType.Deck));
-        Finish(eventModel, PageKey("AMALGAMATOR", "MUQING"));
+        Finish(eventModel, PageKey("AMALGAMATOR", "BENKEI"));
     }
 
-    private static async Task ByrdonisNestMuqing(ByrdonisNest eventModel)
+    private static async Task ByrdonisNestBenkei(ByrdonisNest eventModel)
     {
         Player owner = RequireOwner(eventModel);
         await LoseHp(owner, 6);
@@ -620,7 +620,7 @@ internal static class ShinGetterEventInvasionService
             candidates.Remove(card);
             CardCmd.Upgrade(card, CardPreviewStyle.EventLayout);
         }
-        Finish(eventModel, PageKey("BYRDONIS_NEST", "MUQING"));
+        Finish(eventModel, PageKey("BYRDONIS_NEST", "BENKEI"));
     }
 
     private static async Task ByrdonisNestRyoma(ByrdonisNest eventModel)
@@ -704,7 +704,7 @@ internal static class ShinGetterEventInvasionService
         return Task.CompletedTask;
     }
 
-    private static async Task SunkenStatueMuqing(SunkenStatue eventModel)
+    private static async Task SunkenStatueBenkei(SunkenStatue eventModel)
     {
         Player owner = RequireOwner(eventModel);
         await CreatureCmd.LoseMaxHp(
@@ -716,7 +716,7 @@ internal static class ShinGetterEventInvasionService
             eventModel.DynamicVars.Gold.BaseValue * 1.8m,
             MidpointRounding.AwayFromZero);
         await PlayerCmd.GainGold(gold, owner);
-        Finish(eventModel, PageKey("SUNKEN_STATUE", "MUQING"));
+        Finish(eventModel, PageKey("SUNKEN_STATUE", "BENKEI"));
     }
 
     private static async Task SpiralingWhirlpoolHayato(SpiralingWhirlpool eventModel)
