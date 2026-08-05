@@ -118,7 +118,7 @@ internal static class ShinGetterEventOptionIconPatch
         {
             string path = key.Contains(".HAYATO", StringComparison.Ordinal)
                 ? GetterTwoIcon
-                : key.Contains(".MUQING", StringComparison.Ordinal)
+                : key.Contains(".BENKEI", StringComparison.Ordinal)
                     ? GetterThreeIcon
                     : GetterOneIcon;
             layer.AddChild(CreateRightAnchoredIcon(path, IconRightInset, SingleIconSize));
