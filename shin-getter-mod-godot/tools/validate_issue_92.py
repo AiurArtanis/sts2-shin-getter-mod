@@ -131,6 +131,18 @@ def validate_power_icon() -> None:
         "images/atlases/power_atlas.sprites/s_g_p_final_getter_beam.tres",
         "region = Rect2(128, 256, 64, 64)",
     )
+    big_icon = ROOT / "images/powers/s_g_p_final_getter_beam.png"
+    legacy_icon = ROOT / "images/powers/s_g_p_final_getter_beam_strength_down.png"
+    if not big_icon.is_file():
+        raise AssertionError("Final Getter Beam big flash icon is missing")
+    if big_icon.read_bytes() != legacy_icon.read_bytes():
+        raise AssertionError("Final Getter Beam big flash does not use its status icon")
+    require(
+        "images/powers/s_g_p_final_getter_beam.png.import",
+        'source_file="res://images/powers/s_g_p_final_getter_beam.png"',
+        "compress/mode=0",
+        "mipmaps/generate=false",
+    )
 
 
 def main() -> None:
