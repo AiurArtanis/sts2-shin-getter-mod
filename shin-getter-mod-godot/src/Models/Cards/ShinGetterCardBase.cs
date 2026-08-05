@@ -232,6 +232,7 @@ public abstract class ShinGetterCardBase : CardModel
     public virtual ShinGetterForm CardForm => ShinGetterForm.None;
     public virtual int SpiritRequirement => 0;
     public virtual int UpgradePreviewSpiritRequirement => SpiritRequirement;
+    protected virtual float ActionAnimationSpeedScale => 1f;
 
     protected override bool ShouldGlowGoldInternal => IsFormGlowActive();
 
@@ -353,7 +354,12 @@ public abstract class ShinGetterCardBase : CardModel
 
         string? animationTrigger = GetActionAnimationTrigger();
         if (animationTrigger != null)
+        {
+            if (ActionAnimationSpeedScale != 1f)
+                NShinGetterStaticVisuals.QueueNextActionSpeed(creature, ActionAnimationSpeedScale);
+
             NShinGetterStaticVisuals.TryPlayCreatureActionAnimation(creature, animationTrigger);
+        }
     }
 
     private string? GetActionAnimationTrigger()

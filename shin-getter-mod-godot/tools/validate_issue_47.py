@@ -29,6 +29,15 @@ def reject(relative_path: str, *fragments: str) -> None:
 
 
 def validate_code() -> None:
+    require(
+        "src/Models/Cards/ShinGetterCardBase.cs",
+        "protected virtual float ActionAnimationSpeedScale => 1f;",
+        "QueueNextActionSpeed(creature, ActionAnimationSpeedScale)",
+    )
+    require(
+        "src/Models/Cards/SGC_ShinForm.cs",
+        "protected override float ActionAnimationSpeedScale => 0.5f;",
+    )
     require("src/Models/Cards/SGC_ChosenOne.cs", ": base(2, CardType.Power")
     require(
         "src/Models/Cards/SGC_BoldPlan.cs",

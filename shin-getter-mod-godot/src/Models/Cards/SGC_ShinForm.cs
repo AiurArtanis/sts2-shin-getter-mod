@@ -22,6 +22,8 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_ShinForm : ShinGetterCardBase
 {
+    protected override float ActionAnimationSpeedScale => 0.5f;
+
     public override string PortraitPath =>
         ImageHelper.GetImagePath("packed/card_single/shin_getter/s_g_c_shin_form_card.png");
 
