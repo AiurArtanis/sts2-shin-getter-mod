@@ -191,6 +191,70 @@ for trigger in (
 ):
     require(trigger in service, f"missing voice trigger boundary: {trigger}")
 
+kill_handler = service.split("internal static void OnAfterDamageGiven", 1)[1].split(
+    "internal static void OnAfterDamageReceived", 1
+)[0]
+require(
+    "TryQueueRandomOneTimeAfterCurrentVoice(player, pool)" in kill_handler,
+    "kill voices must enter the deferred queue",
+)
+require("TryPlayRandomOneTime(player, pool)" not in kill_handler, "kill voices must not play immediately")
+
+queue_method = service.split("private static bool TryQueueRandomOneTimeAfterCurrentVoice", 1)[1].split(
+    "private static void TryStartNextQueuedKillVoice", 1
+)[0]
+require(
+    queue_method.index("TryClaimVoiceCue(player, cue)")
+    < queue_method.index("PendingKillVoiceLines.Enqueue(selected)")
+    < queue_method.index("TryStartNextQueuedKillVoice(player, state)"),
+    "kill voice cues must be claimed before they are queued and drained",
+)
+
+drain_method = service.split("private static void TryStartNextQueuedKillVoice", 1)[1].split(
+    "private static bool TryPlayOpeningPool", 1
+)[0]
+for queue_guard in (
+    "!state.IsStoppingVoiceAudio",
+    "state.ActiveVoicePlayers.Count == 0",
+    "state.PendingKillVoiceLines.TryDequeue",
+    "TryPlayLine(player, line, out _, ignoreRequiredForm: true)",
+):
+    require(queue_guard in drain_method, f"kill voice queue guard is missing: {queue_guard}")
+require("Cmd.Wait" not in drain_method, "kill voice queue must wait for actual player completion, not a fixed delay")
+
+finished_callback = service.split("audioPlayer.Finished += () =>", 1)[1].split("sceneTree.Root.AddChild", 1)[0]
+require(
+    finished_callback.index("state.ActiveVoicePlayers.Remove(audioPlayer)")
+    < finished_callback.index("TryStartNextQueuedKillVoice(player, state)"),
+    "the next kill voice must start only after the finished player is removed",
+)
+require(
+    "state.PendingKillVoiceLines.Clear();\n            StopAllVoiceAudio(state);" in service,
+    "combat reset must clear pending kill voices before stopping audio",
+)
+require(
+    "public readonly Queue<VoiceLine> PendingKillVoiceLines = new();" in service,
+    "per-player kill voice queue is missing",
+)
+stop_method = service.split("private static void StopAllVoiceAudio", 1)[1].split(
+    "private static void PlaySubtitle", 1
+)[0]
+for stop_guard in (
+    "state.IsStoppingVoiceAudio = true;",
+    "finally",
+    "state.ActiveVoicePlayers.Clear();",
+    "state.IsStoppingVoiceAudio = false;",
+):
+    require(stop_guard in stop_method, f"voice stop reentrancy guard is missing: {stop_guard}")
+require(
+    stop_method.index("state.IsStoppingVoiceAudio = true;")
+    < stop_method.index("audioPlayer.Stop();")
+    < stop_method.index("state.ActiveVoicePlayers.Clear();")
+    < stop_method.index("state.IsStoppingVoiceAudio = false;"),
+    "voice stop guard must cover the entire player cleanup",
+)
+require("public bool IsStoppingVoiceAudio;" in service, "per-player voice stop guard is missing")
+
 combat_patch = (ROOT / "src" / "Patches" / "ShinGetterCombatStartVoicePatch.cs").read_text(encoding="utf-8")
 require("PrepareCombatStart" in combat_patch, "combat start must prepare voice state before the combat UI is ready")
 require("CreatureCmd" in combat_patch and "OnEnemySummoned" in combat_patch, "enemy summon patch is missing")
