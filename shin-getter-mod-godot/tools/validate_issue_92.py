@@ -60,17 +60,24 @@ def validate_final_getter_beam() -> None:
 
 
 def validate_stoner_sunshine() -> None:
+    card_path = "src/Models/Cards/SGC_StonerSunshine.cs"
     require(
-        "src/Models/Cards/SGC_StonerSunshine.cs",
+        card_path,
         "if (HasForm(Owner, ShinGetterForm.Getter1))",
         "TryPlayCardVoiceAtCustomTiming",
         "QueueNextActionSpeed(Owner.Creature, 0.3f)",
         'TryPlayCreatureActionAnimation(Owner.Creature, "Cast")',
         "PlayStonerSunshine(",
         ".WithNoAttackerAnim()",
-        '.WithAttackerAnim("Cast", 0.5f)',
         "ShinGetterCombatVfx.PlayEnergyBall(",
     )
+    card_text = read(card_path)
+    if card_text.count('TryPlayCreatureActionAnimation(Owner.Creature, "Cast")') != 2:
+        raise AssertionError("Stoner Sunshine must explicitly play Cast in both form branches")
+    if card_text.count(".WithNoAttackerAnim()") != 2:
+        raise AssertionError("Stoner Sunshine attacks must not replay the explicit Cast animation")
+    if ".WithAttackerAnim(" in card_text:
+        raise AssertionError("Stoner Sunshine contains a duplicate command-driven attacker animation")
     require(
         "src/Models/Cards/ShinGetterCardBase.cs",
         '"SGC_StonerSunshine",',
