@@ -512,6 +512,12 @@ internal static class ShinGetterVoiceService
 
     private static void TryStartNextQueuedKillVoice(Player player, VoicePlaybackState state)
     {
+        if (!CombatManager.Instance.IsInProgress)
+        {
+            state.PendingKillVoiceLines.Clear();
+            return;
+        }
+
         while (!state.IsStoppingVoiceAudio
                && state.ActiveVoicePlayers.Count == 0
                && state.PendingKillVoiceLines.TryDequeue(out VoiceLine? line))

@@ -214,6 +214,8 @@ drain_method = service.split("private static void TryStartNextQueuedKillVoice", 
     "private static bool TryPlayOpeningPool", 1
 )[0]
 for queue_guard in (
+    "CombatManager.Instance.IsInProgress",
+    "state.PendingKillVoiceLines.Clear()",
     "!state.IsStoppingVoiceAudio",
     "state.ActiveVoicePlayers.Count == 0",
     "state.PendingKillVoiceLines.TryDequeue",
@@ -221,6 +223,11 @@ for queue_guard in (
 ):
     require(queue_guard in drain_method, f"kill voice queue guard is missing: {queue_guard}")
 require("Cmd.Wait" not in drain_method, "kill voice queue must wait for actual player completion, not a fixed delay")
+require(
+    drain_method.index("CombatManager.Instance.IsInProgress")
+    < drain_method.index("state.ActiveVoicePlayers.Count == 0"),
+    "queued kill voices must be discarded before draining after combat ends",
+)
 
 finished_callback = service.split("audioPlayer.Finished += () =>", 1)[1].split("sceneTree.Root.AddChild", 1)[0]
 require(
