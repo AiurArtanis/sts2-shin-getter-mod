@@ -340,6 +340,7 @@ internal static class ShinGetterVoiceService
             state.ShouldPlayShiningSparkFollowUp = false;
             state.HasHandledFirstDamage = false;
             state.CombatStartContext = null;
+            state.PendingKillVoiceLines.Clear();
             StopAllVoiceAudio(state);
             StopCurrentSubtitle(state);
         }
@@ -399,7 +400,7 @@ internal static class ShinGetterVoiceService
         }
 
         ShinGetterVoiceCue[] pool = GetKillVoicePool(player);
-        TryPlayRandomOneTime(player, pool);
+        TryQueueRandomOneTimeAfterCurrentVoice(player, pool);
     }
 
     internal static void OnAfterDamageReceived(
@@ -487,7 +488,9 @@ internal static class ShinGetterVoiceService
         return TryPlayLine(player, line, out durationSeconds, ignoreRequiredForm: true);
     }
 
-    private static bool TryPlayRandomOneTime(Player player, IReadOnlyCollection<ShinGetterVoiceCue> cues)
+    private static bool TryQueueRandomOneTimeAfterCurrentVoice(
+        Player player,
+        IReadOnlyCollection<ShinGetterVoiceCue> cues)
     {
         List<VoiceLine> candidates = cues
             .Select(cue => Lines[cue])
@@ -498,7 +501,30 @@ internal static class ShinGetterVoiceService
             return false;
 
         VoiceLine selected = candidates[Random.Shared.Next(candidates.Count)];
-        return TryPlayOneTime(player, selected);
+        if (selected.Cue is not { } cue || !TryClaimVoiceCue(player, cue))
+            return false;
+
+        VoicePlaybackState state = PlaybackStates.GetOrCreateValue(player);
+        state.PendingKillVoiceLines.Enqueue(selected);
+        TryStartNextQueuedKillVoice(player, state);
+        return true;
+    }
+
+    private static void TryStartNextQueuedKillVoice(Player player, VoicePlaybackState state)
+    {
+        if (!CombatManager.Instance.IsInProgress)
+        {
+            state.PendingKillVoiceLines.Clear();
+            return;
+        }
+
+        while (!state.IsStoppingVoiceAudio
+               && state.ActiveVoicePlayers.Count == 0
+               && state.PendingKillVoiceLines.TryDequeue(out VoiceLine? line))
+        {
+            if (line != null && TryPlayLine(player, line, out _, ignoreRequiredForm: true))
+                return;
+        }
     }
 
     private static bool TryPlayOpeningPool(Player player, IReadOnlyCollection<ShinGetterVoiceCue> cues)
@@ -579,6 +605,8 @@ internal static class ShinGetterVoiceService
             state.ActiveVoicePlayers.Remove(audioPlayer);
             if (GodotObject.IsInstanceValid(audioPlayer))
                 audioPlayer.QueueFree();
+
+            TryStartNextQueuedKillVoice(player, state);
         };
         sceneTree.Root.AddChild(audioPlayer);
         audioPlayer.Play();
@@ -611,16 +639,23 @@ internal static class ShinGetterVoiceService
 
     private static void StopAllVoiceAudio(VoicePlaybackState state)
     {
-        foreach (AudioStreamPlayer audioPlayer in state.ActiveVoicePlayers.ToArray())
+        state.IsStoppingVoiceAudio = true;
+        try
         {
-            if (!GodotObject.IsInstanceValid(audioPlayer))
-                continue;
+            foreach (AudioStreamPlayer audioPlayer in state.ActiveVoicePlayers.ToArray())
+            {
+                if (!GodotObject.IsInstanceValid(audioPlayer))
+                    continue;
 
-            audioPlayer.Stop();
-            audioPlayer.QueueFree();
+                audioPlayer.Stop();
+                audioPlayer.QueueFree();
+            }
         }
-
-        state.ActiveVoicePlayers.Clear();
+        finally
+        {
+            state.ActiveVoicePlayers.Clear();
+            state.IsStoppingVoiceAudio = false;
+        }
     }
 
     private static void PlaySubtitle(
@@ -845,6 +880,8 @@ internal static class ShinGetterVoiceService
     private sealed class VoicePlaybackState
     {
         public readonly List<AudioStreamPlayer> ActiveVoicePlayers = new();
+        public readonly Queue<VoiceLine> PendingKillVoiceLines = new();
+        public bool IsStoppingVoiceAudio;
         public NSpeechBubbleVfx? CurrentSubtitle;
         public int SubtitleGeneration;
         public bool ShouldPlayShiningSparkFollowUp;
