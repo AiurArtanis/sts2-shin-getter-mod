@@ -22,7 +22,7 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_ShinForm : ShinGetterCardBase
 {
-    protected override float ActionAnimationSpeedScale => 0.5f;
+    protected override float ActionAnimationSpeedScale => 0.33f;
 
     public override string PortraitPath =>
         ImageHelper.GetImagePath("packed/card_single/shin_getter/s_g_c_shin_form_card.png");
@@ -56,6 +56,14 @@ public sealed class SGC_ShinForm : ShinGetterCardBase
         return modifiedCost != originalCost;
     }
 
+    public override async Task BeforeCardPlayed(CardPlay cardPlay)
+    {
+        if (ReferenceEquals(cardPlay.Card, this) && cardPlay.PlayIndex == 0)
+            ShinGetterVoiceService.PlayShinDragonTransform(Owner);
+
+        await base.BeforeCardPlayed(cardPlay);
+    }
+
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         var creature = base.Owner.Creature;
@@ -70,8 +78,6 @@ public sealed class SGC_ShinForm : ShinGetterCardBase
         ShinGetterCardFramePatch.BeginFormTransitionToShinDragon();
         try
         {
-            ShinGetterVoiceService.PlayShinDragonTransform(Owner);
-
             // 移除当前所有形态
             var one = creature.GetPower<SGP_ShinGetterOne>();
             var two = creature.GetPower<SGP_ShinGetterTwo>();
