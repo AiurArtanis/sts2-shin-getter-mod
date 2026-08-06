@@ -62,11 +62,14 @@ def validate_final_getter_beam() -> None:
 def validate_stoner_sunshine() -> None:
     require(
         "src/Models/Cards/SGC_StonerSunshine.cs",
+        "if (HasForm(Owner, ShinGetterForm.Getter1))",
         "TryPlayCardVoiceAtCustomTiming",
         "QueueNextActionSpeed(Owner.Creature, 0.3f)",
         'TryPlayCreatureActionAnimation(Owner.Creature, "Cast")',
         "PlayStonerSunshine(",
         ".WithNoAttackerAnim()",
+        '.WithAttackerAnim("Cast", 0.5f)',
+        "ShinGetterCombatVfx.PlayEnergyBall(",
     )
     require(
         "src/Models/Cards/ShinGetterCardBase.cs",
@@ -74,7 +77,9 @@ def validate_stoner_sunshine() -> None:
     )
     require(
         "src/Audio/ShinGetterVoiceService.cs",
-        "or SGC_StonerSunshine",
+        "card is SGC_StonerSunshine",
+        "SGC_StonerSunshine => Lines[ShinGetterVoiceCue.StonerSunshine]",
+        "ShinGetterCardBase.IsInForm(card.Owner, ShinGetterForm.Getter1)",
     )
     require(
         "src/Nodes/Vfx/ShinGetterCombatVfx.cs",

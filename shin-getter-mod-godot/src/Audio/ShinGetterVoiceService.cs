@@ -212,7 +212,9 @@ internal static class ShinGetterVoiceService
     }
 
     private static bool UsesCustomCardVoiceTiming(CardModel card) =>
-        card is SGC_GetterWill or SGC_HolyDragonRoar or SGC_PoseidonThunder or SGC_StonerSunshine;
+        card is SGC_GetterWill or SGC_HolyDragonRoar or SGC_PoseidonThunder
+        || card is SGC_StonerSunshine
+            && ShinGetterCardBase.IsInForm(card.Owner, ShinGetterForm.Getter1);
 
     private static VoiceLine? ResolveCardVoice(CardModel card) => card switch
     {
