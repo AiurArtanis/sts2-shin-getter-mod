@@ -36,8 +36,16 @@ def validate_code() -> None:
     )
     require(
         "src/Models/Cards/SGC_ShinForm.cs",
-        "protected override float ActionAnimationSpeedScale => 0.5f;",
+        "protected override float ActionAnimationSpeedScale => 0.33f;",
+        "public override async Task BeforeCardPlayed(CardPlay cardPlay)",
+        "ReferenceEquals(cardPlay.Card, this) && cardPlay.PlayIndex == 0",
+        "ShinGetterVoiceService.PlayShinDragonTransform(Owner);",
+        "await base.BeforeCardPlayed(cardPlay);",
     )
+    reject("src/Models/Cards/SGC_ShinForm.cs", "ActionAnimationSpeedScale => 0.5f;")
+    shin_form = read("src/Models/Cards/SGC_ShinForm.cs")
+    if shin_form.count("ShinGetterVoiceService.PlayShinDragonTransform(Owner);") != 1:
+        raise AssertionError("SGC_ShinForm: transform voice must play exactly once")
     require("src/Models/Cards/SGC_ChosenOne.cs", ": base(2, CardType.Power")
     require(
         "src/Models/Cards/SGC_BoldPlan.cs",
