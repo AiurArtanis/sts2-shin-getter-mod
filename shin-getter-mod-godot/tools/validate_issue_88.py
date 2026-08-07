@@ -261,6 +261,8 @@ def validate_ui_and_preview() -> None:
         "ConnectSignals()",
         "protected override void OnRelease()",
         "_action?.Invoke()",
+        "RestoreHoverScaleAfterRelease()",
+        "!IsFocused || !_requestedEnabled || !IsVisibleInTree()",
         "SetEnabled(_requestedEnabled)",
         'TweenProperty(this, "scale", Vector2.One * 1.2f',
         'Name = "SelectionReticle"',

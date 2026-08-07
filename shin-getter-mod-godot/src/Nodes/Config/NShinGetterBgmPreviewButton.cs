@@ -93,6 +93,7 @@ public partial class NShinGetterBgmPreviewButton : NSettingsButton
     {
         base.OnRelease();
         _action?.Invoke();
+        RestoreHoverScaleAfterRelease();
     }
 
     protected override void OnEnable()
@@ -112,6 +113,16 @@ public partial class NShinGetterBgmPreviewButton : NSettingsButton
     {
         SetEnabled(_requestedEnabled);
         SelfModulate = _requestedEnabled ? Colors.White : new Color(1f, 1f, 1f, 0.35f);
+    }
+
+    private void RestoreHoverScaleAfterRelease()
+    {
+        if (!IsFocused || !_requestedEnabled || !IsVisibleInTree())
+            return;
+
+        _tween?.Kill();
+        _tween = CreateTween().SetParallel();
+        _tween.TweenProperty(this, "scale", Vector2.One * 1.2f, 0.05);
     }
 
     private void UpdatePivot()
