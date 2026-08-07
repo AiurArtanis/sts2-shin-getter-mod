@@ -36,10 +36,15 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
     private const int SettingFontSize = 28;
     private const int NoteFontSize = 21;
     private const float SettingControlWidth = 560f;
+    private const float BgmPreviewControlsWidth = 108f;
+    private const float BgmControlSeparation = 12f;
+    private const float BgmDropdownWidth =
+        SettingControlWidth - BgmPreviewControlsWidth - BgmControlSeparation;
 
     private Control? _initialFocus;
     private Label? _exportPathLabel;
     private NShinGetterVoicePaginator? _voiceModePaginator;
+    private Control? _bgmDropdownLayer;
     private FileDialog? _folderDialog;
 
     protected override Control? InitialFocusedControl => _initialFocus;
@@ -229,13 +234,27 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         };
         root.AddChild(scroll);
 
-        var options = new VBoxContainer
+        var scrollContent = new MarginContainer
         {
+            Name = "SettingsScrollContent",
             CustomMinimumSize = new Vector2(720f, 0f),
             SizeFlagsHorizontal = SizeFlags.ExpandFill,
         };
+        scroll.AddChild(scrollContent);
+
+        var options = new VBoxContainer
+        {
+            Name = "SettingsOptions",
+            SizeFlagsHorizontal = SizeFlags.ExpandFill,
+        };
         options.AddThemeConstantOverride("separation", 18);
-        scroll.AddChild(options);
+        scrollContent.AddChild(options);
+
+        _bgmDropdownLayer = new Control
+        {
+            Name = "BgmDropdownLayer",
+            MouseFilter = MouseFilterEnum.Ignore,
+        };
 
         options.AddChild(BuildMainMenuToggle());
         options.AddChild(CreateDivider());
@@ -246,6 +265,10 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         options.AddChild(BuildEventInvasionToggle());
         options.AddChild(CreateDivider());
         options.AddChild(BuildCardExportSection());
+
+        // Keep dropdowns above the option rows while letting the VBox alone drive
+        // the scrollable content height. This mirrors the original settings screen.
+        scrollContent.AddChild(_bgmDropdownLayer);
 
         return margin;
     }
@@ -427,30 +450,45 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         string? noteFallback = null)
     {
         string? note = noteKey == null ? null : Localize(noteKey, noteFallback ?? string.Empty);
+        if (_bgmDropdownLayer == null)
+            throw new InvalidOperationException("BGM dropdown layer must exist before building track rows.");
+
         var row = CreateSettingRow(Localize(labelKey, labelFallback), 88f, note);
-        var selector = new Control
+        var controls = new HBoxContainer
         {
-            Name = category + "Selector",
+            Name = category + "Controls",
             CustomMinimumSize = new Vector2(SettingControlWidth, 64f),
             SizeFlagsHorizontal = SizeFlags.ShrinkEnd,
             SizeFlagsVertical = SizeFlags.ShrinkCenter,
+            MouseFilter = MouseFilterEnum.Ignore,
         };
-        row.AddChild(selector);
+        controls.AddThemeConstantOverride("separation", (int)BgmControlSeparation);
+        row.AddChild(controls);
 
         NShinGetterBgmDropdown dropdown =
             InstantiateOriginalControl<NShinGetterBgmDropdown>(SettingsDropdownScenePath);
         dropdown.Name = category + "Dropdown";
-        dropdown.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
-        dropdown.OffsetRight = -118f;
-        selector.AddChild(dropdown);
+        dropdown.SetAnchorsAndOffsetsPreset(LayoutPreset.TopLeft);
+        dropdown.CustomMinimumSize = new Vector2(BgmDropdownWidth, 64f);
+        dropdown.Size = dropdown.CustomMinimumSize;
+        dropdown.ConfigureLayout(BgmDropdownWidth);
         dropdown.Configure(
             ShinGetterBgmCatalog.Tracks,
             ShinGetterChunibyoConfigService.GetBgmTrackId(category));
+        _bgmDropdownLayer.AddChild(dropdown);
+
+        var anchor = new NShinGetterBgmDropdownAnchor
+        {
+            Name = category + "DropdownAnchor",
+            CustomMinimumSize = new Vector2(BgmDropdownWidth, 64f),
+            SizeFlagsHorizontal = SizeFlags.ExpandFill,
+            SizeFlagsVertical = SizeFlags.ShrinkCenter,
+        };
+        anchor.Bind(dropdown);
+        controls.AddChild(anchor);
 
         var preview = new NShinGetterBgmPreviewControls { Name = category + "Preview" };
-        preview.SetAnchorsPreset(LayoutPreset.FullRect);
-        preview.OffsetLeft = SettingControlWidth - 108f;
-        selector.AddChild(preview);
+        controls.AddChild(preview);
         preview.Configure(category, () => dropdown.SelectedTrack);
 
         dropdown.TrackChanged += track =>

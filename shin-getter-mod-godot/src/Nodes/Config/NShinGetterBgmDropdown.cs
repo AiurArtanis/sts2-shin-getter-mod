@@ -15,6 +15,7 @@ public partial class NShinGetterBgmDropdown : NSettingsDropdown
     private const string LocTable = "settings_ui";
 
     private readonly List<ShinGetterBgmTrack> _tracks = new();
+    private Control? _floatingContainer;
 
     internal event Action<ShinGetterBgmTrack>? TrackChanged;
 
@@ -24,7 +25,25 @@ public partial class NShinGetterBgmDropdown : NSettingsDropdown
     public override void _Ready()
     {
         ConnectSignals();
+        _floatingContainer = GetNode<Control>("%DropdownContainer");
+        _floatingContainer.Connect(
+            CanvasItem.SignalName.VisibilityChanged,
+            Callable.From(OnDropdownContainerVisibilityChanged));
         PopulateItems();
+    }
+
+    public override void _Process(double delta)
+    {
+        if (_floatingContainer is { Visible: true })
+            PositionFloatingContainer();
+    }
+
+    internal void ConfigureLayout(float width)
+    {
+        Control container = GetNode<Control>("%DropdownContainer");
+        container.SetAnchorsAndOffsetsPreset(LayoutPreset.TopLeft);
+        container.Position = new Vector2(0f, 64f);
+        container.Size = new Vector2(width, 600f);
     }
 
     internal void Configure(IReadOnlyList<ShinGetterBgmTrack> tracks, string selectedTrackId)
@@ -64,6 +83,22 @@ public partial class NShinGetterBgmDropdown : NSettingsDropdown
         _currentOptionLabel.SetTextAutoSize(LocalizeTrack(track));
         CloseDropdown();
         TrackChanged?.Invoke(track);
+    }
+
+    private void OnDropdownContainerVisibilityChanged()
+    {
+        if (_floatingContainer == null)
+            return;
+
+        _floatingContainer.TopLevel = _floatingContainer.Visible;
+        if (_floatingContainer.Visible)
+            PositionFloatingContainer();
+    }
+
+    private void PositionFloatingContainer()
+    {
+        if (_floatingContainer != null)
+            _floatingContainer.GlobalPosition = GlobalPosition + new Vector2(0f, Size.Y);
     }
 
     private static string LocalizeTrack(ShinGetterBgmTrack track) =>

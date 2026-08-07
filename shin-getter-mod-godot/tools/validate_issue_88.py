@@ -17,7 +17,9 @@ ENCOUNTER = ROOT / "src/Audio/ShinGetterEncounterMusicService.cs"
 EXECUTION = ROOT / "src/Audio/ShinGetterExecutionMusicService.cs"
 SUBMENU = ROOT / "src/Nodes/Config/NChunibyoConfigSubmenu.cs"
 DROPDOWN = ROOT / "src/Nodes/Config/NShinGetterBgmDropdown.cs"
+ANCHOR = ROOT / "src/Nodes/Config/NShinGetterBgmDropdownAnchor.cs"
 CONTROLS = ROOT / "src/Nodes/Config/NShinGetterBgmPreviewControls.cs"
+PREVIEW_BUTTON = ROOT / "src/Nodes/Config/NShinGetterBgmPreviewButton.cs"
 RESOURCE_GATE = ROOT / "tools/validate-mod-resources.gd"
 ENERGY_TEXTURE = ROOT / "images/atlases/ui_atlas.sprites/card/energy_shin_getter.tres"
 LOCALIZATION_ROOT = ROOT / "ShinGetterMod/localization"
@@ -190,7 +192,9 @@ def validate_config_and_runtime() -> None:
 def validate_ui_and_preview() -> None:
     submenu = SUBMENU.read_text(encoding="utf-8")
     dropdown = DROPDOWN.read_text(encoding="utf-8")
+    anchor = ANCHOR.read_text(encoding="utf-8")
     controls = CONTROLS.read_text(encoding="utf-8")
+    preview_button = PREVIEW_BUTTON.read_text(encoding="utf-8")
     preview = PREVIEW.read_text(encoding="utf-8")
     require(
         submenu,
@@ -202,9 +206,19 @@ def validate_ui_and_preview() -> None:
         'Name = "BgmSettingsDetails"',
         "details.Visible = button.ButtonPressed",
         "SettingsDropdownScenePath",
+        'Name = "SettingsScrollContent"',
+        'Name = "SettingsOptions"',
+        'Name = "BgmDropdownLayer"',
+        "scrollContent.AddChild(_bgmDropdownLayer)",
+        'Name = category + "Controls"',
+        'Name = category + "DropdownAnchor"',
+        "anchor.Bind(dropdown)",
+        "_bgmDropdownLayer.AddChild(dropdown)",
         "BuildBgmOtherCharactersToggle",
         "ShinGetterBgmPreviewService.Stop()",
     )
+    if "dropdown.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect)" in submenu:
+        raise AssertionError("BGM dropdowns must not be laid out directly inside option rows.")
     if submenu.index("options.AddChild(BuildVoiceModeRow())") > submenu.index("options.AddChild(BuildBgmSection())"):
         raise AssertionError("BGM settings must appear below Voice Amount.")
     require(
@@ -213,6 +227,17 @@ def validate_ui_and_preview() -> None:
         "res://scenes/ui/dropdown_item.tscn",
         "NDropdownContainer>().RefreshLayout()",
         "CloseDropdown()",
+        "_floatingContainer.TopLevel = _floatingContainer.Visible",
+        "_floatingContainer.GlobalPosition = GlobalPosition + new Vector2(0f, Size.Y)",
+    )
+    require(
+        anchor,
+        "NShinGetterBgmDropdownAnchor : Control",
+        "dropdown.GlobalPosition = GlobalPosition",
+        "dropdown.Size = Size",
+        "dropdown.Visible = shouldBeVisible",
+        "dropdown.GrabFocus()",
+        "dropdown.FocusNeighborBottom = FocusNeighborBottom",
     )
     require(
         controls,
@@ -223,8 +248,22 @@ def validate_ui_and_preview() -> None:
         "new Rect2(0f, 0f, 276f, 276f)",
         "new Rect2(276f, 0f, 276f, 276f)",
         "new Rect2(552f, 0f, 276f, 276f)",
-        "button.Scale = Vector2.One * 1.2f",
+        "new NShinGetterBgmPreviewButton",
+        "SetPreviewEnabled(hasPreview)",
+        "SetIcon(isPlaying ? _pauseIcon : _playIcon)",
         "_stopButton.Visible = isActive",
+    )
+    if ".Pressed +=" in controls or "new Button" in controls:
+        raise AssertionError("BGM preview controls must use the game's NButton input chain.")
+    require(
+        preview_button,
+        "NShinGetterBgmPreviewButton : NSettingsButton",
+        "ConnectSignals()",
+        "protected override void OnRelease()",
+        "_action?.Invoke()",
+        "SetEnabled(_requestedEnabled)",
+        'TweenProperty(this, "scale", Vector2.One * 1.2f',
+        'Name = "SelectionReticle"',
     )
     require(
         preview,
