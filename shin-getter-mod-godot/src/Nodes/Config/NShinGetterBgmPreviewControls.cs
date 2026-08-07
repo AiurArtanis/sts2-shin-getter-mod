@@ -11,8 +11,8 @@ public partial class NShinGetterBgmPreviewControls : HBoxContainer
     private const string AtlasPath = "res://images/atlases/ui_atlas.png";
     private const string LocTable = "settings_ui";
 
-    private readonly Button _playPauseButton;
-    private readonly Button _stopButton;
+    private readonly NShinGetterBgmPreviewButton _playPauseButton;
+    private readonly NShinGetterBgmPreviewButton _stopButton;
     private readonly Texture2D _playIcon;
     private readonly Texture2D _pauseIcon;
     private Func<ShinGetterBgmTrack>? _trackProvider;
@@ -26,12 +26,20 @@ public partial class NShinGetterBgmPreviewControls : HBoxContainer
 
         _playIcon = CreateAtlasIcon(0);
         _pauseIcon = CreateAtlasIcon(1);
-        _playPauseButton = CreateIconButton(_playIcon, "SHIN_GETTER_CHUNIBYO.BGM.PLAY");
-        _playPauseButton.Pressed += OnPlayPausePressed;
+        _playPauseButton = CreateIconButton(
+            "PlayPauseButton",
+            _playIcon,
+            "SHIN_GETTER_CHUNIBYO.BGM.PLAY",
+            "Play preview",
+            OnPlayPausePressed);
         AddChild(_playPauseButton);
 
-        _stopButton = CreateIconButton(CreateAtlasIcon(2), "SHIN_GETTER_CHUNIBYO.BGM.STOP");
-        _stopButton.Pressed += ShinGetterBgmPreviewService.Stop;
+        _stopButton = CreateIconButton(
+            "StopButton",
+            CreateAtlasIcon(2),
+            "SHIN_GETTER_CHUNIBYO.BGM.STOP",
+            "Stop preview",
+            ShinGetterBgmPreviewService.Stop);
         AddChild(_stopButton);
     }
 
@@ -85,30 +93,26 @@ public partial class NShinGetterBgmPreviewControls : HBoxContainer
         bool isPlaying = isActive
             && ShinGetterBgmPreviewService.State == ShinGetterBgmPreviewState.Playing;
 
-        _playPauseButton.Disabled = !hasPreview;
-        _playPauseButton.Icon = isPlaying ? _pauseIcon : _playIcon;
-        _playPauseButton.TooltipText = Localize(
+        _playPauseButton.SetPreviewEnabled(hasPreview);
+        _playPauseButton.SetIcon(isPlaying ? _pauseIcon : _playIcon);
+        _playPauseButton.SetTooltip(Localize(
             isPlaying ? "SHIN_GETTER_CHUNIBYO.BGM.PAUSE" : "SHIN_GETTER_CHUNIBYO.BGM.PLAY",
-            isPlaying ? "Pause preview" : "Play preview");
+            isPlaying ? "Pause preview" : "Play preview"));
         _stopButton.Visible = isActive;
     }
 
-    private static Button CreateIconButton(Texture2D icon, string tooltipKey)
+    private static NShinGetterBgmPreviewButton CreateIconButton(
+        string name,
+        Texture2D icon,
+        string tooltipKey,
+        string tooltipFallback,
+        Action action)
     {
-        var button = new Button
+        var button = new NShinGetterBgmPreviewButton
         {
-            CustomMinimumSize = new Vector2(52f, 52f),
-            SizeFlagsVertical = SizeFlags.ShrinkCenter,
-            FocusMode = FocusModeEnum.All,
-            Flat = true,
-            Icon = icon,
-            ExpandIcon = true,
-            TooltipText = Localize(tooltipKey, tooltipKey),
+            Name = name,
         };
-        button.AddThemeStyleboxOverride("focus", new StyleBoxEmpty());
-        button.Resized += () => button.PivotOffset = button.Size * 0.5f;
-        button.MouseEntered += () => button.Scale = Vector2.One * 1.2f;
-        button.MouseExited += () => button.Scale = Vector2.One;
+        button.Initialize(icon, Localize(tooltipKey, tooltipFallback), action);
         return button;
     }
 
