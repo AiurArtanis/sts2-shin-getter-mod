@@ -14,6 +14,7 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
 using MegaCrit.Sts2.Core.Nodes.Screens.Settings;
+using ShinGetterMod.Audio;
 using ShinGetterMod.Config;
 using ShinGetterMod.Diagnostics.CardExport;
 
@@ -27,6 +28,8 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
     private const string KreonFontPath = "res://themes/kreon_regular_shared.tres";
     private const string ConfigTickboxScenePath = "res://scenes/screens/settings_tickbox.tscn";
     private const string VoicePaginatorScenePath = "res://scenes/screens/paginator.tscn";
+    private const string SettingsDropdownScenePath = "res://scenes/screens/settings_dropdown.tscn";
+    private const string SettingsArrowPath = "res://images/packed/common_ui/settings_tiny_left_arrow.png";
     private const string LocTable = "settings_ui";
     private const int PageTitleFontSize = 52;
     private const int SidebarTitleFontSize = 48;
@@ -45,6 +48,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
     {
         SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         BuildInterface();
+        Connect(CanvasItem.SignalName.VisibilityChanged, Callable.From(OnConfigVisibilityChanged));
     }
 
     public override void OnSubmenuOpened()
@@ -237,6 +241,8 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         options.AddChild(CreateDivider());
         options.AddChild(BuildVoiceModeRow());
         options.AddChild(CreateDivider());
+        options.AddChild(BuildBgmSection());
+        options.AddChild(CreateDivider());
         options.AddChild(BuildEventInvasionToggle());
         options.AddChild(CreateDivider());
         options.AddChild(BuildCardExportSection());
@@ -311,6 +317,166 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
             SaveConfigOrShowError();
         };
         UpdateVoiceModePresentation();
+        return row;
+    }
+
+    private Control BuildBgmSection()
+    {
+        var section = new VBoxContainer
+        {
+            Name = "BgmSettingsSection",
+            SizeFlagsHorizontal = SizeFlags.ExpandFill,
+        };
+        section.AddThemeConstantOverride("separation", 12);
+
+        var details = new VBoxContainer
+        {
+            Name = "BgmSettingsDetails",
+            Visible = false,
+            SizeFlagsHorizontal = SizeFlags.ExpandFill,
+        };
+        details.AddThemeConstantOverride("separation", 12);
+
+        section.AddChild(CreateBgmSectionHeader(details));
+        section.AddChild(details);
+        details.AddChild(BuildBgmTrackRow(
+            ShinGetterBgmCategory.Execution,
+            "SHIN_GETTER_CHUNIBYO.BGM.EXECUTION",
+            "Execution Theme",
+            "SHIN_GETTER_CHUNIBYO.BGM.EXECUTION_NOTE",
+            "Triggers after a finisher enters your hand from turn two onward."));
+        details.AddChild(CreateDivider());
+        details.AddChild(BuildBgmTrackRow(
+            ShinGetterBgmCategory.NormalCombat,
+            "SHIN_GETTER_CHUNIBYO.BGM.NORMAL",
+            "Normal Combat"));
+        details.AddChild(CreateDivider());
+        details.AddChild(BuildBgmTrackRow(
+            ShinGetterBgmCategory.EventCombat,
+            "SHIN_GETTER_CHUNIBYO.BGM.EVENT",
+            "Encounter Combat",
+            "SHIN_GETTER_CHUNIBYO.BGM.EVENT_NOTE",
+            "Combat entered from a ? room event."));
+        details.AddChild(CreateDivider());
+        details.AddChild(BuildBgmTrackRow(
+            ShinGetterBgmCategory.EliteCombat,
+            "SHIN_GETTER_CHUNIBYO.BGM.ELITE",
+            "Elite Combat"));
+        details.AddChild(CreateDivider());
+        details.AddChild(BuildBgmTrackRow(
+            ShinGetterBgmCategory.BossCombat,
+            "SHIN_GETTER_CHUNIBYO.BGM.BOSS",
+            "Boss Combat"));
+        details.AddChild(CreateDivider());
+        details.AddChild(BuildBgmOtherCharactersToggle());
+        return section;
+    }
+
+    private Control CreateBgmSectionHeader(Control details)
+    {
+        var button = new Button
+        {
+            Name = "BgmSettingsToggle",
+            CustomMinimumSize = new Vector2(0f, 72f),
+            SizeFlagsHorizontal = SizeFlags.ExpandFill,
+            FocusMode = FocusModeEnum.All,
+            ToggleMode = true,
+            Text = Localize("SHIN_GETTER_CHUNIBYO.BGM.TITLE", "BGM Settings"),
+            Alignment = HorizontalAlignment.Left,
+        };
+        button.AddThemeFontOverride("font", PreloadManager.Cache.GetAsset<Font>(KreonFontPath));
+        button.AddThemeFontSizeOverride("font_size", 34);
+        button.AddThemeColorOverride("font_color", new Color(0.91f, 0.86f, 0.74f));
+        button.AddThemeColorOverride("font_hover_color", StsColors.gold);
+        button.AddThemeConstantOverride("outline_size", 4);
+        button.AddThemeStyleboxOverride("normal", CreateBgmHeaderStyle(new Color(0.07f, 0.13f, 0.16f, 0.92f)));
+        button.AddThemeStyleboxOverride("hover", CreateBgmHeaderStyle(new Color(0.10f, 0.20f, 0.24f, 0.96f)));
+        button.AddThemeStyleboxOverride("pressed", CreateBgmHeaderStyle(new Color(0.12f, 0.24f, 0.28f, 0.96f)));
+        button.AddThemeStyleboxOverride("focus", CreateBgmHeaderStyle(new Color(0.10f, 0.20f, 0.24f, 0.96f)));
+
+        var arrow = new TextureRect
+        {
+            Name = "ExpandArrow",
+            Texture = ResourceLoader.Load<Texture2D>(SettingsArrowPath),
+            ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
+            StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered,
+            MouseFilter = MouseFilterEnum.Ignore,
+        };
+        arrow.SetAnchorsPreset(LayoutPreset.CenterRight);
+        arrow.OffsetLeft = -52f;
+        arrow.OffsetTop = -18f;
+        arrow.OffsetRight = -16f;
+        arrow.OffsetBottom = 18f;
+        arrow.PivotOffset = new Vector2(18f, 18f);
+        arrow.Rotation = -Mathf.Pi * 0.5f;
+        button.AddChild(arrow);
+
+        button.Pressed += () =>
+        {
+            details.Visible = button.ButtonPressed;
+            arrow.Rotation = button.ButtonPressed ? 0f : -Mathf.Pi * 0.5f;
+        };
+        return button;
+    }
+
+    private Control BuildBgmTrackRow(
+        ShinGetterBgmCategory category,
+        string labelKey,
+        string labelFallback,
+        string? noteKey = null,
+        string? noteFallback = null)
+    {
+        string? note = noteKey == null ? null : Localize(noteKey, noteFallback ?? string.Empty);
+        var row = CreateSettingRow(Localize(labelKey, labelFallback), 88f, note);
+        var selector = new Control
+        {
+            Name = category + "Selector",
+            CustomMinimumSize = new Vector2(SettingControlWidth, 64f),
+            SizeFlagsHorizontal = SizeFlags.ShrinkEnd,
+            SizeFlagsVertical = SizeFlags.ShrinkCenter,
+        };
+        row.AddChild(selector);
+
+        NShinGetterBgmDropdown dropdown =
+            InstantiateOriginalControl<NShinGetterBgmDropdown>(SettingsDropdownScenePath);
+        dropdown.Name = category + "Dropdown";
+        dropdown.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        dropdown.OffsetRight = -118f;
+        selector.AddChild(dropdown);
+        dropdown.Configure(
+            ShinGetterBgmCatalog.Tracks,
+            ShinGetterChunibyoConfigService.GetBgmTrackId(category));
+
+        var preview = new NShinGetterBgmPreviewControls { Name = category + "Preview" };
+        preview.SetAnchorsPreset(LayoutPreset.FullRect);
+        preview.OffsetLeft = SettingControlWidth - 108f;
+        selector.AddChild(preview);
+        preview.Configure(category, () => dropdown.SelectedTrack);
+
+        dropdown.TrackChanged += track =>
+        {
+            preview.OnSelectionChanged();
+            ShinGetterChunibyoConfigService.SetBgmTrackId(category, track.Id);
+            SaveConfigOrShowError();
+        };
+        return row;
+    }
+
+    private Control BuildBgmOtherCharactersToggle()
+    {
+        var row = CreateSettingRow(
+            Localize("SHIN_GETTER_CHUNIBYO.BGM.OTHER_CHARACTERS", "Enable for other characters"),
+            noteText: Localize(
+                "SHIN_GETTER_CHUNIBYO.BGM.OTHER_CHARACTERS_NOTE",
+                "Also applies these BGM replacements while playing another character."));
+        NShinGetterConfigTickbox toggle = CreateOriginalTickbox(
+            ShinGetterChunibyoConfigService.Current.BgmForOtherCharacters,
+            enabled =>
+            {
+                ShinGetterChunibyoConfigService.Current.BgmForOtherCharacters = enabled;
+                SaveConfigOrShowError();
+            });
+        row.AddChild(toggle);
         return row;
     }
 
@@ -491,6 +657,23 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         panel.AddThemeStyleboxOverride("panel", style);
         return panel;
     }
+
+    private static StyleBoxFlat CreateBgmHeaderStyle(Color background) =>
+        new()
+        {
+            BgColor = background,
+            BorderColor = new Color(0.22f, 0.34f, 0.39f, 0.95f),
+            BorderWidthLeft = 2,
+            BorderWidthTop = 2,
+            BorderWidthRight = 2,
+            BorderWidthBottom = 2,
+            CornerRadiusTopLeft = 4,
+            CornerRadiusTopRight = 4,
+            CornerRadiusBottomLeft = 4,
+            CornerRadiusBottomRight = 4,
+            ContentMarginLeft = 22f,
+            ContentMarginRight = 62f,
+        };
 
     private static MarginContainer CreateInnerMargin()
     {
@@ -692,6 +875,12 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
 
         Control? returnFocus = GetViewport().GuiGetFocusOwner();
         modalContainer.Add(NChunibyoUpdateHistoryPopup.Create(title, body, returnFocus));
+    }
+
+    private void OnConfigVisibilityChanged()
+    {
+        if (!IsVisibleInTree())
+            ShinGetterBgmPreviewService.Stop();
     }
 
     private static string Localize(string key, string fallback)

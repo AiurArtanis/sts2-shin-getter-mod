@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://y3syulj3sl68"
-path="res://.godot/imported/ui_atlas_shin_getter_01.png-7dad830358807558d0b57e29414ccec3.ctex"
+path="res://.godot/imported/ui_atlas.png-78118ec94f3dcd96fbcfc2693b9dbd71.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://images/atlases/ui_atlas_shin_getter_01.png"
-dest_files=["res://.godot/imported/ui_atlas_shin_getter_01.png-7dad830358807558d0b57e29414ccec3.ctex"]
+source_file="res://images/atlases/ui_atlas.png"
+dest_files=["res://.godot/imported/ui_atlas.png-78118ec94f3dcd96fbcfc2693b9dbd71.ctex"]
 
 [params]
 

@@ -11,12 +11,12 @@ using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves;
 using ShinGetterMod.Models.Characters;
+using ShinGetterMod.Config;
 
 namespace ShinGetterMod.Audio;
 
 internal static class ShinGetterEncounterMusicService
 {
-    private const float RelativeVolume = 0.70f;
     private const float FadeInDurationSeconds = 0.5f;
     private const float SilentVolumeDb = -80f;
 
@@ -45,7 +45,7 @@ internal static class ShinGetterEncounterMusicService
             return;
         if (!ShouldReplaceForLocalPlayer(runState))
             return;
-        if (!TryResolveTrack(runState.Act.CanonicalInstance, room.RoomType, out string trackPath))
+        if (!TryResolveTrack(runState.Act.CanonicalInstance, room, out string trackPath, out ShinGetterBgmCategory category))
             return;
         if (ResourceLoader.Load<AudioStream>(trackPath) is not { } loadedStream)
             return;
@@ -53,12 +53,11 @@ internal static class ShinGetterEncounterMusicService
             return;
 
         AudioStream stream = loadedStream.Duplicate() as AudioStream ?? loadedStream;
-        if (stream is AudioStreamMP3 mp3)
-            mp3.Loop = true;
+        ShinGetterBgmPreviewService.EnableLoop(stream);
 
         float configuredBgmVolume = SaveManager.Instance.SettingsSave.VolumeBgm;
         float encounterMusicVolume = Mathf.Max(
-            Mathf.Pow(configuredBgmVolume, 2f) * RelativeVolume,
+            Mathf.Pow(configuredBgmVolume, 2f) * ShinGetterBgmCatalog.GetRelativeVolume(category),
             0.0001f);
         var player = new AudioStreamPlayer
         {
@@ -102,9 +101,38 @@ internal static class ShinGetterEncounterMusicService
         NAudioManager.Instance?.SetBgmVol(SaveManager.Instance.SettingsSave.VolumeBgm);
     }
 
-    private static bool TryResolveTrack(ActModel act, RoomType roomType, out string trackPath)
+    private static bool TryResolveTrack(
+        ActModel act,
+        CombatRoom room,
+        out string trackPath,
+        out ShinGetterBgmCategory category)
     {
-        trackPath = (act, roomType) switch
+        category = room.ParentEventId != null
+            ? ShinGetterBgmCategory.EventCombat
+            : room.RoomType switch
+            {
+                RoomType.Monster => ShinGetterBgmCategory.NormalCombat,
+                RoomType.Elite => ShinGetterBgmCategory.EliteCombat,
+                RoomType.Boss => ShinGetterBgmCategory.BossCombat,
+                _ => ShinGetterBgmCategory.NormalCombat,
+            };
+
+        if (room.ParentEventId == null
+            && room.RoomType is not (RoomType.Monster or RoomType.Elite or RoomType.Boss))
+        {
+            trackPath = string.Empty;
+            return false;
+        }
+
+        ShinGetterBgmTrack configured = ShinGetterBgmCatalog.ResolveOrDefault(
+            ShinGetterChunibyoConfigService.GetBgmTrackId(category));
+        if (configured.Id != ShinGetterBgmCatalog.DefaultTrackId)
+        {
+            trackPath = configured.ResourcePath;
+            return true;
+        }
+
+        trackPath = (act, room.RoomType) switch
         {
             (Overgrowth, RoomType.Elite) => OvergrowthElite,
             (Underdocks, RoomType.Elite) => UnderdocksElite,
@@ -124,7 +152,9 @@ internal static class ShinGetterEncounterMusicService
         if (runState.CurrentMapPointHistoryEntry?.MapPointType == MapPointType.Ancient)
             return false;
 
-        return LocalContext.GetMe(runState)?.Character is ShinGetter;
+        ShinGetterChunibyoConfigService.Load();
+        return LocalContext.GetMe(runState)?.Character is ShinGetter
+            || ShinGetterChunibyoConfigService.Current.BgmForOtherCharacters;
     }
 
     private static void OnCombatEnded(CombatRoom room)
