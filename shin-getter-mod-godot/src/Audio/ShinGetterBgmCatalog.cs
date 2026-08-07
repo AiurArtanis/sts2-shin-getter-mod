@@ -53,8 +53,11 @@ internal static class ShinGetterBgmCatalog
             Track("hymn", $"{AlbumRoot}/hymn.mp3", "HYMN", "Hymn"),
             Track("reminiscence", $"{AlbumRoot}/reminiscence.mp3", "REMINISCENCE", "Reminiscence"),
             Track("final_war", $"{EncounterRoot}/boss_glory.mp3", "FINAL_WAR", "Final War"),
-            Track("dragon_sts2", $"{AlbumRoot}/dragon_sts2.ogg", "DRAGON_STS2", "DRAGON (Slay the Spire 2 ver.)"),
-            Track("storm_sts2", $"{AlbumRoot}/storm_sts2.ogg", "STORM_STS2", "STORM (Slay the Spire 2 ver.)"),
+            Track("dragon_sts2", $"{AlbumRoot}/dragon_sts2.mp3", "DRAGON_STS2", "DRAGON(slay the spire 2 ver.)"),
+            Track("storm_sts2", $"{AlbumRoot}/storm_sts2.mp3", "STORM_STS2", "STORM(slay the spire 2 ver.)"),
+            Track("heats_sts2", $"{AlbumRoot}/heats_sts2.mp3", "HEATS_STS2", "HEATS(slay the spire 2 ver.)"),
+            Track("getter_robo_sts2", $"{AlbumRoot}/getter_robo_sts2.mp3", "GETTER_ROBO_STS2", "GETTER ROBO(slay the spire 2 ver.)"),
+            Track("heats_final", $"{AlbumRoot}/heats_final.mp3", "HEATS_FINAL", "HEATS(Final ver.)"),
         };
 
     internal static ShinGetterBgmTrack ResolveOrDefault(string? trackId)

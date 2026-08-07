@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import re
+import struct
 from pathlib import Path
 
 
@@ -18,6 +19,7 @@ SUBMENU = ROOT / "src/Nodes/Config/NChunibyoConfigSubmenu.cs"
 DROPDOWN = ROOT / "src/Nodes/Config/NShinGetterBgmDropdown.cs"
 CONTROLS = ROOT / "src/Nodes/Config/NShinGetterBgmPreviewControls.cs"
 RESOURCE_GATE = ROOT / "tools/validate-mod-resources.gd"
+ENERGY_TEXTURE = ROOT / "images/atlases/ui_atlas.sprites/card/energy_shin_getter.tres"
 LOCALIZATION_ROOT = ROOT / "ShinGetterMod/localization"
 LANGUAGES = ("zhs", "jpn", "eng")
 
@@ -44,8 +46,11 @@ TRACK_TITLES = {
     "HYMN": ("赞歌", "賛歌", "Hymn"),
     "REMINISCENCE": ("追忆", "追憶", "Reminiscence"),
     "FINAL_WAR": ("总决战", "総大戦", "Final War"),
-    "DRAGON_STS2": ("DRAGON（杀戮尖塔2版）", "DRAGON（slay the spire 2 ver.）", "DRAGON (Slay the Spire 2 ver.)"),
-    "STORM_STS2": ("STORM（杀戮尖塔2版）", "STORM（slay the spire 2 ver.）", "STORM (Slay the Spire 2 ver.)"),
+    "DRAGON_STS2": ("DRAGON（杀戮尖塔2版）", "DRAGON（slay the spire 2 ver.）", "DRAGON(slay the spire 2 ver.)"),
+    "STORM_STS2": ("STORM（杀戮尖塔2版）", "STORM（slay the spire 2 ver.）", "STORM(slay the spire 2 ver.)"),
+    "HEATS_STS2": ("HEATS（杀戮尖塔2版）", "HEATS（slay the spire 2 ver.）", "HEATS(slay the spire 2 ver.)"),
+    "GETTER_ROBO_STS2": ("GETTER ROBO（杀戮尖塔2版）", "GETTER ROBO（slay the spire 2 ver.）", "GETTER ROBO(slay the spire 2 ver.)"),
+    "HEATS_FINAL": ("HEATS（Final版）", "HEATS（Final ver.）", "HEATS(Final ver.)"),
 }
 
 ALBUM_FILES = {
@@ -62,8 +67,11 @@ ALBUM_FILES = {
     "heroic.mp3",
     "hymn.mp3",
     "reminiscence.mp3",
-    "dragon_sts2.ogg",
-    "storm_sts2.ogg",
+    "dragon_sts2.mp3",
+    "storm_sts2.mp3",
+    "heats_sts2.mp3",
+    "getter_robo_sts2.mp3",
+    "heats_final.mp3",
 }
 
 
@@ -73,14 +81,18 @@ def require(text: str, *needles: str) -> None:
             raise AssertionError(f"Missing required issue#88 assertion: {needle}")
 
 
+def read_png_size(path: Path) -> tuple[int, int]:
+    header = path.read_bytes()[:24]
+    if len(header) != 24 or header[:8] != b"\x89PNG\r\n\x1a\n":
+        raise AssertionError(f"Invalid PNG atlas: {path}")
+    return struct.unpack(">II", header[16:24])
+
+
 def validate_catalog_and_assets() -> None:
     catalog = CATALOG.read_text(encoding="utf-8")
     suffixes = set(re.findall(r'Track\([^\n]+,\s*"([A-Z0-9_]+)"', catalog))
     if suffixes != set(TRACK_TITLES):
         raise AssertionError(f"BGM catalog/localization mismatch: {sorted(suffixes ^ set(TRACK_TITLES))}")
-    if "HEATS_STS2" in catalog:
-        raise AssertionError("HEATS must stay hidden until its three-language option name is designed.")
-
     album = ROOT / "audio/music/shin_getter/album"
     actual_files = {path.name for path in album.iterdir() if path.is_file()}
     if actual_files != ALBUM_FILES:
@@ -89,14 +101,30 @@ def validate_catalog_and_assets() -> None:
         if path.stat().st_size < 100_000:
             raise AssertionError(f"BGM asset is unexpectedly small: {path}")
 
-    atlas = ROOT / "images/ui/chunibyo/bgm_controls_atlas.png"
-    if not atlas.is_file() or atlas.stat().st_size < 200:
-        raise AssertionError("Play/pause/stop atlas is missing or empty.")
+    atlas = ROOT / "images/atlases/ui_atlas.png"
+    if not atlas.is_file() or read_png_size(atlas) != (899, 276):
+        raise AssertionError("Compact UI atlas must be exactly 899x276.")
+
+    obsolete_assets = (
+        ROOT / "images/ui/chunibyo/bgm_controls_atlas.png",
+        ROOT / "images/atlases/ui_atlas_shin_getter_01.png",
+        album / "dragon_sts2.ogg",
+        album / "storm_sts2.ogg",
+    )
+    if existing := [str(path) for path in obsolete_assets if path.exists()]:
+        raise AssertionError(f"Obsolete issue#88 assets still exist: {existing}")
+
+    energy_texture = ENERGY_TEXTURE.read_text(encoding="utf-8")
+    require(
+        energy_texture,
+        'path="res://images/atlases/ui_atlas.png"',
+        "region = Rect2(828, 0, 71, 79)",
+    )
 
     gate = RESOURCE_GATE.read_text(encoding="utf-8")
     for filename in sorted(ALBUM_FILES):
         require(gate, f'res://audio/music/shin_getter/album/{filename}')
-    require(gate, "res://images/ui/chunibyo/bgm_controls_atlas.png")
+    require(gate, "res://images/atlases/ui_atlas.png")
 
 
 def validate_localization() -> None:
@@ -116,6 +144,14 @@ def validate_localization() -> None:
         actual = tuple(tables[language][key] for language in LANGUAGES)
         if actual != expected:
             raise AssertionError(f"Incorrect spreadsheet title mapping for {key}: {actual}")
+
+    english_track_titles = (
+        value
+        for key, value in tables["eng"].items()
+        if key.startswith("SHIN_GETTER_CHUNIBYO.BGM.TRACK.")
+    )
+    if any("（" in value or "）" in value for value in english_track_titles):
+        raise AssertionError("English BGM titles must use half-width parentheses.")
 
 
 def validate_config_and_runtime() -> None:
@@ -180,10 +216,13 @@ def validate_ui_and_preview() -> None:
     )
     require(
         controls,
-        "res://images/ui/chunibyo/bgm_controls_atlas.png",
+        "res://images/atlases/ui_atlas.png",
         "CreateAtlasIcon(0)",
         "CreateAtlasIcon(1)",
         "CreateAtlasIcon(2)",
+        "new Rect2(0f, 0f, 276f, 276f)",
+        "new Rect2(276f, 0f, 276f, 276f)",
+        "new Rect2(552f, 0f, 276f, 276f)",
         "button.Scale = Vector2.One * 1.2f",
         "_stopButton.Visible = isActive",
     )

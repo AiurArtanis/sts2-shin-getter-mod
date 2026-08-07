@@ -8,9 +8,8 @@ namespace ShinGetterMod.Nodes.Config;
 
 public partial class NShinGetterBgmPreviewControls : HBoxContainer
 {
-    private const string AtlasPath = "res://images/ui/chunibyo/bgm_controls_atlas.png";
+    private const string AtlasPath = "res://images/atlases/ui_atlas.png";
     private const string LocTable = "settings_ui";
-    private const int AtlasCellSize = 64;
 
     private readonly Button _playPauseButton;
     private readonly Button _stopButton;
@@ -115,12 +114,19 @@ public partial class NShinGetterBgmPreviewControls : HBoxContainer
 
     private static Texture2D CreateAtlasIcon(int index)
     {
+        Rect2 region = index switch
+        {
+            0 => new Rect2(0f, 0f, 276f, 276f),
+            1 => new Rect2(276f, 0f, 276f, 276f),
+            2 => new Rect2(552f, 0f, 276f, 276f),
+            _ => throw new ArgumentOutOfRangeException(nameof(index)),
+        };
         Texture2D atlas = ResourceLoader.Load<Texture2D>(AtlasPath)
             ?? throw new InvalidOperationException($"Unable to load BGM controls atlas: {AtlasPath}");
         return new AtlasTexture
         {
             Atlas = atlas,
-            Region = new Rect2(index * AtlasCellSize, 0f, AtlasCellSize, AtlasCellSize),
+            Region = region,
         };
     }
 
