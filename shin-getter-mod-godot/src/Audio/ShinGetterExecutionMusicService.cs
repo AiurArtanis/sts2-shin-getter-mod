@@ -12,12 +12,12 @@ using MegaCrit.Sts2.Core.Nodes.Audio;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Saves;
 using ShinGetterMod.Models.Cards;
+using ShinGetterMod.Config;
 
 namespace ShinGetterMod.Audio;
 
 internal static class ShinGetterExecutionMusicService
 {
-    private const string ExecutionMusicPath = "res://audio/music/shin_getter/execution_theme.mp3";
     private const float FadeInDurationSeconds = 1f;
     private const float CombatEndFadeOutDurationSeconds = 3f;
     private const float SilentVolumeDb = -80f;
@@ -132,13 +132,20 @@ internal static class ShinGetterExecutionMusicService
 
     private static void StartPlayback(ExecutionMusicState state)
     {
+        ShinGetterBgmTrack configured = ShinGetterBgmCatalog.ResolveOrDefault(
+            ShinGetterChunibyoConfigService.GetBgmTrackId(ShinGetterBgmCategory.Execution));
+        string trackPath = configured.Id == ShinGetterBgmCatalog.DefaultTrackId
+            ? ShinGetterBgmCatalog.DefaultExecutionMusicPath
+            : configured.ResourcePath;
         if (NonInteractiveMode.IsActive
-            || ResourceLoader.Load<AudioStream>(ExecutionMusicPath) is not { } stream
+            || ResourceLoader.Load<AudioStream>(trackPath) is not { } loadedStream
             || Engine.GetMainLoop() is not SceneTree sceneTree)
         {
             return;
         }
 
+        AudioStream stream = loadedStream.Duplicate() as AudioStream ?? loadedStream;
+        ShinGetterBgmPreviewService.EnableLoop(stream);
         bool replacedEncounterMusic = ShinGetterEncounterMusicService.SuspendForExecution();
         ExecutionMusicState? previousState = _activeState;
         _activeState = null;

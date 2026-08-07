@@ -4,6 +4,7 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Godot;
+using ShinGetterMod.Audio;
 
 namespace ShinGetterMod.Config;
 
@@ -18,6 +19,12 @@ public sealed class ShinGetterChunibyoConfig
 {
     public bool ShowInMainMenu { get; set; } = true;
     public ShinGetterVoiceMode VoiceMode { get; set; } = ShinGetterVoiceMode.OncePerCombat;
+    public string ExecutionBgmTrackId { get; set; } = ShinGetterBgmCatalog.DefaultTrackId;
+    public string NormalCombatBgmTrackId { get; set; } = ShinGetterBgmCatalog.DefaultTrackId;
+    public string EventCombatBgmTrackId { get; set; } = ShinGetterBgmCatalog.DefaultTrackId;
+    public string EliteCombatBgmTrackId { get; set; } = ShinGetterBgmCatalog.DefaultTrackId;
+    public string BossCombatBgmTrackId { get; set; } = ShinGetterBgmCatalog.DefaultTrackId;
+    public bool BgmForOtherCharacters { get; set; }
     public bool EventInvasionEnabled { get; set; } = true;
     public string CardExportDirectory { get; set; } = string.Empty;
 }
@@ -94,6 +101,43 @@ public static class ShinGetterChunibyoConfigService
         return string.IsNullOrWhiteSpace(Current.CardExportDirectory)
             ? GetDefaultCardExportDirectory()
             : Current.CardExportDirectory;
+    }
+
+    internal static string GetBgmTrackId(ShinGetterBgmCategory category)
+    {
+        Load();
+        return category switch
+        {
+            ShinGetterBgmCategory.Execution => Current.ExecutionBgmTrackId,
+            ShinGetterBgmCategory.NormalCombat => Current.NormalCombatBgmTrackId,
+            ShinGetterBgmCategory.EventCombat => Current.EventCombatBgmTrackId,
+            ShinGetterBgmCategory.EliteCombat => Current.EliteCombatBgmTrackId,
+            ShinGetterBgmCategory.BossCombat => Current.BossCombatBgmTrackId,
+            _ => ShinGetterBgmCatalog.DefaultTrackId,
+        };
+    }
+
+    internal static void SetBgmTrackId(ShinGetterBgmCategory category, string trackId)
+    {
+        string normalized = ShinGetterBgmCatalog.ResolveOrDefault(trackId).Id;
+        switch (category)
+        {
+            case ShinGetterBgmCategory.Execution:
+                Current.ExecutionBgmTrackId = normalized;
+                break;
+            case ShinGetterBgmCategory.NormalCombat:
+                Current.NormalCombatBgmTrackId = normalized;
+                break;
+            case ShinGetterBgmCategory.EventCombat:
+                Current.EventCombatBgmTrackId = normalized;
+                break;
+            case ShinGetterBgmCategory.EliteCombat:
+                Current.EliteCombatBgmTrackId = normalized;
+                break;
+            case ShinGetterBgmCategory.BossCombat:
+                Current.BossCombatBgmTrackId = normalized;
+                break;
+        }
     }
 
     private static string GetConfigPath()
