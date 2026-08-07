@@ -71,6 +71,7 @@ for name, (size, digest) in TRACKS.items():
     require(hashlib.sha256(path.read_bytes()).hexdigest() == digest, f"unexpected SHA-256 for {name}")
 
 service = (ROOT / "src" / "Audio" / "ShinGetterEncounterMusicService.cs").read_text(encoding="utf-8")
+catalog = (ROOT / "src" / "Audio" / "ShinGetterBgmCatalog.cs").read_text(encoding="utf-8")
 for act in ("Overgrowth", "Underdocks", "Hive", "Glory"):
     for room_type in ("Elite", "Boss"):
         require(f"({act}, RoomType.{room_type})" in service, f"missing {act} {room_type} mapping")
@@ -86,7 +87,14 @@ require(
     "runState.Players.Any" not in service,
     "a remote Shin Getter player must not change this client's music",
 )
-require("RelativeVolume = 0.70f" in service, "custom BGM must play at 70% of the configured BGM volume")
+require(
+    "ShinGetterBgmCatalog.GetRelativeVolume(category)" in service,
+    "custom encounter BGM must use the category-relative volume",
+)
+require(
+    "category == ShinGetterBgmCategory.Execution ? 1f : 0.70f" in catalog,
+    "non-execution custom BGM must play at 70% of the configured BGM volume",
+)
 require("StopActiveAndRestore" in service and "SuspendForExecution" in service, "music lifecycle guards are missing")
 
 execution = (ROOT / "src" / "Audio" / "ShinGetterExecutionMusicService.cs").read_text(encoding="utf-8")
