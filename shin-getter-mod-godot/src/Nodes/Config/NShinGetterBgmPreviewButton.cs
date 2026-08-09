@@ -42,8 +42,6 @@ public partial class NShinGetterBgmPreviewButton : Button
             Pressed += InvokeAction;
             MouseEntered += OnMouseEntered;
             MouseExited += OnMouseExited;
-            FocusEntered += RefreshScale;
-            FocusExited += RefreshScale;
             Resized += UpdatePivot;
             _signalsConnected = true;
         }
@@ -78,8 +76,12 @@ public partial class NShinGetterBgmPreviewButton : Button
 
     private void InvokeAction()
     {
-        if (!Disabled)
-            _action?.Invoke();
+        if (Disabled)
+            return;
+
+        _action?.Invoke();
+        _mouseHovered = false;
+        RefreshScale();
     }
 
     private void OnMouseEntered()
@@ -99,7 +101,7 @@ public partial class NShinGetterBgmPreviewButton : Button
         if (!IsInsideTree())
             return;
 
-        Vector2 target = !Disabled && (_mouseHovered || HasFocus())
+        Vector2 target = !Disabled && _mouseHovered
             ? Vector2.One * 1.2f
             : Vector2.One;
         _scaleTween?.Kill();

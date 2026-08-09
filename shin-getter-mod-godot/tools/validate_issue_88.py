@@ -52,6 +52,7 @@ TRACK_TITLES = {
     "HEATS_STS2": ("HEATS（杀戮尖塔2版）", "HEATS（slay the spire 2 ver.）", "HEATS(slay the spire 2 ver.)"),
     "GETTER_ROBO_STS2": ("GETTER ROBO（杀戮尖塔2版）", "GETTER ROBO（slay the spire 2 ver.）", "GETTER ROBO(slay the spire 2 ver.)"),
     "HEATS_FINAL": ("HEATS（Final版）", "HEATS（Final ver.）", "HEATS(Final ver.)"),
+    "RANDOM": ("随机", "ランダム", "Random"),
 }
 
 ALBUM_FILES = {
@@ -94,6 +95,16 @@ def validate_catalog_and_assets() -> None:
     suffixes = set(re.findall(r'Track\([^\n]+,\s*"([A-Z0-9_]+)"', catalog))
     if suffixes != set(TRACK_TITLES):
         raise AssertionError(f"BGM catalog/localization mismatch: {sorted(suffixes ^ set(TRACK_TITLES))}")
+    require(
+        catalog,
+        'internal const string RandomTrackId = "random"',
+        'Track(RandomTrackId, string.Empty, "RANDOM", "Random")',
+        "ResolveForPlayback(ShinGetterBgmTrack selectedTrack)",
+        "Random.Shared.Next(1, Tracks.Count - 1)",
+        "CanPreview(ShinGetterBgmTrack track)",
+    )
+    if catalog.index("Track(RandomTrackId") < catalog.index('Track("heats_final"'):
+        raise AssertionError("Random must remain the final BGM dropdown option.")
     album = ROOT / "audio/music/shin_getter/album"
     actual_files = {path.name for path in album.iterdir() if path.is_file()}
     if actual_files != ALBUM_FILES:
@@ -176,14 +187,27 @@ def validate_config_and_runtime() -> None:
         "RoomType.Elite => ShinGetterBgmCategory.EliteCombat",
         "RoomType.Boss => ShinGetterBgmCategory.BossCombat",
         "configured.Id != ShinGetterBgmCatalog.DefaultTrackId",
+        "ShinGetterBgmCatalog.ResolveForPlayback(configured).ResourcePath",
+        "(Overgrowth, ShinGetterBgmCategory.NormalCombat)",
+        "ShinGetterBgmCatalog.GetterRoboSts2TrackId",
+        "(Underdocks, ShinGetterBgmCategory.NormalCombat)",
+        "ShinGetterBgmCatalog.StormSts2TrackId",
+        "(Hive, ShinGetterBgmCategory.NormalCombat)",
+        "ShinGetterBgmCatalog.DragonSts2TrackId",
+        "(Glory, ShinGetterBgmCategory.NormalCombat)",
+        "ShinGetterBgmCatalog.HeatsSts2TrackId",
         "ShinGetterChunibyoConfigService.Current.BgmForOtherCharacters",
         "CurrentMapPointHistoryEntry?.MapPointType == MapPointType.Ancient",
     )
+    for act in ("Overgrowth", "Underdocks", "Hive", "Glory"):
+        if f"({act}, ShinGetterBgmCategory.EventCombat)" in encounter:
+            raise AssertionError(f"Event-combat default must not inherit {act} encounter music.")
     execution = EXECUTION.read_text(encoding="utf-8")
     require(
         execution,
         "ShinGetterBgmCategory.Execution",
         "ShinGetterBgmCatalog.DefaultExecutionMusicPath",
+        "ShinGetterBgmCatalog.ResolveForPlayback(configured)",
         "ShinGetterBgmPreviewService.EnableLoop(stream)",
     )
 
@@ -203,7 +227,8 @@ def validate_ui_and_preview() -> None:
         'Name = "BgmSettingsToggle"',
         'Name = "BgmSettingsDetails"',
         "details.Visible = button.ButtonPressed",
-        "BgmDropdownWidth = 320f",
+        "BgmDropdownWidth = 400f",
+        "BgmPreviewControlsWidth = 108f",
         "BgmTextColumnMinimumWidth = 620f",
         "BgmTrackControlsWidth =",
         "SettingsDropdownScenePath",
@@ -219,6 +244,8 @@ def validate_ui_and_preview() -> None:
         "child.Reparent(control, keepGlobalTransform: false)",
         "BuildBgmOtherCharactersToggle",
         "ShinGetterBgmPreviewService.Stop()",
+        "arrow.Rotation = 0f",
+        "arrow.Rotation = button.ButtonPressed ? -Mathf.Pi * 0.5f : 0f",
     )
     for obsolete in ("BgmDropdownLayer", "NShinGetterBgmDropdownAnchor", "anchor.Bind(dropdown)"):
         if obsolete in submenu:
@@ -248,15 +275,16 @@ def validate_ui_and_preview() -> None:
         "res://images/atlases/ui_atlas.png",
         "CreateAtlasIcon(0)",
         "CreateAtlasIcon(1)",
-        "CreateAtlasIcon(2)",
         "new Rect2(0f, 0f, 276f, 276f)",
         "new Rect2(276f, 0f, 276f, 276f)",
-        "new Rect2(552f, 0f, 276f, 276f)",
         "new NShinGetterBgmPreviewButton",
+        "ShinGetterBgmCatalog.CanPreview(track)",
         "SetPreviewEnabled(hasPreview)",
         "SetIcon(isPlaying ? _pauseIcon : _playIcon)",
-        "_stopButton.Visible = isActive",
     )
+    for forbidden_stop_control in ("_stopButton", '"StopButton"', "CreateAtlasIcon(2)"):
+        if forbidden_stop_control in controls:
+            raise AssertionError(f"Removed stop control remains: {forbidden_stop_control}")
     require(
         preview_button,
         "NShinGetterBgmPreviewButton : Button",
@@ -264,10 +292,13 @@ def validate_ui_and_preview() -> None:
         "MouseFilter = MouseFilterEnum.Stop",
         "Disabled = !enabled",
         "_action?.Invoke()",
-        "_mouseHovered || HasFocus()",
+        "_mouseHovered = false",
+        "!Disabled && _mouseHovered",
         "Vector2.One * 1.2f",
         'TweenProperty(this, "scale", target',
     )
+    if "HasFocus()" in preview_button:
+        raise AssertionError("BGM preview scaling must be driven only by mouse hover.")
     require(
         preview,
         'Bus = "Master"',
@@ -277,7 +308,8 @@ def validate_ui_and_preview() -> None:
         "NAudioManager.Instance?.SetBgmVol(0f)",
         "NAudioManager.Instance?.SetBgmVol(SaveManager.Instance.SettingsSave.VolumeBgm)",
         "StreamPaused",
-        "ResourceLoader.Exists(track.ResourcePath)",
+        "ShinGetterBgmCatalog.ResolveForPlayback(track)",
+        "ResourceLoader.Exists(playbackTrack.ResourcePath)",
         "ProcessMode = Node.ProcessModeEnum.Always",
         "[ShinGetterBgmPreview] Started",
     )

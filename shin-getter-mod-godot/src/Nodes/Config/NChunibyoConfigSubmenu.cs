@@ -36,7 +36,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
     private const int SettingFontSize = 28;
     private const int NoteFontSize = 21;
     private const float SettingControlWidth = 560f;
-    private const float BgmDropdownWidth = 320f;
+    private const float BgmDropdownWidth = 400f;
     private const float BgmTextColumnMinimumWidth = 620f;
     private const float BgmPreviewControlsWidth = 108f;
     private const float BgmControlSeparation = 12f;
@@ -422,13 +422,13 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         arrow.OffsetRight = -16f;
         arrow.OffsetBottom = 18f;
         arrow.PivotOffset = new Vector2(18f, 18f);
-        arrow.Rotation = -Mathf.Pi * 0.5f;
+        arrow.Rotation = 0f;
         button.AddChild(arrow);
 
         button.Pressed += () =>
         {
             details.Visible = button.ButtonPressed;
-            arrow.Rotation = button.ButtonPressed ? 0f : -Mathf.Pi * 0.5f;
+            arrow.Rotation = button.ButtonPressed ? -Mathf.Pi * 0.5f : 0f;
         };
         return button;
     }
