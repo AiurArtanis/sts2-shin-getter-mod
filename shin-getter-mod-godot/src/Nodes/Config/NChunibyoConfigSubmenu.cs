@@ -36,15 +36,16 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
     private const int SettingFontSize = 28;
     private const int NoteFontSize = 21;
     private const float SettingControlWidth = 560f;
+    private const float BgmDropdownWidth = 320f;
+    private const float BgmTextColumnMinimumWidth = 620f;
     private const float BgmPreviewControlsWidth = 108f;
     private const float BgmControlSeparation = 12f;
-    private const float BgmDropdownWidth =
-        SettingControlWidth - BgmPreviewControlsWidth - BgmControlSeparation;
+    private const float BgmTrackControlsWidth =
+        BgmDropdownWidth + BgmPreviewControlsWidth + BgmControlSeparation;
 
     private Control? _initialFocus;
     private Label? _exportPathLabel;
     private NShinGetterVoicePaginator? _voiceModePaginator;
-    private Control? _bgmDropdownLayer;
     private FileDialog? _folderDialog;
 
     protected override Control? InitialFocusedControl => _initialFocus;
@@ -250,12 +251,6 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         options.AddThemeConstantOverride("separation", 18);
         scrollContent.AddChild(options);
 
-        _bgmDropdownLayer = new Control
-        {
-            Name = "BgmDropdownLayer",
-            MouseFilter = MouseFilterEnum.Ignore,
-        };
-
         options.AddChild(BuildMainMenuToggle());
         options.AddChild(CreateDivider());
         options.AddChild(BuildVoiceModeRow());
@@ -265,10 +260,6 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         options.AddChild(BuildEventInvasionToggle());
         options.AddChild(CreateDivider());
         options.AddChild(BuildCardExportSection());
-
-        // Keep dropdowns above the option rows while letting the VBox alone drive
-        // the scrollable content height. This mirrors the original settings screen.
-        scrollContent.AddChild(_bgmDropdownLayer);
 
         return margin;
     }
@@ -450,14 +441,15 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         string? noteFallback = null)
     {
         string? note = noteKey == null ? null : Localize(noteKey, noteFallback ?? string.Empty);
-        if (_bgmDropdownLayer == null)
-            throw new InvalidOperationException("BGM dropdown layer must exist before building track rows.");
-
-        var row = CreateSettingRow(Localize(labelKey, labelFallback), 88f, note);
+        var row = CreateSettingRow(
+            Localize(labelKey, labelFallback),
+            88f,
+            note,
+            BgmTextColumnMinimumWidth);
         var controls = new HBoxContainer
         {
             Name = category + "Controls",
-            CustomMinimumSize = new Vector2(SettingControlWidth, 64f),
+            CustomMinimumSize = new Vector2(BgmTrackControlsWidth, 64f),
             SizeFlagsHorizontal = SizeFlags.ShrinkEnd,
             SizeFlagsVertical = SizeFlags.ShrinkCenter,
             MouseFilter = MouseFilterEnum.Ignore,
@@ -465,27 +457,27 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         controls.AddThemeConstantOverride("separation", (int)BgmControlSeparation);
         row.AddChild(controls);
 
+        // The selected option is a real child of this row. Only its expanded list
+        // becomes top-level, matching BaseLib's NConfigDropdown behavior.
+        var dropdownSlot = new Control
+        {
+            Name = category + "DropdownSlot",
+            CustomMinimumSize = new Vector2(BgmDropdownWidth, 64f),
+            SizeFlagsHorizontal = SizeFlags.ExpandFill,
+            SizeFlagsVertical = SizeFlags.ShrinkCenter,
+            MouseFilter = MouseFilterEnum.Ignore,
+        };
+        controls.AddChild(dropdownSlot);
+
         NShinGetterBgmDropdown dropdown =
             InstantiateOriginalControl<NShinGetterBgmDropdown>(SettingsDropdownScenePath);
         dropdown.Name = category + "Dropdown";
-        dropdown.SetAnchorsAndOffsetsPreset(LayoutPreset.TopLeft);
-        dropdown.CustomMinimumSize = new Vector2(BgmDropdownWidth, 64f);
-        dropdown.Size = dropdown.CustomMinimumSize;
+        dropdown.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         dropdown.ConfigureLayout(BgmDropdownWidth);
         dropdown.Configure(
             ShinGetterBgmCatalog.Tracks,
             ShinGetterChunibyoConfigService.GetBgmTrackId(category));
-        _bgmDropdownLayer.AddChild(dropdown);
-
-        var anchor = new NShinGetterBgmDropdownAnchor
-        {
-            Name = category + "DropdownAnchor",
-            CustomMinimumSize = new Vector2(BgmDropdownWidth, 64f),
-            SizeFlagsHorizontal = SizeFlags.ExpandFill,
-            SizeFlagsVertical = SizeFlags.ShrinkCenter,
-        };
-        anchor.Bind(dropdown);
-        controls.AddChild(anchor);
+        dropdownSlot.AddChild(dropdown);
 
         var preview = new NShinGetterBgmPreviewControls { Name = category + "Preview" };
         controls.AddChild(preview);
@@ -745,7 +737,8 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
     private static HBoxContainer CreateSettingRow(
         string labelText,
         float minimumHeight = 72f,
-        string? noteText = null)
+        string? noteText = null,
+        float minimumTextWidth = 0f)
     {
         var row = new HBoxContainer
         {
@@ -756,6 +749,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
 
         var textColumn = new VBoxContainer
         {
+            CustomMinimumSize = new Vector2(minimumTextWidth, 0f),
             SizeFlagsHorizontal = SizeFlags.ExpandFill,
             SizeFlagsVertical = SizeFlags.ShrinkCenter,
         };
@@ -775,6 +769,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
             var note = new Label
             {
                 Text = noteText,
+                CustomMinimumSize = new Vector2(minimumTextWidth, 0f),
                 AutowrapMode = TextServer.AutowrapMode.WordSmart,
                 HorizontalAlignment = HorizontalAlignment.Left,
             };
@@ -829,7 +824,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         {
             Node child = template.GetChild(0);
             ClearSceneOwner(child);
-            child.Reparent(control);
+            child.Reparent(control, keepGlobalTransform: false);
             ReassignSceneOwner(child, control);
         }
 
