@@ -149,7 +149,7 @@
   "S_G_C_HOLY_DRAGON_ROAR.title": "圣龙咆哮",
   "S_G_C_HOLY_DRAGON_ROAR.description": "消耗手牌中所有[gold]盖塔卡牌[/gold]。对所有敌人造成{Damage:diff()}点基础伤害，每张消耗的牌叠加{BurnDamage:diff()}点伤害。\n[gold]击晕[/gold]所有敌人。",
   "S_G_C_PETAL_BREAKTHROUGH.title": "破瓣突进",
-  "S_G_C_PETAL_BREAKTHROUGH.description": "造成{Damage:diff()}点伤害。给抽牌堆中随机1张尚无[gold]重放[/gold]的攻击牌添加{Replay:diff()}层[gold]重放[/gold]。",
+  "S_G_C_PETAL_BREAKTHROUGH.description": "造成{Damage:diff()}点伤害。给抽牌堆中随机1张尚无[gold]重放[/gold]的攻击牌添加{Times:diff()}层[gold]重放[/gold]。",
   "S_G_C_RESCHEDULE_TICKET.title": "改签券",
   "S_G_C_RESCHEDULE_TICKET.description": "选择1张其他手牌置于抽牌堆底。抽牌，直到抽到1张与之同类型的牌。[gold]消耗[/gold]。",
   "S_G_C_RESCHEDULE_TICKET.selectionScreenPrompt": "选择1张手牌改签。",

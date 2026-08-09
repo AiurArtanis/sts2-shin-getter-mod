@@ -18,12 +18,12 @@ public sealed class SGC_PetalBreakthrough : ShinGetterCardBase
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
         new DamageVar(7m, ValueProp.Move),
-        new IntVar("Replay", 1m),
+        new IntVar("Times", 1m),
     };
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips => WithContextualHoverTips(new IHoverTip[]
     {
-        HoverTipFactory.Static(StaticHoverTip.ReplayDynamic, DynamicVars["Replay"]),
+        HoverTipFactory.Static(StaticHoverTip.ReplayDynamic, DynamicVars["Times"]),
     });
 
     public SGC_PetalBreakthrough()
@@ -50,13 +50,13 @@ public sealed class SGC_PetalBreakthrough : ShinGetterCardBase
         CardModel? selected = Owner.RunState.Rng.CombatCardSelection.NextItem(candidates);
         if (selected != null)
         {
-            selected.BaseReplayCount += DynamicVars["Replay"].IntValue;
+            selected.BaseReplayCount += DynamicVars["Times"].IntValue;
             CardCmd.Preview(selected);
         }
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars["Replay"].UpgradeValueBy(1m);
+        DynamicVars["Times"].UpgradeValueBy(1m);
     }
 }
