@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models;
 using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
@@ -19,7 +20,7 @@ public sealed class SGC_WispCoordinate : ShinGetterCardBase
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new CardsVar(4m),
+        new CardsVar(4),
         new PowerVar<SGP_Radiation>(1m),
     };
 

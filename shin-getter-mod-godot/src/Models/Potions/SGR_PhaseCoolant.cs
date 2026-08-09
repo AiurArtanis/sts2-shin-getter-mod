@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Potions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -21,7 +22,7 @@ public sealed class SGR_PhaseCoolant : PotionModel
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
         new PowerVar<SGP_Ki>(1m),
-        new EnergyVar(1m),
+        new EnergyVar(1),
     };
 
     public override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[]

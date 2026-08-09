@@ -23,7 +23,11 @@ def assert_manual_attack_vigor_lifecycle() -> None:
         if "CardType.Attack" in source and "CreatureCmd.Damage(" in source:
             manual_attack_cards.add(path.name)
 
-    assert manual_attack_cards == {"SGC_GetterMissile.cs", "SGC_SpiralDrill.cs"}
+    assert manual_attack_cards == {
+        "SGC_GetterMissile.cs",
+        "SGC_PetalBreakthrough.cs",
+        "SGC_SpiralDrill.cs",
+    }
 
     card_base = read(CARDS / "ShinGetterCardBase.cs")
     assert "CaptureVigorForManualAttack" in card_base

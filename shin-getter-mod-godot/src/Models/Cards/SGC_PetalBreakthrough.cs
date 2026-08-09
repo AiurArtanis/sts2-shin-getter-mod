@@ -7,7 +7,9 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -31,12 +33,16 @@ public sealed class SGC_PetalBreakthrough : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        int vigorToConsume = CaptureVigorForManualAttack(ValueProp.Move);
         await CreatureCmd.Damage(
             choiceContext,
             cardPlay.Target!,
             DynamicVars.Damage,
             Owner.Creature,
             this);
+        await ConsumeCapturedVigor(choiceContext, vigorToConsume);
+        if (Owner.Creature.GetPower<SGP_HotBlood>() is { } hotBlood)
+            await hotBlood.ConsumeForCardDamage(choiceContext, this, ValueProp.Move);
 
         List<CardModel> candidates = PileType.Draw.GetPile(Owner).Cards
             .Where(card => card.Type == CardType.Attack && card.GetEnchantedReplayCount() < 1)

@@ -11,6 +11,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Gold;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Extensions;
 using MegaCrit.Sts2.Core.Factories;
@@ -26,13 +27,16 @@ using MegaCrit.Sts2.Core.Models.Events;
 using MegaCrit.Sts2.Core.Models.Potions;
 using MegaCrit.Sts2.Core.Models.Relics;
 using MegaCrit.Sts2.Core.Nodes;
+using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Nodes.Vfx;
 using MegaCrit.Sts2.Core.Rewards;
+using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.ValueProps;
 using ShinGetterMod.Models.Cards;
 using ShinGetterMod.Models.Enchantments;
 using ShinGetterMod.Models.Potions;
 using ShinGetterMod.Models.Relics;
+using LostWispEvent = MegaCrit.Sts2.Core.Models.Events.LostWisp;
 using LostWispRelic = MegaCrit.Sts2.Core.Models.Relics.LostWisp;
 
 namespace ShinGetterMod.Events;
@@ -285,7 +289,7 @@ internal static partial class ShinGetterEventInvasionService
             HoverTipFactory.FromCardWithCardHoverTips<SGC_PressureBreath>());
     }
 
-    private static IEnumerable<EventOption> BuildLostWispOptions(LostWisp eventModel)
+    private static IEnumerable<EventOption> BuildLostWispOptions(LostWispEvent eventModel)
     {
         Player owner = RequireOwner(eventModel);
         bool benkeiAvailable = owner.Creature.MaxHp > 5
@@ -322,7 +326,7 @@ internal static partial class ShinGetterEventInvasionService
             () => DrowningBeaconGlowwater(eventModel),
             "DROWNING_BEACON",
             "BENKEI_GLOWWATER",
-            HoverTipFactory.FromPotion(ModelDb.Potion<GlowwaterPotion>()));
+            new[] { HoverTipFactory.FromPotion(ModelDb.Potion<GlowwaterPotion>()) });
 
         bool prismAvailable = hasThemeCard && owner.Creature.CurrentHp > 9;
         yield return CreateConditionalOption(
@@ -396,7 +400,7 @@ internal static partial class ShinGetterEventInvasionService
             () => ShowFutureOfPotionsChoice(eventModel),
             "THE_FUTURE_OF_POTIONS",
             "HAYATO",
-            HoverTipFactory.FromPotion(ModelDb.Potion<SGR_LuminescentPulse>()),
+            new[] { HoverTipFactory.FromPotion(ModelDb.Potion<SGR_LuminescentPulse>()) },
             disableOnChosen: false);
     }
 
@@ -417,7 +421,7 @@ internal static partial class ShinGetterEventInvasionService
             () => AbyssalBathsTripleCoolant(eventModel),
             "ABYSSAL_BATHS",
             "TRIPLE_COOLANT",
-            HoverTipFactory.FromPotion(ModelDb.Potion<SGR_PhaseCoolant>()));
+            new[] { HoverTipFactory.FromPotion(ModelDb.Potion<SGR_PhaseCoolant>()) });
     }
 
     private static IEnumerable<EventOption> BuildWaterloggedScriptoriumOptions(WaterloggedScriptorium eventModel)
@@ -442,7 +446,7 @@ internal static partial class ShinGetterEventInvasionService
             () => WaterloggedScriptoriumInk(eventModel),
             "WATERLOGGED_SCRIPTORIUM",
             "HAYATO_INK",
-            HoverTipFactory.FromPotion(ModelDb.Potion<SGR_AdaptiveInk>()));
+            new[] { HoverTipFactory.FromPotion(ModelDb.Potion<SGR_AdaptiveInk>()) });
     }
 
     private static Task WelcomeToWongosCitizenExit(WelcomeToWongos eventModel)
@@ -676,7 +680,7 @@ internal static partial class ShinGetterEventInvasionService
         Finish(eventModel, PageKey("UNREST_SITE", "BENKEI_BREATH"));
     }
 
-    private static async Task LostWispBenkei(LostWisp eventModel)
+    private static async Task LostWispBenkei(LostWispEvent eventModel)
     {
         Player owner = RequireOwner(eventModel);
         await LoseMaxHp(owner, 5);
@@ -684,7 +688,7 @@ internal static partial class ShinGetterEventInvasionService
         Finish(eventModel, PageKey("LOST_WISP", "BENKEI"));
     }
 
-    private static async Task LostWispHayato(LostWisp eventModel)
+    private static async Task LostWispHayato(LostWispEvent eventModel)
     {
         Player owner = RequireOwner(eventModel);
         await LoseMaxHp(owner, 3);

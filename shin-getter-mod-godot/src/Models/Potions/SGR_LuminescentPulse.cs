@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Potions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -27,7 +28,10 @@ public sealed class SGR_LuminescentPulse : PotionModel
 
     protected override async Task OnUse(PlayerChoiceContext choiceContext, Creature? target)
     {
-        foreach (Creature creature in Owner.Creature.CombatState.Creatures.Where(creature => creature.IsAlive))
+        if (Owner.Creature.CombatState is not { } combatState)
+            return;
+
+        foreach (Creature creature in combatState.Creatures.Where(creature => creature.IsAlive))
         {
             await PowerCmd.Apply<SGP_Radiation>(
                 choiceContext,

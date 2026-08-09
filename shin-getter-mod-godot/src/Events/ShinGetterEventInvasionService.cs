@@ -34,6 +34,7 @@ using ShinGetterMod.Models.Characters;
 using ShinGetterMod.Models.Potions;
 using ShinGetterMod.Models.Relics;
 using ByrdpipRelic = MegaCrit.Sts2.Core.Models.Relics.Byrdpip;
+using LostWispEvent = MegaCrit.Sts2.Core.Models.Events.LostWisp;
 
 namespace ShinGetterMod.Events;
 
@@ -107,7 +108,7 @@ internal static partial class ShinGetterEventInvasionService
             RelicTrader relicTrader => BuildRelicTraderOptions(relicTrader),
             EndlessConveyor conveyor => BuildEndlessConveyorOptions(conveyor),
             UnrestSite unrestSite => BuildUnrestSiteOptions(unrestSite),
-            LostWisp lostWisp => BuildLostWispOptions(lostWisp),
+            LostWispEvent lostWisp => BuildLostWispOptions(lostWisp),
             DrowningBeacon drowningBeacon => BuildDrowningBeaconOptions(drowningBeacon),
             LuminousChoir luminousChoir => BuildLuminousChoirOptions(luminousChoir),
             ColossalFlower colossalFlower => BuildColossalFlowerOptions(colossalFlower),

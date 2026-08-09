@@ -126,6 +126,9 @@ def validate_models_and_pools() -> None:
     require(
         petal,
         "StaticHoverTip.ReplayDynamic",
+        "CaptureVigorForManualAttack(ValueProp.Move)",
+        "ConsumeCapturedVigor(choiceContext, vigorToConsume)",
+        "ConsumeForCardDamage(choiceContext, this, ValueProp.Move)",
         "GetEnchantedReplayCount() < 1",
         "BaseReplayCount +=",
         "CardCmd.Preview(selected)",
