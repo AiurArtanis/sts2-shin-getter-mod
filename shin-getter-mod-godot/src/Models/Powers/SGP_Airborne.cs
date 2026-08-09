@@ -51,6 +51,9 @@ public sealed class SGP_Airborne : PowerModel
     public override async Task AfterRemoved(Creature owner)
     {
         // 失去时获得1易伤
-        await PowerCmd.Apply<VulnerablePower>(new ThrowingPlayerChoiceContext(), owner, 1m, owner, null);
+        VulnerablePower? vulnerable = await PowerCmd.Apply<VulnerablePower>(
+            new ThrowingPlayerChoiceContext(), owner, 1m, owner, null);
+        if (vulnerable != null)
+            vulnerable.SkipNextDurationTick = false;
     }
 }
