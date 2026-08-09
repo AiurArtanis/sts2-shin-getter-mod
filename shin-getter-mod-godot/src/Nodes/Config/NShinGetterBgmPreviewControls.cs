@@ -12,7 +12,6 @@ public partial class NShinGetterBgmPreviewControls : HBoxContainer
     private const string LocTable = "settings_ui";
 
     private readonly NShinGetterBgmPreviewButton _playPauseButton;
-    private readonly NShinGetterBgmPreviewButton _stopButton;
     private readonly Texture2D _playIcon;
     private readonly Texture2D _pauseIcon;
     private Func<ShinGetterBgmTrack>? _trackProvider;
@@ -33,14 +32,6 @@ public partial class NShinGetterBgmPreviewControls : HBoxContainer
             "Play preview",
             OnPlayPausePressed);
         AddChild(_playPauseButton);
-
-        _stopButton = CreateIconButton(
-            "StopButton",
-            CreateAtlasIcon(2),
-            "SHIN_GETTER_CHUNIBYO.BGM.STOP",
-            "Stop preview",
-            ShinGetterBgmPreviewService.Stop);
-        AddChild(_stopButton);
     }
 
     public override void _Ready()
@@ -84,9 +75,7 @@ public partial class NShinGetterBgmPreviewControls : HBoxContainer
     private void Refresh()
     {
         ShinGetterBgmTrack? track = _trackProvider?.Invoke();
-        bool hasPreview = track != null
-            && track.Id != ShinGetterBgmCatalog.DefaultTrackId
-            && !string.IsNullOrWhiteSpace(track.ResourcePath);
+        bool hasPreview = track != null && ShinGetterBgmCatalog.CanPreview(track);
         bool isActive = hasPreview
             && ShinGetterBgmPreviewService.ActiveCategory == _category
             && ShinGetterBgmPreviewService.ActiveTrackId == track!.Id;
@@ -98,7 +87,6 @@ public partial class NShinGetterBgmPreviewControls : HBoxContainer
         _playPauseButton.SetTooltip(Localize(
             isPlaying ? "SHIN_GETTER_CHUNIBYO.BGM.PAUSE" : "SHIN_GETTER_CHUNIBYO.BGM.PLAY",
             isPlaying ? "Pause preview" : "Play preview"));
-        _stopButton.Visible = isActive;
     }
 
     private static NShinGetterBgmPreviewButton CreateIconButton(
@@ -122,7 +110,6 @@ public partial class NShinGetterBgmPreviewControls : HBoxContainer
         {
             0 => new Rect2(0f, 0f, 276f, 276f),
             1 => new Rect2(276f, 0f, 276f, 276f),
-            2 => new Rect2(552f, 0f, 276f, 276f),
             _ => throw new ArgumentOutOfRangeException(nameof(index)),
         };
         Texture2D atlas = ResourceLoader.Load<Texture2D>(AtlasPath)

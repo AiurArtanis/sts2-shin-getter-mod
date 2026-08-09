@@ -128,24 +128,35 @@ internal static class ShinGetterEncounterMusicService
             ShinGetterChunibyoConfigService.GetBgmTrackId(category));
         if (configured.Id != ShinGetterBgmCatalog.DefaultTrackId)
         {
-            trackPath = configured.ResourcePath;
+            trackPath = ShinGetterBgmCatalog.ResolveForPlayback(configured).ResourcePath;
             return true;
         }
 
-        trackPath = (act, room.RoomType) switch
+        trackPath = (act, category) switch
         {
-            (Overgrowth, RoomType.Elite) => OvergrowthElite,
-            (Underdocks, RoomType.Elite) => UnderdocksElite,
-            (Hive, RoomType.Elite) => HiveElite,
-            (Glory, RoomType.Elite) => GloryElite,
-            (Overgrowth, RoomType.Boss) => OvergrowthBoss,
-            (Underdocks, RoomType.Boss) => UnderdocksBoss,
-            (Hive, RoomType.Boss) => HiveBoss,
-            (Glory, RoomType.Boss) => GloryBoss,
+            (Overgrowth, ShinGetterBgmCategory.NormalCombat) => GetTrackPath(
+                ShinGetterBgmCatalog.GetterRoboSts2TrackId),
+            (Underdocks, ShinGetterBgmCategory.NormalCombat) => GetTrackPath(
+                ShinGetterBgmCatalog.StormSts2TrackId),
+            (Hive, ShinGetterBgmCategory.NormalCombat) => GetTrackPath(
+                ShinGetterBgmCatalog.DragonSts2TrackId),
+            (Glory, ShinGetterBgmCategory.NormalCombat) => GetTrackPath(
+                ShinGetterBgmCatalog.HeatsSts2TrackId),
+            (Overgrowth, ShinGetterBgmCategory.EliteCombat) => OvergrowthElite,
+            (Underdocks, ShinGetterBgmCategory.EliteCombat) => UnderdocksElite,
+            (Hive, ShinGetterBgmCategory.EliteCombat) => HiveElite,
+            (Glory, ShinGetterBgmCategory.EliteCombat) => GloryElite,
+            (Overgrowth, ShinGetterBgmCategory.BossCombat) => OvergrowthBoss,
+            (Underdocks, ShinGetterBgmCategory.BossCombat) => UnderdocksBoss,
+            (Hive, ShinGetterBgmCategory.BossCombat) => HiveBoss,
+            (Glory, ShinGetterBgmCategory.BossCombat) => GloryBoss,
             _ => string.Empty,
         };
         return trackPath.Length > 0;
     }
+
+    private static string GetTrackPath(string trackId) =>
+        ShinGetterBgmCatalog.ResolveOrDefault(trackId).ResourcePath;
 
     private static bool ShouldReplaceForLocalPlayer(IRunState runState)
     {

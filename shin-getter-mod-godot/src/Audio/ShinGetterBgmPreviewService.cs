@@ -27,7 +27,7 @@ internal static class ShinGetterBgmPreviewService
 
     internal static void Toggle(ShinGetterBgmTrack track, ShinGetterBgmCategory category)
     {
-        if (track.Id == ShinGetterBgmCatalog.DefaultTrackId || string.IsNullOrWhiteSpace(track.ResourcePath))
+        if (!ShinGetterBgmCatalog.CanPreview(track))
         {
             Log.Info($"[ShinGetterBgmPreview] Ignored preview request for default track ({category}).");
             return;
@@ -63,10 +63,11 @@ internal static class ShinGetterBgmPreviewService
             return;
         }
 
-        if (!ResourceLoader.Exists(track.ResourcePath)
-            || ResourceLoader.Load<AudioStream>(track.ResourcePath) is not { } loadedStream)
+        ShinGetterBgmTrack playbackTrack = ShinGetterBgmCatalog.ResolveForPlayback(track);
+        if (!ResourceLoader.Exists(playbackTrack.ResourcePath)
+            || ResourceLoader.Load<AudioStream>(playbackTrack.ResourcePath) is not { } loadedStream)
         {
-            Log.Error($"[ShinGetterBgmPreview] Cannot load preview resource: {track.ResourcePath}");
+            Log.Error($"[ShinGetterBgmPreview] Cannot load preview resource: {playbackTrack.ResourcePath}");
             return;
         }
 
@@ -111,7 +112,8 @@ internal static class ShinGetterBgmPreviewService
         };
         player.Play();
         Log.Info(
-            $"[ShinGetterBgmPreview] Started {track.Id} ({category}) from {track.ResourcePath}; "
+            $"[ShinGetterBgmPreview] Started {playbackTrack.Id} ({category}, selected={track.Id}) "
+            + $"from {playbackTrack.ResourcePath}; "
             + $"playing={player.Playing}, bgm={configuredBgmVolume:0.###}, "
             + $"master={SaveManager.Instance.SettingsSave.VolumeMaster:0.###}, db={player.VolumeDb:0.##}.");
         StateChanged?.Invoke();

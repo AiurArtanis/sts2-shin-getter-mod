@@ -73,8 +73,11 @@ for name, (size, digest) in TRACKS.items():
 service = (ROOT / "src" / "Audio" / "ShinGetterEncounterMusicService.cs").read_text(encoding="utf-8")
 catalog = (ROOT / "src" / "Audio" / "ShinGetterBgmCatalog.cs").read_text(encoding="utf-8")
 for act in ("Overgrowth", "Underdocks", "Hive", "Glory"):
-    for room_type in ("Elite", "Boss"):
-        require(f"({act}, RoomType.{room_type})" in service, f"missing {act} {room_type} mapping")
+    for category in ("EliteCombat", "BossCombat"):
+        require(
+            f"({act}, ShinGetterBgmCategory.{category})" in service,
+            f"missing {act} {category} mapping",
+        )
 require(
     "LocalContext.GetMe(runState)?.Character is ShinGetter" in service,
     "music replacement must be limited to the local Shin Getter player",

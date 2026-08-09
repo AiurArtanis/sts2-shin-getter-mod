@@ -134,9 +134,10 @@ internal static class ShinGetterExecutionMusicService
     {
         ShinGetterBgmTrack configured = ShinGetterBgmCatalog.ResolveOrDefault(
             ShinGetterChunibyoConfigService.GetBgmTrackId(ShinGetterBgmCategory.Execution));
+        ShinGetterBgmTrack playbackTrack = ShinGetterBgmCatalog.ResolveForPlayback(configured);
         string trackPath = configured.Id == ShinGetterBgmCatalog.DefaultTrackId
             ? ShinGetterBgmCatalog.DefaultExecutionMusicPath
-            : configured.ResourcePath;
+            : playbackTrack.ResourcePath;
         if (NonInteractiveMode.IsActive
             || ResourceLoader.Load<AudioStream>(trackPath) is not { } loadedStream
             || Engine.GetMainLoop() is not SceneTree sceneTree)
