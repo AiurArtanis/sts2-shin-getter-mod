@@ -100,6 +100,6 @@ public sealed class ShinGetterCardPool : CardPoolModel
 		UnlockState unlockState,
 		IEnumerable<CardModel> cards)
 	{
-		return cards.Where(card => card is not SGC_InsectVirus);
+		return cards.Where(card => card is not SGC_InsectVirus and not SGC_Radiated);
 	}
 }
