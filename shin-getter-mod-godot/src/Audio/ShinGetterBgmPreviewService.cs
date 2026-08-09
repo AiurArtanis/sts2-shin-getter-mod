@@ -2,6 +2,7 @@
 using System;
 using Godot;
 using MegaCrit.Sts2.Core.Helpers;
+using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Nodes.Audio;
 using MegaCrit.Sts2.Core.Saves;
 
@@ -27,13 +28,17 @@ internal static class ShinGetterBgmPreviewService
     internal static void Toggle(ShinGetterBgmTrack track, ShinGetterBgmCategory category)
     {
         if (track.Id == ShinGetterBgmCatalog.DefaultTrackId || string.IsNullOrWhiteSpace(track.ResourcePath))
+        {
+            Log.Info($"[ShinGetterBgmPreview] Ignored preview request for default track ({category}).");
             return;
+        }
 
         if (ActiveCategory == category && ActiveTrackId == track.Id && _player != null)
         {
             bool resume = State == ShinGetterBgmPreviewState.Paused;
             _player.StreamPaused = !resume;
             State = resume ? ShinGetterBgmPreviewState.Playing : ShinGetterBgmPreviewState.Paused;
+            Log.Info($"[ShinGetterBgmPreview] {(resume ? "Resumed" : "Paused")} {track.Id} ({category}).");
             StateChanged?.Invoke();
             return;
         }
@@ -52,10 +57,22 @@ internal static class ShinGetterBgmPreviewService
 
     private static void Start(ShinGetterBgmTrack track, ShinGetterBgmCategory category)
     {
-        if (NonInteractiveMode.IsActive
-            || ResourceLoader.Load<AudioStream>(track.ResourcePath) is not { } loadedStream
-            || Engine.GetMainLoop() is not SceneTree sceneTree)
+        if (NonInteractiveMode.IsActive)
         {
+            Log.Warn($"[ShinGetterBgmPreview] Cannot preview {track.Id}: non-interactive mode is active.");
+            return;
+        }
+
+        if (!ResourceLoader.Exists(track.ResourcePath)
+            || ResourceLoader.Load<AudioStream>(track.ResourcePath) is not { } loadedStream)
+        {
+            Log.Error($"[ShinGetterBgmPreview] Cannot load preview resource: {track.ResourcePath}");
+            return;
+        }
+
+        if (Engine.GetMainLoop() is not SceneTree sceneTree)
+        {
+            Log.Error($"[ShinGetterBgmPreview] Cannot preview {track.Id}: no active SceneTree.");
             return;
         }
 
@@ -73,6 +90,7 @@ internal static class ShinGetterBgmPreviewService
             Stream = stream,
             Bus = "Master",
             VolumeDb = Mathf.LinearToDb(previewVolume),
+            ProcessMode = Node.ProcessModeEnum.Always,
         };
 
         _player = player;
@@ -92,6 +110,10 @@ internal static class ShinGetterBgmPreviewService
             }
         };
         player.Play();
+        Log.Info(
+            $"[ShinGetterBgmPreview] Started {track.Id} ({category}) from {track.ResourcePath}; "
+            + $"playing={player.Playing}, bgm={configuredBgmVolume:0.###}, "
+            + $"master={SaveManager.Instance.SettingsSave.VolumeMaster:0.###}, db={player.VolumeDb:0.##}.");
         StateChanged?.Invoke();
     }
 
@@ -107,6 +129,8 @@ internal static class ShinGetterBgmPreviewService
             player!.QueueFree();
         if (restoreGameMusic)
             NAudioManager.Instance?.SetBgmVol(SaveManager.Instance.SettingsSave.VolumeBgm);
+
+        Log.Info($"[ShinGetterBgmPreview] Stopped; restoreGameMusic={restoreGameMusic}.");
     }
 
     internal static void EnableLoop(AudioStream stream)

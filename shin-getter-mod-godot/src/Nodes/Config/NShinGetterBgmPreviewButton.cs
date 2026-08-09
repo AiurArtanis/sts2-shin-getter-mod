@@ -1,18 +1,19 @@
 #nullable enable
 using System;
 using Godot;
-using MegaCrit.Sts2.Core.Assets;
-using MegaCrit.Sts2.Core.Helpers;
-using MegaCrit.Sts2.Core.Nodes.Combat;
-using MegaCrit.Sts2.Core.Nodes.Screens.Settings;
 
 namespace ShinGetterMod.Nodes.Config;
 
-public partial class NShinGetterBgmPreviewButton : NSettingsButton
+/// <summary>
+/// A native Godot button for BGM preview controls. Native Button input is used
+/// deliberately so the controls share the same reliable release path as the
+/// rest of the dynamically-built configuration page.
+/// </summary>
+public partial class NShinGetterBgmPreviewButton : Button
 {
-    private readonly TextureRect _icon;
     private Action? _action;
-    private bool _requestedEnabled = true;
+    private Tween? _scaleTween;
+    private bool _mouseHovered;
     private bool _signalsConnected;
 
     public NShinGetterBgmPreviewButton()
@@ -21,50 +22,46 @@ public partial class NShinGetterBgmPreviewButton : NSettingsButton
         SizeFlagsHorizontal = SizeFlags.ShrinkCenter;
         SizeFlagsVertical = SizeFlags.ShrinkCenter;
         FocusMode = FocusModeEnum.All;
+        MouseFilter = MouseFilterEnum.Stop;
+        Flat = true;
+        ExpandIcon = true;
+        AddThemeConstantOverride("icon_max_width", 42);
 
-        _icon = new TextureRect
-        {
-            Name = "Icon",
-            ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
-            StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered,
-            MouseFilter = MouseFilterEnum.Ignore,
-        };
-        _icon.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
-        _icon.OffsetLeft = 5f;
-        _icon.OffsetTop = 5f;
-        _icon.OffsetRight = -5f;
-        _icon.OffsetBottom = -5f;
-        AddChild(_icon);
-
-        NSelectionReticle reticle = PreloadManager.Cache
-            .GetScene(SceneHelper.GetScenePath("ui/selection_reticle"))
-            .Instantiate<NSelectionReticle>();
-        reticle.Name = "SelectionReticle";
-        reticle.MouseFilter = MouseFilterEnum.Ignore;
-        reticle.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
-        AddChild(reticle);
-
-        Resized += UpdatePivot;
+        var emptyStyle = new StyleBoxEmpty();
+        AddThemeStyleboxOverride("normal", emptyStyle);
+        AddThemeStyleboxOverride("hover", emptyStyle);
+        AddThemeStyleboxOverride("pressed", emptyStyle);
+        AddThemeStyleboxOverride("focus", emptyStyle);
+        AddThemeStyleboxOverride("disabled", emptyStyle);
     }
 
     public override void _Ready()
     {
-        ConnectSignals();
-        _signalsConnected = true;
+        if (!_signalsConnected)
+        {
+            Pressed += InvokeAction;
+            MouseEntered += OnMouseEntered;
+            MouseExited += OnMouseExited;
+            FocusEntered += RefreshScale;
+            FocusExited += RefreshScale;
+            Resized += UpdatePivot;
+            _signalsConnected = true;
+        }
+
         UpdatePivot();
-        ApplyEnabledState();
+        RefreshScale();
     }
 
     internal void Initialize(Texture2D icon, string tooltip, Action action)
     {
-        _icon.Texture = icon;
+        Icon = icon;
         TooltipText = tooltip;
         _action = action;
     }
 
     internal void SetIcon(Texture2D icon)
     {
-        _icon.Texture = icon;
+        Icon = icon;
     }
 
     internal void SetTooltip(string tooltip)
@@ -74,55 +71,42 @@ public partial class NShinGetterBgmPreviewButton : NSettingsButton
 
     internal void SetPreviewEnabled(bool enabled)
     {
-        _requestedEnabled = enabled;
-        if (_signalsConnected)
-            ApplyEnabledState();
-        else
-            SelfModulate = enabled ? Colors.White : new Color(1f, 1f, 1f, 0.35f);
+        Disabled = !enabled;
+        SelfModulate = enabled ? Colors.White : new Color(1f, 1f, 1f, 0.35f);
+        RefreshScale();
     }
 
-    protected override void OnFocus()
+    private void InvokeAction()
     {
-        base.OnFocus();
-        _tween?.Kill();
-        _tween = CreateTween().SetParallel();
-        _tween.TweenProperty(this, "scale", Vector2.One * 1.2f, 0.05);
+        if (!Disabled)
+            _action?.Invoke();
     }
 
-    protected override void OnRelease()
+    private void OnMouseEntered()
     {
-        base.OnRelease();
-        _action?.Invoke();
-        RestoreHoverScaleAfterRelease();
+        _mouseHovered = true;
+        RefreshScale();
     }
 
-    protected override void OnEnable()
+    private void OnMouseExited()
     {
-        base.OnEnable();
-        SelfModulate = Colors.White;
+        _mouseHovered = false;
+        RefreshScale();
     }
 
-    protected override void OnDisable()
+    private void RefreshScale()
     {
-        base.OnDisable();
-        SelfModulate = new Color(1f, 1f, 1f, 0.35f);
-        Scale = Vector2.One;
-    }
-
-    private void ApplyEnabledState()
-    {
-        SetEnabled(_requestedEnabled);
-        SelfModulate = _requestedEnabled ? Colors.White : new Color(1f, 1f, 1f, 0.35f);
-    }
-
-    private void RestoreHoverScaleAfterRelease()
-    {
-        if (!IsFocused || !_requestedEnabled || !IsVisibleInTree())
+        if (!IsInsideTree())
             return;
 
-        _tween?.Kill();
-        _tween = CreateTween().SetParallel();
-        _tween.TweenProperty(this, "scale", Vector2.One * 1.2f, 0.05);
+        Vector2 target = !Disabled && (_mouseHovered || HasFocus())
+            ? Vector2.One * 1.2f
+            : Vector2.One;
+        _scaleTween?.Kill();
+        _scaleTween = CreateTween();
+        _scaleTween.TweenProperty(this, "scale", target, target == Vector2.One ? 0.16 : 0.05)
+            .SetEase(Tween.EaseType.Out)
+            .SetTrans(Tween.TransitionType.Cubic);
     }
 
     private void UpdatePivot()

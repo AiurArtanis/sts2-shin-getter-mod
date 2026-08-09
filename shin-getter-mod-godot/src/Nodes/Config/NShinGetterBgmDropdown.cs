@@ -16,6 +16,7 @@ public partial class NShinGetterBgmDropdown : NSettingsDropdown
 
     private readonly List<ShinGetterBgmTrack> _tracks = new();
     private Control? _floatingContainer;
+    private Control? _dismisser;
 
     internal event Action<ShinGetterBgmTrack>? TrackChanged;
 
@@ -26,6 +27,9 @@ public partial class NShinGetterBgmDropdown : NSettingsDropdown
     {
         ConnectSignals();
         _floatingContainer = GetNode<Control>("%DropdownContainer");
+        _dismisser = GetNode<Control>("%Dismisser");
+        _floatingContainer.ZIndex = 200;
+        _floatingContainer.ZAsRelative = false;
         _floatingContainer.Connect(
             CanvasItem.SignalName.VisibilityChanged,
             Callable.From(OnDropdownContainerVisibilityChanged));
@@ -40,6 +44,9 @@ public partial class NShinGetterBgmDropdown : NSettingsDropdown
 
     internal void ConfigureLayout(float width)
     {
+        CustomMinimumSize = new Vector2(width, 64f);
+        SizeFlagsHorizontal = SizeFlags.ExpandFill;
+        SizeFlagsVertical = SizeFlags.ShrinkCenter;
         Control container = GetNode<Control>("%DropdownContainer");
         container.SetAnchorsAndOffsetsPreset(LayoutPreset.TopLeft);
         container.Position = new Vector2(0f, 64f);
@@ -91,14 +98,23 @@ public partial class NShinGetterBgmDropdown : NSettingsDropdown
             return;
 
         _floatingContainer.TopLevel = _floatingContainer.Visible;
+        if (_dismisser != null)
+            _dismisser.TopLevel = _floatingContainer.Visible;
         if (_floatingContainer.Visible)
             PositionFloatingContainer();
     }
 
     private void PositionFloatingContainer()
     {
-        if (_floatingContainer != null)
-            _floatingContainer.GlobalPosition = GlobalPosition + new Vector2(0f, Size.Y);
+        if (_floatingContainer == null)
+            return;
+
+        Vector2 viewportSize = GetViewportRect().Size;
+        float belowY = GlobalPosition.Y + Size.Y;
+        float popupY = belowY + _floatingContainer.Size.Y <= viewportSize.Y - 24f
+            ? belowY
+            : Mathf.Max(24f, GlobalPosition.Y - _floatingContainer.Size.Y);
+        _floatingContainer.GlobalPosition = new Vector2(GlobalPosition.X, popupY);
     }
 
     private static string LocalizeTrack(ShinGetterBgmTrack track) =>

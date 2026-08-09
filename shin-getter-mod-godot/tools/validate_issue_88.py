@@ -17,7 +17,6 @@ ENCOUNTER = ROOT / "src/Audio/ShinGetterEncounterMusicService.cs"
 EXECUTION = ROOT / "src/Audio/ShinGetterExecutionMusicService.cs"
 SUBMENU = ROOT / "src/Nodes/Config/NChunibyoConfigSubmenu.cs"
 DROPDOWN = ROOT / "src/Nodes/Config/NShinGetterBgmDropdown.cs"
-ANCHOR = ROOT / "src/Nodes/Config/NShinGetterBgmDropdownAnchor.cs"
 CONTROLS = ROOT / "src/Nodes/Config/NShinGetterBgmPreviewControls.cs"
 PREVIEW_BUTTON = ROOT / "src/Nodes/Config/NShinGetterBgmPreviewButton.cs"
 RESOURCE_GATE = ROOT / "tools/validate-mod-resources.gd"
@@ -192,7 +191,6 @@ def validate_config_and_runtime() -> None:
 def validate_ui_and_preview() -> None:
     submenu = SUBMENU.read_text(encoding="utf-8")
     dropdown = DROPDOWN.read_text(encoding="utf-8")
-    anchor = ANCHOR.read_text(encoding="utf-8")
     controls = CONTROLS.read_text(encoding="utf-8")
     preview_button = PREVIEW_BUTTON.read_text(encoding="utf-8")
     preview = PREVIEW.read_text(encoding="utf-8")
@@ -205,20 +203,32 @@ def validate_ui_and_preview() -> None:
         'Name = "BgmSettingsToggle"',
         'Name = "BgmSettingsDetails"',
         "details.Visible = button.ButtonPressed",
+        "BgmDropdownWidth = 320f",
+        "BgmTextColumnMinimumWidth = 620f",
+        "BgmTrackControlsWidth =",
         "SettingsDropdownScenePath",
         'Name = "SettingsScrollContent"',
         'Name = "SettingsOptions"',
-        'Name = "BgmDropdownLayer"',
-        "scrollContent.AddChild(_bgmDropdownLayer)",
         'Name = category + "Controls"',
-        'Name = category + "DropdownAnchor"',
-        "anchor.Bind(dropdown)",
-        "_bgmDropdownLayer.AddChild(dropdown)",
+        'Name = category + "DropdownSlot"',
+        "controls.AddChild(dropdownSlot)",
+        "dropdown.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect)",
+        "dropdownSlot.AddChild(dropdown)",
+        "BgmTextColumnMinimumWidth);",
+        "CustomMinimumSize = new Vector2(minimumTextWidth, 0f)",
+        "child.Reparent(control, keepGlobalTransform: false)",
         "BuildBgmOtherCharactersToggle",
         "ShinGetterBgmPreviewService.Stop()",
     )
-    if "dropdown.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect)" in submenu:
-        raise AssertionError("BGM dropdowns must not be laid out directly inside option rows.")
+    for obsolete in ("BgmDropdownLayer", "NShinGetterBgmDropdownAnchor", "anchor.Bind(dropdown)"):
+        if obsolete in submenu:
+            raise AssertionError(f"Obsolete overlaid dropdown-anchor architecture remains: {obsolete}")
+    for temporary_marker in ("SHIN_GETTER_ISSUE88_TEST", "LogLayout"):
+        for source_path in ROOT.joinpath("src").rglob("*.cs"):
+            if temporary_marker in source_path.read_text(encoding="utf-8"):
+                raise AssertionError(
+                    f"Temporary issue#88 runtime hook remains in {source_path}: {temporary_marker}"
+                )
     if submenu.index("options.AddChild(BuildVoiceModeRow())") > submenu.index("options.AddChild(BuildBgmSection())"):
         raise AssertionError("BGM settings must appear below Voice Amount.")
     require(
@@ -228,16 +238,10 @@ def validate_ui_and_preview() -> None:
         "NDropdownContainer>().RefreshLayout()",
         "CloseDropdown()",
         "_floatingContainer.TopLevel = _floatingContainer.Visible",
-        "_floatingContainer.GlobalPosition = GlobalPosition + new Vector2(0f, Size.Y)",
-    )
-    require(
-        anchor,
-        "NShinGetterBgmDropdownAnchor : Control",
-        "dropdown.GlobalPosition = GlobalPosition",
-        "dropdown.Size = Size",
-        "dropdown.Visible = shouldBeVisible",
-        "dropdown.GrabFocus()",
-        "dropdown.FocusNeighborBottom = FocusNeighborBottom",
+        "_dismisser.TopLevel = _floatingContainer.Visible",
+        "float belowY = GlobalPosition.Y + Size.Y",
+        "GlobalPosition.Y - _floatingContainer.Size.Y",
+        "_floatingContainer.GlobalPosition = new Vector2(GlobalPosition.X, popupY)",
     )
     require(
         controls,
@@ -253,19 +257,16 @@ def validate_ui_and_preview() -> None:
         "SetIcon(isPlaying ? _pauseIcon : _playIcon)",
         "_stopButton.Visible = isActive",
     )
-    if ".Pressed +=" in controls or "new Button" in controls:
-        raise AssertionError("BGM preview controls must use the game's NButton input chain.")
     require(
         preview_button,
-        "NShinGetterBgmPreviewButton : NSettingsButton",
-        "ConnectSignals()",
-        "protected override void OnRelease()",
+        "NShinGetterBgmPreviewButton : Button",
+        "Pressed += InvokeAction",
+        "MouseFilter = MouseFilterEnum.Stop",
+        "Disabled = !enabled",
         "_action?.Invoke()",
-        "RestoreHoverScaleAfterRelease()",
-        "!IsFocused || !_requestedEnabled || !IsVisibleInTree()",
-        "SetEnabled(_requestedEnabled)",
-        'TweenProperty(this, "scale", Vector2.One * 1.2f',
-        'Name = "SelectionReticle"',
+        "_mouseHovered || HasFocus()",
+        "Vector2.One * 1.2f",
+        'TweenProperty(this, "scale", target',
     )
     require(
         preview,
@@ -276,6 +277,9 @@ def validate_ui_and_preview() -> None:
         "NAudioManager.Instance?.SetBgmVol(0f)",
         "NAudioManager.Instance?.SetBgmVol(SaveManager.Instance.SettingsSave.VolumeBgm)",
         "StreamPaused",
+        "ResourceLoader.Exists(track.ResourcePath)",
+        "ProcessMode = Node.ProcessModeEnum.Always",
+        "[ShinGetterBgmPreview] Started",
     )
 
 
