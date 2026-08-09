@@ -42,7 +42,7 @@ public sealed class SGP_Ki : PowerModel
 
     public override Task BeforeDamageReceived(PlayerChoiceContext choiceContext, Creature target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
-        if (target == Owner && amount > 0m && Amount > 0)
+        if (target == Owner && amount > 0m && Amount > 0 && !props.HasFlag(ValueProp.Unpowered))
             Flash();
 
         return Task.CompletedTask;
@@ -55,6 +55,9 @@ public sealed class SGP_Ki : PowerModel
         Creature? dealer,
         CardModel? cardSource)
     {
+        if (props.HasFlag(ValueProp.Unpowered))
+            return 0m;
+
         if (target == Owner && amount > 0m && Amount > 0)
             return -Amount;
 
