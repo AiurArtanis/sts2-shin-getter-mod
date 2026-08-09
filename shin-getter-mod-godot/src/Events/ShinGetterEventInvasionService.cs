@@ -34,10 +34,11 @@ using ShinGetterMod.Models.Characters;
 using ShinGetterMod.Models.Potions;
 using ShinGetterMod.Models.Relics;
 using ByrdpipRelic = MegaCrit.Sts2.Core.Models.Relics.Byrdpip;
+using LostWispEvent = MegaCrit.Sts2.Core.Models.Events.LostWisp;
 
 namespace ShinGetterMod.Events;
 
-internal static class ShinGetterEventInvasionService
+internal static partial class ShinGetterEventInvasionService
 {
     private enum PendingBattleSetup
     {
@@ -78,6 +79,8 @@ internal static class ShinGetterEventInvasionService
         if (!ShouldInject(eventModel, options))
             return options;
 
+        ApplyIssue89OptionReplacements(eventModel, options);
+
         IEnumerable<EventOption> invasions = eventModel switch
         {
             TeaMaster teaMaster => BuildTeaMasterOptions(teaMaster),
@@ -94,6 +97,24 @@ internal static class ShinGetterEventInvasionService
             SpiralingWhirlpool spiralingWhirlpool => BuildSpiralingWhirlpoolOptions(spiralingWhirlpool),
             RoundTeaParty roundTeaParty => BuildRoundTeaPartyOptions(roundTeaParty),
             RanwidTheElder ranwidTheElder => BuildRanwidTheElderOptions(ranwidTheElder),
+            WelcomeToWongos welcomeToWongos => BuildWelcomeToWongosOptions(welcomeToWongos),
+            TrashHeap trashHeap => BuildTrashHeapOptions(trashHeap),
+            TinkerTime tinkerTime => BuildTinkerTimeOptions(tinkerTime, options),
+            Reflections reflections => BuildReflectionsOptions(reflections),
+            DoorsOfLightAndDark doors => BuildDoorsOfLightAndDarkOptions(doors),
+            Wellspring wellspring => BuildWellspringOptions(wellspring),
+            RoomFullOfCheese cheese => BuildRoomFullOfCheeseOptions(cheese),
+            Bugslayer bugslayer => BuildBugslayerOptions(bugslayer),
+            RelicTrader relicTrader => BuildRelicTraderOptions(relicTrader),
+            EndlessConveyor conveyor => BuildEndlessConveyorOptions(conveyor),
+            UnrestSite unrestSite => BuildUnrestSiteOptions(unrestSite),
+            LostWispEvent lostWisp => BuildLostWispOptions(lostWisp),
+            DrowningBeacon drowningBeacon => BuildDrowningBeaconOptions(drowningBeacon),
+            LuminousChoir luminousChoir => BuildLuminousChoirOptions(luminousChoir),
+            ColossalFlower colossalFlower => BuildColossalFlowerOptions(colossalFlower),
+            TheFutureOfPotions futureOfPotions => BuildTheFutureOfPotionsOptions(futureOfPotions),
+            AbyssalBaths abyssalBaths => BuildAbyssalBathsOptions(abyssalBaths),
+            WaterloggedScriptorium scriptorium => BuildWaterloggedScriptoriumOptions(scriptorium),
             _ => Array.Empty<EventOption>(),
         };
 
@@ -124,7 +145,9 @@ internal static class ShinGetterEventInvasionService
             option.TextKey.StartsWith("TRIAL.pages.MERCHANT.options.", StringComparison.Ordinal)
             || option.TextKey.StartsWith("TRIAL.pages.NOBLE.options.", StringComparison.Ordinal)
             || option.TextKey.StartsWith("TRIAL.pages.NONDESCRIPT.options.", StringComparison.Ordinal));
-        if (!isInitialPage && !isTrialVerdictPage)
+        bool isTinkerCardTypePage = eventModel is TinkerTime && options.Any(option =>
+            option.TextKey.StartsWith("TINKER_TIME.pages.CHOOSE_CARD_TYPE.options.", StringComparison.Ordinal));
+        if (!isInitialPage && !isTrialVerdictPage && !isTinkerCardTypePage)
             return false;
 
         return owner.GetRelic<SGR_GetterFurnace>()?.EventInvasionEnabled
@@ -806,10 +829,10 @@ internal static class ShinGetterEventInvasionService
         Finish(eventModel, PageKey("RANWID_THE_ELDER", "RYOMA_RESULT"));
     }
 
-    private static void ApplySpiralEnchantment(CardModel card)
+    private static void ApplySpiralEnchantment(CardModel card, decimal amount = 1m)
     {
         EnchantmentModel spiral = ModelDb.Enchantment<Spiral>().ToMutable();
-        card.EnchantInternal(spiral, 1m);
+        card.EnchantInternal(spiral, amount);
         spiral.ModifyCard();
         card.FinalizeUpgradeInternal();
         card.Owner.RunState.CurrentMapPointHistoryEntry?

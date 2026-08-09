@@ -4,5 +4,11 @@
   "S_G_R_KUSUHA_JUICE.title": "クスハ汁",
   "S_G_R_KUSUHA_JUICE.description": "[gold]脱力[/gold]を{WeakPower}、[gold]弱体[/gold]を{VulnerablePower}得る。このターン、[gold]精神コマンドカード[/gold]は気力条件を無視し、コストが0になる。",
   "S_G_R_GETTER_COLD_BREW.title": "ゲッターコールドブリュー",
-  "S_G_R_GETTER_COLD_BREW.description": "名前に「ゲッター」を含むカードを3枚手札に加え、それらに[gold]保留[/gold]を与える。"
+  "S_G_R_GETTER_COLD_BREW.description": "名前に「ゲッター」を含むカードを3枚手札に加え、それらに[gold]保留[/gold]を与える。",
+  "S_G_R_LUMINESCENT_PULSE.title": "蛍光パルス剤",
+  "S_G_R_LUMINESCENT_PULSE.description": "すべてのキャラクターに[gold]放射線[/gold]を{SGP_Radiation:diff()}付与する。",
+  "S_G_R_PHASE_COOLANT.title": "位相冷却液",
+  "S_G_R_PHASE_COOLANT.description": "すべての[gold]放射線[/gold]を取り除く。[gold]気力[/gold]を{SGP_Ki:diff()}、{Energy:energyIcons()}を得る。",
+  "S_G_R_ADAPTIVE_INK.title": "適応インク",
+  "S_G_R_ADAPTIVE_INK.description": "[getter_ray]進化[/getter_ray]を{SGP_Evolution:diff()}、[gold]再生[/gold]を{RegenPower:diff()}得る。"
 }

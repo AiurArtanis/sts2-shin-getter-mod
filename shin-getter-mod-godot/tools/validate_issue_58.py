@@ -146,8 +146,10 @@ def validate_service() -> None:
         "SGC_TornadoDrill or SGC_SpiralDrill",
         "card.Enchantment == null",
         "CardCmd.Downgrade(selected)",
+        "ApplySpiralEnchantment(card)",
+        "private static void ApplySpiralEnchantment(CardModel card, decimal amount = 1m)",
         "EnchantmentModel spiral = ModelDb.Enchantment<Spiral>().ToMutable()",
-        "card.EnchantInternal(spiral, 1m)",
+        "card.EnchantInternal(spiral, amount)",
         "CardsEnchanted.Add(new CardEnchantmentHistoryEntry(card, spiral.Id))",
     )
 

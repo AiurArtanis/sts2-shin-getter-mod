@@ -147,5 +147,16 @@
   "S_G_C_INFINITE_EVOLUTION.title": "無限進化",
   "S_G_C_INFINITE_EVOLUTION.description": "戦闘勝利後、[gold]筋力[/gold]、[gold]敏捷[/gold]、最大HPのいずれかをランダムに1永久に得る。",
   "S_G_C_HOLY_DRAGON_ROAR.title": "聖龍咆哮",
-  "S_G_C_HOLY_DRAGON_ROAR.description": "手札の[gold]ゲッターカード[/gold]をすべて廃棄する。すべての敵に{Damage:diff()}の基本ダメージを与え、廃棄したカード1枚につき{BurnDamage:diff()}ダメージを加算する。\nすべての敵を[gold]スタン[/gold]させる。"
+  "S_G_C_HOLY_DRAGON_ROAR.description": "手札の[gold]ゲッターカード[/gold]をすべて廃棄する。すべての敵に{Damage:diff()}の基本ダメージを与え、廃棄したカード1枚につき{BurnDamage:diff()}ダメージを加算する。\nすべての敵を[gold]スタン[/gold]させる。",
+  "S_G_C_PETAL_BREAKTHROUGH.title": "花弁突破",
+  "S_G_C_PETAL_BREAKTHROUGH.description": "{Damage:diff()}ダメージを与える。山札にある[gold]リプレイ[/gold]を持たないランダムなアタック1枚に、[gold]リプレイ[/gold]を{Replay:diff()}付与する。",
+  "S_G_C_RESCHEDULE_TICKET.title": "振替券",
+  "S_G_C_RESCHEDULE_TICKET.description": "手札からこのカード以外を1枚選び、山札の一番下に置く。同じタイプのカードを引くまでカードを引く。[gold]廃棄[/gold]。",
+  "S_G_C_RESCHEDULE_TICKET.selectionScreenPrompt": "振り替えるカードを1枚選ぶ。",
+  "S_G_C_PRESSURE_BREATH.title": "耐圧呼吸",
+  "S_G_C_PRESSURE_BREATH.description": "{Block:diff()}ブロックを得る。このターンにHPを失っていた場合、[gold]プレート[/gold]を{PlatingPower:diff()}得る。[gold]廃棄[/gold]。",
+  "S_G_C_WISP_COORDINATE.title": "鬼火座標",
+  "S_G_C_WISP_COORDINATE.description": "山札の上から{Cards:diff()}枚を見る。1枚を手札に加え、残りを好きな順番で山札の上に戻す。[gold]放射線[/gold]を{SGP_Radiation:diff()}得る。[gold]廃棄[/gold]。",
+  "S_G_C_WISP_COORDINATE.selectionScreenPrompt": "手札に加えるカードを1枚選ぶ。",
+  "S_G_C_WISP_COORDINATE.orderSelectionScreenPrompt": "次に山札の上へ戻すカードを選ぶ。"
 }

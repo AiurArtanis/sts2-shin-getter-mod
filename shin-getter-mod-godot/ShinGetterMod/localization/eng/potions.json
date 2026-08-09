@@ -4,5 +4,11 @@
   "S_G_R_KUSUHA_JUICE.title": "Kusuha Juice",
   "S_G_R_KUSUHA_JUICE.description": "Gain {WeakPower} [gold]Weak[/gold] and {VulnerablePower} [gold]Vulnerable[/gold]. This turn, [gold]Spirit Command cards[/gold] ignore Ki requirements and cost 0.",
   "S_G_R_GETTER_COLD_BREW.title": "Getter Cold Brew",
-  "S_G_R_GETTER_COLD_BREW.description": "Add 3 cards with \"Getter\" in their name to your hand and give them [gold]Retain[/gold]."
+  "S_G_R_GETTER_COLD_BREW.description": "Add 3 cards with \"Getter\" in their name to your hand and give them [gold]Retain[/gold].",
+  "S_G_R_LUMINESCENT_PULSE.title": "Luminescent Pulse",
+  "S_G_R_LUMINESCENT_PULSE.description": "Apply {SGP_Radiation:diff()} [gold]Radiation[/gold] to ALL characters.",
+  "S_G_R_PHASE_COOLANT.title": "Phase Coolant",
+  "S_G_R_PHASE_COOLANT.description": "Remove ALL [gold]Radiation[/gold]. Gain {SGP_Ki:diff()} [gold]Ki[/gold] and {Energy:energyIcons()}.",
+  "S_G_R_ADAPTIVE_INK.title": "Adaptive Ink",
+  "S_G_R_ADAPTIVE_INK.description": "Gain {SGP_Evolution:diff()} [getter_ray]Evolution[/getter_ray] and {RegenPower:diff()} [gold]Regen[/gold]."
 }
