@@ -107,8 +107,15 @@ def localization_stem(model: str) -> str:
 
 def validate_models_and_pools() -> None:
     card_pool = (SRC / "Models/CardPools/ShinGetterCardPool.cs").read_text(encoding="utf-8")
+    entry = (SRC / "Entry.cs").read_text(encoding="utf-8")
     relic_pool = (SRC / "Models/RelicPools/ShinGetterRelicPool.cs").read_text(encoding="utf-8")
     potion_pool = (SRC / "Models/PotionPools/ShinGetterPotionPool.cs").read_text(encoding="utf-8")
+    all_cards_body = card_pool.split("GenerateAllCards", 1)[1].split("FilterThroughEpochs", 1)[0]
+    if all_cards_body.count("ModelDb.Card<") != 76:
+        raise AssertionError("Shin Getter card pool must register exactly 76 cards.")
+    require(entry, "ShinGetterMod - loading success! (76 cards)")
+    if "loading success! (72 cards)" in entry:
+        raise AssertionError("Stale pre-issue#89 card count remains in initialization log.")
     for model in CARD_TYPES:
         require(card_pool, f"ModelDb.Card<{model}>()", f"not {model}")
         source = (SRC / f"Models/Cards/{model}.cs").read_text(encoding="utf-8")
