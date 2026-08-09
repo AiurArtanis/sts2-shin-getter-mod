@@ -14,6 +14,7 @@ namespace ShinGetterMod.Models.Cards;
 
 public sealed class SGC_Radiated : ShinGetterCardBase
 {
+    public override int MaxUpgradeLevel => 0;
     public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Exhaust };
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips => WithContextualHoverTips(new IHoverTip[]
@@ -43,15 +44,32 @@ public sealed class SGC_Radiated : ShinGetterCardBase
             Owner.Creature,
             this);
 
+        var self = Owner.Creature;
         var creatures = CombatState.Creatures.Where(creature => creature.IsAlive).ToList();
-        await CreatureCmd.Damage(
-            choiceContext,
-            creatures,
-            DynamicVars.Damage.BaseValue,
-            DynamicVars.Damage.Props,
-            Owner.Creature,
-            this,
-            cardPlay);
+        var otherTargets = creatures.Where(creature => creature != self).ToList();
+        if (otherTargets.Count > 0)
+        {
+            await CreatureCmd.Damage(
+                choiceContext,
+                otherTargets,
+                DynamicVars.Damage.BaseValue,
+                DynamicVars.Damage.Props,
+                self,
+                this,
+                cardPlay);
+        }
+
+        if (self.IsAlive)
+        {
+            await CreatureCmd.Damage(
+                choiceContext,
+                self,
+                DynamicVars.Damage.BaseValue,
+                DynamicVars.Damage.Props,
+                null,
+                this,
+                cardPlay);
+        }
 
         foreach (var creature in creatures.Where(creature => creature.IsAlive))
         {
