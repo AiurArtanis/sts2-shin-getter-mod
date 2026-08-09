@@ -27,6 +27,6 @@ public sealed class SGR_TripleWoodCarving : ShinGetterRelicBase
         var choiceContext = new ThrowingPlayerChoiceContext();
 
         for (int i = 0; i < transformCount; i++)
-            await ShinGetterCardBase.Transform(choiceContext, Owner, null);
+            await ShinGetterCardBase.Transform(choiceContext, Owner, null, playVoice: false);
     }
 }

@@ -87,6 +87,7 @@ internal static class ShinGetterVoiceService
     {
         Opening,
         InterruptingNonCard,
+        DamageResponse,
         Card,
     }
 
@@ -126,9 +127,9 @@ internal static class ShinGetterVoiceService
         new("023", ShinGetterVoiceCue.RyomaKillGrunts, "ryoma_kill_grunts.wav", "SHIN_GETTER.voice.ryomaKillGrunts", ShinGetterForm.Getter1, VoicePlaybackCategory.InterruptingNonCard),
         new("024", ShinGetterVoiceCue.RyomaKillGuillotine, "ryoma_kill_guillotine.wav", "SHIN_GETTER.voice.ryomaKillGuillotine", ShinGetterForm.Getter1, VoicePlaybackCategory.InterruptingNonCard),
         new("025", ShinGetterVoiceCue.EnemySummon, "ryoma_enemy_summon.wav", "SHIN_GETTER.voice.enemySummon", ShinGetterForm.Getter1, VoicePlaybackCategory.InterruptingNonCard),
-        new("026", ShinGetterVoiceCue.FirstDamage, "ryoma_first_damage.wav", "SHIN_GETTER.voice.firstDamage", ShinGetterForm.Getter1, VoicePlaybackCategory.InterruptingNonCard),
+        new("026", ShinGetterVoiceCue.FirstDamage, "ryoma_first_damage.wav", "SHIN_GETTER.voice.firstDamage", ShinGetterForm.Getter1, VoicePlaybackCategory.DamageResponse),
         new("027", ShinGetterVoiceCue.LizardEncounter, "ryoma_lizard_encounter.wav", "SHIN_GETTER.voice.lizardEncounter", ShinGetterForm.Getter1, VoicePlaybackCategory.Opening),
-        new("028", ShinGetterVoiceCue.NoHpLoss, "ryoma_no_hp_loss.wav", "SHIN_GETTER.voice.noHpLoss", ShinGetterForm.Getter1, VoicePlaybackCategory.InterruptingNonCard),
+        new("028", ShinGetterVoiceCue.NoHpLoss, "ryoma_no_hp_loss.wav", "SHIN_GETTER.voice.noHpLoss", ShinGetterForm.Getter1, VoicePlaybackCategory.DamageResponse),
         new("029", ShinGetterVoiceCue.EventCombat, "ryoma_event_combat.wav", "SHIN_GETTER.voice.eventCombat", ShinGetterForm.Getter1, VoicePlaybackCategory.Opening),
         new("030", ShinGetterVoiceCue.EliteRespect, "ryoma_elite_respect.wav", "SHIN_GETTER.voice.eliteRespect", ShinGetterForm.Getter1, VoicePlaybackCategory.Opening),
         new("031", ShinGetterVoiceCue.ElitePrepare, "ryoma_elite_prepare.wav", "SHIN_GETTER.voice.elitePrepare", ShinGetterForm.Getter1, VoicePlaybackCategory.Opening),
@@ -245,9 +246,11 @@ internal static class ShinGetterVoiceService
         _ => null,
     };
 
-    internal static Task PlayTransform(Player player, ShinGetterForm targetForm)
+    internal static Task PlayTransform(Player player, ShinGetterForm targetForm, bool playVoice = true)
     {
         PlayAudio(TransformSfxPath);
+        if (!playVoice)
+            return Task.CompletedTask;
 
         ShinGetterVoiceCue? cue = targetForm switch
         {
@@ -478,6 +481,12 @@ internal static class ShinGetterVoiceService
     private static bool TryPlayOneTime(Player player, VoiceLine line, out float durationSeconds)
     {
         durationSeconds = 0f;
+        if (line.Category == VoicePlaybackCategory.DamageResponse
+            && HasActiveDamageResponse(player))
+        {
+            return false;
+        }
+
         if (line.Cue is not { } cue
             || !IsRequiredFormActive(player, line)
             || !TryClaimVoiceCue(player, cue))
@@ -590,8 +599,17 @@ internal static class ShinGetterVoiceService
             return false;
 
         VoicePlaybackState state = PlaybackStates.GetOrCreateValue(player);
-        if (category is VoicePlaybackCategory.Opening or VoicePlaybackCategory.InterruptingNonCard)
+        if (category == VoicePlaybackCategory.DamageResponse)
+        {
+            if (HasActiveDamageResponse(state))
+                return false;
+
             StopAllVoiceAudio(state);
+        }
+        else if (category is VoicePlaybackCategory.Opening or VoicePlaybackCategory.InterruptingNonCard)
+        {
+            StopAllVoiceAudio(state);
+        }
 
         var audioPlayer = new AudioStreamPlayer
         {
@@ -600,9 +618,15 @@ internal static class ShinGetterVoiceService
             VolumeDb = Mathf.LinearToDb(volume),
         };
         state.ActiveVoicePlayers.Add(audioPlayer);
+        if (category == VoicePlaybackCategory.DamageResponse)
+            state.ActiveDamageResponsePlayer = audioPlayer;
+
         audioPlayer.Finished += () =>
         {
             state.ActiveVoicePlayers.Remove(audioPlayer);
+            if (state.ActiveDamageResponsePlayer == audioPlayer)
+                state.ActiveDamageResponsePlayer = null;
+
             if (GodotObject.IsInstanceValid(audioPlayer))
                 audioPlayer.QueueFree();
 
@@ -612,6 +636,21 @@ internal static class ShinGetterVoiceService
         audioPlayer.Play();
         durationSeconds = (float)stream.GetLength();
         return true;
+    }
+
+    private static bool HasActiveDamageResponse(Player player) =>
+        HasActiveDamageResponse(PlaybackStates.GetOrCreateValue(player));
+
+    private static bool HasActiveDamageResponse(VoicePlaybackState state)
+    {
+        AudioStreamPlayer? audioPlayer = state.ActiveDamageResponsePlayer;
+        if (audioPlayer == null)
+            return false;
+        if (GodotObject.IsInstanceValid(audioPlayer) && audioPlayer.Playing)
+            return true;
+
+        state.ActiveDamageResponsePlayer = null;
+        return false;
     }
 
     private static bool TryPlayStandaloneAudio(string path, out float durationSeconds, float volume = 1f)
@@ -654,6 +693,7 @@ internal static class ShinGetterVoiceService
         finally
         {
             state.ActiveVoicePlayers.Clear();
+            state.ActiveDamageResponsePlayer = null;
             state.IsStoppingVoiceAudio = false;
         }
     }
@@ -882,6 +922,7 @@ internal static class ShinGetterVoiceService
         public readonly List<AudioStreamPlayer> ActiveVoicePlayers = new();
         public readonly Queue<VoiceLine> PendingKillVoiceLines = new();
         public bool IsStoppingVoiceAudio;
+        public AudioStreamPlayer? ActiveDamageResponsePlayer;
         public NSpeechBubbleVfx? CurrentSubtitle;
         public int SubtitleGeneration;
         public bool ShouldPlayShiningSparkFollowUp;
