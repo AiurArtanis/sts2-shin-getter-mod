@@ -490,7 +490,11 @@ public abstract class ShinGetterCardBase : CardModel
     /// 变形到下一个形态：1→2→3→1。
     /// 真化形态下不变，改为同时触发三个形态的变形效果。
     /// </summary>
-    public static async Task Transform(PlayerChoiceContext choiceContext, Player player, CardModel? cardSource)
+    public static async Task Transform(
+        PlayerChoiceContext choiceContext,
+        Player player,
+        CardModel? cardSource,
+        bool playVoice = true)
     {
         if (!IsShinGetterPlayer(player))
         {
@@ -513,7 +517,7 @@ public abstract class ShinGetterCardBase : CardModel
         // 真化形态：不切换，改为同时触发三个形态的变形效果
         if (creature.GetPower<SGP_ShinForm>() != null)
         {
-            await TriggerShinFormTransform(choiceContext, creature, cardSource);
+            await TriggerShinFormTransform(choiceContext, creature, cardSource, playVoice);
             return;
         }
 
@@ -536,14 +540,15 @@ public abstract class ShinGetterCardBase : CardModel
             _ => ShinGetterForm.Getter1,
         };
 
-        await TransformTo(choiceContext, player, next, cardSource);
+        await TransformTo(choiceContext, player, next, cardSource, playVoice);
     }
 
     public static async Task TransformTo(
         PlayerChoiceContext choiceContext,
         Player player,
         ShinGetterForm next,
-        CardModel? cardSource)
+        CardModel? cardSource,
+        bool playVoice = true)
     {
         if (!IsShinGetterPlayer(player))
         {
@@ -566,7 +571,7 @@ public abstract class ShinGetterCardBase : CardModel
         Task transformVoiceTask = Task.CompletedTask;
         try
         {
-            transformVoiceTask = ShinGetterVoiceService.PlayTransform(player, next);
+            transformVoiceTask = ShinGetterVoiceService.PlayTransform(player, next, playVoice);
 
             if (creature.GetPower<SGP_ShinForm>() is { } shinForm)
                 await PowerCmd.Remove(shinForm);
@@ -617,10 +622,14 @@ public abstract class ShinGetterCardBase : CardModel
     /// <summary>
     /// 真化形态下的变形：不切换形态，但触发三个形态的出场效果。
     /// </summary>
-    private static async Task TriggerShinFormTransform(PlayerChoiceContext choiceContext, Creature creature, CardModel? cardSource)
+    private static async Task TriggerShinFormTransform(
+        PlayerChoiceContext choiceContext,
+        Creature creature,
+        CardModel? cardSource,
+        bool playVoice)
     {
         if (creature.Player is { } player)
-            _ = ShinGetterVoiceService.PlayTransform(player, ShinGetterForm.None);
+            _ = ShinGetterVoiceService.PlayTransform(player, ShinGetterForm.None, playVoice);
 
         await PowerCmd.Apply<VigorPower>(choiceContext, creature, 1m, creature, cardSource);
         await PowerCmd.Apply<RegenPower>(choiceContext, creature, 1m, creature, cardSource);
