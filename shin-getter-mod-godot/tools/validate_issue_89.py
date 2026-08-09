@@ -132,14 +132,19 @@ def validate_models_and_pools() -> None:
     petal = (SRC / "Models/Cards/SGC_PetalBreakthrough.cs").read_text(encoding="utf-8")
     require(
         petal,
+        'new IntVar("Times", 1m)',
         "StaticHoverTip.ReplayDynamic",
+        'HoverTipFactory.Static(StaticHoverTip.ReplayDynamic, DynamicVars["Times"])',
         "CaptureVigorForManualAttack(ValueProp.Move)",
         "ConsumeCapturedVigor(choiceContext, vigorToConsume)",
         "ConsumeForCardDamage(choiceContext, this, ValueProp.Move)",
         "GetEnchantedReplayCount() < 1",
-        "BaseReplayCount +=",
+        'BaseReplayCount += DynamicVars["Times"].IntValue',
+        'DynamicVars["Times"].UpgradeValueBy(1m)',
         "CardCmd.Preview(selected)",
     )
+    if 'DynamicVars["Replay"]' in petal or 'new IntVar("Replay"' in petal:
+        raise AssertionError("Petal Breakthrough must use the ReplayDynamic {Times} contract.")
     pressure = (SRC / "Models/Cards/SGC_PressureBreath.cs").read_text(encoding="utf-8")
     require(pressure, "CombatManager.Instance.History.Entries", "HappenedThisTurn", "UnblockedDamage > 0")
     ticket = (SRC / "Models/Cards/SGC_RescheduleTicket.cs").read_text(encoding="utf-8")
@@ -272,6 +277,9 @@ def validate_localization() -> None:
                 raise AssertionError(f"{name}.json key mismatch for {language}")
 
     for language in LANGUAGES:
+        petal = tables[language]["cards"]["S_G_C_PETAL_BREAKTHROUGH.description"]
+        if "{Times:diff()}" not in petal or "{Replay" in petal:
+            raise AssertionError("Petal Breakthrough localization must use its Times DynamicVar.")
         ticket = tables[language]["cards"]["S_G_C_RESCHEDULE_TICKET.description"]
         if "next turn" in ticket.lower() or "下回合" in ticket or "次のターン" in ticket:
             raise AssertionError("Reschedule Ticket still contains the obsolete next-turn draw effect.")

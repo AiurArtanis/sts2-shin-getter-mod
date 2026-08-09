@@ -149,7 +149,7 @@
   "S_G_C_HOLY_DRAGON_ROAR.title": "聖龍咆哮",
   "S_G_C_HOLY_DRAGON_ROAR.description": "手札の[gold]ゲッターカード[/gold]をすべて廃棄する。すべての敵に{Damage:diff()}の基本ダメージを与え、廃棄したカード1枚につき{BurnDamage:diff()}ダメージを加算する。\nすべての敵を[gold]スタン[/gold]させる。",
   "S_G_C_PETAL_BREAKTHROUGH.title": "花弁突破",
-  "S_G_C_PETAL_BREAKTHROUGH.description": "{Damage:diff()}ダメージを与える。山札にある[gold]リプレイ[/gold]を持たないランダムなアタック1枚に、[gold]リプレイ[/gold]を{Replay:diff()}付与する。",
+  "S_G_C_PETAL_BREAKTHROUGH.description": "{Damage:diff()}ダメージを与える。山札にある[gold]リプレイ[/gold]を持たないランダムなアタック1枚に、[gold]リプレイ[/gold]を{Times:diff()}付与する。",
   "S_G_C_RESCHEDULE_TICKET.title": "振替券",
   "S_G_C_RESCHEDULE_TICKET.description": "手札からこのカード以外を1枚選び、山札の一番下に置く。同じタイプのカードを引くまでカードを引く。[gold]廃棄[/gold]。",
   "S_G_C_RESCHEDULE_TICKET.selectionScreenPrompt": "振り替えるカードを1枚選ぶ。",

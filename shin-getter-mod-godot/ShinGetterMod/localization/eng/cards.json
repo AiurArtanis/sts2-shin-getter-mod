@@ -149,7 +149,7 @@
   "S_G_C_HOLY_DRAGON_ROAR.title": "Holy Dragon Roar",
   "S_G_C_HOLY_DRAGON_ROAR.description": "Exhaust all [gold]Getter cards[/gold] in your hand. Deal {Damage:diff()} base damage to ALL enemies. Each card Exhausted adds {BurnDamage:diff()} damage.\n[gold]Stun[/gold] ALL enemies.",
   "S_G_C_PETAL_BREAKTHROUGH.title": "Petal Breakthrough",
-  "S_G_C_PETAL_BREAKTHROUGH.description": "Deal {Damage:diff()} damage. Give a random Attack in your draw pile without [gold]Replay[/gold] {Replay:diff()} [gold]Replay[/gold].",
+  "S_G_C_PETAL_BREAKTHROUGH.description": "Deal {Damage:diff()} damage. Give a random Attack in your draw pile without [gold]Replay[/gold] {Times:diff()} [gold]Replay[/gold].",
   "S_G_C_RESCHEDULE_TICKET.title": "Reschedule Ticket",
   "S_G_C_RESCHEDULE_TICKET.description": "Choose another card in your hand and put it on the bottom of your draw pile. Draw until you draw a card of the same type. [gold]Exhaust[/gold].",
   "S_G_C_RESCHEDULE_TICKET.selectionScreenPrompt": "Choose 1 card to reschedule.",
