@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Merchant;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -11,6 +12,7 @@ namespace ShinGetterMod.Models.Relics;
 public sealed class SGR_GoodCitizenCard : ShinGetterRelicBase
 {
     private int _lastFreeFloor = -1;
+    private List<int> _freePurchaseActIndices = new();
 
     public override RelicRarity Rarity => RelicRarity.Rare;
 
@@ -30,6 +32,24 @@ public sealed class SGR_GoodCitizenCard : ShinGetterRelicBase
         }
     }
 
+    [SavedProperty]
+    public List<int> FreePurchaseActIndices
+    {
+        get => _freePurchaseActIndices;
+        private set
+        {
+            AssertMutable();
+            _freePurchaseActIndices.Clear();
+            _freePurchaseActIndices.AddRange(value);
+        }
+    }
+
+    protected override void AfterCloned()
+    {
+        base.AfterCloned();
+        _freePurchaseActIndices = new List<int>();
+    }
+
     public override decimal ModifyMerchantPrice(Player player, MerchantEntry entry, decimal originalPrice)
     {
         if (player != Owner || player.RunState.CurrentRoom is not MerchantRoom || IsUsedThisFloor || originalPrice <= 0m)
@@ -44,6 +64,8 @@ public sealed class SGR_GoodCitizenCard : ShinGetterRelicBase
             return Task.CompletedTask;
 
         Flash();
+        if (goldSpent == 0)
+            FreePurchaseActIndices.Add(Owner.RunState.CurrentActIndex);
         LastFreeFloor = Owner.RunState.TotalFloor;
         ShinGetterMerchantVisuals.RefreshCurrentRoom();
         return Task.CompletedTask;

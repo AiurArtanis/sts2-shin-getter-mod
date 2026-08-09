@@ -93,6 +93,10 @@ public sealed class ShinGetterCardPool : CardPoolModel
 			ModelDb.Card<SGC_Radiated>(),
 			ModelDb.Card<SGC_InsectVirus>(),
 			ModelDb.Card<SGC_InfiniteEvolution>(),
+			ModelDb.Card<SGC_PetalBreakthrough>(),
+			ModelDb.Card<SGC_RescheduleTicket>(),
+			ModelDb.Card<SGC_PressureBreath>(),
+			ModelDb.Card<SGC_WispCoordinate>(),
 		};
 	}
 
@@ -100,6 +104,11 @@ public sealed class ShinGetterCardPool : CardPoolModel
 		UnlockState unlockState,
 		IEnumerable<CardModel> cards)
 	{
-		return cards.Where(card => card is not SGC_InsectVirus and not SGC_Radiated);
+		return cards.Where(card => card is not SGC_InsectVirus
+			and not SGC_Radiated
+			and not SGC_PetalBreakthrough
+			and not SGC_RescheduleTicket
+			and not SGC_PressureBreath
+			and not SGC_WispCoordinate);
 	}
 }

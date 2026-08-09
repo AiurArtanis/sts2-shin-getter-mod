@@ -70,6 +70,11 @@ internal static class ShinGetterEventOptionIconPatch
     private const string GetterOneIcon = "res://images/atlases/power_atlas.sprites/s_g_p_shin_getter_one.tres";
     private const string GetterTwoIcon = "res://images/atlases/power_atlas.sprites/s_g_p_shin_getter_two.tres";
     private const string GetterThreeIcon = "res://images/atlases/power_atlas.sprites/s_g_p_shin_getter_three.tres";
+    private const string GoodCitizenCardIcon = "res://images/atlases/relic_atlas.sprites/s_g_r_good_citizen_card.tres";
+    private const string SaotomeBlueprintIcon = "res://images/atlases/card_atlas.sprites/shin_getter/s_g_c_saotome_blueprint.tres";
+    private const string GetterBeamIcon = "res://images/atlases/card_atlas.sprites/shin_getter/s_g_c_getter_beam.tres";
+    private const string EmperorsFragmentIcon = "res://images/atlases/relic_atlas.sprites/s_g_r_emperors_fragment.tres";
+    private const string ResearchNotesIcon = "res://images/atlases/relic_atlas.sprites/s_g_r_research_notes.tres";
 
     private static void Postfix(NEventOptionButton __instance)
     {
@@ -81,7 +86,8 @@ internal static class ShinGetterEventOptionIconPatch
         }
 
         bool isTriple = key.Contains(".SPIRIT_GRAFTER.", StringComparison.Ordinal)
-            || key.Contains(".WOOD_CARVINGS.", StringComparison.Ordinal);
+            || key.Contains(".WOOD_CARVINGS.", StringComparison.Ordinal)
+            || key.Contains(".TRIPLE_", StringComparison.Ordinal);
         Control icon = CreateIconLayer(key, isTriple);
         icon.Name = "ShinGetterOptionIcon";
         icon.ZIndex = 8;
@@ -116,15 +122,51 @@ internal static class ShinGetterEventOptionIconPatch
         }
         else
         {
-            string path = key.Contains(".HAYATO", StringComparison.Ordinal)
-                ? GetterTwoIcon
-                : key.Contains(".BENKEI", StringComparison.Ordinal)
-                    ? GetterThreeIcon
-                    : GetterOneIcon;
+            string path = ResolveSingleIconPath(key);
             layer.AddChild(CreateRightAnchoredIcon(path, IconRightInset, SingleIconSize));
         }
 
         return layer;
+    }
+
+    private static string ResolveSingleIconPath(string key)
+    {
+        if (key.Contains(
+                ".WELCOME_TO_WONGOS.pages.INITIAL.options.HAYATO",
+                StringComparison.Ordinal))
+        {
+            return GoodCitizenCardIcon;
+        }
+        if (key.Contains(
+                ".TINKER_TIME.pages.INITIAL.options.HAYATO",
+                StringComparison.Ordinal))
+        {
+            return SaotomeBlueprintIcon;
+        }
+        if (key.Contains(
+                ".WELLSPRING.pages.INITIAL.options.RYOMA",
+                StringComparison.Ordinal))
+        {
+            return GetterBeamIcon;
+        }
+        if (key.Contains(
+                ".RELIC_TRADER.pages.INITIAL.options.HAYATO",
+                StringComparison.Ordinal))
+        {
+            return EmperorsFragmentIcon;
+        }
+        if (key.Contains(
+                ".WATERLOGGED_SCRIPTORIUM.pages.INITIAL.options.HAYATO",
+                StringComparison.Ordinal))
+        {
+            return ResearchNotesIcon;
+        }
+
+        if (key.Contains(".HAYATO", StringComparison.Ordinal))
+            return GetterTwoIcon;
+        if (key.Contains(".BENKEI", StringComparison.Ordinal))
+            return GetterThreeIcon;
+        return GetterOneIcon;
     }
 
     private static TextureRect CreateRightAnchoredIcon(string path, float rightOffset, float size)

@@ -147,5 +147,16 @@
   "S_G_C_INFINITE_EVOLUTION.title": "Infinite Evolution",
   "S_G_C_INFINITE_EVOLUTION.description": "After winning combat, randomly gain 1 permanent [gold]Strength[/gold], [gold]Dexterity[/gold], or Max HP.",
   "S_G_C_HOLY_DRAGON_ROAR.title": "Holy Dragon Roar",
-  "S_G_C_HOLY_DRAGON_ROAR.description": "Exhaust all [gold]Getter cards[/gold] in your hand. Deal {Damage:diff()} base damage to ALL enemies. Each card Exhausted adds {BurnDamage:diff()} damage.\n[gold]Stun[/gold] ALL enemies."
+  "S_G_C_HOLY_DRAGON_ROAR.description": "Exhaust all [gold]Getter cards[/gold] in your hand. Deal {Damage:diff()} base damage to ALL enemies. Each card Exhausted adds {BurnDamage:diff()} damage.\n[gold]Stun[/gold] ALL enemies.",
+  "S_G_C_PETAL_BREAKTHROUGH.title": "Petal Breakthrough",
+  "S_G_C_PETAL_BREAKTHROUGH.description": "Deal {Damage:diff()} damage. Give a random Attack in your draw pile without [gold]Replay[/gold] {Replay:diff()} [gold]Replay[/gold].",
+  "S_G_C_RESCHEDULE_TICKET.title": "Reschedule Ticket",
+  "S_G_C_RESCHEDULE_TICKET.description": "Choose another card in your hand and put it on the bottom of your draw pile. Draw until you draw a card of the same type. [gold]Exhaust[/gold].",
+  "S_G_C_RESCHEDULE_TICKET.selectionScreenPrompt": "Choose 1 card to reschedule.",
+  "S_G_C_PRESSURE_BREATH.title": "Pressure Breathing",
+  "S_G_C_PRESSURE_BREATH.description": "Gain {Block:diff()} Block. If you lost HP this turn, gain {PlatingPower:diff()} [gold]Plating[/gold]. [gold]Exhaust[/gold].",
+  "S_G_C_WISP_COORDINATE.title": "Wisp Coordinates",
+  "S_G_C_WISP_COORDINATE.description": "Look at the top {Cards:diff()} cards of your draw pile. Put 1 into your hand, then return the rest in any order. Gain {SGP_Radiation:diff()} [gold]Radiation[/gold]. [gold]Exhaust[/gold].",
+  "S_G_C_WISP_COORDINATE.selectionScreenPrompt": "Choose 1 card to put into your hand.",
+  "S_G_C_WISP_COORDINATE.orderSelectionScreenPrompt": "Choose the next card to return to the top of your draw pile."
 }

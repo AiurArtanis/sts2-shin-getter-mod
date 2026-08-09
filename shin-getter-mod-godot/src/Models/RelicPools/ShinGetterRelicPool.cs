@@ -32,7 +32,9 @@ public sealed class ShinGetterRelicPool : RelicPoolModel
 
 		return relics
 			.Concat(WeightedShinGetterRelics(relics, weight: 2))
-			.Append(ModelDb.Relic<SGR_TripleWoodCarving>());
+			.Append(ModelDb.Relic<SGR_TripleWoodCarving>())
+			.Append(ModelDb.Relic<SGR_BeaconPrism>())
+			.Append(ModelDb.Relic<SGR_MycelialSilencer>());
 	}
 
 	private static IEnumerable<RelicModel> WeightedShinGetterRelics(IEnumerable<RelicModel> relics, int weight)

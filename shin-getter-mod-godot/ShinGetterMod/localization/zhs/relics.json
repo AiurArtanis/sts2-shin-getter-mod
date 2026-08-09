@@ -32,5 +32,11 @@
   "S_G_R_YUMMY_COOKIE.flavor": "盖塔线烤出的香气，让进化也显得有些可口。",
   "S_G_R_TRIPLE_WOOD_CARVING.title": "三合一木雕",
   "S_G_R_TRIPLE_WOOD_CARVING.description": "战斗开始时，随机[gold]变形[/gold]1至3次。",
-  "S_G_R_TRIPLE_WOOD_CARVING.flavor": "飞鸟、长蛇与圆环在红、白、黄三色微光中合为一体。"
+  "S_G_R_TRIPLE_WOOD_CARVING.flavor": "飞鸟、长蛇与圆环在红、白、黄三色微光中合为一体。",
+  "S_G_R_BEACON_PRISM.title": "灯塔棱镜",
+  "S_G_R_BEACON_PRISM.description": "每场战斗中，第N瓶使用的药水使你受到N点不可阻挡伤害，并获得N点[gold]气力[/gold]（N从1开始）。",
+  "S_G_R_BEACON_PRISM.flavor": "灯塔的余光被装甲折进棱镜，也把一层层水压留了下来。",
+  "S_G_R_MYCELIAL_SILENCER.title": "菌丝消音器",
+  "S_G_R_MYCELIAL_SILENCER.description": "每回合第一次消耗卡牌后，获得{Block:diff()}点格挡。",
+  "S_G_R_MYCELIAL_SILENCER.flavor": "把合唱漏掉一拍，后面的杂音便再也压不进驾驶舱。"
 }

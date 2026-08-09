@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
@@ -25,7 +26,8 @@ public sealed class ShinGetterPotionPool : PotionPoolModel
 
     protected override IEnumerable<PotionModel> GenerateAllPotions()
     {
-        return WeightedCustomPotions(weight: 2);
+        return WeightedCustomPotions(weight: 2)
+            .Concat(EventPotions);
     }
 
     public override IEnumerable<PotionModel> GetUnlockedPotions(UnlockState unlockState)
@@ -39,6 +41,16 @@ public sealed class ShinGetterPotionPool : PotionPoolModel
         {
             for (int i = 0; i < weight; i++)
                 yield return potion;
+        }
+    }
+
+    private static IEnumerable<PotionModel> EventPotions
+    {
+        get
+        {
+            yield return ModelDb.Potion<SGR_LuminescentPulse>();
+            yield return ModelDb.Potion<SGR_PhaseCoolant>();
+            yield return ModelDb.Potion<SGR_AdaptiveInk>();
         }
     }
 }
