@@ -139,13 +139,27 @@ def validate_models_and_pools() -> None:
     if beacon.index("await CreatureCmd.Damage(") > beacon.index("await PowerCmd.Apply<SGP_Ki>("):
         raise AssertionError("Beacon Prism must pay its HP cost before granting Ki.")
     ki = (SRC / "Models/Powers/SGP_Ki.cs").read_text(encoding="utf-8")
-    require(ki, "!props.HasFlag(ValueProp.Unpowered)")
+    require(
+        ki,
+        "ShouldReduceDamage(props, cardSource)",
+        "cardSource?.Type == CardType.Status",
+        "!props.HasFlag(ValueProp.Unblockable)",
+    )
     ki_modifier = ki.split("public override decimal ModifyDamageAdditive(", 1)[1].split(
+        "private static bool ShouldReduceDamage", 1
+    )[0]
+    require(ki_modifier, "if (!ShouldReduceDamage(props, cardSource))", "return -Amount;")
+    if ki_modifier.index("if (!ShouldReduceDamage(props, cardSource))") > ki_modifier.index("return -Amount;"):
+        raise AssertionError("Ki must apply its source gate before reducing damage.")
+    ki_gate = ki.split("private static bool ShouldReduceDamage", 1)[1].split(
         "public override async Task AfterDamageReceived", 1
     )[0]
-    require(ki_modifier, "if (props.HasFlag(ValueProp.Unpowered))", "return -Amount;")
-    if ki_modifier.index("if (props.HasFlag(ValueProp.Unpowered))") > ki_modifier.index("return -Amount;"):
-        raise AssertionError("Ki must reject Unpowered damage before applying its reduction.")
+    require(
+        ki_gate,
+        "if (!props.HasFlag(ValueProp.Unpowered))",
+        "cardSource?.Type == CardType.Status",
+        "!props.HasFlag(ValueProp.Unblockable)",
+    )
     ki_after_damage = ki.split("public override async Task AfterDamageReceived", 1)[1]
     require(ki_after_damage, "result.UnblockedDamage <= 0", "PowerCmd.Decrement(this)")
     if "props.HasFlag(ValueProp.Unpowered)" in ki_after_damage:

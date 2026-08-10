@@ -30,6 +30,17 @@ def main() -> None:
         "src/Models/CardPools/ShinGetterCardPool.cs",
         "not SGC_Radiated",
     )
+    ki = read("src/Models/Powers/SGP_Ki.cs")
+    for fragment in (
+        "ShouldReduceDamage(props, cardSource)",
+        "if (!props.HasFlag(ValueProp.Unpowered))",
+        "cardSource?.Type == CardType.Status",
+        "!props.HasFlag(ValueProp.Unblockable)",
+    ):
+        if fragment not in ki:
+            raise AssertionError(f"SGP_Ki.cs: missing {fragment!r}")
+    if ki.count("ShouldReduceDamage(props, cardSource)") != 2:
+        raise AssertionError("Ki must use the same status-damage gate for flash and reduction")
     print("issue#105 issue#107 static validation passed")
 
 
