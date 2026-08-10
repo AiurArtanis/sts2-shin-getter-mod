@@ -43,7 +43,7 @@ public sealed class SGP_Ki : PowerModel
 
     public override Task BeforeDamageReceived(PlayerChoiceContext choiceContext, Creature target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
-        if (target == Owner && amount > 0m && Amount > 0)
+        if (target == Owner && amount > 0m && Amount > 0 && ShouldReduceDamage(props, cardSource))
             Flash();
 
         return Task.CompletedTask;
@@ -57,10 +57,22 @@ public sealed class SGP_Ki : PowerModel
         CardModel? cardSource,
         CardPlay? cardPlay)
     {
+        if (!ShouldReduceDamage(props, cardSource))
+            return 0m;
+
         if (target == Owner && amount > 0m && Amount > 0)
             return -Amount;
 
         return 0m;
+    }
+
+    private static bool ShouldReduceDamage(ValueProp props, CardModel? cardSource)
+    {
+        if (!props.HasFlag(ValueProp.Unpowered))
+            return true;
+
+        return cardSource?.Type == CardType.Status
+            && !props.HasFlag(ValueProp.Unblockable);
     }
 
     public override async Task AfterDamageReceived(PlayerChoiceContext choiceContext, Creature target, DamageResult result, ValueProp props, Creature? dealer, CardModel? cardSource)
