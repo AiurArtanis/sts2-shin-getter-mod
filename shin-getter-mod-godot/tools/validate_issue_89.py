@@ -40,8 +40,127 @@ EVENT_OPTIONS = {
     "LUMINOUS_CHOIR": ("RYOMA", "HAYATO"),
     "COLOSSAL_FLOWER": ("HAYATO", "RYOMA"),
     "THE_FUTURE_OF_POTIONS": ("HAYATO",),
-    "ABYSSAL_BATHS": ("TRIPLE_REFINING", "TRIPLE_COOLANT"),
+    "ABYSSAL_BATHS": ("TRIPLE_COOLANT",),
     "WATERLOGGED_SCRIPTORIUM": ("HAYATO_ADAPTATION", "HAYATO_INK"),
+}
+
+# Audited from the current "事件分支" section of all 48 original-event notes.
+# The three deprecated Wood Carvings routes are tracked separately so the
+# historical 62-option audit cannot accidentally re-enable discarded designs.
+EVENT_NOTE_ROUTE_LABELS = {
+    "镜中倒影 影倒中镜": ("三体同心",),
+    "长者兰伟德": ("龙马",),
+    "这个还是那个？": ("龙马", "隼人"),
+    "遗忘之墓": ("三体协同",),
+    "遗物交换商": ("皇帝的碎片",),
+    "迷失鬼火": ("弁庆", "隼人"),
+    "被寄生的自动机械": ("隼人",),
+    "蓝宝石种子": ("进化共鸣",),
+    "螺旋漩涡": ("隼人",),
+    "蘑菇饥渴": ("弁庆",),
+    "药水的未来？": ("隼人",),
+    "药水快递员": ("龙马",),
+    "茶艺大师": ("龙马", "弁庆"),
+    "色彩哲学家": (),
+    "自助指南": ("龙马",),
+    "玩偶室": ("隼人",),
+    "脑蛭": ("三体协同",),
+    "真理石板": ("隼人",),
+    "灵魂嫁接者": ("三体同心",),
+    "满屋芝士": ("弁庆",),
+    "熔合者": ("龙马", "弁庆"),
+    "滑脚木桥": ("龙马", "隼人"),
+    "淹水金库": ("隼人",),
+    "混沌芳香": ("隼人",),
+    "淹水灯塔": ("弁庆", "弁庆"),
+    "泉水": ("盖塔射线路线",),
+    "深渊浴场": ("三体协同",),
+    "沉没雕像": ("弁庆",),
+    "永恒之石": ("弁庆",),
+    "水漫缮写室": ("研究路线", "研究路线"),
+    "欢迎来到旺购百货": ("顾客资格",),
+    "木雕": ("三体同心",),
+    "无尽传送带": ("隼人",),
+    "害虫杀手": ("弁庆",),
+    "无休之处": ("弁庆", "弁庆"),
+    "打造时间": ("研究路线",),
+    "巨大花卉": ("隼人", "龙马"),
+    "审判": ("龙马",),
+    "多尼斯异鸟巢": ("弁庆", "龙马"),
+    "垃圾堆": ("弁庆",),
+    "圆桌茶会": ("龙马",),
+    "低语空谷": ("隼人",),
+    "冷光合唱团": ("龙马", "隼人"),
+    "共生体": ("弁庆",),
+    "传说是真的": ("龙马", "隼人"),
+    "修禅织网者": ("弁庆",),
+    "光与暗的门扉": ("龙马",),
+    "人形洞穴之地": ("真盖塔龙",),
+}
+
+DEPRECATED_EVENT_NOTE_ROUTE_LABELS = {
+    "木雕": ("龙马", "隼人", "弁庆"),
+}
+
+ROUTE_LABEL_TRANSLATIONS = {
+    "龙马": {"zhs": "龙马", "eng": "Ryoma", "jpn": "竜馬"},
+    "隼人": {"zhs": "隼人", "eng": "Hayato", "jpn": "隼人"},
+    "弁庆": {"zhs": "弁庆", "eng": "Benkei", "jpn": "弁慶"},
+    "三体协同": {"zhs": "三体协同", "eng": "Triple Coordination", "jpn": "三体協同"},
+    "三体同心": {"zhs": "三体同心", "eng": "Triple Unity", "jpn": "三体一心"},
+    "皇帝的碎片": {"zhs": "皇帝的碎片", "eng": "Emperor's Fragment", "jpn": "皇帝の欠片"},
+    "进化共鸣": {"zhs": "进化共鸣", "eng": "Evolution Resonance", "jpn": "進化共鳴"},
+    "盖塔射线路线": {"zhs": "盖塔射线路线", "eng": "Getter Ray Route", "jpn": "ゲッター線ルート"},
+    "研究路线": {"zhs": "研究路线", "eng": "Research Route", "jpn": "研究ルート"},
+    "顾客资格": {"zhs": "顾客资格", "eng": "Customer Credentials", "jpn": "顧客資格"},
+    "真盖塔龙": {"zhs": "真盖塔龙", "eng": "Shin Getter Dragon", "jpn": "真ゲッタードラゴン"},
+}
+
+RUNTIME_ROUTE_LABELS = {
+    ("TEA_MASTER", "RYOMA"): "龙马",
+    ("TEA_MASTER", "BENKEI"): "弁庆",
+    ("SLIPPERY_BRIDGE", "RYOMA"): "龙马",
+    ("SLIPPERY_BRIDGE", "HAYATO"): "隼人",
+    ("SPIRIT_GRAFTER", "TRIPLE_UNITY"): "三体同心",
+    ("WOOD_CARVINGS", "TRIPLE_CARVING"): "三体同心",
+    ("THIS_OR_THAT", "RYOMA"): "龙马",
+    ("THIS_OR_THAT", "HAYATO"): "隼人",
+    ("AMALGAMATOR", "RYOMA"): "龙马",
+    ("AMALGAMATOR", "BENKEI"): "弁庆",
+    ("BYRDONIS_NEST", "BENKEI"): "弁庆",
+    ("BYRDONIS_NEST", "RYOMA"): "龙马",
+    ("INFESTED_AUTOMATON", "HAYATO"): "隼人",
+    ("THE_LEGENDS_WERE_TRUE", "RYOMA"): "龙马",
+    ("THE_LEGENDS_WERE_TRUE", "HAYATO"): "隼人",
+    ("TRIAL", "RYOMA"): "龙马",
+    ("SUNKEN_STATUE", "BENKEI"): "弁庆",
+    ("SPIRALING_WHIRLPOOL", "HAYATO"): "隼人",
+    ("ROUND_TEA_PARTY", "RYOMA"): "龙马",
+    ("RANWID_THE_ELDER", "RYOMA"): "龙马",
+    ("WELCOME_TO_WONGOS", "HAYATO"): "顾客资格",
+    ("TRASH_HEAP", "BENKEI"): "弁庆",
+    ("TINKER_TIME", "HAYATO"): "研究路线",
+    ("REFLECTIONS", "TRIPLE_UNITY"): "三体同心",
+    ("DOORS_OF_LIGHT_AND_DARK", "RYOMA"): "龙马",
+    ("WELLSPRING", "RYOMA"): "盖塔射线路线",
+    ("ROOM_FULL_OF_CHEESE", "BENKEI"): "弁庆",
+    ("BUGSLAYER", "BENKEI"): "弁庆",
+    ("RELIC_TRADER", "HAYATO"): "皇帝的碎片",
+    ("ENDLESS_CONVEYOR", "HAYATO"): "隼人",
+    ("UNREST_SITE", "BENKEI"): "弁庆",
+    ("UNREST_SITE", "BENKEI_BREATH"): "弁庆",
+    ("LOST_WISP", "BENKEI"): "弁庆",
+    ("LOST_WISP", "HAYATO"): "隼人",
+    ("DROWNING_BEACON", "BENKEI_GLOWWATER"): "弁庆",
+    ("DROWNING_BEACON", "BENKEI_PRISM"): "弁庆",
+    ("LUMINOUS_CHOIR", "RYOMA"): "龙马",
+    ("LUMINOUS_CHOIR", "HAYATO"): "隼人",
+    ("COLOSSAL_FLOWER", "HAYATO"): "隼人",
+    ("COLOSSAL_FLOWER", "RYOMA"): "龙马",
+    ("THE_FUTURE_OF_POTIONS", "HAYATO"): "隼人",
+    ("ABYSSAL_BATHS", "TRIPLE_COOLANT"): "三体协同",
+    ("WATERLOGGED_SCRIPTORIUM", "HAYATO_ADAPTATION"): "研究路线",
+    ("WATERLOGGED_SCRIPTORIUM", "HAYATO_INK"): "研究路线",
 }
 
 RESULT_ROUTES = {
@@ -82,6 +201,20 @@ def require(text: str, *needles: str) -> None:
     for needle in needles:
         if needle not in text:
             raise AssertionError(f"Missing required issue#89 assertion: {needle}")
+
+
+def method_body(source: str, signature: str) -> str:
+    start = source.index(signature)
+    brace = source.index("{", start)
+    depth = 0
+    for index in range(brace, len(source)):
+        if source[index] == "{":
+            depth += 1
+        elif source[index] == "}":
+            depth -= 1
+            if depth == 0:
+                return source[brace : index + 1]
+    raise AssertionError(f"Unbalanced method body: {signature}")
 
 
 def read_json(path: Path) -> dict[str, str]:
@@ -239,10 +372,74 @@ def validate_event_runtime() -> None:
     if "RollDish" in service:
         raise AssertionError("The Reschedule Ticket route must not reroll the current conveyor dish.")
 
+    abyssal_options = method_body(
+        service, "private static IEnumerable<EventOption> BuildAbyssalBathsOptions"
+    )
+    require(
+        abyssal_options,
+        "bool hasEvolution = HasRole(owner, ShinGetterCardRole.Evolution)",
+        "hasEvolution,",
+        "AbyssalBathsTripleCoolant(eventModel)",
+        '"ABYSSAL_BATHS"',
+        '"TRIPLE_COOLANT"',
+        "HoverTipFactory.FromPotion(ModelDb.Potion<SGR_PhaseCoolant>())",
+    )
+    if abyssal_options.count("CreateConditionalOption(") != 1:
+        raise AssertionError("Abyssal Baths must expose exactly one Shin Getter route.")
+    for obsolete in ("CurrentHp", "TRIPLE_REFINING", "SGC_Radiated"):
+        if obsolete in abyssal_options:
+            raise AssertionError(f"Obsolete Abyssal Baths option contract remains: {obsolete}")
+
+    abyssal_reward = method_body(
+        service, "private static async Task AbyssalBathsTripleCoolant"
+    )
+    require(
+        abyssal_reward,
+        "await CreatureCmd.GainMaxHp(owner.Creature, 2m)",
+        "await OfferPotion<SGR_PhaseCoolant>(owner)",
+        'Finish(eventModel, PageKey("ABYSSAL_BATHS", "TRIPLE_COOLANT"))',
+    )
+    for obsolete in ("LoseHp", "AddEventCard", "SetState", "SGC_Radiated"):
+        if obsolete in abyssal_reward:
+            raise AssertionError(f"Obsolete Abyssal Baths reward remains: {obsolete}")
+    reward_order = (
+        abyssal_reward.index("CreatureCmd.GainMaxHp"),
+        abyssal_reward.index("OfferPotion<SGR_PhaseCoolant>"),
+        abyssal_reward.index("Finish(eventModel"),
+    )
+    if reward_order != tuple(sorted(reward_order)):
+        raise AssertionError("Abyssal Baths must gain Max HP, offer coolant, then finish.")
+    if "AbyssalBathsTripleRefining" in service:
+        raise AssertionError("The discarded reverse-refining route must not remain in runtime code.")
+
     citizen = (SRC / "Models/Relics/SGR_GoodCitizenCard.cs").read_text(encoding="utf-8")
     require(citizen, "[SavedProperty]", "FreePurchaseActIndices", "goldSpent == 0")
     if not re.search(r"FreePurchaseActIndices\.Add\(Owner\.RunState\.CurrentActIndex\)", citizen):
         raise AssertionError("Free purchases must persist their act indices.")
+
+
+def validate_route_label_audit() -> None:
+    if len(EVENT_NOTE_ROUTE_LABELS) != 48:
+        raise AssertionError("The original-event route audit must cover exactly 48 notes.")
+    active_count = sum(len(labels) for labels in EVENT_NOTE_ROUTE_LABELS.values())
+    deprecated_count = sum(len(labels) for labels in DEPRECATED_EVENT_NOTE_ROUTE_LABELS.values())
+    if active_count != 59 or active_count + deprecated_count != 62:
+        raise AssertionError(
+            "The note audit must contain 59 current routes and 3 explicitly deprecated routes."
+        )
+    if EVENT_NOTE_ROUTE_LABELS["色彩哲学家"]:
+        raise AssertionError("Colorful Philosophers must remain documented with no invasion route.")
+    if DEPRECATED_EVENT_NOTE_ROUTE_LABELS != {"木雕": ("龙马", "隼人", "弁庆")}:
+        raise AssertionError("Only the three discarded Wood Carvings pilot routes are deprecated.")
+    active_labels = {
+        label for labels in EVENT_NOTE_ROUTE_LABELS.values() for label in labels
+    }
+    if active_labels - set(ROUTE_LABEL_TRANSLATIONS):
+        raise AssertionError("Every audited route label must have a three-language translation.")
+    if len(RUNTIME_ROUTE_LABELS) != 44:
+        raise AssertionError("The current runtime must expose exactly 44 Shin Getter routes.")
+    if set(RUNTIME_ROUTE_LABELS.values()) - active_labels:
+        raise AssertionError("Runtime route labels must come from the current event notes.")
 
 
 def expected_event_keys() -> set[str]:
@@ -312,6 +509,49 @@ def validate_localization() -> None:
             if set(tables[language][name]) != reference:
                 raise AssertionError(f"{name}.json key mismatch for {language}")
 
+    route_title_pattern = re.compile(
+        r"^SHIN_GETTER_EVENT_INVASION\.([A-Z0-9_]+)\.pages\.INITIAL\.options\."
+        r"([A-Z0-9_]+)\.title$"
+    )
+    expected_route_title_keys = {
+        f"SHIN_GETTER_EVENT_INVASION.{event}.pages.INITIAL.options.{route}.title"
+        for event, route in RUNTIME_ROUTE_LABELS
+    }
+    separators = {"zhs": "：", "eng": ": ", "jpn": "："}
+    for language in LANGUAGES:
+        events = tables[language]["events"]
+        actual_route_title_keys = set()
+        for key in events:
+            match = route_title_pattern.fullmatch(key)
+            if match is None:
+                continue
+            route = match.group(2)
+            if route != "TRANSACTION_SEALED" and not route.endswith("_LOCKED"):
+                actual_route_title_keys.add(key)
+        if actual_route_title_keys != expected_route_title_keys:
+            missing = sorted(expected_route_title_keys - actual_route_title_keys)
+            extra = sorted(actual_route_title_keys - expected_route_title_keys)
+            raise AssertionError(
+                f"Unexpected {language} runtime route-title set; missing={missing}, extra={extra}"
+            )
+
+        for (event, route), authoritative_label in RUNTIME_ROUTE_LABELS.items():
+            base = f"SHIN_GETTER_EVENT_INVASION.{event}.pages.INITIAL.options.{route}"
+            expected_prefix = (
+                ROUTE_LABEL_TRANSLATIONS[authoritative_label][language]
+                + separators[language]
+            )
+            title = events[f"{base}.title"]
+            if not title.startswith(expected_prefix) or title == expected_prefix:
+                raise AssertionError(
+                    f"Route title must use 'route: content' for {language}: {base}.title"
+                )
+            locked_key = f"{base}_LOCKED.title"
+            if locked_key in events and not events[locked_key].startswith(expected_prefix):
+                raise AssertionError(
+                    f"Locked route title must retain its route label for {language}: {locked_key}"
+                )
+
     for language in LANGUAGES:
         petal = tables[language]["cards"]["S_G_C_PETAL_BREAKTHROUGH.description"]
         if "{Times:diff()}" not in petal or "{Replay" in petal:
@@ -319,6 +559,63 @@ def validate_localization() -> None:
         ticket = tables[language]["cards"]["S_G_C_RESCHEDULE_TICKET.description"]
         if "next turn" in ticket.lower() or "下回合" in ticket or "次のターン" in ticket:
             raise AssertionError("Reschedule Ticket still contains the obsolete next-turn draw effect.")
+
+    abyssal_expected = {
+        "zhs": {
+            "option": "获得2点最大生命并回复2点生命；获得[gold]相位冷却液[/gold]。",
+            "locked": "需要进化卡牌。",
+            "result": (
+                "池水开始往装甲缝里钻，隼人接过操控，把回路切到冷却支线。"
+                "龙马的声音从通讯里压过水声：[red]“别把整池都带回来。”[/red]\n\n"
+                "水面冒出一瓶带着冷凝雾的液体，装甲也在热流里短暂增生。"
+                "隼人压住回流，没有让池水的冲击继续灌进回路，直到仪表归零才将药水收入箱内。\n\n"
+                "[white]“辐射留不留，轮到我们自己决定。”[/white]"
+            ),
+        },
+        "eng": {
+            "option": "Gain 2 Max HP and heal 2 HP. Obtain [gold]Phase Coolant[/gold].",
+            "locked": "Requires an Evolution card.",
+            "result": (
+                "Bathwater begins seeping into the gaps in the armor. Hayato takes the controls "
+                "and switches the circuit to the cooling bypass. Ryoma's voice cuts through the "
+                "rushing water over comms: [red]“Don't bring the whole bath back with us.”[/red]\n\n"
+                "A bottle of liquid veiled in condensation rises from the surface, while the armor "
+                "briefly grows within the heat. Hayato contains the backflow and keeps the force of "
+                "the water from flooding the circuit any further. Only after the gauges return to "
+                "zero does he store the potion.\n\n"
+                "[white]“Whether we keep the radiation is our decision now.”[/white]"
+            ),
+        },
+        "jpn": {
+            "option": "最大HPを2得てHPを2回復し、[gold]位相冷却液[/gold]を得る。",
+            "locked": "進化カードが必要。",
+            "result": (
+                "湯が装甲の隙間へ入り込み始める。隼人が操縦を引き継ぎ、回路を冷却用のバイパスへ切り替えた。"
+                "水音を押しのけて、通信から竜馬の声が響く：[red]「浴槽ごと持ち帰るなよ。」[/red]\n\n"
+                "水面に冷気をまとう液体の瓶が浮かび、装甲も熱流の中で一時的に増生する。"
+                "隼人は逆流を抑え、水圧が回路へそれ以上流れ込まないようにした。"
+                "計器がゼロへ戻るのを待ってから、薬を格納庫へ収めた。\n\n"
+                "[white]「放射を残すかどうかは、俺たち自身で決める。」[/white]"
+            ),
+        },
+    }
+    abyssal_base = "SHIN_GETTER_EVENT_INVASION.ABYSSAL_BATHS"
+    for language in LANGUAGES:
+        events = tables[language]["events"]
+        if any("TRIPLE_REFINING" in key for key in events):
+            raise AssertionError(f"Discarded reverse-refining localization remains in {language}.")
+        expected = abyssal_expected[language]
+        actual = {
+            "option": events[
+                f"{abyssal_base}.pages.INITIAL.options.TRIPLE_COOLANT.description"
+            ],
+            "locked": events[
+                f"{abyssal_base}.pages.INITIAL.options.TRIPLE_COOLANT_LOCKED.description"
+            ],
+            "result": events[f"{abyssal_base}.pages.TRIPLE_COOLANT.description"],
+        }
+        if actual != expected:
+            raise AssertionError(f"Unexpected authoritative Abyssal Baths text for {language}.")
 
 
 def validate_resources() -> None:
@@ -361,6 +658,7 @@ def validate_resources() -> None:
 
 
 def main() -> None:
+    validate_route_label_audit()
     validate_models_and_pools()
     validate_event_runtime()
     validate_localization()

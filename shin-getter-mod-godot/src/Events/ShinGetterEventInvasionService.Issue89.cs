@@ -410,14 +410,7 @@ internal static partial class ShinGetterEventInvasionService
         bool hasEvolution = HasRole(owner, ShinGetterCardRole.Evolution);
         yield return CreateConditionalOption(
             eventModel,
-            hasEvolution && owner.Creature.CurrentHp > 1,
-            () => AbyssalBathsTripleRefining(eventModel),
-            "ABYSSAL_BATHS",
-            "TRIPLE_REFINING",
-            HoverTipFactory.FromCardWithCardHoverTips<SGC_Radiated>());
-        yield return CreateConditionalOption(
-            eventModel,
-            hasEvolution && owner.Creature.CurrentHp > 3,
+            hasEvolution,
             () => AbyssalBathsTripleCoolant(eventModel),
             "ABYSSAL_BATHS",
             "TRIPLE_COOLANT",
@@ -792,19 +785,10 @@ internal static partial class ShinGetterEventInvasionService
         Finish(eventModel, PageKey("THE_FUTURE_OF_POTIONS", "HAYATO"));
     }
 
-    private static async Task AbyssalBathsTripleRefining(AbyssalBaths eventModel)
-    {
-        Player owner = RequireOwner(eventModel);
-        await CreatureCmd.GainMaxHp(owner.Creature, 4m);
-        await LoseHp(owner, 5);
-        await AddEventCard<SGC_Radiated>(owner);
-        Finish(eventModel, PageKey("ABYSSAL_BATHS", "TRIPLE_REFINING"));
-    }
-
     private static async Task AbyssalBathsTripleCoolant(AbyssalBaths eventModel)
     {
         Player owner = RequireOwner(eventModel);
-        await LoseHp(owner, 3);
+        await CreatureCmd.GainMaxHp(owner.Creature, 2m);
         await OfferPotion<SGR_PhaseCoolant>(owner);
         Finish(eventModel, PageKey("ABYSSAL_BATHS", "TRIPLE_COOLANT"));
     }
