@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
@@ -42,7 +43,7 @@ public sealed class SGP_Ki : PowerModel
 
     public override Task BeforeDamageReceived(PlayerChoiceContext choiceContext, Creature target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
-        if (target == Owner && amount > 0m && Amount > 0 && !props.HasFlag(ValueProp.Unpowered))
+        if (target == Owner && amount > 0m && Amount > 0 && ShouldReduceDamage(props, cardSource))
             Flash();
 
         return Task.CompletedTask;
@@ -55,13 +56,22 @@ public sealed class SGP_Ki : PowerModel
         Creature? dealer,
         CardModel? cardSource)
     {
-        if (props.HasFlag(ValueProp.Unpowered))
+        if (!ShouldReduceDamage(props, cardSource))
             return 0m;
 
         if (target == Owner && amount > 0m && Amount > 0)
             return -Amount;
 
         return 0m;
+    }
+
+    private static bool ShouldReduceDamage(ValueProp props, CardModel? cardSource)
+    {
+        if (!props.HasFlag(ValueProp.Unpowered))
+            return true;
+
+        return cardSource?.Type == CardType.Status
+            && !props.HasFlag(ValueProp.Unblockable);
     }
 
     public override async Task AfterDamageReceived(PlayerChoiceContext choiceContext, Creature target, DamageResult result, ValueProp props, Creature? dealer, CardModel? cardSource)
