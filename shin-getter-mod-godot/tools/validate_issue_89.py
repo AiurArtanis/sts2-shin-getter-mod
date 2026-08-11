@@ -34,9 +34,9 @@ EVENT_OPTIONS = {
     "BUGSLAYER": ("BENKEI",),
     "RELIC_TRADER": ("HAYATO",),
     "ENDLESS_CONVEYOR": ("HAYATO",),
-    "UNREST_SITE": ("BENKEI", "BENKEI_BREATH"),
+    "UNREST_SITE": ("RYOMA", "BENKEI_BREATH"),
     "LOST_WISP": ("BENKEI", "HAYATO"),
-    "DROWNING_BEACON": ("BENKEI_GLOWWATER", "BENKEI_PRISM"),
+    "DROWNING_BEACON": ("RYOMA", "BENKEI_PRISM"),
     "LUMINOUS_CHOIR": ("RYOMA", "HAYATO"),
     "COLOSSAL_FLOWER": ("HAYATO", "RYOMA"),
     "THE_FUTURE_OF_POTIONS": ("HAYATO",),
@@ -72,7 +72,7 @@ EVENT_NOTE_ROUTE_LABELS = {
     "滑脚木桥": ("龙马", "隼人"),
     "淹水金库": ("隼人",),
     "混沌芳香": ("隼人",),
-    "淹水灯塔": ("弁庆", "弁庆"),
+    "淹水灯塔": ("龙马", "弁庆"),
     "泉水": ("盖塔射线路线",),
     "深渊浴场": ("三体协同",),
     "沉没雕像": ("弁庆",),
@@ -82,7 +82,7 @@ EVENT_NOTE_ROUTE_LABELS = {
     "木雕": ("三体同心",),
     "无尽传送带": ("隼人",),
     "害虫杀手": ("弁庆",),
-    "无休之处": ("弁庆", "弁庆"),
+    "无休之处": ("龙马", "弁庆"),
     "打造时间": ("研究路线",),
     "巨大花卉": ("隼人", "龙马"),
     "审判": ("龙马",),
@@ -147,11 +147,11 @@ RUNTIME_ROUTE_LABELS = {
     ("BUGSLAYER", "BENKEI"): "弁庆",
     ("RELIC_TRADER", "HAYATO"): "皇帝的碎片",
     ("ENDLESS_CONVEYOR", "HAYATO"): "隼人",
-    ("UNREST_SITE", "BENKEI"): "弁庆",
+    ("UNREST_SITE", "RYOMA"): "龙马",
     ("UNREST_SITE", "BENKEI_BREATH"): "弁庆",
     ("LOST_WISP", "BENKEI"): "弁庆",
     ("LOST_WISP", "HAYATO"): "隼人",
-    ("DROWNING_BEACON", "BENKEI_GLOWWATER"): "弁庆",
+    ("DROWNING_BEACON", "RYOMA"): "龙马",
     ("DROWNING_BEACON", "BENKEI_PRISM"): "弁庆",
     ("LUMINOUS_CHOIR", "RYOMA"): "龙马",
     ("LUMINOUS_CHOIR", "HAYATO"): "隼人",
@@ -174,9 +174,9 @@ RESULT_ROUTES = {
 SELECTION_ROUTES = {
     ("REFLECTIONS", "TRIPLE_UNITY"),
     ("DOORS_OF_LIGHT_AND_DARK", "RYOMA"),
-    ("WELLSPRING", "RYOMA"),
     ("ROOM_FULL_OF_CHEESE", "BENKEI"),
     ("BUGSLAYER", "BENKEI"),
+    ("UNREST_SITE", "RYOMA"),
     ("LUMINOUS_CHOIR", "RYOMA"),
     ("LUMINOUS_CHOIR", "HAYATO"),
 }
@@ -356,7 +356,7 @@ def validate_event_runtime() -> None:
     for resource in (
         "s_g_r_good_citizen_card.tres",
         "s_g_c_saotome_blueprint.tres",
-        "s_g_c_getter_beam.tres",
+        "s_g_p_evolution.tres",
         "s_g_r_emperors_fragment.tres",
         "s_g_r_research_notes.tres",
     ):
@@ -371,6 +371,139 @@ def validate_event_runtime() -> None:
         require(icon_patch, route)
     if "RollDish" in service:
         raise AssertionError("The Reschedule Ticket route must not reroll the current conveyor dish.")
+
+    role_registry = (SRC / "Models/Cards/ShinGetterCardRoleRegistry.cs").read_text(
+        encoding="utf-8"
+    )
+    require(
+        role_registry,
+        "internal static bool Has(CardModel card, ShinGetterCardRole role)",
+        "types.Contains(card.GetType())",
+        "cards.Any(card => Has(card, role))",
+    )
+
+    wellspring_options = method_body(
+        service, "private static IEnumerable<EventOption> BuildWellspringOptions"
+    )
+    require(
+        wellspring_options,
+        "owner.Creature.MaxHp > 3",
+        "HasRole(owner, ShinGetterCardRole.GetterRay)",
+        "WellspringRyoma(eventModel)",
+        "HoverTipFactory.FromCardWithCardHoverTips<SGC_EvolutionResonance>()",
+    )
+    if "IsRemovable" in wellspring_options:
+        raise AssertionError("Wellspring must not require a removable card.")
+    wellspring_reward = method_body(service, "private static async Task WellspringRyoma")
+    require(
+        wellspring_reward,
+        "await LoseMaxHp(owner, 3)",
+        "await AddEventCard<SGC_EvolutionResonance>(owner)",
+        'Finish(eventModel, PageKey("WELLSPRING", "RYOMA"))',
+    )
+    for obsolete in ("CardSelectCmd", "RemoveFromDeck", "OfferPotion", "SGC_Radiated"):
+        if obsolete in wellspring_reward:
+            raise AssertionError(f"Obsolete Wellspring reward remains: {obsolete}")
+    require(icon_patch, "private const string EvolutionIcon", "return EvolutionIcon")
+
+    bugslayer_reward = method_body(service, "private static async Task BugslayerBenkei")
+    require(
+        bugslayer_reward,
+        "await LoseHp(owner, 5)",
+        "IsBugslayerRushCandidate",
+        "CardCmd.Upgrade(rush, CardPreviewStyle.EventLayout)",
+        "ApplySpiralEnchantment(rush, 2m)",
+        'Finish(eventModel, PageKey("BUGSLAYER", "BENKEI"))',
+    )
+    for obsolete in ("Exterminate", "Squash", "FromChooseACardScreen", "CardPileCmd.Add"):
+        if obsolete in bugslayer_reward:
+            raise AssertionError(f"Obsolete Bugslayer event-card reward remains: {obsolete}")
+
+    unrest_options = method_body(
+        service, "private static IEnumerable<EventOption> BuildUnrestSiteOptions"
+    )
+    require(
+        unrest_options,
+        "owner.Deck.Cards.Any(card => card is SGC_Ki)",
+        "UnrestSiteRyoma(eventModel)",
+        '"RYOMA"',
+        "HoverTipFactory.FromCardWithCardHoverTips<SGC_HotBlood>()",
+        "UnrestSiteBenkeiBreath(eventModel)",
+    )
+    for obsolete in ("UnrestSiteBenkei(eventModel)", "owner.Creature.MaxHp > 5"):
+        if obsolete in unrest_options:
+            raise AssertionError(f"Obsolete Unrest Site rest route remains: {obsolete}")
+    unrest_reward = method_body(service, "private static async Task UnrestSiteRyoma")
+    require(
+        unrest_reward,
+        'new CardSelectorPrefs(SelectionKey("UNREST_SITE", "RYOMA"), 1)',
+        "card => card is SGC_Ki",
+        "owner.RunState.CreateCard<SGC_HotBlood>(owner)",
+        "if (ki.IsUpgraded)",
+        "CardCmd.Upgrade(hotBlood)",
+        "await CardCmd.Transform(ki, hotBlood)",
+        'Finish(eventModel, PageKey("UNREST_SITE", "RYOMA"))',
+    )
+    for obsolete in ("LoseMaxHp", "CreatureCmd.Heal", "RelicCmd.Obtain"):
+        if obsolete in unrest_reward:
+            raise AssertionError(f"Obsolete Unrest Site cost or reward remains: {obsolete}")
+
+    beacon_options = method_body(
+        service, "private static IEnumerable<EventOption> BuildDrowningBeaconOptions"
+    )
+    require(
+        beacon_options,
+        "owner.Deck.Cards.Any(IsEvolutionUpgradeCandidate)",
+        "DrowningBeaconRyoma(eventModel)",
+        '"RYOMA"',
+        "DrowningBeaconPrism(eventModel)",
+        '"BENKEI_PRISM"',
+    )
+    for obsolete in ("BENKEI_GLOWWATER", "GlowwaterPotion", "CurrentHp > 12"):
+        if obsolete in beacon_options:
+            raise AssertionError(f"Obsolete Drowning Beacon route remains: {obsolete}")
+    beacon_reward = method_body(service, "private static Task DrowningBeaconRyoma")
+    require(
+        beacon_reward,
+        "owner.Deck.Cards.Where(IsEvolutionUpgradeCandidate).ToList()",
+        "eventModel.Rng.NextItem(candidates)",
+        "CardCmd.Upgrade(selected, CardPreviewStyle.EventLayout)",
+        'Finish(eventModel, PageKey("DROWNING_BEACON", "RYOMA"))',
+    )
+    for obsolete in ("LoseHp", "OfferPotion", "RelicCmd.Obtain", "GlowwaterPotion"):
+        if obsolete in beacon_reward:
+            raise AssertionError(f"Obsolete Drowning Beacon reward remains: {obsolete}")
+    evolution_candidate = method_body(
+        service, "private static bool IsEvolutionUpgradeCandidate"
+    )
+    require(
+        evolution_candidate,
+        "card.IsUpgradable",
+        "ShinGetterCardRoleRegistry.Has(card, ShinGetterCardRole.Evolution)",
+    )
+
+    future_options = method_body(
+        service, "private static IEnumerable<EventOption> BuildTheFutureOfPotionsOptions"
+    )
+    require(
+        future_options,
+        "owner.Potions.Any()",
+        "HasRole(owner, ShinGetterCardRole.ResearchEvolution)",
+        "owner.GetRelic<SGR_ResearchNotes>() != null",
+    )
+    if "owner.Gold" in future_options:
+        raise AssertionError("The Future of Potions route must not require Gold.")
+    future_reward = method_body(
+        service, "private static async Task TheFutureOfPotionsHayato"
+    )
+    require(
+        future_reward,
+        "await PotionCmd.Discard(potion)",
+        "await OfferPotion<SGR_LuminescentPulse>(owner)",
+        'Finish(eventModel, PageKey("THE_FUTURE_OF_POTIONS", "HAYATO"))',
+    )
+    if "LoseGold" in future_reward:
+        raise AssertionError("The Future of Potions route must not spend Gold.")
 
     abyssal_options = method_body(
         service, "private static IEnumerable<EventOption> BuildAbyssalBathsOptions"
@@ -551,6 +684,127 @@ def validate_localization() -> None:
                 raise AssertionError(
                     f"Locked route title must retain its route label for {language}: {locked_key}"
                 )
+
+    reopened_exact = {
+        "zhs": {
+            "DROWNING_BEACON.pages.INITIAL.options.RYOMA.description":
+                "随机升级1张具备[getter_ray]进化[/getter_ray]定位且可升级的卡牌。",
+            "DROWNING_BEACON.pages.INITIAL.options.RYOMA_LOCKED.description":
+                "需要1张具备[getter_ray]进化[/getter_ray]定位且可升级的卡牌。",
+            "WELLSPRING.pages.INITIAL.options.RYOMA.description":
+                "失去[red]3[/red]点最大生命，将1张[gold]进化共鸣[/gold]加入牌组。",
+            "WELLSPRING.pages.INITIAL.options.RYOMA_LOCKED.description":
+                "需要多于3点最大生命和盖塔射线卡牌。",
+            "BUGSLAYER.pages.INITIAL.options.BENKEI.description":
+                "失去[red]5[/red]点生命，升级并附魔1张盖塔冲撞。",
+            "UNREST_SITE.pages.INITIAL.options.RYOMA.description":
+                "选择1张[gold]气势[/gold]，将其变化为[gold]热血[/gold]。",
+            "UNREST_SITE.pages.INITIAL.options.RYOMA_LOCKED.description":
+                "需要至少1张[gold]气势[/gold]。",
+            "UNREST_SITE.pages.RYOMA.selectionPrompt": "选择1张气势变化为热血。",
+            "THE_FUTURE_OF_POTIONS.pages.INITIAL.options.HAYATO.description":
+                "选择消耗1瓶药水，获得[gold]荧光脉冲剂[/gold]。",
+            "THE_FUTURE_OF_POTIONS.pages.INITIAL.options.HAYATO_LOCKED.description":
+                "需要至少1瓶药水，以及研究或进化卡牌或研究笔记。",
+        },
+        "eng": {
+            "DROWNING_BEACON.pages.INITIAL.options.RYOMA.description":
+                "Upgrade 1 random upgradable card with the [getter_ray]Evolution[/getter_ray] role.",
+            "DROWNING_BEACON.pages.INITIAL.options.RYOMA_LOCKED.description":
+                "Requires an upgradable card with the [getter_ray]Evolution[/getter_ray] role.",
+            "WELLSPRING.pages.INITIAL.options.RYOMA.description":
+                "Lose [red]3[/red] Max HP. Add 1 [gold]Evolution Resonance[/gold] to your deck.",
+            "WELLSPRING.pages.INITIAL.options.RYOMA_LOCKED.description":
+                "Requires more than 3 Max HP and a Getter Ray card.",
+            "BUGSLAYER.pages.INITIAL.options.BENKEI.description":
+                "Lose [red]5[/red] HP. Upgrade and enchant 1 Getter Rush.",
+            "UNREST_SITE.pages.INITIAL.options.RYOMA.description":
+                "Choose 1 [gold]Spirit[/gold] and transform it into [gold]Valor[/gold].",
+            "UNREST_SITE.pages.INITIAL.options.RYOMA_LOCKED.description":
+                "Requires at least 1 [gold]Spirit[/gold].",
+            "UNREST_SITE.pages.RYOMA.selectionPrompt":
+                "Choose 1 Spirit to transform into Valor.",
+            "THE_FUTURE_OF_POTIONS.pages.INITIAL.options.HAYATO.description":
+                "Choose and consume 1 Potion to obtain [gold]Luminescent Pulse[/gold].",
+            "THE_FUTURE_OF_POTIONS.pages.INITIAL.options.HAYATO_LOCKED.description":
+                "Requires at least 1 Potion and a Research or Evolution card or Research Notes.",
+        },
+        "jpn": {
+            "DROWNING_BEACON.pages.INITIAL.options.RYOMA.description":
+                "[getter_ray]進化[/getter_ray]の役割を持つアップグレード可能なカード1枚をランダムにアップグレードする。",
+            "DROWNING_BEACON.pages.INITIAL.options.RYOMA_LOCKED.description":
+                "[getter_ray]進化[/getter_ray]の役割を持つアップグレード可能なカードが必要。",
+            "WELLSPRING.pages.INITIAL.options.RYOMA.description":
+                "最大HPを[red]3[/red]失い、[gold]進化共鳴[/gold]1枚をデッキに加える。",
+            "WELLSPRING.pages.INITIAL.options.RYOMA_LOCKED.description":
+                "4以上の最大HPとゲッター線カードが必要。",
+            "BUGSLAYER.pages.INITIAL.options.BENKEI.description":
+                "HPを[red]5[/red]失い、ゲッターラッシュ1枚をアップグレードしてエンチャントする。",
+            "UNREST_SITE.pages.INITIAL.options.RYOMA.description":
+                "[gold]気合[/gold]1枚を選び、[gold]熱血[/gold]へ変化させる。",
+            "UNREST_SITE.pages.INITIAL.options.RYOMA_LOCKED.description":
+                "[gold]気合[/gold]が1枚以上必要。",
+            "UNREST_SITE.pages.RYOMA.selectionPrompt":
+                "熱血へ変化させる気合を1枚選ぶ。",
+            "THE_FUTURE_OF_POTIONS.pages.INITIAL.options.HAYATO.description":
+                "ポーション1本を選んで消費し、[gold]蛍光パルス剤[/gold]を得る。",
+            "THE_FUTURE_OF_POTIONS.pages.INITIAL.options.HAYATO_LOCKED.description":
+                "ポーション1本以上と、研究・進化カードまたは研究ノートが必要。",
+        },
+    }
+    reopened_result_fragments = {
+        "zhs": {
+            "DROWNING_BEACON.pages.RYOMA.description": ("青绿与冷白", "原来这玩意儿还能这么用"),
+            "WELLSPRING.pages.RYOMA.description": ("进化标记", "一张共鸣记录"),
+            "BUGSLAYER.pages.BENKEI.description": ("方法有两种", "名字你们慢慢想"),
+            "LUMINOUS_CHOIR.pages.RYOMA.description": ("灼热孢子逆着光扑回", "下回唱小声点"),
+            "LUMINOUS_CHOIR.pages.HAYATO.description": ("细菌丝钉在控制台", "每一回合，先让它静一次"),
+            "UNREST_SITE.pages.RYOMA.description": ("气势记录推入读槽", "这才叫磨练"),
+            "THE_FUTURE_OF_POTIONS.pages.HAYATO.description": ("又把好东西换成一堆参数", "那就别留到下次"),
+        },
+        "eng": {
+            "DROWNING_BEACON.pages.RYOMA.description": ("Teal and cold white collide", "this stuff can do that too"),
+            "WELLSPRING.pages.RYOMA.description": ("Evolution sigil", "One Resonance record"),
+            "BUGSLAYER.pages.BENKEI.description": ("there are two methods", "Take your time naming the method"),
+            "LUMINOUS_CHOIR.pages.RYOMA.description": ("burning spores surge back", "Keep it down next time"),
+            "LUMINOUS_CHOIR.pages.HAYATO.description": ("pins a thin strand of mycelium", "Once each turn, silence it first"),
+            "UNREST_SITE.pages.RYOMA.description": ("slots a Spirit record", "Now that's training"),
+            "THE_FUTURE_OF_POTIONS.pages.HAYATO.description": ("pile of parameters", "don't save it for next time"),
+        },
+        "jpn": {
+            "DROWNING_BEACON.pages.RYOMA.description": ("青緑と冷たい白", "こんな使い方もできる"),
+            "WELLSPRING.pages.RYOMA.description": ("進化の印", "共鳴の記録が1枚"),
+            "BUGSLAYER.pages.BENKEI.description": ("方法は二つある", "名前はゆっくり考えろ"),
+            "LUMINOUS_CHOIR.pages.RYOMA.description": ("燃える胞子が光を逆流", "もっと小さな声で歌え"),
+            "LUMINOUS_CHOIR.pages.HAYATO.description": ("細い菌糸を一本だけ操作盤", "毎ターン、最初に一度だけ黙らせる"),
+            "UNREST_SITE.pages.RYOMA.description": ("気合の記録を読み取り口", "これが鍛錬ってもんだ"),
+            "THE_FUTURE_OF_POTIONS.pages.HAYATO.description": ("数値の山", "次まで取っておくな"),
+        },
+    }
+    event_prefix = "SHIN_GETTER_EVENT_INVASION."
+    obsolete_keys = (
+        "DROWNING_BEACON.pages.INITIAL.options.BENKEI_GLOWWATER.title",
+        "DROWNING_BEACON.pages.INITIAL.options.BENKEI_GLOWWATER.description",
+        "DROWNING_BEACON.pages.INITIAL.options.BENKEI_GLOWWATER_LOCKED.title",
+        "DROWNING_BEACON.pages.INITIAL.options.BENKEI_GLOWWATER_LOCKED.description",
+        "DROWNING_BEACON.pages.BENKEI_GLOWWATER.description",
+        "UNREST_SITE.pages.INITIAL.options.BENKEI.title",
+        "UNREST_SITE.pages.INITIAL.options.BENKEI.description",
+        "UNREST_SITE.pages.INITIAL.options.BENKEI_LOCKED.title",
+        "UNREST_SITE.pages.INITIAL.options.BENKEI_LOCKED.description",
+        "UNREST_SITE.pages.BENKEI.description",
+        "WELLSPRING.pages.RYOMA.selectionPrompt",
+    )
+    for language in LANGUAGES:
+        events = tables[language]["events"]
+        for suffix, expected in reopened_exact[language].items():
+            key = event_prefix + suffix
+            if events.get(key) != expected:
+                raise AssertionError(f"Unexpected reopened issue#89 text for {language}: {key}")
+        for suffix, fragments in reopened_result_fragments[language].items():
+            require(events[event_prefix + suffix], *fragments)
+        if any(event_prefix + suffix in events for suffix in obsolete_keys):
+            raise AssertionError(f"Obsolete reopened issue#89 localization remains in {language}.")
 
     for language in LANGUAGES:
         petal = tables[language]["cards"]["S_G_C_PETAL_BREAKTHROUGH.description"]

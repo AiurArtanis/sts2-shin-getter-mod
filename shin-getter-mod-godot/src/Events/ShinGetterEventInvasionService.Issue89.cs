@@ -192,14 +192,14 @@ internal static partial class ShinGetterEventInvasionService
     {
         Player owner = RequireOwner(eventModel);
         bool available = owner.Creature.MaxHp > 3
-            && HasRole(owner, ShinGetterCardRole.GetterRay)
-            && owner.Deck.Cards.Any(card => card.IsRemovable);
+            && HasRole(owner, ShinGetterCardRole.GetterRay);
         yield return CreateConditionalOption(
             eventModel,
             available,
             () => WellspringRyoma(eventModel),
             "WELLSPRING",
-            "RYOMA");
+            "RYOMA",
+            HoverTipFactory.FromCardWithCardHoverTips<SGC_EvolutionResonance>());
     }
 
     private static IEnumerable<EventOption> BuildRoomFullOfCheeseOptions(RoomFullOfCheese eventModel)
@@ -266,18 +266,16 @@ internal static partial class ShinGetterEventInvasionService
     private static IEnumerable<EventOption> BuildUnrestSiteOptions(UnrestSite eventModel)
     {
         Player owner = RequireOwner(eventModel);
-        bool isInjured = owner.Creature.CurrentHp < owner.Creature.MaxHp;
-        bool benkeiAvailable = isInjured
-            && owner.Creature.MaxHp > 5
-            && owner.Deck.Cards.Any(card => card is SGC_Indomitable or SGC_IronWall or SGC_Guts);
+        bool ryomaAvailable = owner.Deck.Cards.Any(card => card is SGC_Ki);
         yield return CreateConditionalOption(
             eventModel,
-            benkeiAvailable,
-            () => UnrestSiteBenkei(eventModel),
+            ryomaAvailable,
+            () => UnrestSiteRyoma(eventModel),
             "UNREST_SITE",
-            "BENKEI");
+            "RYOMA",
+            HoverTipFactory.FromCardWithCardHoverTips<SGC_HotBlood>());
 
-        bool breathAvailable = isInjured
+        bool breathAvailable = owner.Creature.CurrentHp < owner.Creature.MaxHp
             && owner.Creature.MaxHp > 4
             && HasRole(owner, ShinGetterCardRole.GetterThreeDefense);
         yield return CreateConditionalOption(
@@ -317,16 +315,13 @@ internal static partial class ShinGetterEventInvasionService
     {
         Player owner = RequireOwner(eventModel);
         bool hasThemeCard = HasRole(owner, ShinGetterCardRole.GetterThreeDefense);
-        bool glowwaterAvailable = hasThemeCard
-            && owner.Creature.CurrentHp > 12
-            && owner.Deck.Cards.Any(card => card.IsUpgradable);
+        bool ryomaAvailable = owner.Deck.Cards.Any(IsEvolutionUpgradeCandidate);
         yield return CreateConditionalOption(
             eventModel,
-            glowwaterAvailable,
-            () => DrowningBeaconGlowwater(eventModel),
+            ryomaAvailable,
+            () => DrowningBeaconRyoma(eventModel),
             "DROWNING_BEACON",
-            "BENKEI_GLOWWATER",
-            new[] { HoverTipFactory.FromPotion(ModelDb.Potion<GlowwaterPotion>()) });
+            "RYOMA");
 
         bool prismAvailable = hasThemeCard && owner.Creature.CurrentHp > 9;
         yield return CreateConditionalOption(
@@ -390,8 +385,7 @@ internal static partial class ShinGetterEventInvasionService
     private static IEnumerable<EventOption> BuildTheFutureOfPotionsOptions(TheFutureOfPotions eventModel)
     {
         Player owner = RequireOwner(eventModel);
-        bool available = owner.Gold >= 25
-            && owner.Potions.Any()
+        bool available = owner.Potions.Any()
             && (HasRole(owner, ShinGetterCardRole.ResearchEvolution)
                 || owner.GetRelic<SGR_ResearchNotes>() != null);
         yield return CreateConditionalOption(
@@ -517,11 +511,7 @@ internal static partial class ShinGetterEventInvasionService
     {
         Player owner = RequireOwner(eventModel);
         await LoseMaxHp(owner, 3);
-        List<CardModel> selected = (await CardSelectCmd.FromDeckForRemoval(
-                owner,
-                new CardSelectorPrefs(SelectionKey("WELLSPRING", "RYOMA"), 1)))
-            .ToList();
-        await CardPileCmd.RemoveFromDeck(selected);
+        await AddEventCard<SGC_EvolutionResonance>(owner);
         Finish(eventModel, PageKey("WELLSPRING", "RYOMA"));
     }
 
@@ -565,17 +555,6 @@ internal static partial class ShinGetterEventInvasionService
             CardCmd.Preview(rush, 1.2f, CardPreviewStyle.EventLayout);
         }
 
-        CardModel[] eventCards =
-        {
-            owner.RunState.CreateCard<Exterminate>(owner),
-            owner.RunState.CreateCard<Squash>(owner),
-        };
-        CardModel? selected = await CardSelectCmd.FromChooseACardScreen(
-            new BlockingPlayerChoiceContext(),
-            eventCards,
-            owner);
-        if (selected != null)
-            CardCmd.PreviewCardPileAdd(await CardPileCmd.Add(selected, PileType.Deck), 2f);
         Finish(eventModel, PageKey("BUGSLAYER", "BENKEI"));
     }
 
@@ -654,13 +633,22 @@ internal static partial class ShinGetterEventInvasionService
         SetState(eventModel, "ENDLESS_CONVEYOR.pages.INITIAL.description", options);
     }
 
-    private static async Task UnrestSiteBenkei(UnrestSite eventModel)
+    private static async Task UnrestSiteRyoma(UnrestSite eventModel)
     {
         Player owner = RequireOwner(eventModel);
-        int missingHp = owner.Creature.MaxHp - owner.Creature.CurrentHp;
-        await LoseMaxHp(owner, 5);
-        await CreatureCmd.Heal(owner.Creature, Math.Floor(missingHp * 0.5m));
-        Finish(eventModel, PageKey("UNREST_SITE", "BENKEI"));
+        CardModel? ki = (await CardSelectCmd.FromDeckGeneric(
+                owner,
+                new CardSelectorPrefs(SelectionKey("UNREST_SITE", "RYOMA"), 1),
+                card => card is SGC_Ki))
+            .FirstOrDefault();
+        if (ki != null)
+        {
+            CardModel hotBlood = owner.RunState.CreateCard<SGC_HotBlood>(owner);
+            if (ki.IsUpgraded)
+                CardCmd.Upgrade(hotBlood);
+            await CardCmd.Transform(ki, hotBlood);
+        }
+        Finish(eventModel, PageKey("UNREST_SITE", "RYOMA"));
     }
 
     private static async Task UnrestSiteBenkeiBreath(UnrestSite eventModel)
@@ -689,16 +677,15 @@ internal static partial class ShinGetterEventInvasionService
         Finish(eventModel, PageKey("LOST_WISP", "HAYATO"));
     }
 
-    private static async Task DrowningBeaconGlowwater(DrowningBeacon eventModel)
+    private static Task DrowningBeaconRyoma(DrowningBeacon eventModel)
     {
         Player owner = RequireOwner(eventModel);
-        await LoseHp(owner, 12);
-        await OfferPotion<GlowwaterPotion>(owner);
-        List<CardModel> upgradable = owner.Deck.Cards.Where(card => card.IsUpgradable).ToList();
-        CardModel? selected = eventModel.Rng.NextItem(upgradable);
+        List<CardModel> candidates = owner.Deck.Cards.Where(IsEvolutionUpgradeCandidate).ToList();
+        CardModel? selected = eventModel.Rng.NextItem(candidates);
         if (selected != null)
             CardCmd.Upgrade(selected, CardPreviewStyle.EventLayout);
-        Finish(eventModel, PageKey("DROWNING_BEACON", "BENKEI_GLOWWATER"));
+        Finish(eventModel, PageKey("DROWNING_BEACON", "RYOMA"));
+        return Task.CompletedTask;
     }
 
     private static async Task DrowningBeaconPrism(DrowningBeacon eventModel)
@@ -779,7 +766,6 @@ internal static partial class ShinGetterEventInvasionService
         PotionModel potion)
     {
         Player owner = RequireOwner(eventModel);
-        await PlayerCmd.LoseGold(25m, owner, GoldLossType.Spent);
         await PotionCmd.Discard(potion);
         await OfferPotion<SGR_LuminescentPulse>(owner);
         Finish(eventModel, PageKey("THE_FUTURE_OF_POTIONS", "HAYATO"));
@@ -832,6 +818,12 @@ internal static partial class ShinGetterEventInvasionService
 
     private static bool IsBugslayerRushCandidate(CardModel card) =>
         card is SGC_GetterRush && !card.IsUpgraded && card.Enchantment == null;
+
+    private static bool IsEvolutionUpgradeCandidate(CardModel card)
+    {
+        return card.IsUpgradable
+            && ShinGetterCardRoleRegistry.Has(card, ShinGetterCardRole.Evolution);
+    }
 
     private static bool IsNormalCardType(CardModel card) =>
         card.Type is CardType.Attack or CardType.Skill or CardType.Power;

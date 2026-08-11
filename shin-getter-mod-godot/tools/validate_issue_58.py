@@ -492,12 +492,15 @@ def validate_localization() -> None:
         "HAYATO": "[white]",
         "BENKEI": "[yellow]",
     }
+    non_pilot_route_titles = {
+        f"{prefix}WELLSPRING.pages.INITIAL.options.RYOMA.title",
+    }
     for language in LANGUAGES:
         events = event_tables[language]
         for actor, color_tag in actor_colors.items():
             actor_title_suffix = f".options.{actor}.title"
             for key in expected_events:
-                if key.endswith(actor_title_suffix):
+                if key.endswith(actor_title_suffix) and key not in non_pilot_route_titles:
                     text = events.get(key)
                     if not isinstance(text, str) or color_tag not in text:
                         raise AssertionError(

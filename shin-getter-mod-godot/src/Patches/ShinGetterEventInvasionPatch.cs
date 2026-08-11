@@ -72,7 +72,7 @@ internal static class ShinGetterEventOptionIconPatch
     private const string GetterThreeIcon = "res://images/atlases/power_atlas.sprites/s_g_p_shin_getter_three.tres";
     private const string GoodCitizenCardIcon = "res://images/atlases/relic_atlas.sprites/s_g_r_good_citizen_card.tres";
     private const string SaotomeBlueprintIcon = "res://images/atlases/card_atlas.sprites/shin_getter/s_g_c_saotome_blueprint.tres";
-    private const string GetterBeamIcon = "res://images/atlases/card_atlas.sprites/shin_getter/s_g_c_getter_beam.tres";
+    private const string EvolutionIcon = "res://images/atlases/power_atlas.sprites/s_g_p_evolution.tres";
     private const string EmperorsFragmentIcon = "res://images/atlases/relic_atlas.sprites/s_g_r_emperors_fragment.tres";
     private const string ResearchNotesIcon = "res://images/atlases/relic_atlas.sprites/s_g_r_research_notes.tres";
 
@@ -147,7 +147,7 @@ internal static class ShinGetterEventOptionIconPatch
                 ".WELLSPRING.pages.INITIAL.options.RYOMA",
                 StringComparison.Ordinal))
         {
-            return GetterBeamIcon;
+            return EvolutionIcon;
         }
         if (key.Contains(
                 ".RELIC_TRADER.pages.INITIAL.options.HAYATO",
