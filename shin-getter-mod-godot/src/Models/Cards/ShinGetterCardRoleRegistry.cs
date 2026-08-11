@@ -79,9 +79,12 @@ internal static class ShinGetterCardRoleRegistry
                 SGC_ChangeAttack>(),
         };
 
-    internal static bool Has(IEnumerable<CardModel> cards, ShinGetterCardRole role) =>
+    internal static bool Has(CardModel card, ShinGetterCardRole role) =>
         Roles.TryGetValue(role, out IReadOnlySet<Type>? types)
-        && cards.Any(card => types.Contains(card.GetType()));
+        && types.Contains(card.GetType());
+
+    internal static bool Has(IEnumerable<CardModel> cards, ShinGetterCardRole role) =>
+        cards.Any(card => Has(card, role));
 
     private static IReadOnlySet<Type> TypesOf<T1, T2, T3, T4>() =>
         new HashSet<Type> { typeof(T1), typeof(T2), typeof(T3), typeof(T4) };
