@@ -154,7 +154,7 @@ internal static class ShinGetterVoiceService
         new("047", ShinGetterVoiceCue.HayatoKill, "hayato_kill.wav", "SHIN_GETTER.voice.hayatoKill", ShinGetterForm.Getter2, VoicePlaybackCategory.InterruptingNonCard),
         new("058", ShinGetterVoiceCue.OpenGetOne, "ryoma_open_get.wav", "SHIN_GETTER.voice.openGetOne", ShinGetterForm.Getter1, VoicePlaybackCategory.DamageResponse),
         new("059", ShinGetterVoiceCue.OpenGetTwo, "hayato_open_get.wav", "SHIN_GETTER.voice.openGetTwo", ShinGetterForm.Getter2, VoicePlaybackCategory.DamageResponse),
-        new("060", ShinGetterVoiceCue.OpenGetThree, "musashi_open_get.wav", "SHIN_GETTER.voice.openGetThree", ShinGetterForm.Getter3, VoicePlaybackCategory.DamageResponse),
+        new("060", ShinGetterVoiceCue.OpenGetThree, "benkei_open_get.wav", "SHIN_GETTER.voice.openGetThree", ShinGetterForm.Getter3, VoicePlaybackCategory.DamageResponse),
     };
 
     private static readonly IReadOnlyDictionary<ShinGetterVoiceCue, VoiceLine> Lines = VoiceLines

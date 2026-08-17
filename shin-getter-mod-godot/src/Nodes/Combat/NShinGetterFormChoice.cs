@@ -1,17 +1,18 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Godot;
 using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Nodes.Combat;
+using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using ShinGetterMod.Models.Cards;
@@ -77,6 +78,7 @@ internal static class NShinGetterFormChoice
         };
         vfxContainer.AddChild(root);
 
+        var buttons = new List<TextureButton>();
         for (int index = 0; index < choices.Count; index++)
         {
             int choiceIndex = index;
@@ -93,10 +95,11 @@ internal static class NShinGetterFormChoice
                 Position = new Vector2((index - (choices.Count - 1) / 2f) * 86f - 32f, -32f),
                 Size = new Vector2(64f, 64f),
                 TooltipText = GetTooltip(form),
-                FocusMode = Control.FocusModeEnum.None,
+                FocusMode = Control.FocusModeEnum.All,
                 Modulate = new Color(1f, 1f, 1f, 0f),
             };
             root.AddChild(button);
+            buttons.Add(button);
             Tween appear = button.CreateTween();
             appear.TweenProperty(button, "modulate:a", 1f, 0.14f)
                 .SetDelay(index * 0.05f)
@@ -106,15 +109,42 @@ internal static class NShinGetterFormChoice
         }
 
         // If a resource is unavailable, never leave an interactive combat command waiting.
-        if (!root.GetChildren().OfType<TextureButton>().Any())
+        if (buttons.Count == 0)
             completion.TrySetResult(0);
+        else
+        {
+            for (int index = 0; index < buttons.Count; index++)
+            {
+                buttons[index].FocusNeighborLeft = buttons[(index - 1 + buttons.Count) % buttons.Count].GetPath();
+                buttons[index].FocusNeighborRight = buttons[(index + 1) % buttons.Count].GetPath();
+            }
+
+            // root and every button have entered the tree, so controller navigation can start here.
+            buttons[0].TryGrabFocus();
+        }
 
         int selectedIndex = await completion.Task;
         root.SetProcess(false);
+        foreach (TextureButton button in buttons)
+            button.Disabled = true;
+
         Tween disappear = root.CreateTween();
         disappear.TweenProperty(root, "modulate:a", 0f, 0.10f);
-        disappear.TweenCallback(Callable.From(root.QueueFree));
+        await root.ToSignal(disappear, Tween.SignalName.Finished);
+        root.QueueFree();
+        await root.ToSignal(root, Node.SignalName.TreeExited);
+        RestoreHandFocus();
         return selectedIndex;
+    }
+
+    private static void RestoreHandFocus()
+    {
+        if (NPlayerHand.Instance is not { } hand || !GodotObject.IsInstanceValid(hand))
+            return;
+
+        Control defaultFocusedControl = hand.DefaultFocusedControl;
+        if (GodotObject.IsInstanceValid(defaultFocusedControl))
+            defaultFocusedControl.TryGrabFocus();
     }
 
     // CardSelectCmd keeps its equivalent helper private. Reproduce the official predicate

@@ -30,12 +30,15 @@ public sealed class SGP_ShinGetterOne : PowerModel
         {
             Flash();
             await PowerCmd.Apply<VigorPower>(new ThrowingPlayerChoiceContext(), base.Owner, 1m, base.Owner, null);
+            bool isCombatStart = cardSource == null;
             float speedScale = cardSource is SGC_ChangeAttack ? SGC_ChangeAttack.TransformSpeedScale : 1f;
+            // Relics start the opening fusion only after all combat-start setup is ready,
+            // immediately alongside the prepared opening voice.
             await NShinGetterStaticVisuals.ShowForm(
                 base.Owner,
                 ShinGetterForm.Getter1,
-                speedScale: speedScale,
-                forceFusion: cardSource == null);
+                animate: !isCombatStart,
+                speedScale: speedScale);
             ShinGetterCardFramePatch.RefreshVisibleCards();
         }
     }

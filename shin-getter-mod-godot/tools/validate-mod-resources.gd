@@ -55,7 +55,7 @@ const REQUIRED_RESOURCES := {
 	"res://audio/sfx/characters/shin_getter/voices/hayato_kill.wav": false,
 	"res://audio/sfx/characters/shin_getter/voices/ryoma_open_get.wav": false,
 	"res://audio/sfx/characters/shin_getter/voices/hayato_open_get.wav": false,
-	"res://audio/sfx/characters/shin_getter/voices/musashi_open_get.wav": false,
+	"res://audio/sfx/characters/shin_getter/voices/benkei_open_get.wav": false,
 	"res://audio/music/shin_getter/execution_theme.mp3": false,
 	"res://audio/music/shin_getter/encounters/elite_overgrowth.mp3": false,
 	"res://audio/music/shin_getter/encounters/elite_underdocks.mp3": false,

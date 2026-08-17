@@ -62,6 +62,9 @@ def check_code_wiring() -> None:
     landing = read(PROJECT / "src/Models/Cards/SGC_GetterLanding.cs")
     pool = read(PROJECT / "src/Models/CardPools/ShinGetterCardPool.cs")
     voice = read(PROJECT / "src/Audio/ShinGetterVoiceService.cs")
+    getter_one = read(PROJECT / "src/Models/Powers/SGP_ShinGetterOne.cs")
+    getter_furnace = read(PROJECT / "src/Models/Relics/SGR_GetterFurnace.cs")
+    emperors_fragment = read(PROJECT / "src/Models/Relics/SGR_EmperorsFragment.cs")
 
     require("FusionFramesPerSecond = 60d" in sequence, "fusion animation must run at 60fps")
     require("EnsureFusionLoaded" in sequence and "FusionAnimationName" in sequence, "fusion sequence loader is missing")
@@ -79,8 +82,42 @@ def check_code_wiring() -> None:
     require("PlayerChoiceSynchronizer" in choice and "PlayerChoiceResult.FromIndex" in choice, "form choice must synchronize in multiplayer")
     require("ShouldSelectLocalForm" in choice and "CardSelectCmd.ShouldSelectLocalCard" not in choice,
             "form choice must not call CardSelectCmd's private selector")
+    require("FocusMode = Control.FocusModeEnum.All" in choice, "form choices must accept controller focus")
+    require("FocusModeEnum.None" not in choice, "form choices must not opt out of controller focus")
+    require("FocusNeighborLeft" in choice and "FocusNeighborRight" in choice,
+            "form choices must have circular left/right controller navigation")
+    require("buttons[0].TryGrabFocus()" in choice, "form choices must receive initial controller focus")
+    require("NPlayerHand.Instance" in choice and "DefaultFocusedControl" in choice and "TryGrabFocus" in choice,
+            "form choice must restore the combat hand focus after its temporary controls are released")
+    require("GodotObject.IsInstanceValid" in choice and "Node.SignalName.TreeExited" in choice,
+            "form choice must restore focus only after valid temporary controls leave the tree")
+    require("result.TotalDamage" in open_get and "result.UnblockedDamage" not in open_get,
+            "Open Get accumulated-damage contract must include damage absorbed by block")
+    require("animate: !isCombatStart" in getter_one,
+            "combat-start form setup must finish before the opening fusion starts")
+    opening_start = visuals.index("private static async Task PlayOpeningGetterOneFusion(FormSprites sprites)")
+    opening_end = visuals.index("    private static async Task<bool> TryPlayFusionTransition", opening_start)
+    opening_fusion = visuals[opening_start:opening_end]
+    require("await PlayFusionAnimation(nextSprite, ShinGetterForm.Getter1, backwards: false" in opening_fusion,
+            "combat-opening Getter One fusion must play forward")
+    require("backwards: true" not in opening_fusion and "previous" not in opening_fusion and "forceFusion" not in visuals,
+            "combat-opening fusion must never reverse a previous form")
+    transition_start = visuals.index("private static async Task<bool> TryPlayFusionTransition")
+    transition_end = visuals.index("    private static async Task PlayFusionAnimation", transition_start)
+    fighter_transition = visuals[transition_start:transition_end]
+    require("backwards: true" in fighter_transition and "backwards: false" in fighter_transition,
+            "ordinary atomic form changes must retain reverse-then-forward fusion")
+    for relic_name, relic in (("Getter Furnace", getter_furnace), ("Emperor's Fragment", emperors_fragment)):
+        setup_index = relic.index("await ShinGetterEventInvasionService.ApplyPendingPreCombatSetup(Owner);")
+        fusion_index = relic.index("Task openingFusion = NShinGetterStaticVisuals.PlayOpeningGetterOneFusion(Owner.Creature);")
+        voice_index = relic.index("ShinGetterVoiceService.PlayPreparedCombatStart(Owner);")
+        await_index = relic.index("await openingFusion;")
+        require(setup_index < fusion_index < voice_index < await_index,
+                f"{relic_name} must start prepared fusion and opening voice together after setup")
     for code in ("058", "059", "060"):
         require(f'new("{code}"' in voice, f"Open Get voice {code} is missing")
+    require('new("060", ShinGetterVoiceCue.OpenGetThree, "benkei_open_get.wav"' in voice,
+            "Open Get voice 060 must use Benkei's resource")
 
 
 def check_localization_and_assets() -> None:
@@ -101,10 +138,20 @@ def check_localization_and_assets() -> None:
     resource_gate = read(PROJECT / "tools/validate-mod-resources.gd")
     require("s_g_c_getter_landing.tres" in resource_gate and "s_g_p_open_get.tres" in resource_gate,
             "resource gate does not require issue#10 atlas resources")
-    for filename in ("ryoma_open_get.wav", "hayato_open_get.wav", "musashi_open_get.wav"):
+    require("benkei_open_get.wav" in resource_gate and "musashi_open_get.wav" not in resource_gate,
+            "resource gate must require only Benkei's issue#10 Open Get voice")
+    for filename in ("ryoma_open_get.wav", "hayato_open_get.wav", "benkei_open_get.wav"):
         path = PROJECT / "audio/sfx/characters/shin_getter/voices" / filename
         require(path.is_file(), f"missing voice file: {filename}")
         require(path.with_name(f"{filename}.import").is_file(), f"missing Godot import sidecar: {filename}")
+    voice_root = PROJECT / "audio/sfx/characters/shin_getter/voices"
+    require(not (voice_root / "musashi_open_get.wav").exists(), "issue#10 must not retain Musashi's Open Get voice")
+    require(not (voice_root / "musashi_open_get.wav.import").exists(), "issue#10 must not retain Musashi's Open Get import")
+    benkei_import = read(voice_root / "benkei_open_get.wav.import")
+    require('source_file="res://audio/sfx/characters/shin_getter/voices/benkei_open_get.wav"' in benkei_import,
+            "Benkei Open Get import must point to its renamed source")
+    require("benkei_open_get.wav-fd2c371e41ad6859b6a943a944786c09.sample" in benkei_import,
+            "Benkei Open Get import must use the renamed source hash")
 
     for action in FUSION_ACTIONS:
         sheet = PROJECT / "images/characters/shin_getter/forms" / action / "sprite_sheet.png"

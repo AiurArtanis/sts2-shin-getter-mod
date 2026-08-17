@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Godot;
 using MegaCrit.Sts2.Core.Commands;
@@ -17,8 +18,7 @@ public static class NShinGetterStaticVisuals
         Creature creature,
         ShinGetterForm form,
         bool animate = true,
-        float speedScale = 1f,
-        bool forceFusion = false)
+        float speedScale = 1f)
     {
         if (!TryGetFormSprites(creature, out var visuals, out var sprites))
             return Task.CompletedTask;
@@ -30,7 +30,19 @@ public static class NShinGetterStaticVisuals
             _ => sprites.GetterOne,
         };
 
-        return SwitchTo(visuals, sprites, next, animate, speedScale, forceFusion);
+        return SwitchTo(visuals, sprites, next, animate, speedScale);
+    }
+
+    /// <summary>
+    /// Plays the combat-opening Getter One fusion after the starting form has been prepared.
+    /// Unlike normal fighter-to-fighter transitions, it has no previous form to reverse.
+    /// </summary>
+    public static Task PlayOpeningGetterOneFusion(Creature creature)
+    {
+        if (!TryGetFormSprites(creature, out _, out var sprites))
+            return Task.CompletedTask;
+
+        return PlayOpeningGetterOneFusion(sprites);
     }
 
     public static Task ShowShinDragon(Creature creature, bool animate = true)
@@ -38,7 +50,7 @@ public static class NShinGetterStaticVisuals
         if (!TryGetFormSprites(creature, out var visuals, out var sprites))
             return Task.CompletedTask;
 
-        return SwitchTo(visuals, sprites, sprites.ShinDragon, animate, 1f, forceAtomicFusion: false);
+        return SwitchTo(visuals, sprites, sprites.ShinDragon, animate, 1f);
     }
 
     public static bool TryPlayGetterOneActionAnimation(NCreature creatureNode, string trigger)
@@ -489,8 +501,7 @@ public static class NShinGetterStaticVisuals
         FormSprites sprites,
         FormVisual next,
         bool animate,
-        float speedScale,
-        bool forceAtomicFusion)
+        float speedScale)
     {
         FormVisual? previous = null;
         foreach (var sprite in sprites.All)
@@ -499,7 +510,7 @@ public static class NShinGetterStaticVisuals
                 previous = sprite;
         }
 
-        if (next.Item.Visible && next.Item.Modulate.A > 0.99f && !forceAtomicFusion)
+        if (next.Item.Visible && next.Item.Modulate.A > 0.99f)
         {
             ActivateIdleAnimation(next);
             return;
@@ -571,6 +582,30 @@ public static class NShinGetterStaticVisuals
         transformTween.TweenCallback(Callable.From(() => HideInactive(sprites, next, previous, previousBaseScale)))
             .SetDelay(0.36f / animationSpeed);
         await visuals.ToSignal(transformTween, Tween.SignalName.Finished);
+    }
+
+    private static async Task PlayOpeningGetterOneFusion(FormSprites sprites)
+    {
+        FormVisual next = sprites.GetterOne;
+        foreach (FormVisual sprite in sprites.All)
+        {
+            if (sprite.Item == next.Item)
+                continue;
+
+            sprite.Item.Visible = false;
+            sprite.Item.Modulate = new Color(sprite.Item.Modulate, 0f);
+            sprite.Node.RotationDegrees = 0f;
+            if (sprite.Node is AnimatedSprite2D animation)
+                NShinGetterSpriteSequence.ReleaseActionAnimations(animation);
+        }
+
+        next.Item.Visible = true;
+        next.Item.Modulate = new Color(next.Item.Modulate, 1f);
+        next.Node.RotationDegrees = 0f;
+        if (next.Node is AnimatedSprite2D nextSprite)
+            await PlayFusionAnimation(nextSprite, ShinGetterForm.Getter1, backwards: false, speedScale: 1f);
+
+        ActivateIdleAnimation(next);
     }
 
     private static async Task<bool> TryPlayFusionTransition(
@@ -708,7 +743,8 @@ public static class NShinGetterStaticVisuals
 
     private static bool TryGetAtomicForm(FormVisual visual, out ShinGetterForm form)
     {
-        form = visual.Node.Name switch
+        string nodeName = visual.Node.Name.ToString();
+        form = nodeName switch
         {
             "GetterOne" => ShinGetterForm.Getter1,
             "GetterTwo" => ShinGetterForm.Getter2,

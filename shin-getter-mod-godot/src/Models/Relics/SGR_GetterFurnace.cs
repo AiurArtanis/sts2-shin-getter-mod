@@ -16,6 +16,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 using ShinGetterMod.Audio;
 using ShinGetterMod.Events;
 using ShinGetterMod.Models.Powers;
+using ShinGetterMod.Nodes.Combat;
 
 namespace ShinGetterMod.Models.Relics;
 
@@ -150,7 +151,9 @@ public sealed class SGR_GetterFurnace : ShinGetterRelicBase, IInfiniteEvolutionP
             new ThrowingPlayerChoiceContext(), Owner.Creature,
             DynamicVars["SGP_Ki"].BaseValue, Owner.Creature, null);
         await ShinGetterEventInvasionService.ApplyPendingPreCombatSetup(Owner);
+        Task openingFusion = NShinGetterStaticVisuals.PlayOpeningGetterOneFusion(Owner.Creature);
         ShinGetterVoiceService.PlayPreparedCombatStart(Owner);
+        await openingFusion;
     }
 
     public override Task AfterDamageGiven(
