@@ -53,6 +53,9 @@ const REQUIRED_RESOURCES := {
 	"res://audio/sfx/characters/shin_getter/voices/hayato_drill_hurricane_long.wav": false,
 	"res://audio/sfx/characters/shin_getter/voices/hayato_drill_arm.wav": false,
 	"res://audio/sfx/characters/shin_getter/voices/hayato_kill.wav": false,
+	"res://audio/sfx/characters/shin_getter/voices/ryoma_open_get.wav": false,
+	"res://audio/sfx/characters/shin_getter/voices/hayato_open_get.wav": false,
+	"res://audio/sfx/characters/shin_getter/voices/musashi_open_get.wav": false,
 	"res://audio/music/shin_getter/execution_theme.mp3": false,
 	"res://audio/music/shin_getter/encounters/elite_overgrowth.mp3": false,
 	"res://audio/music/shin_getter/encounters/elite_underdocks.mp3": false,
@@ -88,6 +91,7 @@ const REQUIRED_RESOURCES := {
 	"res://images/atlases/card_atlas.sprites/shin_getter/s_g_c_reschedule_ticket.tres": false,
 	"res://images/atlases/card_atlas.sprites/shin_getter/s_g_c_pressure_breath.tres": false,
 	"res://images/atlases/card_atlas.sprites/shin_getter/s_g_c_wisp_coordinate.tres": false,
+	"res://images/atlases/card_atlas.sprites/shin_getter/s_g_c_getter_landing.tres": false,
 	"res://images/atlases/power_atlas.sprites/s_g_p_ki.tres": false,
 	"res://images/atlases/power_atlas.sprites/s_g_p_evolution.tres": false,
 	"res://images/atlases/power_atlas.sprites/s_g_p_evolution_engine.tres": false,
@@ -99,6 +103,7 @@ const REQUIRED_RESOURCES := {
 	"res://images/atlases/power_atlas.sprites/s_g_p_shin_getter_one.tres": false,
 	"res://images/atlases/power_atlas.sprites/s_g_p_shin_getter_two.tres": false,
 	"res://images/atlases/power_atlas.sprites/s_g_p_shin_getter_three.tres": false,
+	"res://images/atlases/power_atlas.sprites/s_g_p_open_get.tres": false,
 	"res://images/enchantments/s_g_e_adaptation.png": false,
 	"res://images/enchantments/s_g_e_devolution.png": false,
 	"res://images/events/s_g_e_getter_mandala.png": false,
@@ -158,18 +163,21 @@ const REQUIRED_RESOURCES := {
 	"res://images/characters/shin_getter/forms/getter_one_dash/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/forms/getter_one_death/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/forms/getter_one_idle/sprite_sheet.png": false,
+	"res://images/characters/shin_getter/forms/getter_one_fusion/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/forms/getter_two_attack/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/forms/getter_two_block/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/forms/getter_two_cast/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/forms/getter_two_dash/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/forms/getter_two_death/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/forms/getter_two_idle/sprite_sheet.png": false,
+	"res://images/characters/shin_getter/forms/getter_two_fusion/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/forms/getter_three_attack/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/forms/getter_three_block/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/forms/getter_three_cast/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/forms/getter_three_dash/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/forms/getter_three_death/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/forms/getter_three_idle/sprite_sheet.png": false,
+	"res://images/characters/shin_getter/forms/getter_three_fusion/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/forms/shin_getter_dragon_attack/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/forms/shin_getter_dragon_block/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/forms/shin_getter_dragon_cast/sprite_sheet.png": false,
@@ -247,7 +255,7 @@ const FORBIDDEN_RESOURCE_DEPENDENCIES := {
 }
 
 const CHARACTER_FRAME_MANIFEST_PATH := "art_sources/characters/shin_getter/forms/frame_manifest.txt"
-const EXPECTED_CHARACTER_SOURCE_FRAME_COUNT := 920
+const EXPECTED_CHARACTER_SOURCE_FRAME_COUNT := 1010
 
 
 func _initialize() -> void:

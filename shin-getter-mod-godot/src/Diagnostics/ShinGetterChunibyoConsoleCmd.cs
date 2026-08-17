@@ -39,14 +39,14 @@ public sealed class ShinGetterChunibyoConsoleCmd : AbstractConsoleCmd
 public sealed class ShinGetterSoundConsoleCmd : AbstractConsoleCmd
 {
     public override string CmdName => "sgs";
-    public override string Args => "<001-047>";
+    public override string Args => "<001-047|058-060>";
     public override string Description => "Plays a Shin Getter voice or transformation sound by workbook code.";
     public override bool IsNetworked => false;
 
     public override CmdResult Process(Player? issuingPlayer, string[] args)
     {
         if (args.Length != 1)
-            return new(false, "Usage: sgs <001-047>");
+            return new(false, "Usage: sgs <001-047|058-060>");
 
         bool success = ShinGetterVoiceService.TryPlayCode(issuingPlayer, args[0], out string message);
         return new(success, message);

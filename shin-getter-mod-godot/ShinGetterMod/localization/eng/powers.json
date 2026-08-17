@@ -27,6 +27,8 @@
   "S_G_P_SEAL.description": "Status amounts cannot increase or decrease this turn.",
   "S_G_P_SHADE.title": "Shade",
   "S_G_P_SHADE.description": "This turn, multi-hit attacks can only damage you once, and non-multi-hit attack damage is halved.",
+  "S_G_P_OPEN_GET.title": "Open Get",
+  "S_G_P_OPEN_GET.description": "Track damage your side deals after gaining this status. When an attack no greater than the total would hit you, evade it and remove this status.",
   "S_G_P_TRIPLE_UNITY.title": "Triple Unity",
   "S_G_P_TRIPLE_UNITY.description": "After you play the next {Amount} cards, Transform.",
   "S_G_P_INDOMITABLE.title": "Persist",

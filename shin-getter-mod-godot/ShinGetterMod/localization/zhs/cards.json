@@ -72,6 +72,8 @@
 	"S_G_C_PARTS_SWAP.selectionScreenPrompt": "选择要交换的卡牌。",
   "S_G_C_TRIPLE_UNITY.title": "三体同心",
   "S_G_C_TRIPLE_UNITY.description": "接下来打出的{SGP_TripleUnity:diff()}张牌，每张打出后[gold]变形[/gold]。",
+  "S_G_C_GETTER_LANDING.title": "盖塔登场",
+  "S_G_C_GETTER_LANDING.description": "选择一个其他形态[gold]变形[/gold]，获得{SGP_Ki:diff()}点[gold]气力[/gold]和[gold]战机分离[/gold]。",
   "S_G_C_DARK_CAPE.title": "漆黑披风",
   "S_G_C_DARK_CAPE.description": "获得{Block:diff()}点[gold]格挡[/gold]。本回合每当[gold]格挡[/gold]完全抵挡伤害时，对所有敌人造成{Damage:diff()}点伤害。\n[red]一号机[/red]：获得3层[gold]腾空[/gold]。",
   "S_G_C_BACKUP_PLAN.title": "备用方案",

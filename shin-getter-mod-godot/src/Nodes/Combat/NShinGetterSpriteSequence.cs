@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Godot;
+using ShinGetterMod.Models.Cards;
 
 namespace ShinGetterMod.Nodes.Combat;
 
@@ -18,6 +19,9 @@ internal static class NShinGetterSpriteSequence
     {
         (AttackFrameDirectory, AttackMaxFrames),
         (ShinDragonIdleFrameDirectory, ShinDragonIdleMaxFrames),
+        (GetterOneFusionFrameDirectory, FusionMaxFrames),
+        (GetterTwoFusionFrameDirectory, FusionMaxFrames),
+        (GetterThreeFusionFrameDirectory, FusionMaxFrames),
     };
 
     private static readonly ConditionalWeakTable<AnimatedSprite2D, ActionCacheState> ActionCaches = new();
@@ -40,6 +44,9 @@ internal static class NShinGetterSpriteSequence
     public const string GetterThreeCastFrameDirectory = "res://images/characters/shin_getter/forms/getter_three_cast";
     public const string GetterThreeBlockFrameDirectory = "res://images/characters/shin_getter/forms/getter_three_block";
     public const string GetterThreeDeathFrameDirectory = "res://images/characters/shin_getter/forms/getter_three_death";
+    public const string GetterOneFusionFrameDirectory = "res://images/characters/shin_getter/forms/getter_one_fusion";
+    public const string GetterTwoFusionFrameDirectory = "res://images/characters/shin_getter/forms/getter_two_fusion";
+    public const string GetterThreeFusionFrameDirectory = "res://images/characters/shin_getter/forms/getter_three_fusion";
     public const string ShinDragonIdleFrameDirectory = "res://images/characters/shin_getter/forms/shin_getter_dragon_idle";
     public const string ShinDragonAttackFrameDirectory = "res://images/characters/shin_getter/forms/shin_getter_dragon_attack";
     public const string ShinDragonCastFrameDirectory = "res://images/characters/shin_getter/forms/shin_getter_dragon_cast";
@@ -53,6 +60,7 @@ internal static class NShinGetterSpriteSequence
     public const string DashAnimationName = "dash";
     public const string BlockAnimationName = "block";
     public const string DeathAnimationName = "death";
+    public const string FusionAnimationName = "fusion";
     public const int IdleMaxFrames = 24;
     public const int AttackMaxFrames = 40;
     public const int CastMaxFrames = 32;
@@ -77,12 +85,14 @@ internal static class NShinGetterSpriteSequence
     public const int ShinDragonBlockMaxFrames = 48;
     public const int ShinDragonDashMaxFrames = 48;
     public const int ShinDragonDeathMaxFrames = 48;
+    public const int FusionMaxFrames = 30;
     public const double IdleFramesPerSecond = 24d;
     public const double AttackFramesPerSecond = 36d;
     public const double ActionFramesPerSecond = 30d;
     public const double GetterOneBlockFramesPerSecond = 45d;
     public const double ShinDragonAttackFramesPerSecond = 54d;
     public const double ShinDragonBlockFramesPerSecond = 60d;
+    public const double FusionFramesPerSecond = 60d;
 
     public const string FrameDirectory = IdleFrameDirectory;
     public const string AnimationName = IdleAnimationName;
@@ -182,6 +192,35 @@ internal static class NShinGetterSpriteSequence
 
         if (!sprite.IsPlaying() && frames.HasAnimation(IdleAnimationName))
             sprite.Play(IdleAnimationName);
+    }
+
+    /// <summary>
+    /// Loads the non-cached atomic fighter-to-form sequence for one of the three Getter forms.
+    /// This is intentionally separate from combat action caching: transform playback can reverse it.
+    /// </summary>
+    public static bool EnsureFusionLoaded(AnimatedSprite2D sprite, ShinGetterForm form)
+    {
+        string? frameDirectory = form switch
+        {
+            ShinGetterForm.Getter1 => GetterOneFusionFrameDirectory,
+            ShinGetterForm.Getter2 => GetterTwoFusionFrameDirectory,
+            ShinGetterForm.Getter3 => GetterThreeFusionFrameDirectory,
+            _ => null,
+        };
+        if (frameDirectory == null)
+            return false;
+
+        SpriteFrames frames = sprite.SpriteFrames ?? new SpriteFrames();
+        sprite.SpriteFrames = frames;
+        LoadLinearAnimation(
+            frames,
+            FusionAnimationName,
+            frameDirectory,
+            FusionMaxFrames,
+            FusionFramesPerSecond,
+            loop: false);
+        return frames.HasAnimation(FusionAnimationName)
+               && frames.GetFrameCount(FusionAnimationName) >= FusionMaxFrames;
     }
 
     public static void ReleaseActionAnimations(AnimatedSprite2D sprite)

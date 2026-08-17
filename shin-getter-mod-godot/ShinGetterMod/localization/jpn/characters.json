@@ -59,5 +59,8 @@
   "SHIN_GETTER.voice.drillHurricane": "[white]Drill Hurricane[/white]",
   "SHIN_GETTER.voice.drillHurricaneLong": "[white]Drill Hurricaaaaaane~[/white]",
   "SHIN_GETTER.voice.drillArm": "[white]Drill Arrrrrm[/white]",
-  "SHIN_GETTER.voice.hayatoKill": "お前らは黙って見てろ。"
+  "SHIN_GETTER.voice.hayatoKill": "お前らは黙って見てろ。",
+  "SHIN_GETTER.voice.openGetOne": "[sine][red]OPEN GET[/red][/sine]",
+  "SHIN_GETTER.voice.openGetTwo": "[sine][white]OPEN GET[/white][/sine]",
+  "SHIN_GETTER.voice.openGetThree": "[sine][yellow]OPEN GET[/yellow][/sine]"
 }

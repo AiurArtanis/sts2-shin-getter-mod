@@ -72,6 +72,8 @@
   "S_G_C_PARTS_SWAP.selectionScreenPrompt": "Choose cards to swap.",
   "S_G_C_TRIPLE_UNITY.title": "Triple Unity",
   "S_G_C_TRIPLE_UNITY.description": "After you play the next {SGP_TripleUnity:diff()} cards, [gold]Transform[/gold].",
+  "S_G_C_GETTER_LANDING.title": "Getter Landing",
+  "S_G_C_GETTER_LANDING.description": "Choose another form to [gold]Transform[/gold]. Gain {SGP_Ki:diff()} Ki and [gold]Open Get[/gold].",
   "S_G_C_DARK_CAPE.title": "Black Cape",
   "S_G_C_DARK_CAPE.description": "Gain {Block:diff()} [gold]Block[/gold]. This turn, whenever [gold]Block[/gold] fully blocks damage, deal {Damage:diff()} damage to ALL enemies.\n[red]Shin Getter 1[/red]: Gain 3 [gold]Airborne[/gold].",
   "S_G_C_BACKUP_PLAN.title": "Backup Plan",

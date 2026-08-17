@@ -8,9 +8,11 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Nodes.Combat;
 
 namespace ShinGetterMod.Models.Powers;
 
@@ -24,6 +26,7 @@ public sealed class SGP_Shade : PowerModel
         public AttackCommand? ActiveAttack;
         public int HitCount;
         public int OwnerHitsReceived;
+        public bool HasPlayedVisualForAttack;
     }
 
     public override PowerType Type => PowerType.Buff;
@@ -42,6 +45,7 @@ public sealed class SGP_Shade : PowerModel
             data.ActiveAttack = attack;
             data.HitCount = hitCount;
             data.OwnerHitsReceived = 0;
+            data.HasPlayedVisualForAttack = false;
         }
 
         return hitCount;
@@ -67,6 +71,26 @@ public sealed class SGP_Shade : PowerModel
         return 0.5m;
     }
 
+    public override Task BeforeDamageReceived(
+        PlayerChoiceContext choiceContext,
+        Creature target,
+        decimal amount,
+        ValueProp props,
+        Creature? dealer,
+        CardModel? cardSource)
+    {
+        if (target != Owner || !props.IsPoweredAttack())
+            return Task.CompletedTask;
+
+        Data data = GetInternalData<Data>();
+        if (data.HasPlayedVisualForAttack)
+            return Task.CompletedTask;
+
+        data.HasPlayedVisualForAttack = true;
+        TaskHelper.RunSafely(NShinGetterStaticVisuals.PlayShadeVfx(Owner));
+        return Task.CompletedTask;
+    }
+
     public override Task AfterAttack(PlayerChoiceContext choiceContext, AttackCommand command)
     {
         var data = GetInternalData<Data>();
@@ -75,6 +99,7 @@ public sealed class SGP_Shade : PowerModel
             data.ActiveAttack = null;
             data.HitCount = 0;
             data.OwnerHitsReceived = 0;
+            data.HasPlayedVisualForAttack = false;
         }
 
         return Task.CompletedTask;

@@ -17,7 +17,8 @@ public static class NShinGetterStaticVisuals
         Creature creature,
         ShinGetterForm form,
         bool animate = true,
-        float speedScale = 1f)
+        float speedScale = 1f,
+        bool forceFusion = false)
     {
         if (!TryGetFormSprites(creature, out var visuals, out var sprites))
             return Task.CompletedTask;
@@ -29,7 +30,7 @@ public static class NShinGetterStaticVisuals
             _ => sprites.GetterOne,
         };
 
-        return SwitchTo(visuals, sprites, next, animate, speedScale);
+        return SwitchTo(visuals, sprites, next, animate, speedScale, forceFusion);
     }
 
     public static Task ShowShinDragon(Creature creature, bool animate = true)
@@ -37,7 +38,7 @@ public static class NShinGetterStaticVisuals
         if (!TryGetFormSprites(creature, out var visuals, out var sprites))
             return Task.CompletedTask;
 
-        return SwitchTo(visuals, sprites, sprites.ShinDragon, animate, 1f);
+        return SwitchTo(visuals, sprites, sprites.ShinDragon, animate, 1f, forceAtomicFusion: false);
     }
 
     public static bool TryPlayGetterOneActionAnimation(NCreature creatureNode, string trigger)
@@ -202,6 +203,89 @@ public static class NShinGetterStaticVisuals
         cleanup.TweenProperty(rayWrap, "modulate:a", 0f, 0.16f);
         cleanup.TweenCallback(Callable.From(rayWrap.QueueFree));
         await Cmd.CustomScaledWait(0.74f, 0.82f);
+    }
+
+    /// <summary>
+    /// Plays the current atomic form through fighter separation and recombination.
+    /// Shin Getter Dragon deliberately keeps its existing transform effect.
+    /// </summary>
+    public static async Task PlayOpenGetVfx(Creature creature)
+    {
+        if (!TryGetFormSprites(creature, out _, out FormSprites sprites))
+            return;
+
+        foreach (FormVisual formVisual in sprites.Atomic)
+        {
+            if (!formVisual.Item.Visible || formVisual.Item.Modulate.A <= 0.01f)
+                continue;
+
+            if (formVisual.Node is AnimatedSprite2D sprite
+                && TryGetAtomicForm(formVisual, out ShinGetterForm form))
+            {
+                await PlayFusionAnimation(sprite, form, backwards: true, speedScale: 1f);
+                await PlayFusionAnimation(sprite, form, backwards: false, speedScale: 1f);
+                ActivateIdleAnimation(formVisual);
+            }
+            return;
+        }
+    }
+
+    /// <summary>
+    /// Creates three or five synchronized afterimages above the active form for Shade.
+    /// The source sprite itself continues playing normally underneath the VFX layer.
+    /// </summary>
+    public static Task PlayShadeVfx(Creature creature)
+    {
+        if (!TryGetFormSprites(creature, out _, out FormSprites sprites)
+            || NCombatRoom.Instance?.CombatVfxContainer is not { } vfxContainer)
+        {
+            return Task.CompletedTask;
+        }
+
+        FormVisual? active = sprites.Atomic
+            .FirstOrDefault(sprite => sprite.Item.Visible && sprite.Item.Modulate.A > 0.01f);
+        if (active == null || active.Value.Node is not AnimatedSprite2D source)
+            return Task.CompletedTask;
+
+        int ghostCount = Random.Shared.Next(0, 2) == 0 ? 3 : 5;
+        List<AnimatedSprite2D> ghosts = new(ghostCount);
+        for (int index = 0; index < ghostCount; index++)
+        {
+            float centered = index - (ghostCount - 1) / 2f;
+            AnimatedSprite2D ghost = new()
+            {
+                SpriteFrames = source.SpriteFrames,
+                Animation = source.Animation,
+                Frame = source.Frame,
+                SpeedScale = source.SpeedScale,
+                Centered = source.Centered,
+                Offset = source.Offset,
+                ZIndex = 96 + index,
+                SelfModulate = new Color(0.62f, 0.86f, 1f, 0f),
+            };
+            vfxContainer.AddChild(ghost);
+            ghost.GlobalTransform = source.GlobalTransform;
+            ghost.Play();
+            ghosts.Add(ghost);
+
+            Vector2 initialPosition = ghost.Position;
+            Vector2 spreadPosition = initialPosition + Vector2.Right * centered * 38f;
+            Tween tween = ghost.CreateTween();
+            tween.TweenProperty(ghost, "self_modulate:a", 0.44f, 0.08f)
+                .SetEase(Tween.EaseType.Out)
+                .SetTrans(Tween.TransitionType.Sine);
+            tween.Parallel().TweenProperty(ghost, "position", spreadPosition, 0.12f)
+                .SetEase(Tween.EaseType.Out)
+                .SetTrans(Tween.TransitionType.Sine);
+            tween.Chain().TweenProperty(ghost, "self_modulate:a", 0.12f, 0.10f);
+            tween.Parallel().TweenProperty(ghost, "position", initialPosition, 0.14f)
+                .SetEase(Tween.EaseType.In)
+                .SetTrans(Tween.TransitionType.Sine);
+            tween.Chain().TweenProperty(ghost, "self_modulate:a", 0f, 0.10f);
+            tween.TweenCallback(Callable.From(ghost.QueueFree));
+        }
+
+        return Task.CompletedTask;
     }
 
     private static void CreateRisingRayRing(Node2D parent, int index, Color color)
@@ -405,19 +489,20 @@ public static class NShinGetterStaticVisuals
         FormSprites sprites,
         FormVisual next,
         bool animate,
-        float speedScale)
+        float speedScale,
+        bool forceAtomicFusion)
     {
-        if (next.Item.Visible && next.Item.Modulate.A > 0.99f)
-        {
-            ActivateIdleAnimation(next);
-            return;
-        }
-
         FormVisual? previous = null;
         foreach (var sprite in sprites.All)
         {
             if (sprite.Item != next.Item && sprite.Item.Visible && sprite.Item.Modulate.A > 0.01f)
                 previous = sprite;
+        }
+
+        if (next.Item.Visible && next.Item.Modulate.A > 0.99f && !forceAtomicFusion)
+        {
+            ActivateIdleAnimation(next);
+            return;
         }
 
         if (!animate)
@@ -436,6 +521,9 @@ public static class NShinGetterStaticVisuals
         }
 
         float animationSpeed = Math.Max(0.05f, speedScale);
+
+        if (await TryPlayFusionTransition(sprites, previous, next, animationSpeed))
+            return;
 
         foreach (var sprite in sprites.All)
         {
@@ -483,6 +571,85 @@ public static class NShinGetterStaticVisuals
         transformTween.TweenCallback(Callable.From(() => HideInactive(sprites, next, previous, previousBaseScale)))
             .SetDelay(0.36f / animationSpeed);
         await visuals.ToSignal(transformTween, Tween.SignalName.Finished);
+    }
+
+    private static async Task<bool> TryPlayFusionTransition(
+        FormSprites sprites,
+        FormVisual? previous,
+        FormVisual next,
+        float speedScale)
+    {
+        if (!TryGetAtomicForm(next, out ShinGetterForm nextForm)
+            || next.Node is not AnimatedSprite2D nextSprite)
+        {
+            return false;
+        }
+
+        // Transitions to or from Shin Getter Dragon retain the existing non-fighter effect.
+        if (previous is { } visiblePrevious && !TryGetAtomicForm(visiblePrevious, out _))
+            return false;
+
+        if (previous is { } previousVisual
+            && TryGetAtomicForm(previousVisual, out ShinGetterForm previousForm)
+            && previousVisual.Node is AnimatedSprite2D previousSprite)
+        {
+            await PlayFusionAnimation(previousSprite, previousForm, backwards: true, speedScale: speedScale);
+            previousVisual.Item.Visible = false;
+            previousVisual.Item.Modulate = new Color(previousVisual.Item.Modulate, 0f);
+            previousVisual.Node.RotationDegrees = 0f;
+        }
+
+        foreach (FormVisual sprite in sprites.All)
+        {
+            if (sprite.Item == next.Item)
+                continue;
+
+            sprite.Item.Visible = false;
+            sprite.Item.Modulate = new Color(sprite.Item.Modulate, 0f);
+            sprite.Node.RotationDegrees = 0f;
+            if (sprite.Node is AnimatedSprite2D animation)
+                NShinGetterSpriteSequence.ReleaseActionAnimations(animation);
+        }
+
+        next.Item.Visible = true;
+        next.Item.Modulate = new Color(next.Item.Modulate, 1f);
+        next.Node.RotationDegrees = 0f;
+        await PlayFusionAnimation(nextSprite, nextForm, backwards: false, speedScale: speedScale);
+        ActivateIdleAnimation(next);
+        return true;
+    }
+
+    private static async Task PlayFusionAnimation(
+        AnimatedSprite2D sprite,
+        ShinGetterForm form,
+        bool backwards,
+        float speedScale)
+    {
+        if (!NShinGetterSpriteSequence.EnsureFusionLoaded(sprite, form)
+            || sprite.SpriteFrames is not { } frames)
+        {
+            return;
+        }
+
+        StringName animation = NShinGetterSpriteSequence.FusionAnimationName;
+        int frameCount = frames.GetFrameCount(animation);
+        if (frameCount <= 0)
+            return;
+
+        sprite.Play(animation);
+        sprite.SpeedScale = backwards ? -Math.Max(0.05f, speedScale) : Math.Max(0.05f, speedScale);
+        sprite.Frame = backwards ? frameCount - 1 : 0;
+        double framesPerSecond = frames.GetAnimationSpeed(animation);
+        float duration = framesPerSecond > 0d
+            ? (float)(frameCount / framesPerSecond / Math.Max(0.05f, speedScale))
+            : 0.5f / Math.Max(0.05f, speedScale);
+        await Cmd.CustomScaledWait(duration, duration);
+        if (!GodotObject.IsInstanceValid(sprite))
+            return;
+
+        sprite.Stop();
+        sprite.Frame = backwards ? 0 : frameCount - 1;
+        sprite.SpeedScale = 1f;
     }
 
     private static void HideInactive(FormSprites sprites, FormVisual active, FormVisual? previous, Vector2 previousBaseScale)
@@ -534,9 +701,22 @@ public static class NShinGetterStaticVisuals
         FormVisual ShinDragon)
     {
         public FormVisual[] All => new[] { GetterOne, GetterTwo, GetterThree, ShinDragon };
+        public FormVisual[] Atomic => new[] { GetterOne, GetterTwo, GetterThree };
     }
 
     private readonly record struct FormVisual(CanvasItem Item, Node2D Node);
+
+    private static bool TryGetAtomicForm(FormVisual visual, out ShinGetterForm form)
+    {
+        form = visual.Node.Name switch
+        {
+            "GetterOne" => ShinGetterForm.Getter1,
+            "GetterTwo" => ShinGetterForm.Getter2,
+            "GetterThree" => ShinGetterForm.Getter3,
+            _ => ShinGetterForm.None,
+        };
+        return form != ShinGetterForm.None;
+    }
 
     private readonly record struct FormAnimation(
         AnimatedSprite2D Sprite,
