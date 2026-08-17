@@ -28,6 +28,6 @@ public static class Entry
             }
         }
 
-        Log.Info("ShinGetterMod - loading success! (76 cards)");
+        Log.Info("ShinGetterMod - loading success! (77 cards)");
     }
 }
