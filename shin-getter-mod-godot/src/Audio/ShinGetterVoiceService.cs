@@ -75,6 +75,9 @@ internal enum ShinGetterVoiceCue
     MusashiKill = 43,
     DrillHurricaneLong = 44,
     HayatoKill = 45,
+    OpenGetOne = 46,
+    OpenGetTwo = 47,
+    OpenGetThree = 48,
 }
 
 internal static class ShinGetterVoiceService
@@ -149,6 +152,9 @@ internal static class ShinGetterVoiceService
         new("045", ShinGetterVoiceCue.DrillHurricaneLong, "hayato_drill_hurricane_long.wav", "SHIN_GETTER.voice.drillHurricaneLong", ShinGetterForm.Getter2),
         new("046", ShinGetterVoiceCue.DrillArm, "hayato_drill_arm.wav", "SHIN_GETTER.voice.drillArm", ShinGetterForm.Getter2, StartAtCardPlay: true),
         new("047", ShinGetterVoiceCue.HayatoKill, "hayato_kill.wav", "SHIN_GETTER.voice.hayatoKill", ShinGetterForm.Getter2, VoicePlaybackCategory.InterruptingNonCard),
+        new("058", ShinGetterVoiceCue.OpenGetOne, "ryoma_open_get.wav", "SHIN_GETTER.voice.openGetOne", ShinGetterForm.Getter1, VoicePlaybackCategory.DamageResponse),
+        new("059", ShinGetterVoiceCue.OpenGetTwo, "hayato_open_get.wav", "SHIN_GETTER.voice.openGetTwo", ShinGetterForm.Getter2, VoicePlaybackCategory.DamageResponse),
+        new("060", ShinGetterVoiceCue.OpenGetThree, "benkei_open_get.wav", "SHIN_GETTER.voice.openGetThree", ShinGetterForm.Getter3, VoicePlaybackCategory.DamageResponse),
     };
 
     private static readonly IReadOnlyDictionary<ShinGetterVoiceCue, VoiceLine> Lines = VoiceLines
@@ -267,6 +273,21 @@ internal static class ShinGetterVoiceService
         }
 
         return Cmd.Wait(durationSeconds);
+    }
+
+    internal static Task PlayOpenGet(Player player)
+    {
+        ShinGetterVoiceCue? cue = player.Creature.GetPower<SGP_ShinGetterOne>() != null
+            ? ShinGetterVoiceCue.OpenGetOne
+            : player.Creature.GetPower<SGP_ShinGetterTwo>() != null
+                ? ShinGetterVoiceCue.OpenGetTwo
+                : player.Creature.GetPower<SGP_ShinGetterThree>() != null
+                    ? ShinGetterVoiceCue.OpenGetThree
+                    : null;
+        if (cue is { } selectedCue)
+            TryPlayOneTime(player, Lines[selectedCue]);
+
+        return Task.CompletedTask;
     }
 
     internal static void PlayShinDragonTransform(Player player)
@@ -458,7 +479,7 @@ internal static class ShinGetterVoiceService
 
         if (!LinesByCode.TryGetValue(code, out VoiceLine? line))
         {
-            message = "Usage: sgs <001-047>";
+            message = "Usage: sgs <001-047|058-060>";
             return false;
         }
 

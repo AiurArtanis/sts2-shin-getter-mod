@@ -27,6 +27,8 @@
   "S_G_P_SEAL.description": "このターン、状態のスタック数は増減しない。",
   "S_G_P_SHADE.title": "分身",
   "S_G_P_SHADE.description": "このターン、多段攻撃からは1回だけダメージを受ける。多段攻撃ではないダメージは半減する。",
+  "S_G_P_OPEN_GET.title": "戦闘機分離",
+  "S_G_P_OPEN_GET.description": "この状態を得た後に味方が与えたダメージを累積する。累積値以下の攻撃を受ける時、その攻撃を回避してこの状態を失う。",
   "S_G_P_TRIPLE_UNITY.title": "三体一心",
   "S_G_P_TRIPLE_UNITY.description": "次の{Amount}枚のカードをプレイした後、変形する。",
   "S_G_P_INDOMITABLE.title": "不屈",

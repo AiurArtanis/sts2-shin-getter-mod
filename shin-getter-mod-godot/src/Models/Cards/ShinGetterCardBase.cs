@@ -58,6 +58,7 @@ public abstract class ShinGetterCardBase : CardModel
             ["延时伤害"] = _ => HoverTipFactory.FromPower<SGP_DelayDamage>(),
             ["封印"] = _ => HoverTipFactory.FromPower<SGP_Seal>(),
             ["分身"] = _ => HoverTipFactory.FromPower<SGP_Shade>(),
+            ["战机分离"] = _ => HoverTipFactory.FromPower<SGP_OpenGet>(),
             ["一号机"] = _ => HoverTipFactory.FromPower<SGP_ShinGetterOne>(),
             ["二号机"] = _ => HoverTipFactory.FromPower<SGP_ShinGetterTwo>(),
             ["三号机"] = _ => HoverTipFactory.FromPower<SGP_ShinGetterThree>(),

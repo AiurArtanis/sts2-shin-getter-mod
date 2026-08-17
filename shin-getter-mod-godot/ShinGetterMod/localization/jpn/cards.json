@@ -72,6 +72,8 @@
   "S_G_C_PARTS_SWAP.selectionScreenPrompt": "交換するカードを選ぶ。",
   "S_G_C_TRIPLE_UNITY.title": "三体一心",
   "S_G_C_TRIPLE_UNITY.description": "次にプレイする{SGP_TripleUnity:diff()}枚のカードは、プレイ後に[gold]変形[/gold]する。",
+  "S_G_C_GETTER_LANDING.title": "ゲッター登場",
+  "S_G_C_GETTER_LANDING.description": "他の形態を1つ選んで[gold]変形[/gold]する。{SGP_Ki:diff()}の[gold]気力[/gold]と[gold]戦闘機分離[/gold]を得る。",
   "S_G_C_DARK_CAPE.title": "漆黒のマント",
   "S_G_C_DARK_CAPE.description": "{Block:diff()}[gold]ブロック[/gold]を得る。このターン、[gold]ブロック[/gold]でダメージを完全に防ぐたび、敵全体に{Damage:diff()}ダメージを与える。\n[red]真ゲッター1[/red]：[gold]空中[/gold]を3得る。",
   "S_G_C_BACKUP_PLAN.title": "予備プラン",

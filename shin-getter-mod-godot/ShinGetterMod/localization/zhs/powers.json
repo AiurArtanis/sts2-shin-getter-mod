@@ -27,6 +27,8 @@
   "S_G_P_SEAL.description": "本回合不会增减状态层数。",
   "S_G_P_SHADE.title": "分身",
   "S_G_P_SHADE.description": "本回合受到的多段攻击仅有1次造成伤害，受到的非多段攻击伤害减半。",
+  "S_G_P_OPEN_GET.title": "战机分离",
+  "S_G_P_OPEN_GET.description": "累计此状态生效后己方造成的伤害。受到不超过累计值的攻击时，回避该攻击并移除此状态。",
   "S_G_P_TRIPLE_UNITY.title": "三体同心",
   "S_G_P_TRIPLE_UNITY.description": "打出接下来的{Amount}张牌后变形。",
   "S_G_P_INDOMITABLE.title": "不屈",

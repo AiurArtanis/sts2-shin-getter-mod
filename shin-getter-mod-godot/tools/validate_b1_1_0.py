@@ -118,8 +118,8 @@ def validate_sprite_sheets() -> None:
     forms = ROOT / "images/characters/shin_getter/forms"
     sheets = sorted(forms.glob("*/sprite_sheet.png"))
     imports = sorted(forms.glob("*/sprite_sheet.png.import"))
-    if len(sheets) != 24 or len(imports) != 24:
-        raise AssertionError(f"expected 24 sheets/imports, got {len(sheets)}/{len(imports)}")
+    if len(sheets) != 27 or len(imports) != 27:
+        raise AssertionError(f"expected 27 sheets/imports, got {len(sheets)}/{len(imports)}")
     frame_pngs = [path for path in forms.glob("*/sprite_*.png") if path.name != "sprite_sheet.png"]
     if frame_pngs:
         raise AssertionError("runtime form directories still contain per-frame PNG files")
@@ -129,6 +129,7 @@ def validate_sprite_sheets() -> None:
         "cast": ("compress/mode=0", None),
         "dash": ("compress/mode=1", "compress/lossy_quality=0.75"),
         "death": ("compress/mode=1", "compress/lossy_quality=0.6"),
+        "fusion": ("compress/mode=1", "compress/lossy_quality=0.75"),
         "idle": ("compress/mode=1", "compress/lossy_quality=0.75"),
     }
     for sidecar in imports:
@@ -150,8 +151,8 @@ def validate_sprite_sheets() -> None:
 
     source_root = REPO_ROOT / "art_sources/characters/shin_getter/forms"
     source_frames = list(source_root.glob("*/sprite_*.png"))
-    if len(source_frames) != 920:
-        raise AssertionError(f"expected 920 source frames, got {len(source_frames)}")
+    if len(source_frames) != 1010:
+        raise AssertionError(f"expected 1010 source frames, got {len(source_frames)}")
     frame_manifest = load_frame_manifest(source_root / "frame_manifest.txt")
     manifest_frame_paths = {
         f"{action}/sprite_{frame_number:06d}.png"
@@ -160,11 +161,11 @@ def validate_sprite_sheets() -> None:
     }
     actual_frame_paths = {path.relative_to(source_root).as_posix() for path in source_frames}
     manifest_entry_count = sum(len(frame_numbers) for frame_numbers in frame_manifest.values())
-    if manifest_entry_count != 920 or manifest_frame_paths != actual_frame_paths:
+    if manifest_entry_count != 1010 or manifest_frame_paths != actual_frame_paths:
         missing = sorted(actual_frame_paths - manifest_frame_paths)
         extra = sorted(manifest_frame_paths - actual_frame_paths)
         raise AssertionError(
-            "PCK forbidden frame set does not exactly match the 920 source files; "
+            "PCK forbidden frame set does not exactly match the 1010 source files; "
             f"missing={missing[:3]}, extra={extra[:3]}"
         )
     validator_path = "tools/validate-mod-resources.gd"
@@ -172,7 +173,7 @@ def validate_sprite_sheets() -> None:
         validator_path,
         "CHARACTER_FRAME_MANIFEST_PATH",
         "_load_character_frame_manifest(pck_path)",
-        "EXPECTED_CHARACTER_SOURCE_FRAME_COUNT := 920",
+        "EXPECTED_CHARACTER_SOURCE_FRAME_COUNT := 1010",
     )
     reject(validator_path, "FORBIDDEN_CHARACTER_FRAME_COUNTS", "range(1, FORBIDDEN_CHARACTER_FRAME_COUNTS")
     if (ROOT / "art_sources/characters/shin_getter/forms").exists():

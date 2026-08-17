@@ -97,6 +97,7 @@ public sealed class ShinGetterCardPool : CardPoolModel
 			ModelDb.Card<SGC_RescheduleTicket>(),
 			ModelDb.Card<SGC_PressureBreath>(),
 			ModelDb.Card<SGC_WispCoordinate>(),
+			ModelDb.Card<SGC_GetterLanding>(),
 		};
 	}
 
@@ -105,6 +106,7 @@ public sealed class ShinGetterCardPool : CardPoolModel
 		IEnumerable<CardModel> cards)
 	{
 		return cards.Where(card => card is not SGC_InsectVirus
+			and not SGC_GetterLanding
 			and not SGC_Radiated
 			and not SGC_PetalBreakthrough
 			and not SGC_RescheduleTicket
