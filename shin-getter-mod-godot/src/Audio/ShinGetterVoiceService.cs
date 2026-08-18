@@ -277,13 +277,15 @@ internal static class ShinGetterVoiceService
 
     internal static Task PlayOpenGet(Player player)
     {
-        ShinGetterVoiceCue? cue = player.Creature.GetPower<SGP_ShinGetterOne>() != null
+        ShinGetterVoiceCue? cue = player.Creature.GetPower<SGP_ShinForm>() != null
             ? ShinGetterVoiceCue.OpenGetOne
-            : player.Creature.GetPower<SGP_ShinGetterTwo>() != null
-                ? ShinGetterVoiceCue.OpenGetTwo
-                : player.Creature.GetPower<SGP_ShinGetterThree>() != null
-                    ? ShinGetterVoiceCue.OpenGetThree
-                    : null;
+            : player.Creature.GetPower<SGP_ShinGetterOne>() != null
+                ? ShinGetterVoiceCue.OpenGetOne
+                : player.Creature.GetPower<SGP_ShinGetterTwo>() != null
+                    ? ShinGetterVoiceCue.OpenGetTwo
+                    : player.Creature.GetPower<SGP_ShinGetterThree>() != null
+                        ? ShinGetterVoiceCue.OpenGetThree
+                        : null;
         if (cue is { } selectedCue)
             TryPlayOneTime(player, Lines[selectedCue]);
 
