@@ -41,14 +41,19 @@ public sealed class SGP_OpenGet : PowerModel
 
     protected override object InitInternalData() => new Data();
 
-    internal bool WouldAvoidAttack(Creature? target, decimal amount, ValueProp props)
+    internal bool WouldAvoidAttack(
+        Creature? target,
+        decimal amount,
+        ValueProp props,
+        Creature? dealer)
     {
+        SGP_Shade? shade = Owner.GetPower<SGP_Shade>();
         return target == Owner
             && props.IsPoweredAttack()
             && amount > 0m
             && amount <= DisplayAmount
-            && Owner.Player is { } player
-            && player.Creature.GetPower<SGP_ShinForm>() == null;
+            && Owner.Player != null
+            && shade?.WouldPreventCurrentHit(dealer) != true;
     }
 
     internal bool IsAvoidingCurrentHit => GetInternalData<Data>().WillAvoidCurrentHit;
@@ -81,10 +86,11 @@ public sealed class SGP_OpenGet : PowerModel
     {
         Data data = GetInternalData<Data>();
         data.WillAvoidCurrentHit = false;
-        if (!WouldAvoidAttack(target, amount, props))
+        if (!WouldAvoidAttack(target, amount, props, dealer))
             return 1m;
 
         data.WillAvoidCurrentHit = true;
+        Owner.GetPower<SGP_Shade>()?.RecordOpenGetAvoidedHit(dealer);
         return 0m;
     }
 
@@ -101,7 +107,7 @@ public sealed class SGP_OpenGet : PowerModel
             return;
 
         data.WillAvoidCurrentHit = false;
-        if (Owner.Player is not { } player || player.Creature.GetPower<SGP_ShinForm>() != null)
+        if (Owner.Player is not { } player)
             return;
 
         Flash();

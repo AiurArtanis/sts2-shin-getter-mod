@@ -61,7 +61,7 @@ public sealed class SGP_Shade : PowerModel
         if (target != Owner || !props.IsPoweredAttack())
             return 1m;
 
-        if (ShouldDeferToOpenGet(target, amount, props))
+        if (ShouldDeferToOpenGet(target, amount, props, dealer))
             return 1m;
 
         var data = GetInternalData<Data>();
@@ -85,7 +85,7 @@ public sealed class SGP_Shade : PowerModel
         if (target != Owner || !props.IsPoweredAttack() || amount <= 0m)
             return Task.CompletedTask;
 
-        if (ShouldDeferToOpenGet(target, amount, props))
+        if (ShouldDeferToOpenGet(target, amount, props, dealer))
             return Task.CompletedTask;
 
         Data data = GetInternalData<Data>();
@@ -97,10 +97,30 @@ public sealed class SGP_Shade : PowerModel
         return Task.CompletedTask;
     }
 
-    private bool ShouldDeferToOpenGet(Creature? target, decimal amount, ValueProp props)
+    internal bool WouldPreventCurrentHit(Creature? dealer)
+    {
+        Data data = GetInternalData<Data>();
+        return data.ActiveAttack?.Attacker == dealer
+            && data.HitCount > 1
+            && data.OwnerHitsReceived >= 1;
+    }
+
+    internal void RecordOpenGetAvoidedHit(Creature? dealer)
+    {
+        Data data = GetInternalData<Data>();
+        if (data.ActiveAttack?.Attacker == dealer && data.HitCount > 1)
+            data.OwnerHitsReceived = Math.Max(data.OwnerHitsReceived, 1);
+    }
+
+    private bool ShouldDeferToOpenGet(
+        Creature? target,
+        decimal amount,
+        ValueProp props,
+        Creature? dealer)
     {
         SGP_OpenGet? openGet = Owner.GetPower<SGP_OpenGet>();
-        return openGet?.IsAvoidingCurrentHit == true || openGet?.WouldAvoidAttack(target, amount, props) == true;
+        return openGet?.IsAvoidingCurrentHit == true
+            || openGet?.WouldAvoidAttack(target, amount, props, dealer) == true;
     }
 
     public override Task AfterAttack(PlayerChoiceContext choiceContext, AttackCommand command)

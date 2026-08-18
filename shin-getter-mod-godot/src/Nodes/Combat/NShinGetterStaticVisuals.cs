@@ -15,7 +15,8 @@ namespace ShinGetterMod.Nodes.Combat;
 public static class NShinGetterStaticVisuals
 {
     private const float FusionTransitionHoldSeconds = 0.2f;
-    private const float ShadeAfterimageSpacing = 110f;
+    private const float ShadeAfterimageSpacing = 182f;
+    private const float ShinDragonOpenGetAlpha = 0.3f;
 
     public static Task ShowForm(
         Creature creature,
@@ -241,7 +242,7 @@ public static class NShinGetterStaticVisuals
 
     /// <summary>
     /// Plays the current atomic form through fighter separation and recombination.
-    /// Shin Getter Dragon deliberately keeps its existing transform effect.
+    /// Shin Getter Dragon uses an opacity tween because it has no fighter separation frames.
     /// </summary>
     public static async Task PlayOpenGetVfx(Creature creature)
     {
@@ -262,6 +263,19 @@ public static class NShinGetterStaticVisuals
             }
             return;
         }
+
+        FormVisual shinDragon = sprites.ShinDragon;
+        if (!shinDragon.Item.Visible || shinDragon.Item.Modulate.A <= 0.01f)
+            return;
+
+        Tween tween = shinDragon.Item.CreateTween();
+        tween.TweenProperty(shinDragon.Item, "modulate:a", ShinDragonOpenGetAlpha, 0.12f)
+            .SetEase(Tween.EaseType.Out)
+            .SetTrans(Tween.TransitionType.Sine);
+        tween.TweenProperty(shinDragon.Item, "modulate:a", 1f, 0.18f)
+            .SetEase(Tween.EaseType.In)
+            .SetTrans(Tween.TransitionType.Sine);
+        await shinDragon.Item.ToSignal(tween, Tween.SignalName.Finished);
     }
 
     /// <summary>

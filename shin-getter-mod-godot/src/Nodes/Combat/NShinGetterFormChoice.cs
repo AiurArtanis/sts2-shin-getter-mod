@@ -31,6 +31,7 @@ internal static class NShinGetterFormChoice
     private const float FormIconSize = 96f;
     private const float FormIconSpacing = 129f;
     private const float FormOutlinePadding = 6f;
+    private const int FormOutlineRadius = 54;
 
     public static async Task<ShinGetterForm> Select(
         PlayerChoiceContext choiceContext,
@@ -106,8 +107,10 @@ internal static class NShinGetterFormChoice
                 TextureNormal = texture,
                 TextureHover = texture,
                 TexturePressed = texture,
-                Position = Vector2.One * FormOutlinePadding,
+                Position = (outlineSize - Vector2.One * FormIconSize) / 2f,
                 Size = Vector2.One * FormIconSize,
+                IgnoreTextureSize = true,
+                StretchMode = TextureButton.StretchModeEnum.KeepAspectCentered,
                 TooltipText = GetTooltip(form),
                 FocusMode = Control.FocusModeEnum.All,
             };
@@ -171,16 +174,19 @@ internal static class NShinGetterFormChoice
         };
         return new StyleBoxFlat
         {
-            BgColor = new Color(color, 0.20f),
+            BgColor = new Color(color, 0.12f),
             BorderColor = color,
+            BorderBlend = true,
             BorderWidthLeft = 4,
             BorderWidthTop = 4,
             BorderWidthRight = 4,
             BorderWidthBottom = 4,
-            CornerRadiusTopLeft = 18,
-            CornerRadiusTopRight = 18,
-            CornerRadiusBottomRight = 18,
-            CornerRadiusBottomLeft = 18,
+            CornerRadiusTopLeft = FormOutlineRadius,
+            CornerRadiusTopRight = FormOutlineRadius,
+            CornerRadiusBottomRight = FormOutlineRadius,
+            CornerRadiusBottomLeft = FormOutlineRadius,
+            CornerDetail = 16,
+            AntiAliasing = true,
         };
     }
 

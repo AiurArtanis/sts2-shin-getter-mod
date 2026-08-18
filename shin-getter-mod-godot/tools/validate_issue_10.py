@@ -73,14 +73,23 @@ def check_code_wiring() -> None:
     require("PlayShadeVfx" in visuals, "shade visual hook is missing")
     require("FusionTransitionHoldSeconds = 0.2f" in visuals,
             "ordinary fusion transitions must hold the shared fighter frame for 0.2 seconds")
-    require("ShadeAfterimageSpacing = 110f" in visuals and "sprites.All" in visuals,
+    require("ShadeAfterimageSpacing = 182f" in visuals and "sprites.All" in visuals,
             "Shade must show its wider afterimages for every Getter form, including Shin Dragon")
+    require("ShinDragonOpenGetAlpha = 0.3f" in visuals and "FormVisual shinDragon = sprites.ShinDragon" in visuals,
+            "Shin Dragon Open Get must simulate separation with a 30%-to-100% opacity tween")
     require("DisplayAmount => Amount - 1" in open_get, "Open Get must expose a zero starting counter")
     require("dealer?.Side != Owner.Side" in open_get, "Open Get must account for allied damage")
     require("target.CombatState?.CurrentSide != CombatSide.Player" in open_get,
             "Open Get must not accumulate damage during the enemy turn")
     require("WouldAvoidAttack" in open_get and "amount > 0m" in open_get,
             "Open Get must reject zero-damage hits before avoidance")
+    require("shade?.WouldPreventCurrentHit(dealer) != true" in open_get,
+            "Open Get must not consume itself on a multi-hit already nullified by Shade")
+    require("RecordOpenGetAvoidedHit(dealer)" in open_get
+            and "WouldPreventCurrentHit" in shade and "RecordOpenGetAvoidedHit" in shade,
+            "Open Get and Shade must share the consumed first hit of a multi-hit attack")
+    require("GetPower<SGP_ShinForm>() == null" not in open_get,
+            "Shin Dragon must remain eligible for Open Get avoidance")
     require("ModifyDamageMultiplicative" in open_get and "AfterDamageGiven" in open_get, "Open Get avoidance/accounting is missing")
     require("AfterEnergyReset" in open_get, "Open Get must expire at turn start")
     require("PlayShadeVfx" in shade, "Shade does not trigger its visual effect")
@@ -103,6 +112,10 @@ def check_code_wiring() -> None:
             "form choice must restore focus only after valid temporary controls leave the tree")
     require("FormIconSize = 96f" in choice and "CreateGetterOutline" in choice,
             "Getter Landing choices must use enlarged coloured outlines")
+    require("FormOutlineRadius = 54" in choice
+            and "Position = (outlineSize - Vector2.One * FormIconSize) / 2f" in choice
+            and "StretchMode = TextureButton.StretchModeEnum.KeepAspectCentered" in choice,
+            "Getter Landing circular outlines and icons must share the same centre")
     require("result.TotalDamage" in open_get and "result.UnblockedDamage" not in open_get,
             "Open Get accumulated-damage contract must include damage absorbed by block")
     require("PrepareOpeningGetterOneFusion" in getter_one,
@@ -143,6 +156,8 @@ def check_code_wiring() -> None:
         require(f'new("{code}"' in voice, f"Open Get voice {code} is missing")
     require('new("060", ShinGetterVoiceCue.OpenGetThree, "benkei_open_get.wav"' in voice,
             "Open Get voice 060 must use Benkei's resource")
+    require("GetPower<SGP_ShinForm>() != null" in voice,
+            "Shin Dragon Open Get must retain Ryoma's voice cue")
 
 
 def check_localization_and_assets() -> None:
@@ -159,12 +174,16 @@ def check_localization_and_assets() -> None:
             require(key in characters, f"{locale} {key} is missing")
 
     icon = read(PROJECT / "images/atlases/power_atlas.sprites/s_g_p_open_get.tres")
-    require("region = Rect2(320, 256, 64, 64)" in icon, "Open Get icon region is wrong")
+    require("region = Rect2(320, 256, 64, 64)" in icon, "Open Get small icon region is wrong")
     flash_icon = PROJECT / "images/powers/s_g_p_open_get.png"
     require(flash_icon.is_file() and flash_icon.with_name(f"{flash_icon.name}.import").is_file(),
             "Open Get flash requires a standalone imported power icon")
-    with Image.open(flash_icon) as image:
+    power_atlas = PROJECT / "images/atlases/power_atlas_shin_getter.png"
+    with Image.open(flash_icon) as image, Image.open(power_atlas) as atlas:
         require(image.size == (256, 256), "Open Get flash icon must use the standard 256x256 power image")
+        expected = atlas.crop((1280, 1024, 1536, 1280)).convert("RGBA")
+        require(image.convert("RGBA").tobytes() == expected.tobytes(),
+                "Open Get flash icon must come from the large power atlas, not the small icon atlas")
     resource_gate = read(PROJECT / "tools/validate-mod-resources.gd")
     require("s_g_c_getter_landing.tres" in resource_gate and "s_g_p_open_get.tres" in resource_gate,
             "resource gate does not require issue#10 atlas resources")
