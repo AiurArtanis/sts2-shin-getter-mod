@@ -57,6 +57,7 @@ def check_code_wiring() -> None:
     sequence = read(PROJECT / "src/Nodes/Combat/NShinGetterSpriteSequence.cs")
     visuals = read(PROJECT / "src/Nodes/Combat/NShinGetterStaticVisuals.cs")
     open_get = read(PROJECT / "src/Models/Powers/SGP_OpenGet.cs")
+    card_base = read(PROJECT / "src/Models/Cards/ShinGetterCardBase.cs")
     choice = read(PROJECT / "src/Nodes/Combat/NShinGetterFormChoice.cs")
     shade = read(PROJECT / "src/Models/Powers/SGP_Shade.cs")
     landing = read(PROJECT / "src/Models/Cards/SGC_GetterLanding.cs")
@@ -70,13 +71,22 @@ def check_code_wiring() -> None:
     require("EnsureFusionLoaded" in sequence and "FusionAnimationName" in sequence, "fusion sequence loader is missing")
     require("TryPlayFusionTransition" in visuals and "PlayOpenGetVfx" in visuals, "fusion visual flow is missing")
     require("PlayShadeVfx" in visuals, "shade visual hook is missing")
+    require("FusionTransitionHoldSeconds = 0.2f" in visuals,
+            "ordinary fusion transitions must hold the shared fighter frame for 0.2 seconds")
+    require("ShadeAfterimageSpacing = 110f" in visuals and "sprites.All" in visuals,
+            "Shade must show its wider afterimages for every Getter form, including Shin Dragon")
     require("DisplayAmount => Amount - 1" in open_get, "Open Get must expose a zero starting counter")
     require("dealer?.Side != Owner.Side" in open_get, "Open Get must account for allied damage")
+    require("target.CombatState?.CurrentSide != CombatSide.Player" in open_get,
+            "Open Get must not accumulate damage during the enemy turn")
+    require("WouldAvoidAttack" in open_get and "amount > 0m" in open_get,
+            "Open Get must reject zero-damage hits before avoidance")
     require("ModifyDamageMultiplicative" in open_get and "AfterDamageGiven" in open_get, "Open Get avoidance/accounting is missing")
     require("AfterEnergyReset" in open_get, "Open Get must expire at turn start")
     require("PlayShadeVfx" in shade, "Shade does not trigger its visual effect")
     require("NShinGetterFormChoice" in landing, "Getter Landing does not show form choices")
-    require("PowerCmd.Remove<SGP_OpenGet>" in landing, "Getter Landing must refresh the unique Open Get status")
+    require("GetPower<SGP_OpenGet>() == null" in landing and "PowerCmd.Remove<SGP_OpenGet>" not in landing,
+            "replaying Getter Landing must retain Open Get's accumulated damage")
     require("ModelDb.Card<SGC_GetterLanding>()" in pool, "Getter Landing is not registered")
     require("and not SGC_GetterLanding" in pool, "Getter Landing must stay out of reward epochs")
     require("PlayerChoiceSynchronizer" in choice and "PlayerChoiceResult.FromIndex" in choice, "form choice must synchronize in multiplayer")
@@ -91,15 +101,20 @@ def check_code_wiring() -> None:
             "form choice must restore the combat hand focus after its temporary controls are released")
     require("GodotObject.IsInstanceValid" in choice and "Node.SignalName.TreeExited" in choice,
             "form choice must restore focus only after valid temporary controls leave the tree")
+    require("FormIconSize = 96f" in choice and "CreateGetterOutline" in choice,
+            "Getter Landing choices must use enlarged coloured outlines")
     require("result.TotalDamage" in open_get and "result.UnblockedDamage" not in open_get,
             "Open Get accumulated-damage contract must include damage absorbed by block")
-    require("animate: !isCombatStart" in getter_one,
-            "combat-start form setup must finish before the opening fusion starts")
+    require("PrepareOpeningGetterOneFusion" in getter_one,
+            "combat-start form setup must hide the idle form before opening fusion")
     opening_start = visuals.index("private static async Task PlayOpeningGetterOneFusion(FormSprites sprites)")
     opening_end = visuals.index("    private static async Task<bool> TryPlayFusionTransition", opening_start)
     opening_fusion = visuals[opening_start:opening_end]
-    require("await PlayFusionAnimation(nextSprite, ShinGetterForm.Getter1, backwards: false" in opening_fusion,
-            "combat-opening Getter One fusion must play forward")
+    require("TryPrepareFusionAnimation" in opening_fusion and "PlayPreparedFusionAnimation" in opening_fusion,
+            "combat-opening Getter One fusion must be prepared before it becomes visible")
+    require(opening_fusion.index("TryPrepareFusionAnimation") < opening_fusion.index("next.Item.Visible = true")
+            < opening_fusion.index("PlayPreparedFusionAnimation"),
+            "combat-opening Getter One must show fusion frame one before it starts playing")
     require("backwards: true" not in opening_fusion and "previous" not in opening_fusion and "forceFusion" not in visuals,
             "combat-opening fusion must never reverse a previous form")
     transition_start = visuals.index("private static async Task<bool> TryPlayFusionTransition")
@@ -107,6 +122,16 @@ def check_code_wiring() -> None:
     fighter_transition = visuals[transition_start:transition_end]
     require("backwards: true" in fighter_transition and "backwards: false" in fighter_transition,
             "ordinary atomic form changes must retain reverse-then-forward fusion")
+    require(fighter_transition.index("backwards: true") < fighter_transition.index("FusionTransitionHoldSeconds")
+            < fighter_transition.index("next.Item.Visible = true") < fighter_transition.index("backwards: false"),
+            "ordinary atomic changes must hold the shared fighter frame before forward fusion")
+    require("FormTransformCards" in card_base and "if (TriggersFormTransform)" in card_base,
+            "cards that transform forms must bypass the ordinary action animation")
+    for card_name in ("SGC_ChangeAttack", "SGC_Enable", "SGC_GetterLanding", "SGC_GetterLaunch",
+                      "SGC_IronWall", "SGC_Jammer", "SGC_ShiftStrike", "SGC_ShinForm", "SGC_TacticalRetreat"):
+        require(f'"{card_name}"' in card_base, f"{card_name} must suppress ordinary action animation")
+    require("ShouldDeferToOpenGet" in shade and "amount <= 0m" in shade,
+            "Shade must defer to successful Open Get avoidance and ignore zero damage")
     for relic_name, relic in (("Getter Furnace", getter_furnace), ("Emperor's Fragment", emperors_fragment)):
         setup_index = relic.index("await ShinGetterEventInvasionService.ApplyPendingPreCombatSetup(Owner);")
         fusion_index = relic.index("Task openingFusion = NShinGetterStaticVisuals.PlayOpeningGetterOneFusion(Owner.Creature);")
@@ -135,9 +160,16 @@ def check_localization_and_assets() -> None:
 
     icon = read(PROJECT / "images/atlases/power_atlas.sprites/s_g_p_open_get.tres")
     require("region = Rect2(320, 256, 64, 64)" in icon, "Open Get icon region is wrong")
+    flash_icon = PROJECT / "images/powers/s_g_p_open_get.png"
+    require(flash_icon.is_file() and flash_icon.with_name(f"{flash_icon.name}.import").is_file(),
+            "Open Get flash requires a standalone imported power icon")
+    with Image.open(flash_icon) as image:
+        require(image.size == (256, 256), "Open Get flash icon must use the standard 256x256 power image")
     resource_gate = read(PROJECT / "tools/validate-mod-resources.gd")
     require("s_g_c_getter_landing.tres" in resource_gate and "s_g_p_open_get.tres" in resource_gate,
             "resource gate does not require issue#10 atlas resources")
+    require("res://images/powers/s_g_p_open_get.png" in resource_gate,
+            "resource gate must require the Open Get flash icon")
     require("benkei_open_get.wav" in resource_gate and "musashi_open_get.wav" not in resource_gate,
             "resource gate must require only Benkei's issue#10 Open Get voice")
     for filename in ("ryoma_open_get.wav", "hayato_open_get.wav", "benkei_open_get.wav"):

@@ -111,6 +111,7 @@ const REQUIRED_RESOURCES := {
 	"res://images/powers/s_g_p_evolution_engine.png": false,
 	"res://images/powers/s_g_p_final_getter_beam_strength_down.png": false,
 	"res://images/powers/s_g_p_delay_damage.png": false,
+	"res://images/powers/s_g_p_open_get.png": false,
 	"res://images/atlases/sgr_atlas_shin_getter.png": false,
 	"res://images/atlases/sgr_outline_atlas_shin_getter.png": false,
 	"res://images/atlases/relic_atlas.sprites/s_g_r_getter_furnace.tres": false,
