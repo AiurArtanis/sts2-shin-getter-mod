@@ -28,6 +28,9 @@ internal static class NShinGetterFormChoice
     private const string GetterOneIconPath = "res://images/atlases/power_atlas.sprites/s_g_p_shin_getter_one.tres";
     private const string GetterTwoIconPath = "res://images/atlases/power_atlas.sprites/s_g_p_shin_getter_two.tres";
     private const string GetterThreeIconPath = "res://images/atlases/power_atlas.sprites/s_g_p_shin_getter_three.tres";
+    private const float FormIconSize = 96f;
+    private const float FormIconSpacing = 129f;
+    private const float FormOutlinePadding = 6f;
 
     public static async Task<ShinGetterForm> Select(
         PlayerChoiceContext choiceContext,
@@ -87,21 +90,31 @@ internal static class NShinGetterFormChoice
             if (texture == null)
                 continue;
 
+            Vector2 outlineSize = Vector2.One * (FormIconSize + FormOutlinePadding * 2f);
+            Panel outline = new()
+            {
+                Position = new Vector2((index - (choices.Count - 1) / 2f) * FormIconSpacing, 0f) - outlineSize / 2f,
+                Size = outlineSize,
+                MouseFilter = Control.MouseFilterEnum.Ignore,
+                Modulate = new Color(1f, 1f, 1f, 0f),
+            };
+            outline.AddThemeStyleboxOverride("panel", CreateGetterOutline(form));
+            root.AddChild(outline);
+
             TextureButton button = new()
             {
                 TextureNormal = texture,
                 TextureHover = texture,
                 TexturePressed = texture,
-                Position = new Vector2((index - (choices.Count - 1) / 2f) * 86f - 32f, -32f),
-                Size = new Vector2(64f, 64f),
+                Position = Vector2.One * FormOutlinePadding,
+                Size = Vector2.One * FormIconSize,
                 TooltipText = GetTooltip(form),
                 FocusMode = Control.FocusModeEnum.All,
-                Modulate = new Color(1f, 1f, 1f, 0f),
             };
-            root.AddChild(button);
+            outline.AddChild(button);
             buttons.Add(button);
-            Tween appear = button.CreateTween();
-            appear.TweenProperty(button, "modulate:a", 1f, 0.14f)
+            Tween appear = outline.CreateTween();
+            appear.TweenProperty(outline, "modulate:a", 1f, 0.14f)
                 .SetDelay(index * 0.05f)
                 .SetEase(Tween.EaseType.Out)
                 .SetTrans(Tween.TransitionType.Back);
@@ -145,6 +158,30 @@ internal static class NShinGetterFormChoice
         Control defaultFocusedControl = hand.DefaultFocusedControl;
         if (GodotObject.IsInstanceValid(defaultFocusedControl))
             defaultFocusedControl.TryGrabFocus();
+    }
+
+    private static StyleBoxFlat CreateGetterOutline(ShinGetterForm form)
+    {
+        Color color = form switch
+        {
+            ShinGetterForm.Getter1 => Color.FromHtml("ef3f48"),
+            ShinGetterForm.Getter2 => Color.FromHtml("4d9dff"),
+            ShinGetterForm.Getter3 => Color.FromHtml("f4c542"),
+            _ => Colors.White,
+        };
+        return new StyleBoxFlat
+        {
+            BgColor = new Color(color, 0.20f),
+            BorderColor = color,
+            BorderWidthLeft = 4,
+            BorderWidthTop = 4,
+            BorderWidthRight = 4,
+            BorderWidthBottom = 4,
+            CornerRadiusTopLeft = 18,
+            CornerRadiusTopRight = 18,
+            CornerRadiusBottomRight = 18,
+            CornerRadiusBottomLeft = 18,
+        };
     }
 
     // CardSelectCmd keeps its equivalent helper private. Reproduce the official predicate

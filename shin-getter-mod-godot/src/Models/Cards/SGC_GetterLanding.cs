@@ -61,13 +61,13 @@ public sealed class SGC_GetterLanding : ShinGetterCardBase
             DynamicVars["SGP_Ki"].BaseValue,
             Owner.Creature,
             this);
-        // The status is unique: a new Landing starts a fresh post-play damage counter.
-        if (Owner.Creature.GetPower<SGP_OpenGet>() != null)
-            await PowerCmd.Remove<SGP_OpenGet>(Owner.Creature);
-
-        // SGP_OpenGet keeps its initial zero counter behind a hidden sentinel stack because
-        // PowerCmd intentionally treats zero-amount applications as a no-op.
-        await PowerCmd.Apply<SGP_OpenGet>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
+        // The status is unique. Replaying Landing must retain an already-earned counter.
+        if (Owner.Creature.GetPower<SGP_OpenGet>() == null)
+        {
+            // SGP_OpenGet keeps its initial zero counter behind a hidden sentinel stack because
+            // PowerCmd intentionally treats zero-amount applications as a no-op.
+            await PowerCmd.Apply<SGP_OpenGet>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
+        }
     }
 
     protected override void OnUpgrade()

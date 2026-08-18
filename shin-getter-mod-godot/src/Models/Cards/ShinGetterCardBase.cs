@@ -231,12 +231,27 @@ public abstract class ShinGetterCardBase : CardModel
             "SGC_StarSlash",
         };
 
+    private static readonly IReadOnlySet<string> FormTransformCards =
+        new HashSet<string>(StringComparer.Ordinal)
+        {
+            "SGC_ChangeAttack",
+            "SGC_Enable",
+            "SGC_GetterLanding",
+            "SGC_GetterLaunch",
+            "SGC_IronWall",
+            "SGC_Jammer",
+            "SGC_ShiftStrike",
+            "SGC_ShinForm",
+            "SGC_TacticalRetreat",
+        };
+
     public override CardPoolModel Pool => ModelDb.CardPool<ShinGetterCardPool>();
 
     public virtual ShinGetterForm CardForm => ShinGetterForm.None;
     public virtual int SpiritRequirement => 0;
     public virtual int UpgradePreviewSpiritRequirement => SpiritRequirement;
     protected virtual float ActionAnimationSpeedScale => 1f;
+    private bool TriggersFormTransform => FormTransformCards.Contains(GetType().Name);
 
     protected override bool ShouldGlowGoldInternal => IsFormGlowActive();
 
@@ -355,6 +370,9 @@ public abstract class ShinGetterCardBase : CardModel
 
         if (!DeferredCardVoiceCards.Contains(GetType().Name))
             ShinGetterVoiceService.TryPlayCardVoice(this);
+
+        if (TriggersFormTransform)
+            return;
 
         string? animationTrigger = GetActionAnimationTrigger();
         if (animationTrigger != null)

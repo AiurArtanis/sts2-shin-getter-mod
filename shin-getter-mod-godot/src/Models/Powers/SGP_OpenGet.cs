@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -40,6 +41,18 @@ public sealed class SGP_OpenGet : PowerModel
 
     protected override object InitInternalData() => new Data();
 
+    internal bool WouldAvoidAttack(Creature? target, decimal amount, ValueProp props)
+    {
+        return target == Owner
+            && props.IsPoweredAttack()
+            && amount > 0m
+            && amount <= DisplayAmount
+            && Owner.Player is { } player
+            && player.Creature.GetPower<SGP_ShinForm>() == null;
+    }
+
+    internal bool IsAvoidingCurrentHit => GetInternalData<Data>().WillAvoidCurrentHit;
+
     public override async Task AfterDamageGiven(
         PlayerChoiceContext choiceContext,
         Creature? dealer,
@@ -48,7 +61,10 @@ public sealed class SGP_OpenGet : PowerModel
         Creature target,
         CardModel? cardSource)
     {
-        if (dealer?.Side != Owner.Side || target.Side == Owner.Side || result.TotalDamage <= 0)
+        if (target.CombatState?.CurrentSide != CombatSide.Player
+            || dealer?.Side != Owner.Side
+            || target.Side == Owner.Side
+            || result.TotalDamage <= 0)
             return;
 
         int gainedDamage = result.TotalDamage;
@@ -65,15 +81,8 @@ public sealed class SGP_OpenGet : PowerModel
     {
         Data data = GetInternalData<Data>();
         data.WillAvoidCurrentHit = false;
-        if (target != Owner
-            || !props.IsPoweredAttack()
-            || amount <= 0m
-            || amount > DisplayAmount
-            || Owner.Player is not { } player
-            || player.Creature.GetPower<SGP_ShinForm>() != null)
-        {
+        if (!WouldAvoidAttack(target, amount, props))
             return 1m;
-        }
 
         data.WillAvoidCurrentHit = true;
         return 0m;
