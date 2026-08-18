@@ -14,6 +14,9 @@ namespace ShinGetterMod.Nodes.Combat;
 
 public static class NShinGetterStaticVisuals
 {
+    private const float FusionTransitionHoldSeconds = 0.2f;
+    private const float ShadeAfterimageSpacing = 110f;
+
     public static Task ShowForm(
         Creature creature,
         ShinGetterForm form,
@@ -43,6 +46,25 @@ public static class NShinGetterStaticVisuals
             return Task.CompletedTask;
 
         return PlayOpeningGetterOneFusion(sprites);
+    }
+
+    /// <summary>
+    /// Readies the opening form without exposing its idle frame. The opening fusion is started
+    /// only after the combat-start state and voice context are ready.
+    /// </summary>
+    public static void PrepareOpeningGetterOneFusion(Creature creature)
+    {
+        if (!TryGetFormSprites(creature, out _, out var sprites))
+            return;
+
+        foreach (FormVisual sprite in sprites.All)
+        {
+            sprite.Item.Visible = false;
+            sprite.Item.Modulate = new Color(sprite.Item.Modulate, 0f);
+            sprite.Node.RotationDegrees = 0f;
+            if (sprite.Node is AnimatedSprite2D animation)
+                NShinGetterSpriteSequence.ReleaseActionAnimations(animation);
+        }
     }
 
     public static Task ShowShinDragon(Creature creature, bool animate = true)
@@ -254,7 +276,7 @@ public static class NShinGetterStaticVisuals
             return Task.CompletedTask;
         }
 
-        FormVisual? active = sprites.Atomic
+        FormVisual? active = sprites.All
             .FirstOrDefault(sprite => sprite.Item.Visible && sprite.Item.Modulate.A > 0.01f);
         if (active == null || active.Value.Node is not AnimatedSprite2D source)
             return Task.CompletedTask;
@@ -281,7 +303,7 @@ public static class NShinGetterStaticVisuals
             ghosts.Add(ghost);
 
             Vector2 initialPosition = ghost.Position;
-            Vector2 spreadPosition = initialPosition + Vector2.Right * centered * 38f;
+            Vector2 spreadPosition = initialPosition + Vector2.Right * centered * ShadeAfterimageSpacing;
             Tween tween = ghost.CreateTween();
             tween.TweenProperty(ghost, "self_modulate:a", 0.44f, 0.08f)
                 .SetEase(Tween.EaseType.Out)
@@ -587,6 +609,10 @@ public static class NShinGetterStaticVisuals
     private static async Task PlayOpeningGetterOneFusion(FormSprites sprites)
     {
         FormVisual next = sprites.GetterOne;
+        AnimatedSprite2D? preparedSprite = next.Node as AnimatedSprite2D;
+        int frameCount = 0;
+        bool hasFusion = preparedSprite != null
+            && TryPrepareFusionAnimation(preparedSprite, ShinGetterForm.Getter1, backwards: false, out frameCount);
         foreach (FormVisual sprite in sprites.All)
         {
             if (sprite.Item == next.Item)
@@ -602,8 +628,8 @@ public static class NShinGetterStaticVisuals
         next.Item.Visible = true;
         next.Item.Modulate = new Color(next.Item.Modulate, 1f);
         next.Node.RotationDegrees = 0f;
-        if (next.Node is AnimatedSprite2D nextSprite)
-            await PlayFusionAnimation(nextSprite, ShinGetterForm.Getter1, backwards: false, speedScale: 1f);
+        if (hasFusion && preparedSprite != null)
+            await PlayPreparedFusionAnimation(preparedSprite, frameCount, backwards: false, speedScale: 1f);
 
         ActivateIdleAnimation(next);
     }
@@ -629,6 +655,7 @@ public static class NShinGetterStaticVisuals
             && previousVisual.Node is AnimatedSprite2D previousSprite)
         {
             await PlayFusionAnimation(previousSprite, previousForm, backwards: true, speedScale: speedScale);
+            await Cmd.CustomScaledWait(FusionTransitionHoldSeconds, FusionTransitionHoldSeconds);
             previousVisual.Item.Visible = false;
             previousVisual.Item.Modulate = new Color(previousVisual.Item.Modulate, 0f);
             previousVisual.Node.RotationDegrees = 0f;
@@ -660,21 +687,48 @@ public static class NShinGetterStaticVisuals
         bool backwards,
         float speedScale)
     {
+        if (!TryPrepareFusionAnimation(sprite, form, backwards, out int frameCount))
+            return;
+
+        await PlayPreparedFusionAnimation(sprite, frameCount, backwards, speedScale);
+    }
+
+    private static bool TryPrepareFusionAnimation(
+        AnimatedSprite2D sprite,
+        ShinGetterForm form,
+        bool backwards,
+        out int frameCount)
+    {
+        frameCount = 0;
         if (!NShinGetterSpriteSequence.EnsureFusionLoaded(sprite, form)
             || sprite.SpriteFrames is not { } frames)
         {
-            return;
+            return false;
         }
 
         StringName animation = NShinGetterSpriteSequence.FusionAnimationName;
-        int frameCount = frames.GetFrameCount(animation);
+        frameCount = frames.GetFrameCount(animation);
         if (frameCount <= 0)
-            return;
+            return false;
 
+        sprite.Animation = animation;
+        sprite.Frame = backwards ? frameCount - 1 : 0;
+        sprite.SpeedScale = 1f;
+        sprite.Stop();
+        return true;
+    }
+
+    private static async Task PlayPreparedFusionAnimation(
+        AnimatedSprite2D sprite,
+        int frameCount,
+        bool backwards,
+        float speedScale)
+    {
+        StringName animation = NShinGetterSpriteSequence.FusionAnimationName;
         sprite.Play(animation);
         sprite.SpeedScale = backwards ? -Math.Max(0.05f, speedScale) : Math.Max(0.05f, speedScale);
         sprite.Frame = backwards ? frameCount - 1 : 0;
-        double framesPerSecond = frames.GetAnimationSpeed(animation);
+        double framesPerSecond = sprite.SpriteFrames?.GetAnimationSpeed(animation) ?? 0d;
         float duration = framesPerSecond > 0d
             ? (float)(frameCount / framesPerSecond / Math.Max(0.05f, speedScale))
             : 0.5f / Math.Max(0.05f, speedScale);

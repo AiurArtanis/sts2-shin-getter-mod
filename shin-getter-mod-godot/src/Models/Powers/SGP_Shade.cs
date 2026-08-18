@@ -61,6 +61,9 @@ public sealed class SGP_Shade : PowerModel
         if (target != Owner || !props.IsPoweredAttack())
             return 1m;
 
+        if (ShouldDeferToOpenGet(target, amount, props))
+            return 1m;
+
         var data = GetInternalData<Data>();
         if (data.ActiveAttack?.Attacker == dealer && data.HitCount > 1)
         {
@@ -79,7 +82,10 @@ public sealed class SGP_Shade : PowerModel
         Creature? dealer,
         CardModel? cardSource)
     {
-        if (target != Owner || !props.IsPoweredAttack())
+        if (target != Owner || !props.IsPoweredAttack() || amount <= 0m)
+            return Task.CompletedTask;
+
+        if (ShouldDeferToOpenGet(target, amount, props))
             return Task.CompletedTask;
 
         Data data = GetInternalData<Data>();
@@ -89,6 +95,12 @@ public sealed class SGP_Shade : PowerModel
         data.HasPlayedVisualForAttack = true;
         TaskHelper.RunSafely(NShinGetterStaticVisuals.PlayShadeVfx(Owner));
         return Task.CompletedTask;
+    }
+
+    private bool ShouldDeferToOpenGet(Creature? target, decimal amount, ValueProp props)
+    {
+        SGP_OpenGet? openGet = Owner.GetPower<SGP_OpenGet>();
+        return openGet?.IsAvoidingCurrentHit == true || openGet?.WouldAvoidAttack(target, amount, props) == true;
     }
 
     public override Task AfterAttack(PlayerChoiceContext choiceContext, AttackCommand command)
