@@ -56,7 +56,8 @@ public partial class NShinGetterBgmPreviewControls : HBoxContainer
     {
         ShinGetterBgmTrack? track = _trackProvider?.Invoke();
         if (ShinGetterBgmPreviewService.ActiveCategory == _category
-            && track?.Id != ShinGetterBgmPreviewService.ActiveTrackId)
+            && (!CanPreviewSelection(track)
+                || track?.Id != ShinGetterBgmPreviewService.ActiveTrackId))
         {
             ShinGetterBgmPreviewService.Stop();
         }
@@ -68,14 +69,14 @@ public partial class NShinGetterBgmPreviewControls : HBoxContainer
 
     private void OnPlayPausePressed()
     {
-        if (_trackProvider?.Invoke() is { } track)
+        if (_trackProvider?.Invoke() is { } track && CanPreviewSelection(track))
             ShinGetterBgmPreviewService.Toggle(track, _category);
     }
 
     private void Refresh()
     {
         ShinGetterBgmTrack? track = _trackProvider?.Invoke();
-        bool hasPreview = track != null && ShinGetterBgmCatalog.CanPreview(track);
+        bool hasPreview = CanPreviewSelection(track);
         bool isActive = hasPreview
             && ShinGetterBgmPreviewService.ActiveCategory == _category
             && ShinGetterBgmPreviewService.ActiveTrackId == track!.Id;
@@ -88,6 +89,11 @@ public partial class NShinGetterBgmPreviewControls : HBoxContainer
             isPlaying ? "SHIN_GETTER_CHUNIBYO.BGM.PAUSE" : "SHIN_GETTER_CHUNIBYO.BGM.PLAY",
             isPlaying ? "Pause preview" : "Play preview"));
     }
+
+    private static bool CanPreviewSelection(ShinGetterBgmTrack? track) =>
+        track != null
+        && track.Id != ShinGetterBgmCatalog.RandomTrackId
+        && ShinGetterBgmCatalog.CanPreview(track);
 
     private static NShinGetterBgmPreviewButton CreateIconButton(
         string name,

@@ -278,10 +278,14 @@ def validate_ui_and_preview() -> None:
         "new Rect2(0f, 0f, 276f, 276f)",
         "new Rect2(276f, 0f, 276f, 276f)",
         "new NShinGetterBgmPreviewButton",
+        "CanPreviewSelection(track)",
+        "track.Id != ShinGetterBgmCatalog.RandomTrackId",
         "ShinGetterBgmCatalog.CanPreview(track)",
         "SetPreviewEnabled(hasPreview)",
         "SetIcon(isPlaying ? _pauseIcon : _playIcon)",
     )
+    if "ResolveForPlayback(track)" in controls:
+        raise AssertionError("Random BGM selection must not be resolved by the preview controls.")
     for forbidden_stop_control in ("_stopButton", '"StopButton"', "CreateAtlasIcon(2)"):
         if forbidden_stop_control in controls:
             raise AssertionError(f"Removed stop control remains: {forbidden_stop_control}")
