@@ -91,7 +91,13 @@ def validate_stoner_sunshine() -> None:
     require(
         "src/Nodes/Vfx/ShinGetterCombatVfx.cs",
         "PlayStonerSunshine(",
-        "Vector2.Up * 150f",
+        "const float ascentDurationSeconds = 0.75f",
+        "const float landingDurationSeconds = 0.4f",
+        "Vector2 airborneOffset = new(-90f, -150f)",
+        "ownerOrigin + airborneOffset",
+        "totalDuration - ascentDurationSeconds - landingDurationSeconds",
+        ".SetEase(Tween.EaseType.InOut)",
+        ".SetTrans(Tween.TransitionType.Sine)",
         "firstGrowthDuration",
         "secondGrowthDuration",
         "CreateSolarCoronaRay(",
@@ -100,6 +106,10 @@ def validate_stoner_sunshine() -> None:
         "CreateSolarLightning(",
         "const int layerCount = 22",
         "flightDurationSeconds",
+    )
+    reject(
+        "src/Nodes/Vfx/ShinGetterCombatVfx.cs",
+        'ownerOrigin + Vector2.Up * 150f, 0.42f',
     )
 
     expected_assets = {
