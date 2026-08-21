@@ -77,6 +77,24 @@ public sealed class SGP_OpenGet : PowerModel
 
     internal bool IsAvoidingCurrentHit => GetInternalData<Data>().WillAvoidCurrentHit;
 
+    internal bool TryAvoidFinalDamage(
+        Creature target,
+        decimal finalDamagePerHit,
+        ValueProp props,
+        Creature? dealer)
+    {
+        Data data = GetInternalData<Data>();
+        data.WillAvoidCurrentHit = false;
+        if (!WouldAvoidAttack(target, finalDamagePerHit, props, dealer))
+            return false;
+
+        data.WillAvoidCurrentHit = true;
+        if (data.ActiveAttack?.Attacker == dealer)
+            data.WillAvoidActiveAttack = true;
+        Owner.GetPower<SGP_Shade>()?.RecordOpenGetAvoidedHit(dealer);
+        return true;
+    }
+
     public override int ModifyAttackHitCount(AttackCommand attack, int hitCount)
     {
         if (attack.TargetSide == Owner.Side)
@@ -118,19 +136,10 @@ public sealed class SGP_OpenGet : PowerModel
         Creature? dealer,
         CardModel? cardSource)
     {
-        Data data = GetInternalData<Data>();
-        data.WillAvoidCurrentHit = false;
-        if (ShinGetterOpenGetIntentPatch.IsCalculatingIntentDamage)
-            return 1m;
-
-        if (!WouldAvoidAttack(target, amount, props, dealer))
-            return 1m;
-
-        data.WillAvoidCurrentHit = true;
-        if (data.ActiveAttack?.Attacker == dealer)
-            data.WillAvoidActiveAttack = true;
-        Owner.GetPower<SGP_Shade>()?.RecordOpenGetAvoidedHit(dealer);
-        return 0m;
+        // Qualification must happen only after every additive, multiplicative, and cap hook.
+        // The Hook.ModifyDamage postfix performs the actual avoidance using that final amount.
+        GetInternalData<Data>().WillAvoidCurrentHit = false;
+        return 1m;
     }
 
     public override async Task AfterDamageReceived(

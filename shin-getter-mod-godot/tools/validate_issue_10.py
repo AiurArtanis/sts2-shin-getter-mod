@@ -68,6 +68,7 @@ def check_code_wiring() -> None:
     emperors_fragment = read(PROJECT / "src/Models/Relics/SGR_EmperorsFragment.cs")
     intent_patch = read(PROJECT / "src/Patches/ShinGetterOpenGetIntentPatch.cs")
     hit_count_patch = read(PROJECT / "src/Patches/ShinGetterOpenGetAttackHitCountPatch.cs")
+    final_damage_patch = read(PROJECT / "src/Patches/ShinGetterOpenGetFinalDamagePatch.cs")
     combat_vfx = read(PROJECT / "src/Nodes/Vfx/ShinGetterCombatVfx.Extra.cs")
     tactical_retreat = read(PROJECT / "src/Models/Cards/SGC_TacticalRetreat.cs")
     form_powers = "\n".join(read(PROJECT / f"src/Models/Powers/{name}") for name in (
@@ -152,8 +153,19 @@ def check_code_wiring() -> None:
             "Open Get must keep avoiding its owner through every hit of an eligible attack")
     require("ModifyAttackHitCount" in open_get and "AfterAttack" in open_get,
             "Open Get must retain its active AttackCommand through every eligible hit")
-    require("IsCalculatingIntentDamage" in open_get and "return 1m" in open_get,
-            "Open Get must not reduce the displayed attack-intent damage")
+    multiplicative_start = open_get.index("public override decimal ModifyDamageMultiplicative")
+    multiplicative_end = open_get.index("public override async Task AfterDamageReceived", multiplicative_start)
+    open_get_multiplicative = open_get[multiplicative_start:multiplicative_end]
+    require("return 1m" in open_get_multiplicative and "return 0m" not in open_get_multiplicative,
+            "Open Get must defer avoidance until the final all-stage damage result")
+    require("HarmonyPatch(typeof(Hook), nameof(Hook.ModifyDamage))" in final_damage_patch
+            and "modifyDamageHookType != ModifyDamageHookType.All" in final_damage_patch
+            and "IsCalculatingIntentDamage" in final_damage_patch
+            and "GetDisplayedDamagePerHit(__result)" in final_damage_patch
+            and "TryAvoidFinalDamage" in final_damage_patch and "__result = 0m" in final_damage_patch,
+            "Open Get runtime avoidance must use Hook.ModifyDamage's final displayed damage")
+    require("Math.Max(0, (int)finalDamage)" in final_damage_patch,
+            "Open Get runtime damage must use AttackIntent's final decimal-to-int display contract")
     require("SHIN_GETTER_OPEN_GET_INTENT_SINGLE" in intent_patch
             and "SHIN_GETTER_OPEN_GET_INTENT_MULTI" in intent_patch,
             "Open Get intent labels must preserve damage while adding the avoidance marker")
@@ -213,6 +225,31 @@ def check_code_wiring() -> None:
             "Open Get voice 060 must use Benkei's resource")
     require("GetPower<SGP_ShinForm>() != null" in voice,
             "Shin Dragon Open Get must retain Ryoma's voice cue")
+
+
+def check_open_get_final_damage_contract() -> None:
+    """Lock final-stage Weak, Cap, and multi-hit+Grapple eligibility boundaries."""
+
+    def final_total(raw: float, multiplier: float, cap: float, repeats: int, grapple: int = 0) -> int:
+        final_per_hit = max(0, int(min(raw * multiplier, cap)))
+        final_repeats = max(0, repeats - grapple)
+        return final_per_hit * final_repeats
+
+    weak_total = final_total(raw=10, multiplier=0.75, cap=float("inf"), repeats=1)
+    require(weak_total == 7 and weak_total <= 8 and not (10 <= 8),
+            "Weak positive gate must use final 7 damage instead of intermediate 10")
+    require(weak_total > 6, "Weak negative gate must reject an Open Get threshold below final damage")
+
+    capped_total = final_total(raw=10, multiplier=1.0, cap=1, repeats=1)
+    require(capped_total == 1 and capped_total <= 1 and not (10 <= 1),
+            "Cap positive gate must use final capped damage instead of intermediate damage")
+    require(capped_total > 0, "Cap negative gate must reject a zero Open Get threshold")
+
+    grapple_multi_total = final_total(raw=10, multiplier=0.75, cap=float("inf"), repeats=3, grapple=1)
+    require(grapple_multi_total == 14 and grapple_multi_total <= 14,
+            "Weak multi-hit plus Grapple positive gate must use 7 x 2 final damage")
+    require(grapple_multi_total > 13,
+            "Weak multi-hit plus Grapple negative gate must reject a threshold below 14")
 
 
 def check_localization_and_assets() -> None:
@@ -278,6 +315,7 @@ def check_localization_and_assets() -> None:
 def main() -> None:
     check_fusion_sheets()
     check_code_wiring()
+    check_open_get_final_damage_contract()
     check_localization_and_assets()
     print("issue#10 validation passed")
 
