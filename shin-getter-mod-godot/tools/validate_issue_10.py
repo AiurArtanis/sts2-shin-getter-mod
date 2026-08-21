@@ -67,6 +67,7 @@ def check_code_wiring() -> None:
     getter_furnace = read(PROJECT / "src/Models/Relics/SGR_GetterFurnace.cs")
     emperors_fragment = read(PROJECT / "src/Models/Relics/SGR_EmperorsFragment.cs")
     intent_patch = read(PROJECT / "src/Patches/ShinGetterOpenGetIntentPatch.cs")
+    hit_count_patch = read(PROJECT / "src/Patches/ShinGetterOpenGetAttackHitCountPatch.cs")
     combat_vfx = read(PROJECT / "src/Nodes/Vfx/ShinGetterCombatVfx.Extra.cs")
     tactical_retreat = read(PROJECT / "src/Models/Cards/SGC_TacticalRetreat.cs")
     form_powers = "\n".join(read(PROJECT / f"src/Models/Powers/{name}") for name in (
@@ -128,8 +129,27 @@ def check_code_wiring() -> None:
             "Getter Landing hover scaling must remain centred and reversible")
     require("result.TotalDamage" in open_get and "result.UnblockedDamage" not in open_get,
             "Open Get accumulated-damage contract must include damage absorbed by block")
-    require("amount * data.HitCount" in open_get and "data.WillAvoidActiveAttack" in open_get,
-            "Open Get must judge and avoid a multi-attack by its total damage")
+    owner_guard = open_get.index("if (target != Owner || !props.IsPoweredAttack() || Owner.Player == null)")
+    active_attack_shortcut = open_get.index("data.ActiveAttack?.Attacker == dealer && data.WillAvoidActiveAttack")
+    require(owner_guard < active_attack_shortcut,
+            "Open Get must isolate the whole-attack avoidance shortcut to its own player target")
+    require(open_get.count("data.ActiveAttack?.Attacker == dealer && data.WillAvoidActiveAttack") == 1,
+            "Open Get must not bypass its owner-target guard in another damage shortcut")
+    require("GetFinalHitCount(activeAttack)" in open_get and "amount * finalHitCount" in open_get
+            and "data.HitCount" not in open_get,
+            "Open Get must judge a multi-attack by the final global hook hit count")
+    require("HarmonyPatch(typeof(Hook), nameof(Hook.ModifyAttackHitCount))" in hit_count_patch
+            and "HarmonyPostfix" in hit_count_patch and "decimal __result" in hit_count_patch
+            and "ConditionalWeakTable<AttackCommand, FinalHitCount>" in hit_count_patch,
+            "Open Get must capture the hit count after all listeners, including enemy Grapple")
+    require("Math.Max(0, (int)__result)" in hit_count_patch,
+            "Open Get's final hit count must retain Grapple's clamped result")
+    grapple = read(PROJECT / "src/Models/Powers/SGP_Grapple.cs")
+    require("Math.Max(0, hitCount - Amount)" in grapple
+            and "GetAdjustedRepeats" in read(PROJECT / "src/Patches/ShinGetterMultiAttackIntentPatch.cs"),
+            "Open Get intent and runtime totals must both retain Grapple-adjusted repeats")
+    require("data.WillAvoidActiveAttack" in open_get,
+            "Open Get must keep avoiding its owner through every hit of an eligible attack")
     require("ModifyAttackHitCount" in open_get and "AfterAttack" in open_get,
             "Open Get must retain its active AttackCommand through every eligible hit")
     require("IsCalculatingIntentDamage" in open_get and "return 1m" in open_get,

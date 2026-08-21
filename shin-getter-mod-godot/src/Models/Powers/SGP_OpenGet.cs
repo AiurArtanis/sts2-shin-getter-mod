@@ -29,7 +29,6 @@ public sealed class SGP_OpenGet : PowerModel
     private sealed class Data
     {
         public AttackCommand? ActiveAttack;
-        public int HitCount;
         public bool WillAvoidCurrentHit;
         public bool WillAvoidActiveAttack;
         public bool AvoidanceTriggered;
@@ -57,19 +56,22 @@ public sealed class SGP_OpenGet : PowerModel
         ValueProp props,
         Creature? dealer)
     {
+        if (target != Owner || !props.IsPoweredAttack() || Owner.Player == null)
+            return false;
+
         Data data = GetInternalData<Data>();
         if (data.ActiveAttack?.Attacker == dealer && data.WillAvoidActiveAttack)
             return true;
 
-        decimal totalAttackDamage = data.ActiveAttack?.Attacker == dealer && data.HitCount > 1
-            ? amount * data.HitCount
+        int finalHitCount = data.ActiveAttack is { } activeAttack && activeAttack.Attacker == dealer
+            ? ShinGetterOpenGetAttackHitCountPatch.GetFinalHitCount(activeAttack)
+            : 1;
+        decimal totalAttackDamage = finalHitCount > 1
+            ? amount * finalHitCount
             : amount;
         SGP_Shade? shade = Owner.GetPower<SGP_Shade>();
-        return target == Owner
-            && props.IsPoweredAttack()
-            && totalAttackDamage > 0m
+        return totalAttackDamage > 0m
             && totalAttackDamage <= DisplayAmount
-            && Owner.Player != null
             && shade?.WouldPreventCurrentHit(dealer) != true;
     }
 
@@ -81,7 +83,6 @@ public sealed class SGP_OpenGet : PowerModel
         {
             Data data = GetInternalData<Data>();
             data.ActiveAttack = attack;
-            data.HitCount = hitCount;
             data.WillAvoidCurrentHit = false;
             data.WillAvoidActiveAttack = false;
             data.AvoidanceTriggered = false;
@@ -121,12 +122,6 @@ public sealed class SGP_OpenGet : PowerModel
         data.WillAvoidCurrentHit = false;
         if (ShinGetterOpenGetIntentPatch.IsCalculatingIntentDamage)
             return 1m;
-
-        if (data.ActiveAttack?.Attacker == dealer && data.WillAvoidActiveAttack)
-        {
-            data.WillAvoidCurrentHit = true;
-            return 0m;
-        }
 
         if (!WouldAvoidAttack(target, amount, props, dealer))
             return 1m;
@@ -178,7 +173,6 @@ public sealed class SGP_OpenGet : PowerModel
 
         bool shouldRemove = data.AvoidanceTriggered;
         data.ActiveAttack = null;
-        data.HitCount = 0;
         data.WillAvoidCurrentHit = false;
         data.WillAvoidActiveAttack = false;
         data.AvoidanceTriggered = false;
