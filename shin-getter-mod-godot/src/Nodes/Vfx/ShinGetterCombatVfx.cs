@@ -217,20 +217,29 @@ internal static partial class ShinGetterCombatVfx
             return;
 
         const float flightDurationSeconds = 0.4f;
+        const float ascentDurationSeconds = 0.75f;
+        const float landingDurationSeconds = 0.4f;
         float totalDuration = Math.Max(2.6f, sequenceDurationSeconds);
         float firstGrowthDuration = Math.Min(2f, totalDuration - flightDurationSeconds - 0.2f);
         float secondGrowthDuration = Math.Max(0.2f,
             totalDuration - firstGrowthDuration - flightDurationSeconds);
         Vector2 ownerOrigin = ownerNode.GlobalPosition;
+        Vector2 airborneOffset = new(-90f, -150f);
         Vector2 destination = targetPositions.Aggregate(Vector2.Zero, (sum, pos) => sum + pos)
             / targetPositions.Count;
 
         Tween movementTween = ownerNode.CreateTween();
-        movementTween.TweenProperty(ownerNode, "global_position", ownerOrigin + Vector2.Up * 150f, 0.42f)
-            .SetEase(Tween.EaseType.Out)
-            .SetTrans(Tween.TransitionType.Cubic);
-        movementTween.TweenInterval(Math.Max(0f, totalDuration - 0.82f));
-        movementTween.TweenProperty(ownerNode, "global_position", ownerOrigin, 0.4f)
+        movementTween.TweenProperty(
+                ownerNode,
+                "global_position",
+                ownerOrigin + airborneOffset,
+                ascentDurationSeconds)
+            .SetEase(Tween.EaseType.InOut)
+            .SetTrans(Tween.TransitionType.Sine);
+        movementTween.TweenInterval(Math.Max(
+            0f,
+            totalDuration - ascentDurationSeconds - landingDurationSeconds));
+        movementTween.TweenProperty(ownerNode, "global_position", ownerOrigin, landingDurationSeconds)
             .SetEase(Tween.EaseType.In)
             .SetTrans(Tween.TransitionType.Cubic);
 
