@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -16,6 +17,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 using ShinGetterMod.Audio;
 using ShinGetterMod.Models.Cards;
 using ShinGetterMod.Nodes.Combat;
+using ShinGetterMod.Patches;
 
 namespace ShinGetterMod.Models.Powers;
 
@@ -26,7 +28,12 @@ public sealed class SGP_OpenGet : PowerModel
 {
     private sealed class Data
     {
+        public AttackCommand? ActiveAttack;
+        public int HitCount;
         public bool WillAvoidCurrentHit;
+        public bool WillAvoidActiveAttack;
+        public bool AvoidanceTriggered;
+        public bool AvoidanceFeedbackPlayed;
     }
 
     public override PowerType Type => PowerType.Buff;
@@ -41,22 +48,48 @@ public sealed class SGP_OpenGet : PowerModel
 
     protected override object InitInternalData() => new Data();
 
+    internal bool WouldAvoidIntent(int totalDamage) =>
+        totalDamage > 0 && totalDamage <= DisplayAmount && Owner.Player != null;
+
     internal bool WouldAvoidAttack(
         Creature? target,
         decimal amount,
         ValueProp props,
         Creature? dealer)
     {
+        Data data = GetInternalData<Data>();
+        if (data.ActiveAttack?.Attacker == dealer && data.WillAvoidActiveAttack)
+            return true;
+
+        decimal totalAttackDamage = data.ActiveAttack?.Attacker == dealer && data.HitCount > 1
+            ? amount * data.HitCount
+            : amount;
         SGP_Shade? shade = Owner.GetPower<SGP_Shade>();
         return target == Owner
             && props.IsPoweredAttack()
-            && amount > 0m
-            && amount <= DisplayAmount
+            && totalAttackDamage > 0m
+            && totalAttackDamage <= DisplayAmount
             && Owner.Player != null
             && shade?.WouldPreventCurrentHit(dealer) != true;
     }
 
     internal bool IsAvoidingCurrentHit => GetInternalData<Data>().WillAvoidCurrentHit;
+
+    public override int ModifyAttackHitCount(AttackCommand attack, int hitCount)
+    {
+        if (attack.TargetSide == Owner.Side)
+        {
+            Data data = GetInternalData<Data>();
+            data.ActiveAttack = attack;
+            data.HitCount = hitCount;
+            data.WillAvoidCurrentHit = false;
+            data.WillAvoidActiveAttack = false;
+            data.AvoidanceTriggered = false;
+            data.AvoidanceFeedbackPlayed = false;
+        }
+
+        return hitCount;
+    }
 
     public override async Task AfterDamageGiven(
         PlayerChoiceContext choiceContext,
@@ -86,10 +119,21 @@ public sealed class SGP_OpenGet : PowerModel
     {
         Data data = GetInternalData<Data>();
         data.WillAvoidCurrentHit = false;
+        if (ShinGetterOpenGetIntentPatch.IsCalculatingIntentDamage)
+            return 1m;
+
+        if (data.ActiveAttack?.Attacker == dealer && data.WillAvoidActiveAttack)
+        {
+            data.WillAvoidCurrentHit = true;
+            return 0m;
+        }
+
         if (!WouldAvoidAttack(target, amount, props, dealer))
             return 1m;
 
         data.WillAvoidCurrentHit = true;
+        if (data.ActiveAttack?.Attacker == dealer)
+            data.WillAvoidActiveAttack = true;
         Owner.GetPower<SGP_Shade>()?.RecordOpenGetAvoidedHit(dealer);
         return 0m;
     }
@@ -110,11 +154,37 @@ public sealed class SGP_OpenGet : PowerModel
         if (Owner.Player is not { } player)
             return;
 
-        Flash();
-        Task vfxTask = NShinGetterStaticVisuals.PlayOpenGetVfx(Owner);
-        Task voiceTask = ShinGetterVoiceService.PlayOpenGet(player);
-        await Task.WhenAll(vfxTask, voiceTask);
-        await PowerCmd.Remove(this);
+        data.AvoidanceTriggered = true;
+        if (!data.AvoidanceFeedbackPlayed)
+        {
+            data.AvoidanceFeedbackPlayed = true;
+            Flash();
+            Task vfxTask = NShinGetterStaticVisuals.PlayOpenGetVfx(Owner);
+            Task voiceTask = ShinGetterVoiceService.PlayOpenGet(player);
+            await Task.WhenAll(vfxTask, voiceTask);
+        }
+
+        // Keep the power alive until the entire AttackCommand is complete so every hit of an
+        // eligible multi-attack is avoided. Direct powered damage retains the immediate removal.
+        if (data.ActiveAttack?.Attacker != dealer)
+            await PowerCmd.Remove(this);
+    }
+
+    public override async Task AfterAttack(PlayerChoiceContext choiceContext, AttackCommand command)
+    {
+        Data data = GetInternalData<Data>();
+        if (data.ActiveAttack != command)
+            return;
+
+        bool shouldRemove = data.AvoidanceTriggered;
+        data.ActiveAttack = null;
+        data.HitCount = 0;
+        data.WillAvoidCurrentHit = false;
+        data.WillAvoidActiveAttack = false;
+        data.AvoidanceTriggered = false;
+        data.AvoidanceFeedbackPlayed = false;
+        if (shouldRemove)
+            await PowerCmd.Remove(this);
     }
 
     public override async Task AfterEnergyReset(Player player)

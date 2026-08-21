@@ -66,6 +66,11 @@ def check_code_wiring() -> None:
     getter_one = read(PROJECT / "src/Models/Powers/SGP_ShinGetterOne.cs")
     getter_furnace = read(PROJECT / "src/Models/Relics/SGR_GetterFurnace.cs")
     emperors_fragment = read(PROJECT / "src/Models/Relics/SGR_EmperorsFragment.cs")
+    intent_patch = read(PROJECT / "src/Patches/ShinGetterOpenGetIntentPatch.cs")
+    combat_vfx = read(PROJECT / "src/Nodes/Vfx/ShinGetterCombatVfx.Extra.cs")
+    tactical_retreat = read(PROJECT / "src/Models/Cards/SGC_TacticalRetreat.cs")
+    form_powers = "\n".join(read(PROJECT / f"src/Models/Powers/{name}") for name in (
+        "SGP_ShinGetterOne.cs", "SGP_ShinGetterTwo.cs", "SGP_ShinGetterThree.cs"))
 
     require("FusionFramesPerSecond = 60d" in sequence, "fusion animation must run at 60fps")
     require("EnsureFusionLoaded" in sequence and "FusionAnimationName" in sequence, "fusion sequence loader is missing")
@@ -81,7 +86,7 @@ def check_code_wiring() -> None:
     require("dealer?.Side != Owner.Side" in open_get, "Open Get must account for allied damage")
     require("target.CombatState?.CurrentSide != CombatSide.Player" in open_get,
             "Open Get must not accumulate damage during the enemy turn")
-    require("WouldAvoidAttack" in open_get and "amount > 0m" in open_get,
+    require("WouldAvoidAttack" in open_get and "totalAttackDamage > 0m" in open_get,
             "Open Get must reject zero-damage hits before avoidance")
     require("shade?.WouldPreventCurrentHit(dealer) != true" in open_get,
             "Open Get must not consume itself on a multi-hit already nullified by Shade")
@@ -116,8 +121,38 @@ def check_code_wiring() -> None:
             and "Position = (outlineSize - Vector2.One * FormIconSize) / 2f" in choice
             and "StretchMode = TextureButton.StretchModeEnum.KeepAspectCentered" in choice,
             "Getter Landing circular outlines and icons must share the same centre")
+    require("FormIconSpacing = 156f" in choice and "FormIconHoverScale = 1.25f" in choice,
+            "Getter Landing choices must use the widened spacing and 25% hover scale")
+    require("PivotOffset = Vector2.One * FormIconSize / 2f" in choice
+            and "button.MouseEntered" in choice and "button.MouseExited" in choice,
+            "Getter Landing hover scaling must remain centred and reversible")
     require("result.TotalDamage" in open_get and "result.UnblockedDamage" not in open_get,
             "Open Get accumulated-damage contract must include damage absorbed by block")
+    require("amount * data.HitCount" in open_get and "data.WillAvoidActiveAttack" in open_get,
+            "Open Get must judge and avoid a multi-attack by its total damage")
+    require("ModifyAttackHitCount" in open_get and "AfterAttack" in open_get,
+            "Open Get must retain its active AttackCommand through every eligible hit")
+    require("IsCalculatingIntentDamage" in open_get and "return 1m" in open_get,
+            "Open Get must not reduce the displayed attack-intent damage")
+    require("SHIN_GETTER_OPEN_GET_INTENT_SINGLE" in intent_patch
+            and "SHIN_GETTER_OPEN_GET_INTENT_MULTI" in intent_patch,
+            "Open Get intent labels must preserve damage while adding the avoidance marker")
+    require("HoverMeta = \"shin_getter_open_get\"" in intent_patch
+            and "MetaHoverStarted" in intent_patch and "CreateAvoidanceHoverTip" in intent_patch,
+            "the red Open Get intent X must expose its localized hover tip")
+    require("intent.GetTotalDamage" in intent_patch and "WouldAvoidIntent(totalDamage)" in intent_patch,
+            "multi-hit intent avoidance must compare the full displayed damage total")
+    require("TacticalRetreatDistance = 480f" in combat_vfx
+            and "TryPlayCreatureActionAnimation(owner, \"Block\")" in combat_vfx,
+            "Tactical Retreat must defend and move back three body positions")
+    require("Task transformTask = transform()" in combat_vfx
+            and "await ownerNode.ToSignal(returnTween" in combat_vfx
+            and "await transformTask" in combat_vfx
+            and "TacticalRetreatReturnSeconds = 1.5f" in combat_vfx,
+            "Tactical Retreat must transform while returning to its origin")
+    require("TransformSpeedScale = 0.75f" in tactical_retreat
+            and form_powers.count("SGC_TacticalRetreat.TransformSpeedScale") == 3,
+            "Tactical Retreat fusion must run at 0.75 speed in every atomic form")
     require("PrepareOpeningGetterOneFusion" in getter_one,
             "combat-start form setup must hide the idle form before opening fusion")
     opening_start = visuals.index("private static async Task PlayOpeningGetterOneFusion(FormSprites sprites)")
@@ -166,12 +201,18 @@ def check_localization_and_assets() -> None:
         cards = json.loads(read(root / "cards.json"))
         powers = json.loads(read(root / "powers.json"))
         characters = json.loads(read(root / "characters.json"))
+        static_tips = json.loads(read(root / "static_hover_tips.json"))
         require("S_G_C_GETTER_LANDING.title" in cards, f"{locale} Getter Landing title is missing")
         require("S_G_C_GETTER_LANDING.description" in cards, f"{locale} Getter Landing description is missing")
         require("S_G_P_OPEN_GET.title" in powers, f"{locale} Open Get title is missing")
         require("S_G_P_OPEN_GET.description" in powers, f"{locale} Open Get description is missing")
         for key in ("SHIN_GETTER.voice.openGetOne", "SHIN_GETTER.voice.openGetTwo", "SHIN_GETTER.voice.openGetThree"):
             require(key in characters, f"{locale} {key} is missing")
+        for key in ("SHIN_GETTER_OPEN_GET_INTENT_SINGLE", "SHIN_GETTER_OPEN_GET_INTENT_MULTI",
+                    "SHIN_GETTER_OPEN_GET_INTENT.title", "SHIN_GETTER_OPEN_GET_INTENT.description"):
+            require(key in static_tips, f"{locale} {key} is missing")
+        require("[color=#ff0000] X[/color]" in static_tips["SHIN_GETTER_OPEN_GET_INTENT_SINGLE"],
+                f"{locale} Open Get intent marker must remain red")
 
     icon = read(PROJECT / "images/atlases/power_atlas.sprites/s_g_p_open_get.tres")
     require("region = Rect2(320, 256, 64, 64)" in icon, "Open Get small icon region is wrong")

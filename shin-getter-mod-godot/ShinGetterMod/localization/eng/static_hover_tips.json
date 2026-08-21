@@ -8,5 +8,9 @@
   "SHIN_GETTER_INFINITE_EVOLUTION_TOTAL.title": "Infinite Evolution Total",
   "SHIN_GETTER_INFINITE_EVOLUTION_TOTAL.description": "Permanent growth this run: Strength: {Strength}; Dexterity: {Dexterity}; Max HP: {MaxHp}.",
   "SHIN_GETTER_STACK.title": "Stack",
-  "SHIN_GETTER_STACK.description": "Add the printed values on the selected cards to this card's damage, up to a total of 50."
+  "SHIN_GETTER_STACK.description": "Add the printed values on the selected cards to this card's damage, up to a total of 50.",
+  "SHIN_GETTER_OPEN_GET_INTENT_SINGLE": "{Damage}[url=shin_getter_open_get][color=#ff0000] X[/color][/url]",
+  "SHIN_GETTER_OPEN_GET_INTENT_MULTI": "{Damage}[font_size=18]x{Repeat}[/font_size][url=shin_getter_open_get][color=#ff0000] X[/color][/url]",
+  "SHIN_GETTER_OPEN_GET_INTENT.title": "Open Get",
+  "SHIN_GETTER_OPEN_GET_INTENT.description": "This attack will be avoided."
 }
