@@ -39,8 +39,12 @@ public sealed class SGC_GetterClaw : ShinGetterCardBase
 
     public override async Task AfterCardExhausted(PlayerChoiceContext choiceContext, CardModel card, bool causedByEthereal)
     {
-        if (card.Owner != Owner || card == this || causedByEthereal || Pile?.Type is not (PileType.Draw or PileType.Discard))
+        if (card.Owner != Owner
+            || card == this
+            || Pile?.Type is not (PileType.Draw or PileType.Discard or PileType.Play))
+        {
             return;
+        }
 
         await CardPileCmd.Add(this, PileType.Hand);
     }

@@ -18,6 +18,7 @@ public enum ShinGetterVoiceMode
 public sealed class ShinGetterChunibyoConfig
 {
     public bool ShowInMainMenu { get; set; } = true;
+    public string LastReadUpdateVersion { get; set; } = string.Empty;
     public ShinGetterVoiceMode VoiceMode { get; set; } = ShinGetterVoiceMode.OncePerCombat;
     public string ExecutionBgmTrackId { get; set; } = ShinGetterBgmCatalog.DefaultTrackId;
     public string NormalCombatBgmTrackId { get; set; } = ShinGetterBgmCatalog.DefaultTrackId;
@@ -33,6 +34,7 @@ public static class ShinGetterChunibyoConfigService
 {
     private const string ConfigDirectoryName = "mod_configs";
     private const string ConfigFileName = "shin_getter_chunibyo.json";
+    private const string ManifestPath = "res://ShinGetterMod.json";
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -42,7 +44,25 @@ public static class ShinGetterChunibyoConfigService
 
     private static bool _loaded;
 
+    internal static event Action? UpdateReadStateChanged;
+
     public static ShinGetterChunibyoConfig Current { get; private set; } = new();
+
+    internal static string CurrentManifestVersion => ReadCurrentManifestVersion();
+
+    internal static bool IsCurrentUpdateUnread
+    {
+        get
+        {
+            Load();
+            string currentVersion = CurrentManifestVersion;
+            return currentVersion.Length > 0
+                && !string.Equals(
+                    NormalizeVersion(Current.LastReadUpdateVersion),
+                    currentVersion,
+                    StringComparison.Ordinal);
+        }
+    }
 
     public static void Load()
     {
@@ -88,6 +108,34 @@ public static class ShinGetterChunibyoConfigService
             GD.PushError($"Shin Getter could not save chunibyo config: {ex}");
             return false;
         }
+    }
+
+    internal static bool MarkCurrentUpdateRead(out string error)
+    {
+        Load();
+        string currentVersion = CurrentManifestVersion;
+        if (currentVersion.Length == 0)
+        {
+            error = "ShinGetterMod.json.version";
+            return false;
+        }
+
+        string previousVersion = Current.LastReadUpdateVersion;
+        if (string.Equals(NormalizeVersion(previousVersion), currentVersion, StringComparison.Ordinal))
+        {
+            error = string.Empty;
+            return true;
+        }
+
+        Current.LastReadUpdateVersion = currentVersion;
+        if (!Save(out error))
+        {
+            Current.LastReadUpdateVersion = previousVersion;
+            return false;
+        }
+
+        UpdateReadStateChanged?.Invoke();
+        return true;
     }
 
     public static string GetDefaultCardExportDirectory()
@@ -144,4 +192,22 @@ public static class ShinGetterChunibyoConfigService
     {
         return Path.Combine(OS.GetUserDataDir(), ConfigDirectoryName, ConfigFileName);
     }
+
+    private static string ReadCurrentManifestVersion()
+    {
+        try
+        {
+            string json = Godot.FileAccess.GetFileAsString(ManifestPath);
+            using JsonDocument document = JsonDocument.Parse(json);
+            return NormalizeVersion(document.RootElement.GetProperty("version").GetString());
+        }
+        catch (Exception ex)
+        {
+            GD.PushWarning($"Shin Getter could not read manifest version: {ex.Message}");
+            return string.Empty;
+        }
+    }
+
+    private static string NormalizeVersion(string? version) =>
+        string.IsNullOrWhiteSpace(version) ? string.Empty : version.Trim();
 }
