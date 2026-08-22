@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -109,19 +110,14 @@ internal static class ShinGetterStonerSunshineService
         ShinGetterVoiceService.PlayStonerSunshineArrival(owner);
     }
 
-    internal static void RecordFinalKill(
-        Player owner,
-        Creature? dealer,
-        DamageResult result,
-        Creature target,
-        CardModel? cardSource)
+    internal static void RecordFinalKill(Player owner, AttackCommand attackCommand)
     {
-        if (!ReferenceEquals(dealer, owner.Creature)
-            || cardSource is not SGC_StonerSunshine
+        if (!ReferenceEquals(attackCommand.Attacker, owner.Creature)
+            || attackCommand.ModelSource is not SGC_StonerSunshine cardSource
             || !ReferenceEquals(cardSource.Owner, owner)
-            || !result.WasTargetKilled
-            || target.Side != CombatSide.Enemy
-            || target.CombatState is not CombatState combatState
+            || owner.Creature.CombatState is not CombatState combatState
+            || !attackCommand.Results.SelectMany(results => results).Any(
+                result => result.WasTargetKilled && result.Receiver.Side == CombatSide.Enemy)
             || combatState.Enemies.Any(enemy => enemy.IsAlive))
         {
             return;

@@ -354,7 +354,8 @@ def check_code_wiring() -> None:
         "CardPileCmd.AddGeneratedCardToCombat(card, PileType.Hand, owner)",
         "TryStartFromStonerSunshineArrival(owner, card)",
         "PlayStonerSunshineArrival(owner)",
-        "cardSource is not SGC_StonerSunshine",
+        "attackCommand.ModelSource is not SGC_StonerSunshine cardSource",
+        "attackCommand.Results.SelectMany(results => results)",
         "combatState.Enemies.Any(enemy => enemy.IsAlive)",
         "room.AddExtraReward(owner, new SpecialCardReward(rewardCard, owner))",
     ):
@@ -392,10 +393,18 @@ def check_code_wiring() -> None:
             "Stoner Sunshine progress must be isolated by both combat and player")
     require("ReferenceEquals(cardPlay.Card.Owner, owner)" in stoner_service,
             "other players' card plays must not change this player's probability")
-    require("ReferenceEquals(dealer, owner.Creature)" in stoner_service
+    require("ReferenceEquals(attackCommand.Attacker, owner.Creature)" in stoner_service
             and "ReferenceEquals(cardSource.Owner, owner)" in stoner_service
-            and "target.Side != CombatSide.Enemy" in stoner_service,
+            and "result.Receiver.Side == CombatSide.Enemy" in stoner_service,
             "the final-kill reward must be isolated to the owner's Stoner Sunshine enemy kill")
+    require(stoner_card.count("attackCommand = await DamageCmd.Attack") == 2
+            and stoner_card.count(".Execute(choiceContext);") == 2,
+            "both Stoner Sunshine visual branches must retain the executed AttackCommand")
+    final_execute = stoner_card.rindex(".Execute(choiceContext);")
+    final_kill_confirmation = stoner_card.index(
+        "ShinGetterStonerSunshineService.RecordFinalKill(Owner, attackCommand);")
+    require(final_execute < final_kill_confirmation,
+            "Stoner Sunshine may confirm the final kill only after Damage, Kill, AfterDeath, and reinforcements finish")
     reward_guard = stoner_service.index(
         "if (!progress.FinishedCombatWithStonerSunshine || progress.VictoryRewardAdded)")
     reward_flag = stoner_service.index("progress.VictoryRewardAdded = true")
@@ -434,9 +443,8 @@ def check_code_wiring() -> None:
                 f"{relic_name} must roll Stoner Sunshine only after the normal start-of-turn hand setup")
         require("RecordCardPlayed(Owner, cardPlay)" in relic,
                 f"{relic_name} must track Triple Unity and spirit-command plays")
-        require("RecordFinalKill(Owner, dealer, result, target, cardSource)" in relic
-                and "AddVictoryReward(Owner, room)" in relic,
-                f"{relic_name} must carry the final-kill reward from combat into rewards")
+        require("RecordFinalKill(" not in relic and "AddVictoryReward(Owner, room)" in relic,
+                f"{relic_name} must not record final kills from the pre-AfterDeath damage hook")
         reset = relic.index("ShinGetterStonerSunshineService.ResetCombat(Owner)")
         initial_form = relic.index("await PowerCmd.Apply<SGP_ShinGetterOne>")
         require(reset < initial_form,
@@ -499,6 +507,31 @@ def check_stoner_sunshine_probability_contract() -> None:
             "Ki, Spirit, and Super Ki plays must each add 5%")
     require(chance(3, 0b111, 2, True, 3) == 0.70,
             "all Stoner Sunshine probability factors must be additive")
+
+
+def check_stoner_sunshine_final_kill_contract() -> None:
+    """Lock post-AfterDeath confirmation for Infested and other reinforcement fights."""
+
+    def confirms_reward(stoner_killed_enemy: bool, living_enemies_after_execute: int) -> bool:
+        return stoner_killed_enemy and living_enemies_after_execute == 0
+
+    infested_spawned_wrigglers = 4
+    recorded = confirms_reward(
+        stoner_killed_enemy=True,
+        living_enemies_after_execute=infested_spawned_wrigglers,
+    )
+    require(not recorded,
+            "killing an Infested host must not record the reward after AfterDeath spawns Wrigglers")
+
+    # A later non-Stoner card does not invoke the Stoner-only confirmation path.
+    infested_spawned_wrigglers = 0
+    require(not recorded and infested_spawned_wrigglers == 0,
+            "clearing Infested reinforcements with another card must not retroactively record the reward")
+
+    require(confirms_reward(stoner_killed_enemy=True, living_enemies_after_execute=0),
+            "Stoner Sunshine must record a real final enemy kill when AfterDeath adds no reinforcements")
+    require(not confirms_reward(stoner_killed_enemy=False, living_enemies_after_execute=0),
+            "an empty enemy side reached without a Stoner Sunshine kill must not record the reward")
 
 
 def check_localization_and_assets() -> None:
@@ -600,6 +633,7 @@ def main() -> None:
     check_code_wiring()
     check_open_get_final_damage_contract()
     check_stoner_sunshine_probability_contract()
+    check_stoner_sunshine_final_kill_contract()
     check_localization_and_assets()
     print("issue#10 validation passed")
 

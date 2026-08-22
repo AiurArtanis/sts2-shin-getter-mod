@@ -179,7 +179,6 @@ public sealed class SGR_EmperorsFragment : ShinGetterRelicBase, IInfiniteEvoluti
         CardModel? cardSource)
     {
         ShinGetterVoiceService.OnAfterDamageGiven(Owner, dealer, result, target);
-        ShinGetterStonerSunshineService.RecordFinalKill(Owner, dealer, result, target, cardSource);
         return Task.CompletedTask;
     }
 

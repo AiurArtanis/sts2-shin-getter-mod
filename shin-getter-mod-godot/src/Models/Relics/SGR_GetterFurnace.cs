@@ -167,7 +167,6 @@ public sealed class SGR_GetterFurnace : ShinGetterRelicBase, IInfiniteEvolutionP
         CardModel? cardSource)
     {
         ShinGetterVoiceService.OnAfterDamageGiven(Owner, dealer, result, target);
-        ShinGetterStonerSunshineService.RecordFinalKill(Owner, dealer, result, target, cardSource);
         return Task.CompletedTask;
     }
 
