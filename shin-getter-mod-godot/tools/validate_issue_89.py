@@ -320,6 +320,18 @@ def validate_models_and_pools() -> None:
     require(ticket, "CardPilePosition.Bottom", "Draw(choiceContext, 1, Owner)", "drawn.Type == targetType")
     wisp = (SRC / "Models/Cards/SGC_WispCoordinate.cs").read_text(encoding="utf-8")
     require(wisp, ".Take(DynamicVars.Cards.IntValue)", "PileType.Hand", "AsEnumerable().Reverse()")
+    for event_card in (pressure, ticket, wisp):
+        require(event_card, "CardKeyword.Exhaust")
+
+    getter_claw = (SRC / "Models/Cards/SGC_GetterClaw.cs").read_text(encoding="utf-8")
+    claw_exhaust_hook = method_body(getter_claw, "public override async Task AfterCardExhausted")
+    require(
+        claw_exhaust_hook,
+        "PileType.Draw or PileType.Discard or PileType.Play",
+        "await CardPileCmd.Add(this, PileType.Hand)",
+    )
+    if "causedByEthereal ||" in claw_exhaust_hook:
+        raise AssertionError("Getter Claw must return for Ethereal exhausts too.")
 
 
 def validate_event_runtime() -> None:
@@ -813,6 +825,16 @@ def validate_localization() -> None:
         ticket = tables[language]["cards"]["S_G_C_RESCHEDULE_TICKET.description"]
         if "next turn" in ticket.lower() or "下回合" in ticket or "次のターン" in ticket:
             raise AssertionError("Reschedule Ticket still contains the obsolete next-turn draw effect.")
+        event_card_descriptions = (
+            ticket,
+            tables[language]["cards"]["S_G_C_PRESSURE_BREATH.description"],
+            tables[language]["cards"]["S_G_C_WISP_COORDINATE.description"],
+        )
+        explicit_exhaust_terms = ("[gold]消耗[/gold]", "[gold]Exhaust[/gold]", "[gold]廃棄[/gold]")
+        if any(term in description for description in event_card_descriptions for term in explicit_exhaust_terms):
+            raise AssertionError(
+                f"Event-card rules text must not duplicate the automatic Exhaust keyword in {language}."
+            )
 
     abyssal_expected = {
         "zhs": {
