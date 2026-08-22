@@ -22,7 +22,6 @@ namespace ShinGetterMod.Nodes.Config;
 
 public partial class NChunibyoConfigSubmenu : NSubmenu
 {
-    private const string ManifestPath = "res://ShinGetterMod.json";
     private const string UpdateHistoryPath = "res://ShinGetterMod/update_history.json";
     private const string CharacterIconPath = "res://images/ui/top_panel/character_icon_shin_getter.png";
     private const string KreonFontPath = "res://themes/kreon_regular_shared.tres";
@@ -46,6 +45,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
     private Control? _initialFocus;
     private Label? _exportPathLabel;
     private NShinGetterVoicePaginator? _voiceModePaginator;
+    private NShinGetterConfigActionButton? _updateHistoryButton;
     private FileDialog? _folderDialog;
 
     protected override Control? InitialFocusedControl => _initialFocus;
@@ -210,16 +210,17 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         heading.SizeFlagsHorizontal = SizeFlags.ExpandFill;
         header.AddChild(heading);
 
-        var historyButton = CreateActionButton(
+        _updateHistoryButton = CreateActionButton(
             Localize("SHIN_GETTER_CHUNIBYO.UPDATE_HISTORY", "Update History"),
             ShowUpdateHistory);
-        header.AddChild(historyButton);
+        header.AddChild(_updateHistoryButton);
+        NShinGetterUpdateBadge.AttachTo(_updateHistoryButton);
 
         string versionText = LocalizeWithVariable(
             "SHIN_GETTER_CHUNIBYO.VERSION",
             "Current version: {Version}",
             "Version",
-            ReadManifestVersion());
+            GetManifestVersionForDisplay());
         var versionLabel = new Label { Text = versionText };
         ApplyKreonFont(versionLabel, 24);
         versionLabel.AddThemeColorOverride("font_color", new Color(0.72f, 0.78f, 0.8f));
@@ -627,7 +628,14 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
 
     private void ShowUpdateHistory()
     {
-        var entries = ReadUpdateHistory()
+        string title = Localize("SHIN_GETTER_CHUNIBYO.UPDATE_TITLE", "Shin Getter Update History");
+        if (!TryReadUpdateHistory(out List<UpdateHistoryEntry> entries, out string readError))
+        {
+            ShowPopup(title, readError);
+            return;
+        }
+
+        entries = entries
             .OrderByDescending(entry => entry.Date, StringComparer.Ordinal)
             .ThenByDescending(entry => entry.Version, StringComparer.Ordinal)
             .ToList();
@@ -641,9 +649,19 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
             body.Append(Localize(entry.LocalizationKey, entry.Version));
         }
 
-        ShowUpdateHistoryPopup(
-            Localize("SHIN_GETTER_CHUNIBYO.UPDATE_TITLE", "Shin Getter Update History"),
-            body.Length == 0 ? ReadManifestVersion() : body.ToString());
+        if (!ShowUpdateHistoryPopup(
+                title,
+                body.Length == 0 ? GetManifestVersionForDisplay() : body.ToString()))
+        {
+            return;
+        }
+
+        if (!ShinGetterChunibyoConfigService.MarkCurrentUpdateRead(out string saveError))
+        {
+            ShowPopup(
+                Localize("SHIN_GETTER_CHUNIBYO.SAVE_ERROR_TITLE", "Unable to save config"),
+                saveError);
+        }
     }
 
     private void SaveConfigOrShowError()
@@ -897,17 +915,27 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
             GD.Print($"[ShinGetterChunibyo] {title}: {body}");
     }
 
-    private void ShowUpdateHistoryPopup(string title, string body)
+    private bool ShowUpdateHistoryPopup(string title, string body)
     {
         NModalContainer? modalContainer = NModalContainer.Instance;
         if (modalContainer == null)
         {
             GD.Print($"[ShinGetterChunibyo] {title}: {body}");
-            return;
+            return false;
         }
 
-        Control? returnFocus = GetViewport().GuiGetFocusOwner();
-        modalContainer.Add(NChunibyoUpdateHistoryPopup.Create(title, body, returnFocus));
+        try
+        {
+            Control? returnFocus = GetViewport().GuiGetFocusOwner();
+            NChunibyoUpdateHistoryPopup popup = NChunibyoUpdateHistoryPopup.Create(title, body, returnFocus);
+            modalContainer.Add(popup);
+            return GodotObject.IsInstanceValid(popup) && popup.IsInsideTree() && popup.IsVisibleInTree();
+        }
+        catch (Exception ex)
+        {
+            GD.PushError($"Shin Getter could not show update history: {ex}");
+            return false;
+        }
     }
 
     private void OnConfigVisibilityChanged()
@@ -948,32 +976,29 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         return localized.GetFormattedText();
     }
 
-    private static string ReadManifestVersion()
+    private static string GetManifestVersionForDisplay()
     {
-        try
-        {
-            string json = Godot.FileAccess.GetFileAsString(ManifestPath);
-            using JsonDocument document = JsonDocument.Parse(json);
-            return document.RootElement.GetProperty("version").GetString() ?? "unknown";
-        }
-        catch (Exception ex)
-        {
-            GD.PushWarning($"Shin Getter could not read manifest version: {ex.Message}");
-            return "unknown";
-        }
+        string version = ShinGetterChunibyoConfigService.CurrentManifestVersion;
+        return version.Length == 0 ? "unknown" : version;
     }
 
-    private static IEnumerable<UpdateHistoryEntry> ReadUpdateHistory()
+    private static bool TryReadUpdateHistory(
+        out List<UpdateHistoryEntry> entries,
+        out string error)
     {
         try
         {
             string json = Godot.FileAccess.GetFileAsString(UpdateHistoryPath);
-            return JsonSerializer.Deserialize<List<UpdateHistoryEntry>>(json) ?? new List<UpdateHistoryEntry>();
+            entries = JsonSerializer.Deserialize<List<UpdateHistoryEntry>>(json) ?? new List<UpdateHistoryEntry>();
+            error = string.Empty;
+            return true;
         }
         catch (Exception ex)
         {
             GD.PushWarning($"Shin Getter could not read update history: {ex.Message}");
-            return Array.Empty<UpdateHistoryEntry>();
+            entries = new List<UpdateHistoryEntry>();
+            error = ex.Message;
+            return false;
         }
     }
 
