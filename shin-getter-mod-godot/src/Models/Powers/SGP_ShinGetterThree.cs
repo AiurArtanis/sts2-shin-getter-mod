@@ -33,7 +33,12 @@ public sealed class SGP_ShinGetterThree : PowerModel
             await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), base.Owner, -2m, base.Owner, null);
             await PowerCmd.Apply<DexterityPower>(new ThrowingPlayerChoiceContext(), base.Owner, -2m, base.Owner, null);
             await PowerCmd.Apply<PlatingPower>(new ThrowingPlayerChoiceContext(), base.Owner, 1m, base.Owner, null);
-            float speedScale = cardSource is SGC_ChangeAttack ? SGC_ChangeAttack.TransformSpeedScale : 1f;
+            float speedScale = cardSource switch
+            {
+                SGC_ChangeAttack => SGC_ChangeAttack.TransformSpeedScale,
+                SGC_TacticalRetreat => SGC_TacticalRetreat.TransformSpeedScale,
+                _ => 1f,
+            };
             await NShinGetterStaticVisuals.ShowForm(base.Owner, ShinGetterForm.Getter3, speedScale: speedScale);
             ShinGetterCardFramePatch.RefreshVisibleCards();
         }

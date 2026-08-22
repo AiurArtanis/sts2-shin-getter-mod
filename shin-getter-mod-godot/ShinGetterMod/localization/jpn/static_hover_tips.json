@@ -8,5 +8,9 @@
   "SHIN_GETTER_INFINITE_EVOLUTION_TOTAL.title": "無限進化累計",
   "SHIN_GETTER_INFINITE_EVOLUTION_TOTAL.description": "このランで累計成長した筋力：{Strength}、敏捷：{Dexterity}、最大HP：{MaxHp}。",
   "SHIN_GETTER_STACK.title": "加算",
-  "SHIN_GETTER_STACK.description": "選んだカード面の数値をこのカードのダメージに加算する。加算値の合計は最大50。"
+  "SHIN_GETTER_STACK.description": "選んだカード面の数値をこのカードのダメージに加算する。加算値の合計は最大50。",
+  "SHIN_GETTER_OPEN_GET_INTENT_SINGLE": "{Damage}[url=shin_getter_open_get][color=#ff0000] X[/color][/url]",
+  "SHIN_GETTER_OPEN_GET_INTENT_MULTI": "{Damage}[font_size=18]x{Repeat}[/font_size][url=shin_getter_open_get][color=#ff0000] X[/color][/url]",
+  "SHIN_GETTER_OPEN_GET_INTENT.title": "オープン・ゲット",
+  "SHIN_GETTER_OPEN_GET_INTENT.description": "この攻撃は回避される。"
 }
