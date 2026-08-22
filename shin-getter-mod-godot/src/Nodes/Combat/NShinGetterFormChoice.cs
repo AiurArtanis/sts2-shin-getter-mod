@@ -29,7 +29,8 @@ internal static class NShinGetterFormChoice
     private const string GetterTwoIconPath = "res://images/atlases/power_atlas.sprites/s_g_p_shin_getter_two.tres";
     private const string GetterThreeIconPath = "res://images/atlases/power_atlas.sprites/s_g_p_shin_getter_three.tres";
     private const float FormIconSize = 96f;
-    private const float FormIconSpacing = 129f;
+    private const float FormIconSpacing = 156f;
+    private const float FormIconHoverScale = 1.25f;
     private const float FormOutlinePadding = 6f;
     private const int FormOutlineRadius = 54;
 
@@ -109,6 +110,7 @@ internal static class NShinGetterFormChoice
                 TexturePressed = texture,
                 Position = (outlineSize - Vector2.One * FormIconSize) / 2f,
                 Size = Vector2.One * FormIconSize,
+                PivotOffset = Vector2.One * FormIconSize / 2f,
                 IgnoreTextureSize = true,
                 StretchMode = TextureButton.StretchModeEnum.KeepAspectCentered,
                 TooltipText = GetTooltip(form),
@@ -121,6 +123,29 @@ internal static class NShinGetterFormChoice
                 .SetDelay(index * 0.05f)
                 .SetEase(Tween.EaseType.Out)
                 .SetTrans(Tween.TransitionType.Back);
+            Tween? hoverTween = null;
+            button.MouseEntered += () =>
+            {
+                hoverTween?.Kill();
+                outline.ZIndex = 10;
+                hoverTween = button.CreateTween();
+                hoverTween.TweenProperty(button, "scale", Vector2.One * FormIconHoverScale, 0.10f)
+                    .SetEase(Tween.EaseType.Out)
+                    .SetTrans(Tween.TransitionType.Back);
+            };
+            button.MouseExited += () =>
+            {
+                hoverTween?.Kill();
+                hoverTween = button.CreateTween();
+                hoverTween.TweenProperty(button, "scale", Vector2.One, 0.08f)
+                    .SetEase(Tween.EaseType.Out)
+                    .SetTrans(Tween.TransitionType.Sine);
+                hoverTween.Finished += () =>
+                {
+                    if (GodotObject.IsInstanceValid(outline))
+                        outline.ZIndex = 0;
+                };
+            };
             button.Pressed += () => completion.TrySetResult(choiceIndex);
         }
 

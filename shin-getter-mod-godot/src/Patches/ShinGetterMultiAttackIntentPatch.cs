@@ -30,9 +30,14 @@ internal static class ShinGetterMultiAttackIntentPatch
 [HarmonyPatch(typeof(MultiAttackIntent), nameof(MultiAttackIntent.GetIntentLabel))]
 internal static class ShinGetterMultiAttackIntentLabelPatch
 {
-    private static void Postfix(MultiAttackIntent __instance, Creature owner, LocString __result)
+    private static void Postfix(
+        MultiAttackIntent __instance,
+        IEnumerable<Creature> targets,
+        Creature owner,
+        ref LocString __result)
     {
         __result.Add("Repeat", ShinGetterMultiAttackIntentPatch.GetAdjustedRepeats(__instance, owner));
+        ShinGetterOpenGetIntentPatch.ApplyAvoidanceLabel(__instance, targets, owner, ref __result);
     }
 }
 
