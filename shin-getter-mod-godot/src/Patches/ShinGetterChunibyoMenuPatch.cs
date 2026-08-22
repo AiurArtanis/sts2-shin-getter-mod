@@ -47,9 +47,6 @@ internal static class ShinGetterChunibyoMainMenuPatch
     private static void Prefix(NMainMenu __instance)
     {
         ShinGetterChunibyoConfigService.Load();
-        if (!ShinGetterChunibyoConfigService.Current.ShowInMainMenu)
-            return;
-
         try
         {
             NMainMenuTextButton? settingsButton =
@@ -57,7 +54,18 @@ internal static class ShinGetterChunibyoMainMenuPatch
             if (settingsButton == null)
                 return;
 
-            if (__instance.GetNodeOrNull<NMainMenuTextButton>($"MainMenuTextButtons/{ButtonName}") is { } existing)
+            NMainMenuTextButton? existing =
+                __instance.GetNodeOrNull<NMainMenuTextButton>($"MainMenuTextButtons/{ButtonName}");
+            if (!ShinGetterChunibyoConfigService.Current.ShowInMainMenu)
+            {
+                if (existing != null)
+                    existing.QueueFree();
+                NShinGetterUpdateBadge.AttachTo(settingsButton);
+                return;
+            }
+
+            NShinGetterUpdateBadge.RemoveFrom(settingsButton);
+            if (existing != null)
             {
                 NShinGetterUpdateBadge.AttachTo(existing);
                 return;
@@ -108,7 +116,7 @@ internal static class ShinGetterChunibyoSettingsEntryPatch
 
             if (content.GetNodeOrNull<MarginContainer>(EntryName) is { } existingEntry)
             {
-                NShinGetterUpdateBadge.AttachTo(
+                NShinGetterUpdateBadge.AttachOutsideLeft(
                     existingEntry.GetNode<NOpenModdingScreenButton>("OpenChunibyoConfigButton"));
                 return;
             }
@@ -144,7 +152,7 @@ internal static class ShinGetterChunibyoSettingsEntryPatch
             content.MoveChild(divider, insertAt + 1);
             button.GetNode<MegaCrit.Sts2.addons.mega_text.MegaLabel>("Label").SetTextAutoSize(
                 Localize("SHIN_GETTER_CHUNIBYO.OPEN_CONFIG", "Open Config"));
-            NShinGetterUpdateBadge.AttachTo(button);
+            NShinGetterUpdateBadge.AttachOutsideLeft(button);
 
             if (!sourceButton.IsEnabled)
                 Callable.From(button.Disable).CallDeferred();

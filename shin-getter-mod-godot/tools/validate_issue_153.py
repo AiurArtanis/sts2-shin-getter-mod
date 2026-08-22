@@ -90,12 +90,14 @@ def validate_manifest_and_config_contract() -> None:
 def validate_badge_and_mounts() -> None:
     badge = read(BADGE)
     for needle in (
-        'Text = "NEW"',
+        "class NShinGetterUpdateBadge : MegaRichTextLabel",
+        "BbcodeEnabled = true",
+        'Text = "[rainbow]NEW[/rainbow]"',
+        'AddThemeFontSizeOverride("normal_font_size", 22)',
+        'AddThemeFontSizeOverride("bold_font_size", 22)',
         "CustomMinimumSize = BadgeSize",
         "MouseFilter = MouseFilterEnum.Ignore",
         "FocusMode = FocusModeEnum.None",
-        "AnchorLeft = 1f",
-        "AnchorRight = 1f",
         "UpdateReadStateChanged += RefreshVisibility",
         "UpdateReadStateChanged -= RefreshVisibility",
         "public override void _ExitTree()",
@@ -104,6 +106,12 @@ def validate_badge_and_mounts() -> None:
         "Visible = ShinGetterChunibyoConfigService.IsCurrentUpdateUnread",
     ):
         require(needle in badge, f"Missing NEW badge boundary: {needle}")
+    require('AddThemeColorOverride("font_color"' not in badge,
+            "rainbow NEW must not be overridden by the old fixed red font color")
+    require("internal static NShinGetterUpdateBadge AttachOutsideLeft" in badge
+            and "AnchorLeft = outsideLeft ? 0f : 1f" in badge
+            and "AnchorRight = outsideLeft ? 0f : 1f" in badge,
+            "settings entry NEW must sit outside the open button without layout pressure or viewport clipping")
     require(not re.search(
         r"static\s+(?:readonly\s+)?(?:Control|NShinGetterUpdateBadge)\??\s+\w+\s*(?:=|;)",
         badge,
@@ -114,10 +122,21 @@ def validate_badge_and_mounts() -> None:
     submenu = read(SUBMENU)
     require("Current.ShowInMainMenu" in menu,
             "main-menu NEW marker must retain the ShowInMainMenu boundary")
-    require(menu.count("NShinGetterUpdateBadge.AttachTo") >= 4,
+    main_menu = method_body(menu, "private static void Prefix(NMainMenu __instance)")
+    require("if (!ShinGetterChunibyoConfigService.Current.ShowInMainMenu)" in main_menu
+            and "NShinGetterUpdateBadge.AttachTo(settingsButton)" in main_menu,
+            "hidden Chunibyo main-menu entry must move unread NEW to the original Settings button")
+    require("NShinGetterUpdateBadge.RemoveFrom(settingsButton)" in main_menu,
+            "visible Chunibyo entry must remove any fallback NEW from Settings on repeated _Ready")
+    require(menu.count("NShinGetterUpdateBadge.AttachTo") >= 3
+            and menu.count("NShinGetterUpdateBadge.AttachOutsideLeft") == 2,
             "main-menu and settings entries need creation and duplicate-ready badge paths")
-    require("is { } existing" in menu and "is { } existingEntry" in menu,
+    require("NMainMenuTextButton? existing" in menu and "is { } existingEntry" in menu,
             "both outer entry patches must prevent duplicate _Ready nodes")
+    require("AttachOutsideLeft(" in menu
+            and "AttachOutsideLeft(button)" in menu
+            and 'GetNode<NOpenModdingScreenButton>("OpenChunibyoConfigButton")' in menu,
+            "the settings-screen Chunibyo entry must render NEW outside its open button")
     require("private NShinGetterConfigActionButton? _updateHistoryButton" in submenu
             and "NShinGetterUpdateBadge.AttachTo(_updateHistoryButton)" in submenu,
             "the update-history button must retain and mount the shared badge")
