@@ -1,6 +1,7 @@
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Cards;
 using ShinGetterMod.Audio;
 using ShinGetterMod.Models.Cards;
 using ShinGetterMod.Models.Characters;
@@ -15,7 +16,9 @@ internal static class ShinGetterCardPlayVoicePatch
     {
         ShinGetterVoiceService.TryPlayCardVoiceAtCardPlayStart(__instance);
 
-        if (__instance is ShinGetterCardBase || __instance.Owner?.Character is not ShinGetter)
+        if (__instance is ShinGetterCardBase
+            || __instance is Maul
+            || __instance.Owner?.Character is not ShinGetter)
             return;
 
         string trigger = __instance.Type switch
