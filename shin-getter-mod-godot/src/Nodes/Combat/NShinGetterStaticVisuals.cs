@@ -14,7 +14,7 @@ namespace ShinGetterMod.Nodes.Combat;
 
 public static class NShinGetterStaticVisuals
 {
-    private const float OpeningFusionFirstFrameHoldSeconds = 0.1f;
+    private const float OpeningFusionFirstFrameHoldSeconds = 0.2f;
     private const float FusionTransitionHoldSeconds = 0.2f;
     private const float ShadeAfterimageSpacing = 182f;
     private const float ShinDragonOpenGetAlpha = 0.3f;

@@ -82,8 +82,8 @@ def check_code_wiring() -> None:
     require("PlayShadeVfx" in visuals, "shade visual hook is missing")
     require("FusionTransitionHoldSeconds = 0.2f" in visuals,
             "ordinary fusion transitions must hold the shared fighter frame for 0.2 seconds")
-    require("OpeningFusionFirstFrameHoldSeconds = 0.1f" in visuals,
-            "combat-opening fusion must hold its prepared first frame for 0.1 seconds")
+    require("OpeningFusionFirstFrameHoldSeconds = 0.2f" in visuals,
+            "combat-opening fusion must hold its prepared first frame for 0.2 seconds")
     require("ShadeAfterimageSpacing = 182f" in visuals and "sprites.All" in visuals,
             "Shade must show its wider afterimages for every Getter form, including Shin Dragon")
     require("ShinDragonOpenGetAlpha = 0.3f" in visuals and "FormVisual shinDragon = sprites.ShinDragon" in visuals,
@@ -180,11 +180,15 @@ def check_code_wiring() -> None:
             "multi-hit intent avoidance must compare the full displayed damage total")
     require("private static T CalculateIntentDamage<T>" in intent_patch
             and "CalculateIntentDamage(() => intent.GetSingleDamage(targetArray, owner))" in intent_patch
-            and "CalculateIntentDamage(() => intent.GetTotalDamage(targetArray, owner))" in intent_patch,
+            and "CalculateIntentDamage(() => intent.GetTotalDamage(targets, owner))" in intent_patch,
             "Open Get labels must explicitly isolate displayed damage from runtime avoidance")
     require("finally" in intent_patch
             and "_intentDamageCalculationDepth = Math.Max(0, _intentDamageCalculationDepth - 1)" in intent_patch,
             "explicit intent damage scopes must unwind even when calculation throws")
+    require("foreach (Creature enemy in combatState.Enemies)" in intent_patch
+            and "foreach (AbstractIntent candidate in enemy.Monster.NextMove.Intents)" in intent_patch
+            and "return ReferenceEquals(enemy, owner) && ReferenceEquals(attackIntent, intent)" in intent_patch,
+            "only the first eligible attack intent in stable combat order may show Open Get's red X")
     radiation_multiplier_start = radiation.index("public override decimal ModifyDamageMultiplicative")
     radiation_multiplier_end = radiation.index("private static bool IsHpLoss", radiation_multiplier_start)
     radiation_multiplier = radiation[radiation_multiplier_start:radiation_multiplier_end]
@@ -192,6 +196,10 @@ def check_code_wiring() -> None:
             "Radiated's printed damage must not be increased by existing Radiation")
     require('new DamageVar(5m, ValueProp.Unpowered)' in radiated_card,
             "Radiated must retain its printed five-damage contract")
+    require("creature.PetOwner?.Creature ?? creature" in radiated_card
+            and ".Distinct()" in radiated_card
+            and "!ReferenceEquals(creature, self)" in radiated_card,
+            "Radiated must collapse pets to their effective receiver and hit its owner only once")
     radiated_damage = radiated_card.index("await CreatureCmd.Damage(")
     radiated_apply = radiated_card.index("await PowerCmd.Apply<SGP_Radiation>")
     require(radiated_damage < radiated_apply,

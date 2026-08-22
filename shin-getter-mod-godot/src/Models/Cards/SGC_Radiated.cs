@@ -46,7 +46,17 @@ public sealed class SGC_Radiated : ShinGetterCardBase
 
         var self = Owner.Creature;
         var creatures = CombatState.Creatures.Where(creature => creature.IsAlive).ToList();
-        var otherTargets = creatures.Where(creature => creature != self).ToList();
+        // CreatureCmd redirects a pet's block loss to its owning player. Collapse pets to that
+        // effective receiver before dealing damage so a player and their pet cannot make the
+        // same player take Radiated's printed damage twice.
+        var damageTargets = creatures
+            .Select(creature => creature.PetOwner?.Creature ?? creature)
+            .Where(creature => creature.IsAlive)
+            .Distinct()
+            .ToList();
+        var otherTargets = damageTargets
+            .Where(creature => !ReferenceEquals(creature, self))
+            .ToList();
         if (otherTargets.Count > 0)
         {
             await CreatureCmd.Damage(
