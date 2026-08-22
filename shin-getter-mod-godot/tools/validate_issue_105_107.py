@@ -22,7 +22,9 @@ def main() -> None:
     require(
         "src/Models/Cards/SGC_Radiated.cs",
         "var self = Owner.Creature;",
-        "creature != self",
+        "creature.PetOwner?.Creature ?? creature",
+        ".Distinct()",
+        "!ReferenceEquals(creature, self)",
         "null,",
         "public override int MaxUpgradeLevel => 0;",
     )

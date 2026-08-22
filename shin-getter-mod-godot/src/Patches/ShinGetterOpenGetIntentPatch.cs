@@ -85,8 +85,44 @@ internal static class ShinGetterOpenGetIntentPatch
         Creature owner)
     {
         Creature[] targetArray = targets as Creature[] ?? targets.ToArray();
-        int totalDamage = CalculateIntentDamage(() => intent.GetTotalDamage(targetArray, owner));
-        return targetArray.Any(target =>
+        if (!IsEligibleForAvoidance(intent, targetArray, owner))
+            return false;
+
+        // Intents are rendered in CombatState.Enemies order and then in each monster move's
+        // intent order. Mark only the first eligible attack so multiple enemies do not imply
+        // that one Open Get counter will avoid every attack this turn.
+        if (owner.CombatState is not { } combatState)
+            return true;
+
+        foreach (Creature enemy in combatState.Enemies)
+        {
+            if (!enemy.IsAlive || enemy.Monster == null)
+                continue;
+
+            foreach (AbstractIntent candidate in enemy.Monster.NextMove.Intents)
+            {
+                if (candidate is not AttackIntent attackIntent
+                    || !IsEligibleForAvoidance(attackIntent, targetArray, enemy))
+                {
+                    continue;
+                }
+
+                return ReferenceEquals(enemy, owner) && ReferenceEquals(attackIntent, intent);
+            }
+        }
+
+        // Keep isolated previews and transient move updates useful if the current intent is not
+        // present in the combat state's move list yet.
+        return true;
+    }
+
+    private static bool IsEligibleForAvoidance(
+        AttackIntent intent,
+        Creature[] targets,
+        Creature owner)
+    {
+        int totalDamage = CalculateIntentDamage(() => intent.GetTotalDamage(targets, owner));
+        return targets.Any(target =>
             target.GetPower<SGP_OpenGet>()?.WouldAvoidIntent(totalDamage) == true);
     }
 
