@@ -658,9 +658,7 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
 
         if (!ShinGetterChunibyoConfigService.MarkCurrentUpdateRead(out string saveError))
         {
-            ShowPopup(
-                Localize("SHIN_GETTER_CHUNIBYO.SAVE_ERROR_TITLE", "Unable to save config"),
-                saveError);
+            ShowUpdateHistorySaveError(saveError);
         }
     }
 
@@ -906,13 +904,35 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         control.AddThemeFontSizeOverride("font_size", fontSize);
     }
 
-    private static void ShowPopup(string title, string body)
+    private static bool ShowPopup(string title, string body)
     {
         NErrorPopup? popup = NErrorPopup.Create(title, body, showReportBugButton: false);
-        if (popup != null && NModalContainer.Instance != null)
-            NModalContainer.Instance.Add(popup);
-        else
+        NModalContainer? modalContainer = NModalContainer.Instance;
+        if (popup == null || modalContainer == null)
+        {
+            popup?.QueueFreeSafely();
             GD.Print($"[ShinGetterChunibyo] {title}: {body}");
+            return false;
+        }
+
+        modalContainer.Add(popup);
+        bool shown = GodotObject.IsInstanceValid(popup)
+            && popup.IsInsideTree()
+            && popup.IsVisibleInTree();
+        if (!shown && GodotObject.IsInstanceValid(popup))
+            popup.QueueFreeSafely();
+        return shown;
+    }
+
+    private static void ShowUpdateHistorySaveError(string body)
+    {
+        NModalContainer? modalContainer = NModalContainer.Instance;
+        if (modalContainer?.OpenModal is NChunibyoUpdateHistoryPopup)
+            modalContainer.Clear();
+
+        ShowPopup(
+            Localize("SHIN_GETTER_CHUNIBYO.SAVE_ERROR_TITLE", "Unable to save config"),
+            body);
     }
 
     private bool ShowUpdateHistoryPopup(string title, string body)

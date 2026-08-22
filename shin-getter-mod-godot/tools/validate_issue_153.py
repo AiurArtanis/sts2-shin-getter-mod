@@ -138,8 +138,28 @@ def validate_popup_success_boundary() -> None:
             "history content and popup visibility must succeed before read-version persistence")
     require("if (!ShowUpdateHistoryPopup" in show_history and "return" in show_history,
             "popup failure must leave the update unread")
-    require("SAVE_ERROR_TITLE" in show_history and "saveError" in show_history,
-            "save failure must use the existing error popup and keep the marker")
+    require("saveError" in show_history and "ShowUpdateHistorySaveError(saveError)" in show_history,
+            "save failure must route through the modal-replacement path")
+
+    save_error = method_body(submenu, "private static void ShowUpdateHistorySaveError")
+    require("SAVE_ERROR_TITLE" in save_error,
+            "save failure must use the existing localized error-popup title")
+    require("modalContainer?.OpenModal is NChunibyoUpdateHistoryPopup" in save_error,
+            "save-error recovery must identify the open update-history modal")
+    require("modalContainer.Clear()" in save_error,
+            "save-error recovery must clear the update-history modal before showing the error")
+    require(save_error.index("modalContainer.Clear()") < save_error.index("ShowPopup("),
+            "save-error recovery must release the modal slot before adding NErrorPopup")
+
+    generic_popup = method_body(submenu, "private static bool ShowPopup")
+    require("modalContainer.Add(popup)" in generic_popup,
+            "the shared error-popup helper must add NErrorPopup to the modal container")
+    require("popup.IsInsideTree()" in generic_popup and "popup.IsVisibleInTree()" in generic_popup,
+            "the shared error-popup helper must verify that NErrorPopup was displayed")
+    require("popup.QueueFreeSafely()" in generic_popup,
+            "an NErrorPopup rejected by the modal container must be released")
+    require("ShowPopup(" not in show_history[show_history.index("MarkCurrentUpdateRead"):],
+            "save failure must not directly compete for an occupied modal slot")
 
     popup = method_body(submenu, "private bool ShowUpdateHistoryPopup")
     for needle in (
