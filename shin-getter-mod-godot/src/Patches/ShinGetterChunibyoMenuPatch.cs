@@ -54,9 +54,12 @@ internal static class ShinGetterChunibyoMainMenuPatch
         {
             NMainMenuTextButton? settingsButton =
                 __instance.GetNodeOrNull<NMainMenuTextButton>("MainMenuTextButtons/SettingsButton");
-            if (settingsButton == null ||
-                __instance.GetNodeOrNull<NMainMenuTextButton>($"MainMenuTextButtons/{ButtonName}") != null)
+            if (settingsButton == null)
+                return;
+
+            if (__instance.GetNodeOrNull<NMainMenuTextButton>($"MainMenuTextButtons/{ButtonName}") is { } existing)
             {
+                NShinGetterUpdateBadge.AttachTo(existing);
                 return;
             }
 
@@ -77,6 +80,7 @@ internal static class ShinGetterChunibyoMainMenuPatch
             var self = new NodePath(".");
             button.FocusNeighborLeft = self;
             button.FocusNeighborRight = self;
+            NShinGetterUpdateBadge.AttachTo(button);
         }
         catch (Exception ex)
         {
@@ -97,9 +101,15 @@ internal static class ShinGetterChunibyoSettingsEntryPatch
             var modding = __instance.GetNodeOrNull<MarginContainer>("%Modding");
             var sourceButton = __instance.GetNodeOrNull<NOpenModdingScreenButton>("%ModdingButton");
             if (modding?.GetParent() is not VBoxContainer content
-                || sourceButton == null
-                || content.GetNodeOrNull<MarginContainer>(EntryName) != null)
+                || sourceButton == null)
             {
+                return;
+            }
+
+            if (content.GetNodeOrNull<MarginContainer>(EntryName) is { } existingEntry)
+            {
+                NShinGetterUpdateBadge.AttachTo(
+                    existingEntry.GetNode<NOpenModdingScreenButton>("OpenChunibyoConfigButton"));
                 return;
             }
 
@@ -134,6 +144,7 @@ internal static class ShinGetterChunibyoSettingsEntryPatch
             content.MoveChild(divider, insertAt + 1);
             button.GetNode<MegaCrit.Sts2.addons.mega_text.MegaLabel>("Label").SetTextAutoSize(
                 Localize("SHIN_GETTER_CHUNIBYO.OPEN_CONFIG", "Open Config"));
+            NShinGetterUpdateBadge.AttachTo(button);
 
             if (!sourceButton.IsEnabled)
                 Callable.From(button.Disable).CallDeferred();
