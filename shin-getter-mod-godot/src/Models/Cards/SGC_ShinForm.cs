@@ -13,6 +13,7 @@ using ShinGetterMod.Models.Powers;
 using ShinGetterMod.Audio;
 using ShinGetterMod.Nodes.Combat;
 using ShinGetterMod.Patches;
+using ShinGetterMod.Services;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -91,6 +92,7 @@ public sealed class SGC_ShinForm : ShinGetterCardBase
 
             // 变形为真化形态
             await PowerCmd.Apply<SGP_ShinForm>(choiceContext, creature, 1m, creature, this);
+            ShinGetterStonerSunshineService.RecordShinDragonTransform(Owner);
         }
         finally
         {

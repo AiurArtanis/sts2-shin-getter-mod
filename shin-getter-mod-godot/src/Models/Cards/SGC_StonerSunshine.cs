@@ -26,6 +26,8 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_StonerSunshine : ShinGetterCardBase
 {
+    public override bool CanBeGeneratedInCombat => false;
+
     public override string PortraitPath =>
         ImageHelper.GetImagePath("packed/card_single/shin_getter/s_g_c_stoner_sunshine_card.png");
 

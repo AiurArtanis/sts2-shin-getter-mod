@@ -17,6 +17,7 @@ using ShinGetterMod.Audio;
 using ShinGetterMod.Events;
 using ShinGetterMod.Models.Powers;
 using ShinGetterMod.Nodes.Combat;
+using ShinGetterMod.Services;
 
 namespace ShinGetterMod.Models.Relics;
 
@@ -144,6 +145,7 @@ public sealed class SGR_GetterFurnace : ShinGetterRelicBase, IInfiniteEvolutionP
 
     public override async Task BeforeCombatStart()
     {
+        ShinGetterStonerSunshineService.ResetCombat(Owner);
         Flash();
         await PowerCmd.Apply<SGP_ShinGetterOne>(
             new ThrowingPlayerChoiceContext(), Owner.Creature, 1m, Owner.Creature, null);
@@ -165,6 +167,7 @@ public sealed class SGR_GetterFurnace : ShinGetterRelicBase, IInfiniteEvolutionP
         CardModel? cardSource)
     {
         ShinGetterVoiceService.OnAfterDamageGiven(Owner, dealer, result, target);
+        ShinGetterStonerSunshineService.RecordFinalKill(Owner, dealer, result, target, cardSource);
         return Task.CompletedTask;
     }
 
@@ -180,12 +183,19 @@ public sealed class SGR_GetterFurnace : ShinGetterRelicBase, IInfiniteEvolutionP
         return Task.CompletedTask;
     }
 
-    public override Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
+    public override Task AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        ShinGetterStonerSunshineService.RecordCardPlayed(Owner, cardPlay);
+        return Task.CompletedTask;
+    }
+
+    public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
     {
         if (player != Owner)
-            return Task.CompletedTask;
+            return;
 
-        return ShinGetterEventInvasionService.ApplyPendingTrialAfterHandDraw(choiceContext, Owner);
+        await ShinGetterEventInvasionService.ApplyPendingTrialAfterHandDraw(choiceContext, Owner);
+        await ShinGetterStonerSunshineService.TryGrantAfterHandDraw(Owner);
     }
 
     public override Task AfterCardChangedPiles(CardModel card, PileType oldPileType, AbstractModel? clonedBy)
@@ -196,4 +206,10 @@ public sealed class SGR_GetterFurnace : ShinGetterRelicBase, IInfiniteEvolutionP
 
     public override Task AfterCombatEnd(CombatRoom room) =>
         ShinGetterExecutionMusicService.StopAndRestore(room.CombatState);
+
+    public override Task AfterCombatVictory(CombatRoom room)
+    {
+        ShinGetterStonerSunshineService.AddVictoryReward(Owner, room);
+        return Task.CompletedTask;
+    }
 }

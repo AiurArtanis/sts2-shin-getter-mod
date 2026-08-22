@@ -107,6 +107,7 @@ public sealed class ShinGetterCardPool : CardPoolModel
 	{
 		return cards.Where(card => card is not SGC_InsectVirus
 			and not SGC_GetterLanding
+			and not SGC_StonerSunshine
 			and not SGC_Radiated
 			and not SGC_PetalBreakthrough
 			and not SGC_RescheduleTicket

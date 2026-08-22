@@ -62,5 +62,10 @@
   "SHIN_GETTER.voice.hayatoKill": "お前らは黙って見てろ。",
   "SHIN_GETTER.voice.openGetOne": "[sine][red]OPEN GET[/red][/sine]",
   "SHIN_GETTER.voice.openGetTwo": "[sine][white]OPEN GET[/white][/sine]",
-  "SHIN_GETTER.voice.openGetThree": "[sine][yellow]OPEN GET[/yellow][/sine]"
+  "SHIN_GETTER.voice.openGetThree": "[sine][yellow]OPEN GET[/yellow][/sine]",
+  "SHIN_GETTER.voice.stonerArrivalFeelPower": "感じるぞ、ゲッターの力を！",
+  "SHIN_GETTER.voice.stonerArrivalThreeHearts": "三つの心を一つに！",
+  "SHIN_GETTER.voice.stonerArrivalOurWill": "俺の、俺たちの意志がゲッターの力を引き出す！",
+  "SHIN_GETTER.voice.stonerArrivalUniteHearts": "俺たちの心を一つにするんだ！",
+  "SHIN_GETTER.voice.stonerArrivalUseSunshine": "竜馬！[red]Stoner[/red] [yellow]Sunshine[/yellow]を使え！"
 }
