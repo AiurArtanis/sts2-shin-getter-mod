@@ -128,6 +128,22 @@ def validate_badge_and_mounts() -> None:
             "hidden Chunibyo main-menu entry must move unread NEW to the original Settings button")
     require("NShinGetterUpdateBadge.RemoveFrom(settingsButton)" in main_menu,
             "visible Chunibyo entry must remove any fallback NEW from Settings on repeated _Ready")
+    hidden_branch = main_menu[
+        main_menu.index("if (!ShinGetterChunibyoConfigService.Current.ShowInMainMenu)"):
+        main_menu.index("NShinGetterUpdateBadge.RemoveFrom(settingsButton)")
+    ]
+    hidden_cleanup = (
+        "NShinGetterUpdateBadge.RemoveFrom(existing)",
+        "existing.Visible = false",
+        "existing.GetParent()?.RemoveChild(existing)",
+        "existing.QueueFreeSafely()",
+        "NShinGetterUpdateBadge.AttachTo(settingsButton)",
+    )
+    hidden_positions = [hidden_branch.index(needle) for needle in hidden_cleanup]
+    require(hidden_positions == sorted(hidden_positions),
+            "hidden Chunibyo entry must detach its badge and leave the tree before Settings gets the sole NEW")
+    require(hidden_branch.count("NShinGetterUpdateBadge.AttachTo(settingsButton)") == 1,
+            "ShowInMainMenu=false must mount exactly one main-menu NEW on the original Settings button")
     require(menu.count("NShinGetterUpdateBadge.AttachTo") >= 3
             and menu.count("NShinGetterUpdateBadge.AttachOutsideLeft") == 2,
             "main-menu and settings entries need creation and duplicate-ready badge paths")

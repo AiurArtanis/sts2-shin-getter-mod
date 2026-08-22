@@ -3,6 +3,7 @@ using System;
 using System.Runtime.CompilerServices;
 using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
@@ -59,7 +60,12 @@ internal static class ShinGetterChunibyoMainMenuPatch
             if (!ShinGetterChunibyoConfigService.Current.ShowInMainMenu)
             {
                 if (existing != null)
-                    existing.QueueFree();
+                {
+                    NShinGetterUpdateBadge.RemoveFrom(existing);
+                    existing.Visible = false;
+                    existing.GetParent()?.RemoveChild(existing);
+                    existing.QueueFreeSafely();
+                }
                 NShinGetterUpdateBadge.AttachTo(settingsButton);
                 return;
             }
