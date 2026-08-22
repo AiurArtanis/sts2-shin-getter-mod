@@ -60,8 +60,12 @@ def validate_balance() -> None:
     )
     reject("src/Models/Powers/SGP_Evolution.cs", "BeforeSideTurnEnd")
     # Evolution Engine was superseded by B1.1.1 and is gated by validate_issue_47.py.
-    if (ROOT / "src/Patches/ShinGetterSpiritCommandRetainPatch.cs").exists():
-        raise AssertionError("spirit command cards must not be retained by a Harmony patch")
+    require(
+        "src/Patches/ShinGetterSpiritCommandRetainPatch.cs",
+        'HarmonyPatch(typeof(CardModel), "get_ShouldRetainThisTurn")',
+        "SpiritRequirement: > 0",
+        "GetPower<SGP_Ki>()?.Amount > 0",
+    )
     spirit_commands = (
         "SGC_HotBlood.cs",
         "SGC_Spirit.cs",
