@@ -69,6 +69,8 @@ def check_code_wiring() -> None:
     intent_patch = read(PROJECT / "src/Patches/ShinGetterOpenGetIntentPatch.cs")
     hit_count_patch = read(PROJECT / "src/Patches/ShinGetterOpenGetAttackHitCountPatch.cs")
     final_damage_patch = read(PROJECT / "src/Patches/ShinGetterOpenGetFinalDamagePatch.cs")
+    radiation = read(PROJECT / "src/Models/Powers/SGP_Radiation.cs")
+    radiated_card = read(PROJECT / "src/Models/Cards/SGC_Radiated.cs")
     combat_vfx = read(PROJECT / "src/Nodes/Vfx/ShinGetterCombatVfx.Extra.cs")
     tactical_retreat = read(PROJECT / "src/Models/Cards/SGC_TacticalRetreat.cs")
     form_powers = "\n".join(read(PROJECT / f"src/Models/Powers/{name}") for name in (
@@ -80,6 +82,8 @@ def check_code_wiring() -> None:
     require("PlayShadeVfx" in visuals, "shade visual hook is missing")
     require("FusionTransitionHoldSeconds = 0.2f" in visuals,
             "ordinary fusion transitions must hold the shared fighter frame for 0.2 seconds")
+    require("OpeningFusionFirstFrameHoldSeconds = 0.1f" in visuals,
+            "combat-opening fusion must hold its prepared first frame for 0.1 seconds")
     require("ShadeAfterimageSpacing = 182f" in visuals and "sprites.All" in visuals,
             "Shade must show its wider afterimages for every Getter form, including Shin Dragon")
     require("ShinDragonOpenGetAlpha = 0.3f" in visuals and "FormVisual shinDragon = sprites.ShinDragon" in visuals,
@@ -174,9 +178,31 @@ def check_code_wiring() -> None:
             "the red Open Get intent X must expose its localized hover tip")
     require("intent.GetTotalDamage" in intent_patch and "WouldAvoidIntent(totalDamage)" in intent_patch,
             "multi-hit intent avoidance must compare the full displayed damage total")
+    require("private static T CalculateIntentDamage<T>" in intent_patch
+            and "CalculateIntentDamage(() => intent.GetSingleDamage(targetArray, owner))" in intent_patch
+            and "CalculateIntentDamage(() => intent.GetTotalDamage(targetArray, owner))" in intent_patch,
+            "Open Get labels must explicitly isolate displayed damage from runtime avoidance")
+    require("finally" in intent_patch
+            and "_intentDamageCalculationDepth = Math.Max(0, _intentDamageCalculationDepth - 1)" in intent_patch,
+            "explicit intent damage scopes must unwind even when calculation throws")
+    radiation_multiplier_start = radiation.index("public override decimal ModifyDamageMultiplicative")
+    radiation_multiplier_end = radiation.index("private static bool IsHpLoss", radiation_multiplier_start)
+    radiation_multiplier = radiation[radiation_multiplier_start:radiation_multiplier_end]
+    require("cardSource is SGC_Radiated" in radiation_multiplier,
+            "Radiated's printed damage must not be increased by existing Radiation")
+    require('new DamageVar(5m, ValueProp.Unpowered)' in radiated_card,
+            "Radiated must retain its printed five-damage contract")
+    radiated_damage = radiated_card.index("await CreatureCmd.Damage(")
+    radiated_apply = radiated_card.index("await PowerCmd.Apply<SGP_Radiation>")
+    require(radiated_damage < radiated_apply,
+            "Radiated must finish its printed damage before applying Radiation")
     require("TacticalRetreatDistance = 480f" in combat_vfx
-            and "TryPlayCreatureActionAnimation(owner, \"Block\")" in combat_vfx,
-            "Tactical Retreat must defend and move back three body positions")
+            and "await NShinGetterStaticVisuals.PlayCreatureActionAnimationAndWait" in combat_vfx
+            and '"Block"' in combat_vfx,
+            "Tactical Retreat must finish its defence animation before moving back three body positions")
+    require("public static async Task PlayCreatureActionAnimationAndWait" in visuals
+            and "frameCount / framesPerSecond / speedScale" in visuals,
+            "Tactical Retreat must wait for the active form's real defence-animation duration")
     require("Task transformTask = transform()" in combat_vfx
             and "await ownerNode.ToSignal(returnTween" in combat_vfx
             and "await transformTask" in combat_vfx
@@ -193,8 +219,9 @@ def check_code_wiring() -> None:
     require("TryPrepareFusionAnimation" in opening_fusion and "PlayPreparedFusionAnimation" in opening_fusion,
             "combat-opening Getter One fusion must be prepared before it becomes visible")
     require(opening_fusion.index("TryPrepareFusionAnimation") < opening_fusion.index("next.Item.Visible = true")
+            < opening_fusion.index("OpeningFusionFirstFrameHoldSeconds")
             < opening_fusion.index("PlayPreparedFusionAnimation"),
-            "combat-opening Getter One must show fusion frame one before it starts playing")
+            "combat-opening Getter One must show and hold fusion frame one before it starts playing")
     require("backwards: true" not in opening_fusion and "previous" not in opening_fusion and "forceFusion" not in visuals,
             "combat-opening fusion must never reverse a previous form")
     transition_start = visuals.index("private static async Task<bool> TryPlayFusionTransition")

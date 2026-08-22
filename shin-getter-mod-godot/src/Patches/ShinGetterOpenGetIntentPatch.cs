@@ -42,6 +42,19 @@ internal static class ShinGetterOpenGetIntentPatch
         return __exception;
     }
 
+    private static T CalculateIntentDamage<T>(Func<T> calculate)
+    {
+        _intentDamageCalculationDepth++;
+        try
+        {
+            return calculate();
+        }
+        finally
+        {
+            _intentDamageCalculationDepth = Math.Max(0, _intentDamageCalculationDepth - 1);
+        }
+    }
+
     internal static void ApplyAvoidanceLabel(
         AttackIntent intent,
         IEnumerable<Creature> targets,
@@ -55,7 +68,9 @@ internal static class ShinGetterOpenGetIntentPatch
         var replacement = new LocString(
             "static_hover_tips",
             intent is MultiAttackIntent ? MultiLabelKey : SingleLabelKey);
-        replacement.Add("Damage", intent.GetSingleDamage(targetArray, owner));
+        replacement.Add(
+            "Damage",
+            CalculateIntentDamage(() => intent.GetSingleDamage(targetArray, owner)));
         replacement.Add(
             "Repeat",
             intent is MultiAttackIntent multiAttack
@@ -70,7 +85,7 @@ internal static class ShinGetterOpenGetIntentPatch
         Creature owner)
     {
         Creature[] targetArray = targets as Creature[] ?? targets.ToArray();
-        int totalDamage = intent.GetTotalDamage(targetArray, owner);
+        int totalDamage = CalculateIntentDamage(() => intent.GetTotalDamage(targetArray, owner));
         return targetArray.Any(target =>
             target.GetPower<SGP_OpenGet>()?.WouldAvoidIntent(totalDamage) == true);
     }

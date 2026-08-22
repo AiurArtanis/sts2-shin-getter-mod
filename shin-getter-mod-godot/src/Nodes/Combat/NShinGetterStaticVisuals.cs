@@ -14,6 +14,7 @@ namespace ShinGetterMod.Nodes.Combat;
 
 public static class NShinGetterStaticVisuals
 {
+    private const float OpeningFusionFirstFrameHoldSeconds = 0.1f;
     private const float FusionTransitionHoldSeconds = 0.2f;
     private const float ShadeAfterimageSpacing = 182f;
     private const float ShinDragonOpenGetAlpha = 0.3f;
@@ -88,6 +89,34 @@ public static class NShinGetterStaticVisuals
     {
         var creatureNode = NCombatRoom.Instance?.GetCreatureNode(creature);
         return creatureNode != null && TryPlayGetterActionAnimation(creatureNode, trigger);
+    }
+
+    public static async Task PlayCreatureActionAnimationAndWait(
+        Creature creature,
+        string trigger,
+        float fallbackDuration)
+    {
+        var creatureNode = NCombatRoom.Instance?.GetCreatureNode(creature);
+        if (creatureNode == null
+            || !TryGetVisibleFormAnimation(creatureNode, out FormAnimation formAnimation)
+            || !TryPlayVisibleActionAnimation(
+                formAnimation.Sprite,
+                trigger,
+                formAnimation.EnsureLoaded))
+        {
+            await Cmd.CustomScaledWait(fallbackDuration, fallbackDuration);
+            return;
+        }
+
+        AnimatedSprite2D sprite = formAnimation.Sprite;
+        StringName animation = sprite.Animation;
+        int frameCount = sprite.SpriteFrames?.GetFrameCount(animation) ?? 0;
+        double framesPerSecond = sprite.SpriteFrames?.GetAnimationSpeed(animation) ?? 0d;
+        float speedScale = Math.Max(0.05f, Math.Abs(sprite.SpeedScale));
+        float duration = frameCount > 0 && framesPerSecond > 0d
+            ? (float)(frameCount / framesPerSecond / speedScale)
+            : fallbackDuration;
+        await Cmd.CustomScaledWait(duration, duration);
     }
 
     public static bool TryPlayGetterActionAnimation(NCreature creatureNode, string trigger)
@@ -643,7 +672,12 @@ public static class NShinGetterStaticVisuals
         next.Item.Modulate = new Color(next.Item.Modulate, 1f);
         next.Node.RotationDegrees = 0f;
         if (hasFusion && preparedSprite != null)
+        {
+            await Cmd.CustomScaledWait(
+                OpeningFusionFirstFrameHoldSeconds,
+                OpeningFusionFirstFrameHoldSeconds);
             await PlayPreparedFusionAnimation(preparedSprite, frameCount, backwards: false, speedScale: 1f);
+        }
 
         ActivateIdleAnimation(next);
     }

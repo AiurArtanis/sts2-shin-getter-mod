@@ -114,8 +114,10 @@ internal static partial class ShinGetterCombatVfx
         Vector2 originCenter = ownerNode.VfxSpawnPosition;
         Vector2 retreatDirection = owner.IsEnemy ? Vector2.Right : Vector2.Left;
         Vector2 retreatPosition = origin + retreatDirection * TacticalRetreatDistance;
-        NShinGetterStaticVisuals.TryPlayCreatureActionAnimation(owner, "Block");
-        await Cmd.CustomScaledWait(0.12f, 0.12f);
+        await NShinGetterStaticVisuals.PlayCreatureActionAnimationAndWait(
+            owner,
+            "Block",
+            fallbackDuration: 0.4f);
         AddAfterimageLines(originCenter, originCenter + retreatDirection * TacticalRetreatDistance, RushLine, 6, 18f);
 
         Tween tween = ownerNode.CreateTween();

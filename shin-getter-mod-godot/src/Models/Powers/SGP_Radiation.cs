@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Models.Cards;
 using ShinGetterMod.Models.Relics;
 
 namespace ShinGetterMod.Models.Powers;
@@ -35,14 +36,22 @@ public sealed class SGP_Radiation : PowerModel
 
     public override Task BeforeDamageReceived(PlayerChoiceContext choiceContext, Creature target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
-        if (target == Owner && amount > 0m && Amount > 0 && !IsHpLoss(props))
+        if (target == Owner
+            && amount > 0m
+            && Amount > 0
+            && !IsHpLoss(props)
+            && cardSource is not SGC_Radiated)
+        {
             Flash();
+        }
         return Task.CompletedTask;
     }
 
     public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
-        if (IsHpLoss(props))
+        // Radiated deals its printed 5 damage before applying Radiation. Existing Radiation
+        // must not turn that application into extra damage beyond the card's printed amount.
+        if (IsHpLoss(props) || cardSource is SGC_Radiated)
             return 1m;
         if (target == base.Owner && target.Player?.GetRelic<SGR_ResearchNotes>() != null)
             return 1m;
