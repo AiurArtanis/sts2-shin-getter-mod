@@ -7,6 +7,8 @@ import hashlib
 import json
 from pathlib import Path
 
+from PIL import Image
+
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -65,19 +67,24 @@ def validate_stoner_sunshine() -> None:
         card_path,
         "if (HasForm(Owner, ShinGetterForm.Getter1))",
         "TryPlayCardVoiceAtCustomTiming",
-        "QueueNextActionSpeed(Owner.Creature, 0.3f)",
-        'TryPlayCreatureActionAnimation(Owner.Creature, "Cast")',
-        "PlayStonerSunshine(",
+        "TryPlayStonerSunshineAnimation(",
+        "await ShinGetterCombatVfx.PlayStonerSunshine(",
+        "const int impactFrame = 47",
+        "recoveryDurationSeconds",
         ".WithNoAttackerAnim()",
         "ShinGetterCombatVfx.PlayEnergyBall(",
     )
     card_text = read(card_path)
-    if card_text.count('TryPlayCreatureActionAnimation(Owner.Creature, "Cast")') != 2:
-        raise AssertionError("Stoner Sunshine must explicitly play Cast in both form branches")
+    if card_text.count('TryPlayCreatureActionAnimation(Owner.Creature, "Cast")') != 1:
+        raise AssertionError("only Getter Two/Three may explicitly play the shared Cast animation")
     if card_text.count(".WithNoAttackerAnim()") != 2:
         raise AssertionError("Stoner Sunshine attacks must not replay the explicit Cast animation")
     if ".WithAttackerAnim(" in card_text:
         raise AssertionError("Stoner Sunshine contains a duplicate command-driven attacker animation")
+    if card_text.index("await ShinGetterCombatVfx.PlayStonerSunshine(") > card_text.index("attackCommand = await DamageCmd.Attack"):
+        raise AssertionError("Stoner Sunshine damage must wait until the dedicated animation reaches impact")
+    if ".BeforeDamage(() => ShinGetterCombatVfx.PlayStonerSunshine(" in card_text:
+        raise AssertionError("Stoner Sunshine cannot use the engine's pre-hit callback for its delayed impact")
     require(
         "src/Models/Cards/ShinGetterCardBase.cs",
         '"SGC_StonerSunshine",',
@@ -89,13 +96,37 @@ def validate_stoner_sunshine() -> None:
         "ShinGetterCardBase.IsInForm(card.Owner, ShinGetterForm.Getter1)",
     )
     require(
+        "src/Nodes/Combat/NShinGetterSpriteSequence.cs",
+        'StonerSunshineAnimationName = "stoner_sunshine"',
+        "GetterOneStonerSunshineFrameDirectory",
+        "ShinDragonStonerSunshineFrameDirectory",
+        "StonerSunshineMaxFrames = 60",
+        "StonerSunshineFramesPerSecond = 30d",
+    )
+    sequence_text = read("src/Nodes/Combat/NShinGetterSpriteSequence.cs")
+    if sequence_text.count("StonerSunshineAnimationName,") != 3:
+        raise AssertionError("Stoner Sunshine must be registered only for Getter One, Shin Dragon, and cache cleanup")
+    require(
+        "src/Nodes/Combat/NShinGetterSpriteAnimationStateMachine.cs",
+        '"StonerSunshine" => NShinGetterSpriteSequence.StonerSunshineAnimationName',
+    )
+    require(
+        "src/Nodes/Combat/NShinGetterStaticVisuals.cs",
+        "TryPlayStonerSunshineAnimation(",
+        "baseDuration / Math.Max(0.1f, sequenceDurationSeconds)",
+        '"StonerSunshine"',
+        'formAnimation.Sprite, "Cast"',
+    )
+    require(
         "src/Nodes/Vfx/ShinGetterCombatVfx.cs",
         "PlayStonerSunshine(",
-        "const float ascentDurationSeconds = 0.75f",
-        "const float landingDurationSeconds = 0.4f",
-        "Vector2 airborneOffset = new(-90f, -150f)",
-        "ownerOrigin + airborneOffset",
-        "totalDuration - ascentDurationSeconds - landingDurationSeconds",
+        "const int chargeStartFrame = 20",
+        "const int lightningStartFrame = 30",
+        "const int launchFrame = 42",
+        "const int impactFrame = 47",
+        "new Vector2(56f, -118f)",
+        "new Vector2(150f, -95f)",
+        "chargeStartDelay",
         ".SetEase(Tween.EaseType.InOut)",
         ".SetTrans(Tween.TransitionType.Sine)",
         "firstGrowthDuration",
@@ -110,7 +141,27 @@ def validate_stoner_sunshine() -> None:
     reject(
         "src/Nodes/Vfx/ShinGetterCombatVfx.cs",
         'ownerOrigin + Vector2.Up * 150f, 0.42f',
+        "airborneOffset",
     )
+
+    for action in (
+        "getter_one_stoner_sunshine",
+        "shin_getter_dragon_stoner_sunshine",
+    ):
+        source_dir = ROOT.parent / "art_sources/characters/shin_getter/forms" / action
+        source_frames = sorted(source_dir.glob("sprite_*.png"))
+        if len(source_frames) != 60:
+            raise AssertionError(f"{action}: expected 60 source frames, got {len(source_frames)}")
+        sheet_path = ROOT / "images/characters/shin_getter/forms" / action / "sprite_sheet.png"
+        with Image.open(sheet_path) as sheet:
+            if sheet.size != (5760, 5760):
+                raise AssertionError(f"{action}: expected 5760x5760 sheet, got {sheet.size}")
+        require(
+            f"images/characters/shin_getter/forms/{action}/sprite_sheet.png.import",
+            '"vram_texture": false',
+            "compress/mode=0",
+            "mipmaps/generate=false",
+        )
 
     expected_assets = {
         "images/packed/card_single/shin_getter/s_g_c_stoner_sunshine_card.png":

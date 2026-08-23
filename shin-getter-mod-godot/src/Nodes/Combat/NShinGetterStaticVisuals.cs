@@ -91,6 +91,29 @@ public static class NShinGetterStaticVisuals
         return creatureNode != null && TryPlayGetterActionAnimation(creatureNode, trigger);
     }
 
+    public static bool TryPlayStonerSunshineAnimation(Creature creature, float sequenceDurationSeconds)
+    {
+        var creatureNode = NCombatRoom.Instance?.GetCreatureNode(creature);
+        if (creatureNode == null || !TryGetVisibleFormAnimation(creatureNode, out FormAnimation formAnimation))
+            return false;
+
+        float baseDuration = (float)(
+            NShinGetterSpriteSequence.StonerSunshineMaxFrames
+            / NShinGetterSpriteSequence.StonerSunshineFramesPerSecond);
+        float speedScale = baseDuration / Math.Max(0.1f, sequenceDurationSeconds);
+        NShinGetterSpriteAnimationStateMachine.QueueNextActionSpeed(formAnimation.Sprite, speedScale);
+        if (TryPlayVisibleActionAnimation(
+                formAnimation.Sprite,
+                "StonerSunshine",
+                formAnimation.EnsureLoaded))
+        {
+            return true;
+        }
+
+        NShinGetterSpriteAnimationStateMachine.QueueNextActionSpeed(formAnimation.Sprite, 0.3f);
+        return TryPlayVisibleActionAnimation(formAnimation.Sprite, "Cast", formAnimation.EnsureLoaded);
+    }
+
     public static async Task PlayCreatureActionAnimationAndWait(
         Creature creature,
         string trigger,

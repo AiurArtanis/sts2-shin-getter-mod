@@ -68,18 +68,26 @@ public sealed class SGC_StonerSunshine : ShinGetterCardBase
             {
                 sequenceDurationSeconds = voiceDurationSeconds;
             }
+            sequenceDurationSeconds = Math.Max(2.6f, sequenceDurationSeconds);
 
-            NShinGetterStaticVisuals.QueueNextActionSpeed(Owner.Creature, 0.3f);
-            NShinGetterStaticVisuals.TryPlayCreatureActionAnimation(Owner.Creature, "Cast");
+            NShinGetterStaticVisuals.TryPlayStonerSunshineAnimation(
+                Owner.Creature,
+                sequenceDurationSeconds);
+
+            await ShinGetterCombatVfx.PlayStonerSunshine(
+                Owner.Creature,
+                combatState.GetOpponentsOf(Owner.Creature),
+                sequenceDurationSeconds);
 
             attackCommand = await DamageCmd.Attack(DynamicVars.CalculatedDamage).FromCard(this)
                 .TargetingAllOpponents(combatState)
                 .WithNoAttackerAnim()
-                .BeforeDamage(() => ShinGetterCombatVfx.PlayStonerSunshine(
-                    Owner.Creature,
-                    combatState.GetOpponentsOf(Owner.Creature),
-                    sequenceDurationSeconds))
                 .WithHitFx("vfx/vfx_starry_impact").Execute(choiceContext);
+
+            const int totalFrames = 60;
+            const int impactFrame = 47;
+            float recoveryDurationSeconds = sequenceDurationSeconds * (totalFrames - impactFrame) / totalFrames;
+            await Cmd.Wait(recoveryDurationSeconds);
         }
         else
         {
