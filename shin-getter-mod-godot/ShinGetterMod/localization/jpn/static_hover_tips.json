@@ -12,5 +12,7 @@
   "SHIN_GETTER_OPEN_GET_INTENT_SINGLE": "{Damage}[url=shin_getter_open_get][color=#ff0000] X[/color][/url]",
   "SHIN_GETTER_OPEN_GET_INTENT_MULTI": "{Damage}[font_size=18]x{Repeat}[/font_size][url=shin_getter_open_get][color=#ff0000] X[/color][/url]",
   "SHIN_GETTER_OPEN_GET_INTENT.title": "オープン・ゲット",
-  "SHIN_GETTER_OPEN_GET_INTENT.description": "この攻撃は回避される。"
+  "SHIN_GETTER_OPEN_GET_INTENT.description": "この攻撃は回避される。",
+  "SHIN_GETTER_BEACON_PRISM_COLOR.title": "異なる色",
+  "SHIN_GETTER_BEACON_PRISM_COLOR.description": "真ゲッターの報酬プールのカード、ストライク、防御、ゲッタービーム、ゲッター出撃はゲッター系の色として扱う。他キャラクターのカード、無色カード（状態カードを含む）、古代カード、イベントカード、呪いカードは異なる色として扱う。プレイフェーズ中に山札から手札へ引いたカードだけを数える。"
 }

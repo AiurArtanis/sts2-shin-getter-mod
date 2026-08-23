@@ -34,8 +34,8 @@
   "S_G_R_TRIPLE_WOOD_CARVING.description": "At the start of combat, [gold]Transform[/gold] 1 to 3 times at random.",
   "S_G_R_TRIPLE_WOOD_CARVING.flavor": "Bird, snake, and ring become one beneath red, white, and yellow light.",
   "S_G_R_BEACON_PRISM.title": "Beacon Prism",
-  "S_G_R_BEACON_PRISM.description": "In each combat, the Nth Potion you use makes you take N unblocked damage and gain N [gold]Ki[/gold] (starting at 1).",
-  "S_G_R_BEACON_PRISM.flavor": "The beacon's afterglow was folded into a prism, along with every layer of water pressure.",
+  "S_G_R_BEACON_PRISM.description": "The first time each turn you draw a card of a [gold]different color[/gold] during your play phase, draw 1 additional card.",
+  "S_G_R_BEACON_PRISM.flavor": "The drowned beacon refracts every color of the sea into a single guide-light; even a card that strays from Getter's course is illuminated once more.",
   "S_G_R_MYCELIAL_SILENCER.title": "Mycelial Silencer",
   "S_G_R_MYCELIAL_SILENCER.description": "After the first card you Exhaust each turn, gain {Block:diff()} Block.",
   "S_G_R_MYCELIAL_SILENCER.flavor": "Mute one beat of the chorus, and the rest can no longer press into the cockpit."

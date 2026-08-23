@@ -12,5 +12,7 @@
   "SHIN_GETTER_OPEN_GET_INTENT_SINGLE": "{Damage}[url=shin_getter_open_get][color=#ff0000] X[/color][/url]",
   "SHIN_GETTER_OPEN_GET_INTENT_MULTI": "{Damage}[font_size=18]x{Repeat}[/font_size][url=shin_getter_open_get][color=#ff0000] X[/color][/url]",
   "SHIN_GETTER_OPEN_GET_INTENT.title": "Open Get",
-  "SHIN_GETTER_OPEN_GET_INTENT.description": "This attack will be avoided."
+  "SHIN_GETTER_OPEN_GET_INTENT.description": "This attack will be avoided.",
+  "SHIN_GETTER_BEACON_PRISM_COLOR.title": "Different Color",
+  "SHIN_GETTER_BEACON_PRISM_COLOR.description": "Cards in Shin Getter's reward pool, Strike, Defend, Getter Beam, and Getter Launch use the Getter-line color. Cards from other characters, Colorless cards (including Status cards), Ancient cards, Event cards, and Curse cards count as a different color. Only cards drawn from the draw pile during your play phase are counted."
 }

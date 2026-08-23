@@ -265,12 +265,36 @@ def validate_models_and_pools() -> None:
     beacon = (SRC / "Models/Relics/SGR_BeaconPrism.cs").read_text(encoding="utf-8")
     require(
         beacon,
-        "_potionsUsedThisCombat++",
-        "ValueProp.Unblockable | ValueProp.Unpowered",
-        "PowerCmd.Apply<SGP_Ki>",
+        "public override bool ShowCounter => CombatManager.Instance.IsInProgress",
+        "public override int DisplayAmount => AvailableThisTurn ? 1 : 0",
+        "[SavedProperty(SerializationCondition.SaveIfNotTypeDefault)]",
+        "Status = value ? RelicStatus.Active : RelicStatus.Disabled",
+        "InvokeDisplayAmountChanged()",
+        "participants.Contains(Owner.Creature)",
+        "Owner.PlayerCombatState?.Phase != PlayerTurnPhase.Play",
+        "oldPileType != PileType.Draw",
+        "card.Pile?.Type != PileType.Hand",
+        "card.Owner != Owner",
+        "AvailableThisTurn = false",
+        "await CardPileCmd.Draw(new ThrowingPlayerChoiceContext(), 1, Owner)",
+        "card.Pool is ShinGetterCardPool",
+        "CardRarity.Common or CardRarity.Uncommon or CardRarity.Rare",
+        "SGC_Strike or SGC_Defend or SGC_GetterBeam or SGC_GetterLaunch",
+        "SHIN_GETTER_BEACON_PRISM_COLOR.title",
+        "SHIN_GETTER_BEACON_PRISM_COLOR.description",
     )
-    if beacon.index("await CreatureCmd.Damage(") > beacon.index("await PowerCmd.Apply<SGP_Ki>("):
-        raise AssertionError("Beacon Prism must pay its HP cost before granting Ki.")
+    if any(obsolete in beacon for obsolete in (
+        "AfterPotionUsed", "_potionsUsedThisCombat", "CreatureCmd.Damage", "PowerCmd.Apply<SGP_Ki>"
+    )):
+        raise AssertionError("Beacon Prism still contains its obsolete Potion/HP/Ki behavior.")
+    consume = beacon.index("AvailableThisTurn = false")
+    draw = beacon.index("await CardPileCmd.Draw(new ThrowingPlayerChoiceContext(), 1, Owner)")
+    if consume > draw:
+        raise AssertionError("Beacon Prism must consume its once-per-turn trigger before the bonus draw.")
+    availability_guard = beacon.index("if (!AvailableThisTurn")
+    color_guard = beacon.index("|| HasGetterLineColor(card)")
+    if availability_guard > color_guard or color_guard > consume:
+        raise AssertionError("Beacon Prism must finish its owner/phase/color gates before consuming the trigger.")
     ki = (SRC / "Models/Powers/SGP_Ki.cs").read_text(encoding="utf-8")
     require(
         ki,
@@ -636,7 +660,7 @@ def validate_localization() -> None:
     for language in LANGUAGES:
         tables[language] = {
             name: read_json(LOC / language / f"{name}.json")
-            for name in ("cards", "relics", "potions", "events")
+            for name in ("cards", "relics", "potions", "events", "static_hover_tips")
         }
         for card in expected_cards:
             require("\n".join(tables[language]["cards"]), f"{card}.title", f"{card}.description")
@@ -648,7 +672,7 @@ def validate_localization() -> None:
         if missing:
             raise AssertionError(f"Missing {language} issue#89 event keys: {sorted(missing)}")
 
-    for name in ("cards", "relics", "potions", "events"):
+    for name in ("cards", "relics", "potions", "events", "static_hover_tips"):
         reference = set(tables[LANGUAGES[0]][name])
         for language in LANGUAGES[1:]:
             if set(tables[language][name]) != reference:
@@ -835,6 +859,38 @@ def validate_localization() -> None:
             raise AssertionError(
                 f"Event-card rules text must not duplicate the automatic Exhaust keyword in {language}."
             )
+
+    beacon_localization = {
+        "zhs": {
+            "description": ("每回合", "出牌阶段", "[gold]不同颜色[/gold]", "额外抽1张牌"),
+            "flavor": ("淹没的灯塔", "不同海色", "盖塔航线"),
+            "tip": ("真盖塔奖励池卡牌", "初始攻击", "状态卡", "先古卡", "事件卡", "诅咒卡", "抽牌堆"),
+        },
+        "eng": {
+            "description": ("first time each turn", "play phase", "[gold]different color[/gold]", "draw 1 additional card"),
+            "flavor": ("drowned beacon", "every color of the sea", "Getter's course"),
+            "tip": ("reward pool", "Strike", "Status cards", "Ancient cards", "Event cards", "Curse cards", "draw pile"),
+        },
+        "jpn": {
+            "description": ("各ターン", "プレイフェーズ", "[gold]異なる色[/gold]", "追加で1枚引く"),
+            "flavor": ("沈んだ灯台", "海の異なる色", "ゲッターの航路"),
+            "tip": ("報酬プール", "ストライク", "状態カード", "古代カード", "イベントカード", "呪いカード", "山札"),
+        },
+    }
+    for language in LANGUAGES:
+        relics = tables[language]["relics"]
+        tips = tables[language]["static_hover_tips"]
+        expected = beacon_localization[language]
+        require(relics["S_G_R_BEACON_PRISM.description"], *expected["description"])
+        require(relics["S_G_R_BEACON_PRISM.flavor"], *expected["flavor"])
+        require(tips["SHIN_GETTER_BEACON_PRISM_COLOR.description"], *expected["tip"])
+        require(tips, "SHIN_GETTER_BEACON_PRISM_COLOR.title")
+        obsolete_fragments = (
+            "第N瓶", "Nth Potion", "N本目", "不可阻挡伤害", "unblocked damage",
+            "ブロック不能ダメージ", "[gold]气力[/gold]", "[gold]Ki[/gold]", "[gold]気力[/gold]",
+        )
+        if any(fragment in relics["S_G_R_BEACON_PRISM.description"] for fragment in obsolete_fragments):
+            raise AssertionError(f"Beacon Prism still has obsolete Potion text in {language}.")
 
     abyssal_expected = {
         "zhs": {
