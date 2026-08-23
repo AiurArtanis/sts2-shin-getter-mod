@@ -157,6 +157,7 @@ def check_runtime_wiring() -> None:
     card_base = read(PROJECT / "src/Models/Cards/ShinGetterCardBase.cs")
     star_slash = read(PROJECT / "src/Models/Cards/SGC_StarSlash.cs")
     getter_flash = read(PROJECT / "src/Models/Cards/SGC_GetterFlash.cs")
+    getter_missile = read(PROJECT / "src/Models/Cards/SGC_GetterMissile.cs")
 
     for fragment in (
         'ShinDragonCycloneFrameDirectory = "res://images/characters/shin_getter/forms/shin_getter_dragon_cyclone"',
@@ -178,9 +179,23 @@ def check_runtime_wiring() -> None:
         require(f'"{trigger}" => NShinGetterSpriteSequence.{animation}' in state_machine,
                 f"state machine is missing {trigger}")
 
-    require("ShouldKeepActiveSpecialAnimation" in state_machine
-            and "IsSpecialAnimation" in state_machine,
-            "generic engine triggers must not interrupt an active Shin Dragon special animation")
+    suppression_path = state_machine.split(
+        "if (ShouldKeepActiveSpecialAnimation(sprite, state, trigger))", 1
+    )[1].split("ensureLoaded(sprite, animationName);", 1)[0]
+    require("state.NextActionSpeedScale = 1f;" in suppression_path,
+            "suppressed follow-up triggers must consume their queued speed multiplier")
+    protection_contract = state_machine.split(
+        "private static bool ShouldKeepActiveSpecialAnimation", 1
+    )[1].split("private static bool IsSpecialAnimation", 1)[0]
+    for protected_trigger in ("Attack", "HeavyAttack", "Cast", "Dash", "Hit"):
+        require(f'"{protected_trigger}"' in protection_contract,
+                f"active special animations must ignore {protected_trigger}")
+    for priority_trigger in ("Dead", "Death"):
+        require(f'"{priority_trigger}"' not in protection_contract,
+                f"active special animations must still allow {priority_trigger}")
+    require("CombatState.Creatures.Where(creature => creature.IsHittable)" in getter_missile
+            and "target == Owner.Creature ? null : Owner.Creature" in getter_missile,
+            "Getter Missile self-hit regression fixture is missing")
     require("Owner.Creature.GetPower<SGP_ShinForm>() != null" in card_base,
             "special card mapping must be gated to the current Shin Getter Dragon form")
     for trigger, cards in SPECIAL_CARD_GROUPS.items():

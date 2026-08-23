@@ -40,7 +40,10 @@ internal static class NShinGetterSpriteAnimationStateMachine
 
         State state = States.GetOrCreateValue(sprite);
         if (ShouldKeepActiveSpecialAnimation(sprite, state, trigger))
+        {
+            state.NextActionSpeedScale = 1f;
             return true;
+        }
 
         ensureLoaded(sprite, animationName);
         EnsureSignalConnected(sprite, state);
@@ -120,7 +123,7 @@ internal static class NShinGetterSpriteAnimationStateMachine
         State state,
         string trigger) =>
         sprite.IsPlaying()
-        && trigger is "Attack" or "HeavyAttack" or "Cast" or "Dash"
+        && trigger is "Attack" or "HeavyAttack" or "Cast" or "Dash" or "Hit"
         && IsSpecialAnimation(state.ActiveOneShotAnimation);
 
     private static bool IsSpecialAnimation(string animationName) =>
