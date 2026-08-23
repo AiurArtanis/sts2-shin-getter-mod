@@ -182,6 +182,12 @@ public sealed class SGR_EmperorsFragment : ShinGetterRelicBase, IInfiniteEvoluti
         return Task.CompletedTask;
     }
 
+    public override Task AfterCurrentHpChanged(Creature creature, decimal delta)
+    {
+        ShinGetterVoiceService.OnAfterCurrentHpChanged(Owner, creature, delta);
+        return Task.CompletedTask;
+    }
+
     public override Task AfterDamageReceived(
         PlayerChoiceContext choiceContext,
         Creature target,
