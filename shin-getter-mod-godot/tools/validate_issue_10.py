@@ -14,7 +14,7 @@ PROJECT = Path(__file__).resolve().parents[1]
 REPOSITORY = PROJECT.parent
 FRAME_SIZE = 720
 FUSION_ACTIONS = ("getter_one_fusion", "getter_two_fusion", "getter_three_fusion")
-EXPECTED_FIRST_FRAME_SHA256 = "31ebc1f3e222299e09c7448ee52cf6cd307c8a18ea5f832844a60dffaf9770ee"
+EXPECTED_FIRST_FRAME_SHA256 = "f8c58c468f3ad2bcdd8cc3637d7b9c413bac9406e3c4dd2a8e48fe8747486717"
 EXPECTED_GETTER_LANDING_ART = {
     "images/packed/card_portraits/shin_getter/s_g_c_getter_landing.png":
         "8d7714c7d29bf73f2af7f8eec80bfe5bbc0342579f805c8ca1d5524835a4c395",

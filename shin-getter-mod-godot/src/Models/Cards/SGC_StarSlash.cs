@@ -63,7 +63,7 @@ public sealed class SGC_StarSlash : ShinGetterCardBase
             .Targeting(cardPlay.Target)
             .BeforeDamage(() => NShinGetterStaticVisuals.PlayPhasedCreatureActionAnimation(
                 Owner.Creature,
-                "Attack",
+                GetActionAnimationTrigger() ?? "Attack",
                 1f,
                 1f,
                 () => ShinGetterCombatVfx.PlayHeavyCleave(Owner.Creature, new[] { cardPlay.Target }),

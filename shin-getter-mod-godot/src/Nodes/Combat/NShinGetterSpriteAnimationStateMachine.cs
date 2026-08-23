@@ -23,6 +23,9 @@ internal static class NShinGetterSpriteAnimationStateMachine
             "HeavyAttack" => NShinGetterSpriteSequence.HeavyAttackAnimationName,
             "Cast" => NShinGetterSpriteSequence.CastAnimationName,
             "StonerSunshine" => NShinGetterSpriteSequence.StonerSunshineAnimationName,
+            "Cyclone" => NShinGetterSpriteSequence.CycloneAnimationName,
+            "DashV2" => NShinGetterSpriteSequence.DashV2AnimationName,
+            "DrillAttack" => NShinGetterSpriteSequence.DrillAttackAnimationName,
             "Dash" => NShinGetterSpriteSequence.DashAnimationName,
             "Hit" => NShinGetterSpriteSequence.BlockAnimationName,
             "Block" => NShinGetterSpriteSequence.BlockAnimationName,
@@ -35,8 +38,11 @@ internal static class NShinGetterSpriteAnimationStateMachine
         if (animationName == null)
             return false;
 
-        ensureLoaded(sprite, animationName);
         State state = States.GetOrCreateValue(sprite);
+        if (ShouldKeepActiveSpecialAnimation(sprite, state, trigger))
+            return true;
+
+        ensureLoaded(sprite, animationName);
         EnsureSignalConnected(sprite, state);
 
         SpriteFrames? frames = sprite.SpriteFrames;
@@ -108,6 +114,19 @@ internal static class NShinGetterSpriteAnimationStateMachine
 
         PlayIdle(sprite, state);
     }
+
+    private static bool ShouldKeepActiveSpecialAnimation(
+        AnimatedSprite2D sprite,
+        State state,
+        string trigger) =>
+        sprite.IsPlaying()
+        && trigger is "Attack" or "HeavyAttack" or "Cast" or "Dash"
+        && IsSpecialAnimation(state.ActiveOneShotAnimation);
+
+    private static bool IsSpecialAnimation(string animationName) =>
+        animationName is NShinGetterSpriteSequence.CycloneAnimationName
+            or NShinGetterSpriteSequence.DashV2AnimationName
+            or NShinGetterSpriteSequence.DrillAttackAnimationName;
 
     private static void PlayIdle(AnimatedSprite2D sprite, State state)
     {
