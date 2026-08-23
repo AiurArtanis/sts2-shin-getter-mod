@@ -53,6 +53,8 @@ const REQUIRED_RESOURCES := {
 	"res://audio/sfx/characters/shin_getter/voices/hayato_drill_hurricane_long.wav": false,
 	"res://audio/sfx/characters/shin_getter/voices/hayato_drill_arm.wav": false,
 	"res://audio/sfx/characters/shin_getter/voices/hayato_kill.wav": false,
+	"res://audio/sfx/characters/shin_getter/voices/hayato_no_hp_loss.wav": false,
+	"res://audio/sfx/characters/shin_getter/voices/benkei_no_hp_loss.wav": false,
 	"res://audio/sfx/characters/shin_getter/voices/ryoma_open_get.wav": false,
 	"res://audio/sfx/characters/shin_getter/voices/hayato_open_get.wav": false,
 	"res://audio/sfx/characters/shin_getter/voices/benkei_open_get.wav": false,
