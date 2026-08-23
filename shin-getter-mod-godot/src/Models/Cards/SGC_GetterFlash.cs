@@ -42,7 +42,7 @@ public sealed class SGC_GetterFlash : ShinGetterCardBase
                 ShinGetterVoiceService.TryPlayCardVoice(this);
                 await NShinGetterStaticVisuals.PlayPhasedCreatureActionAnimation(
                     Owner.Creature,
-                    "Attack",
+                    GetActionAnimationTrigger() ?? "Attack",
                     0.75f,
                     2f,
                     () => ShinGetterCombatVfx.PlayFlashRush(Owner.Creature, cardPlay.Target),

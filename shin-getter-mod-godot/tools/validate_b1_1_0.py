@@ -121,8 +121,8 @@ def validate_sprite_sheets() -> None:
     forms = ROOT / "images/characters/shin_getter/forms"
     sheets = sorted(forms.glob("*/sprite_sheet.png"))
     imports = sorted(forms.glob("*/sprite_sheet.png.import"))
-    if len(sheets) != 29 or len(imports) != 29:
-        raise AssertionError(f"expected 29 sheets/imports, got {len(sheets)}/{len(imports)}")
+    if len(sheets) != 32 or len(imports) != 32:
+        raise AssertionError(f"expected 32 sheets/imports, got {len(sheets)}/{len(imports)}")
     frame_pngs = [path for path in forms.glob("*/sprite_*.png") if path.name != "sprite_sheet.png"]
     if frame_pngs:
         raise AssertionError("runtime form directories still contain per-frame PNG files")
@@ -135,13 +135,17 @@ def validate_sprite_sheets() -> None:
         "fusion": ("compress/mode=1", "compress/lossy_quality=0.75"),
         "idle": ("compress/mode=1", "compress/lossy_quality=0.75"),
         "stoner_sunshine": ("compress/mode=0", None),
+        "cyclone": ("compress/mode=0", None),
+        "dash_v2": ("compress/mode=0", None),
+        "drill_attack": ("compress/mode=0", None),
     }
     for sidecar in imports:
         text = sidecar.read_text(encoding="utf-8")
-        action = (
-            "stoner_sunshine"
-            if sidecar.parent.name.endswith("_stoner_sunshine")
-            else sidecar.parent.name.rsplit("_", 1)[-1]
+        directory_name = sidecar.parent.name
+        action = next(
+            (special for special in ("stoner_sunshine", "dash_v2", "drill_attack")
+             if directory_name.endswith(f"_{special}")),
+            directory_name.rsplit("_", 1)[-1],
         )
         if action not in expected_imports:
             raise AssertionError(f"{sidecar.relative_to(ROOT)}: unknown animation action")
@@ -159,8 +163,8 @@ def validate_sprite_sheets() -> None:
 
     source_root = REPO_ROOT / "art_sources/characters/shin_getter/forms"
     source_frames = list(source_root.glob("*/sprite_*.png"))
-    if len(source_frames) != 1190:
-        raise AssertionError(f"expected 1190 source frames, got {len(source_frames)}")
+    if len(source_frames) != 1370:
+        raise AssertionError(f"expected 1370 source frames, got {len(source_frames)}")
     frame_manifest = load_frame_manifest(source_root / "frame_manifest.txt")
     manifest_frame_paths = {
         f"{action}/sprite_{frame_number:06d}.png"
@@ -169,11 +173,11 @@ def validate_sprite_sheets() -> None:
     }
     actual_frame_paths = {path.relative_to(source_root).as_posix() for path in source_frames}
     manifest_entry_count = sum(len(frame_numbers) for frame_numbers in frame_manifest.values())
-    if manifest_entry_count != 1190 or manifest_frame_paths != actual_frame_paths:
+    if manifest_entry_count != 1370 or manifest_frame_paths != actual_frame_paths:
         missing = sorted(actual_frame_paths - manifest_frame_paths)
         extra = sorted(manifest_frame_paths - actual_frame_paths)
         raise AssertionError(
-            "PCK forbidden frame set does not exactly match the 1190 source files; "
+            "PCK forbidden frame set does not exactly match the 1370 source files; "
             f"missing={missing[:3]}, extra={extra[:3]}"
         )
     validator_path = "tools/validate-mod-resources.gd"
@@ -181,7 +185,7 @@ def validate_sprite_sheets() -> None:
         validator_path,
         "CHARACTER_FRAME_MANIFEST_PATH",
         "_load_character_frame_manifest(pck_path)",
-        "EXPECTED_CHARACTER_SOURCE_FRAME_COUNT := 1190",
+        "EXPECTED_CHARACTER_SOURCE_FRAME_COUNT := 1370",
     )
     reject(validator_path, "FORBIDDEN_CHARACTER_FRAME_COUNTS", "range(1, FORBIDDEN_CHARACTER_FRAME_COUNTS")
     if (ROOT / "art_sources/characters/shin_getter/forms").exists():

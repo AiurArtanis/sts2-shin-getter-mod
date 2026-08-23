@@ -41,6 +41,9 @@ FRAME_COUNTS = {
     "shin_getter_dragon_dash": 48,
     "shin_getter_dragon_death": 48,
     "shin_getter_dragon_idle": 36,
+    "shin_getter_dragon_cyclone": 60,
+    "shin_getter_dragon_dash_v2": 60,
+    "shin_getter_dragon_drill_attack": 60,
     "shin_getter_dragon_stoner_sunshine": 90,
 }
 COLUMNS_BY_FRAME_COUNT = {24: 6, 30: 6, 32: 8, 36: 6, 40: 8, 48: 8, 60: 10, 90: 10}

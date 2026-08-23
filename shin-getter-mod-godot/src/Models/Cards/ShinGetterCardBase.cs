@@ -164,6 +164,26 @@ public abstract class ShinGetterCardBase : CardModel
             ["三号机"] = ShinGetterForm.Getter3,
         };
 
+    private static readonly IReadOnlyDictionary<string, string> ShinDragonSpecialAnimationCards =
+        new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["SGC_Avalanche"] = "Cyclone",
+            ["SGC_PoseidonThunder"] = "Cyclone",
+            ["SGC_GetterMissile"] = "Cyclone",
+            ["SGC_FocusFire"] = "Cyclone",
+            ["SGC_Annihilation"] = "Cyclone",
+            ["SGC_StarSlash"] = "DashV2",
+            ["SGC_GetterRush"] = "DashV2",
+            ["SGC_Acceleration"] = "DashV2",
+            ["SGC_GetterFlash"] = "DashV2",
+            ["SGC_PetalBreakthrough"] = "DashV2",
+            ["SGC_TornadoDrill"] = "DrillAttack",
+            ["SGC_SpiralDrill"] = "DrillAttack",
+            ["SGC_LigerAssault"] = "DrillAttack",
+            ["SGC_GetterClaw"] = "DrillAttack",
+            ["SGC_HurricaneStrike"] = "DrillAttack",
+        };
+
     private static readonly IReadOnlySet<string> DashAnimationCards =
         new HashSet<string>(StringComparer.Ordinal)
         {
@@ -394,9 +414,15 @@ public abstract class ShinGetterCardBase : CardModel
         }
     }
 
-    private string? GetActionAnimationTrigger()
+    protected string? GetActionAnimationTrigger()
     {
         string cardTypeName = GetType().Name;
+        if (Owner.Creature.GetPower<SGP_ShinForm>() != null
+            && ShinDragonSpecialAnimationCards.TryGetValue(cardTypeName, out string? specialTrigger))
+        {
+            return specialTrigger;
+        }
+
         if (BlockAnimationCards.Contains(cardTypeName))
             return "Block";
 
