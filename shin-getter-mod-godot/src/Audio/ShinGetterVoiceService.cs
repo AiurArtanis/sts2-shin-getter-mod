@@ -83,6 +83,8 @@ internal enum ShinGetterVoiceCue
     StonerArrivalOurWill = 51,
     StonerArrivalUniteHearts = 52,
     StonerArrivalUseSunshine = 53,
+    HayatoNoHpLoss = 54,
+    BenkeiNoHpLoss = 55,
 }
 
 internal static class ShinGetterVoiceService
@@ -157,6 +159,8 @@ internal static class ShinGetterVoiceService
         new("045", ShinGetterVoiceCue.DrillHurricaneLong, "hayato_drill_hurricane_long.wav", "SHIN_GETTER.voice.drillHurricaneLong", ShinGetterForm.Getter2),
         new("046", ShinGetterVoiceCue.DrillArm, "hayato_drill_arm.wav", "SHIN_GETTER.voice.drillArm", ShinGetterForm.Getter2, StartAtCardPlay: true),
         new("047", ShinGetterVoiceCue.HayatoKill, "hayato_kill.wav", "SHIN_GETTER.voice.hayatoKill", ShinGetterForm.Getter2, VoicePlaybackCategory.InterruptingNonCard),
+        new("049", ShinGetterVoiceCue.HayatoNoHpLoss, "hayato_no_hp_loss.wav", "SHIN_GETTER.voice.hayatoNoHpLoss", ShinGetterForm.Getter2, VoicePlaybackCategory.DamageResponse),
+        new("050", ShinGetterVoiceCue.BenkeiNoHpLoss, "benkei_no_hp_loss.wav", "SHIN_GETTER.voice.benkeiNoHpLoss", ShinGetterForm.Getter3, VoicePlaybackCategory.DamageResponse),
         new("058", ShinGetterVoiceCue.OpenGetOne, "ryoma_open_get.wav", "SHIN_GETTER.voice.openGetOne", ShinGetterForm.Getter1, VoicePlaybackCategory.DamageResponse),
         new("059", ShinGetterVoiceCue.OpenGetTwo, "hayato_open_get.wav", "SHIN_GETTER.voice.openGetTwo", ShinGetterForm.Getter2, VoicePlaybackCategory.DamageResponse),
         new("060", ShinGetterVoiceCue.OpenGetThree, "benkei_open_get.wav", "SHIN_GETTER.voice.openGetThree", ShinGetterForm.Getter3, VoicePlaybackCategory.DamageResponse),
@@ -516,7 +520,23 @@ internal static class ShinGetterVoiceService
         }
 
         if (dealer?.Side == CombatSide.Enemy && props.HasFlag(ValueProp.Move))
-            TryPlayOneTime(player, Lines[ShinGetterVoiceCue.NoHpLoss]);
+            TryPlayOneTime(player, Lines[GetNoHpLossVoiceCue(player)]);
+    }
+
+    private static ShinGetterVoiceCue GetNoHpLossVoiceCue(Player player)
+    {
+        ShinGetterForm activeForm = player.Creature.GetPower<SGP_ShinGetterTwo>() != null
+            ? ShinGetterForm.Getter2
+            : player.Creature.GetPower<SGP_ShinGetterThree>() != null
+                ? ShinGetterForm.Getter3
+                : ShinGetterForm.Getter1;
+
+        return activeForm switch
+        {
+            ShinGetterForm.Getter2 => ShinGetterVoiceCue.HayatoNoHpLoss,
+            ShinGetterForm.Getter3 => ShinGetterVoiceCue.BenkeiNoHpLoss,
+            _ => ShinGetterVoiceCue.NoHpLoss,
+        };
     }
 
     private static ShinGetterVoiceCue[] GetKillVoicePool(Player player)
@@ -546,7 +566,7 @@ internal static class ShinGetterVoiceService
 
         if (!LinesByCode.TryGetValue(code, out VoiceLine? line))
         {
-            message = "Usage: sgs <001-047|058-065>";
+            message = "Usage: sgs <001-047|049-050|058-065>";
             return false;
         }
 

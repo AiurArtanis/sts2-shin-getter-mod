@@ -41,6 +41,8 @@
   "SHIN_GETTER.voice.firstDamage": "Now let me return the favor!",
   "SHIN_GETTER.voice.lizardEncounter": "Don't think a lizard can beat a [red]dragon[/red]!",
   "SHIN_GETTER.voice.noHpLoss": "I thought that was just a light breeze.",
+  "SHIN_GETTER.voice.hayatoNoHpLoss": "Hmph, don't make me laugh!",
+  "SHIN_GETTER.voice.benkeiNoHpLoss": "Can't be helped. I'll be the shield.",
   "SHIN_GETTER.voice.eventCombat": "I don't go easy on anyone who charges at me.",
   "SHIN_GETTER.voice.eliteRespect": "Looks like you've got some spirit.",
   "SHIN_GETTER.voice.elitePrepare": "Ready yourself!",
