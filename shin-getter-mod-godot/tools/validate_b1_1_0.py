@@ -60,8 +60,12 @@ def validate_balance() -> None:
     )
     reject("src/Models/Powers/SGP_Evolution.cs", "BeforeSideTurnEnd")
     # Evolution Engine was superseded by B1.1.1 and is gated by validate_issue_47.py.
-    if (ROOT / "src/Patches/ShinGetterSpiritCommandRetainPatch.cs").exists():
-        raise AssertionError("spirit command cards must not be retained by a Harmony patch")
+    require(
+        "src/Patches/ShinGetterSpiritCommandRetainPatch.cs",
+        'HarmonyPatch(typeof(CardModel), "get_ShouldRetainThisTurn")',
+        "SpiritRequirement: > 0",
+        "GetPower<SGP_Ki>()?.Amount > 0",
+    )
     spirit_commands = (
         "SGC_HotBlood.cs",
         "SGC_Spirit.cs",
@@ -118,8 +122,8 @@ def validate_sprite_sheets() -> None:
     forms = ROOT / "images/characters/shin_getter/forms"
     sheets = sorted(forms.glob("*/sprite_sheet.png"))
     imports = sorted(forms.glob("*/sprite_sheet.png.import"))
-    if len(sheets) != 27 or len(imports) != 27:
-        raise AssertionError(f"expected 27 sheets/imports, got {len(sheets)}/{len(imports)}")
+    if len(sheets) != 29 or len(imports) != 29:
+        raise AssertionError(f"expected 29 sheets/imports, got {len(sheets)}/{len(imports)}")
     frame_pngs = [path for path in forms.glob("*/sprite_*.png") if path.name != "sprite_sheet.png"]
     if frame_pngs:
         raise AssertionError("runtime form directories still contain per-frame PNG files")
@@ -131,10 +135,15 @@ def validate_sprite_sheets() -> None:
         "death": ("compress/mode=1", "compress/lossy_quality=0.6"),
         "fusion": ("compress/mode=1", "compress/lossy_quality=0.75"),
         "idle": ("compress/mode=1", "compress/lossy_quality=0.75"),
+        "stoner_sunshine": ("compress/mode=0", None),
     }
     for sidecar in imports:
         text = sidecar.read_text(encoding="utf-8")
-        action = sidecar.parent.name.rsplit("_", 1)[-1]
+        action = (
+            "stoner_sunshine"
+            if sidecar.parent.name.endswith("_stoner_sunshine")
+            else sidecar.parent.name.rsplit("_", 1)[-1]
+        )
         if action not in expected_imports:
             raise AssertionError(f"{sidecar.relative_to(ROOT)}: unknown animation action")
         expected_mode, expected_quality = expected_imports[action]
@@ -151,8 +160,8 @@ def validate_sprite_sheets() -> None:
 
     source_root = REPO_ROOT / "art_sources/characters/shin_getter/forms"
     source_frames = list(source_root.glob("*/sprite_*.png"))
-    if len(source_frames) != 1010:
-        raise AssertionError(f"expected 1010 source frames, got {len(source_frames)}")
+    if len(source_frames) != 1190:
+        raise AssertionError(f"expected 1190 source frames, got {len(source_frames)}")
     frame_manifest = load_frame_manifest(source_root / "frame_manifest.txt")
     manifest_frame_paths = {
         f"{action}/sprite_{frame_number:06d}.png"
@@ -161,11 +170,11 @@ def validate_sprite_sheets() -> None:
     }
     actual_frame_paths = {path.relative_to(source_root).as_posix() for path in source_frames}
     manifest_entry_count = sum(len(frame_numbers) for frame_numbers in frame_manifest.values())
-    if manifest_entry_count != 1010 or manifest_frame_paths != actual_frame_paths:
+    if manifest_entry_count != 1190 or manifest_frame_paths != actual_frame_paths:
         missing = sorted(actual_frame_paths - manifest_frame_paths)
         extra = sorted(manifest_frame_paths - actual_frame_paths)
         raise AssertionError(
-            "PCK forbidden frame set does not exactly match the 1010 source files; "
+            "PCK forbidden frame set does not exactly match the 1190 source files; "
             f"missing={missing[:3]}, extra={extra[:3]}"
         )
     validator_path = "tools/validate-mod-resources.gd"
@@ -173,7 +182,7 @@ def validate_sprite_sheets() -> None:
         validator_path,
         "CHARACTER_FRAME_MANIFEST_PATH",
         "_load_character_frame_manifest(pck_path)",
-        "EXPECTED_CHARACTER_SOURCE_FRAME_COUNT := 1010",
+        "EXPECTED_CHARACTER_SOURCE_FRAME_COUNT := 1190",
     )
     reject(validator_path, "FORBIDDEN_CHARACTER_FRAME_COUNTS", "range(1, FORBIDDEN_CHARACTER_FRAME_COUNTS")
     if (ROOT / "art_sources/characters/shin_getter/forms").exists():

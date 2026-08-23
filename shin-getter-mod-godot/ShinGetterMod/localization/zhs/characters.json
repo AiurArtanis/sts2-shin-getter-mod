@@ -41,6 +41,8 @@
 	"SHIN_GETTER.voice.firstDamage": "让我好好回敬你吧",
 	"SHIN_GETTER.voice.lizardEncounter": "别以为蜥蜴能赢过[red]龙[/red]",
 	"SHIN_GETTER.voice.noHpLoss": "我还以为是刮了阵微风",
+	"SHIN_GETTER.voice.hayatoNoHpLoss": "哼，别逗我笑了！",
+	"SHIN_GETTER.voice.benkeiNoHpLoss": "没办法，我来当盾牌。",
 	"SHIN_GETTER.voice.eventCombat": "对主动冲上来的家伙我可不会客气",
 	"SHIN_GETTER.voice.eliteRespect": "看来是个有骨气的对手",
 	"SHIN_GETTER.voice.elitePrepare": "做好觉悟了吧",
@@ -62,5 +64,10 @@
 	"SHIN_GETTER.voice.hayatoKill": "你们就闭嘴看着吧",
 	"SHIN_GETTER.voice.openGetOne": "[sine][red]OPEN GET[/red][/sine]",
 	"SHIN_GETTER.voice.openGetTwo": "[sine][white]OPEN GET[/white][/sine]",
-	"SHIN_GETTER.voice.openGetThree": "[sine][yellow]OPEN GET[/yellow][/sine]"
+	"SHIN_GETTER.voice.openGetThree": "[sine][yellow]OPEN GET[/yellow][/sine]",
+	"SHIN_GETTER.voice.stonerArrivalFeelPower": "我感觉到了，盖塔的力量！",
+	"SHIN_GETTER.voice.stonerArrivalThreeHearts": "三颗心合而为一！",
+	"SHIN_GETTER.voice.stonerArrivalOurWill": "我的、我们的意念会引出盖塔的力量！",
+	"SHIN_GETTER.voice.stonerArrivalUniteHearts": "让我们的心合而为一！",
+	"SHIN_GETTER.voice.stonerArrivalUseSunshine": "龙马！用[red]Stoner[/red] [yellow]Sunshine[/yellow]！"
 }

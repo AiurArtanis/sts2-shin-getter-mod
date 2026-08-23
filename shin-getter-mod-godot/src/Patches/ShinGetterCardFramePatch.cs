@@ -26,12 +26,9 @@ internal static class ShinGetterCardFramePatch
     private const string GetterTwoSilverKey = "D9E4DE";
     private const string GetterThreeYellowKey = "C4AD59";
     private const string DefaultDisabledKey = "default";
-    private const string DynamicFrameTexturePath = "res://images/atlases/ui_atlas.sprites/card/card_frame_attack_s.tres";
-
     private static readonly ConditionalWeakTable<NCard, FrameTintState> TintStates = new();
     private static readonly AccessTools.FieldRef<NCard, TextureRect> FrameRef =
         AccessTools.FieldRefAccess<NCard, TextureRect>("_frame");
-    private static Texture2D? SharedDynamicFrameTexture;
     private static int _formTransitionDepth;
     private static PendingFrameForm? PendingTransitionForm;
     private static int DefaultTintOverrideDepth;
@@ -155,7 +152,7 @@ internal static class ShinGetterCardFramePatch
         if (frame == null)
             return;
 
-        frame.Texture = GetFrameTexture(model);
+        frame.Texture = model.Frame;
         frame.SelfModulate = Colors.White;
 
         Material? material = ModelDb.CardPool<ShinGetterCardPool>().FrameMaterial;
@@ -329,18 +326,6 @@ internal static class ShinGetterCardFramePatch
 
     private static FrameHsvTarget DisabledTarget() =>
         new(DefaultDisabledKey, new Color(DefaultGetterRayKey), 0.455f, 1.05f, 1.16f, Enabled: false);
-
-    private static Texture2D GetFrameTexture(CardModel model)
-    {
-        if (!IsDynamicTintEligible(model))
-            return model.Frame;
-
-        SharedDynamicFrameTexture ??= ResourceLoader.Load<Texture2D>(
-            DynamicFrameTexturePath,
-            null,
-            ResourceLoader.CacheMode.Reuse);
-        return SharedDynamicFrameTexture ?? model.Frame;
-    }
 
     private static bool IsDynamicTintEligible(CardModel model)
     {

@@ -3,6 +3,7 @@ using System;
 using System.Runtime.CompilerServices;
 using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
@@ -47,16 +48,32 @@ internal static class ShinGetterChunibyoMainMenuPatch
     private static void Prefix(NMainMenu __instance)
     {
         ShinGetterChunibyoConfigService.Load();
-        if (!ShinGetterChunibyoConfigService.Current.ShowInMainMenu)
-            return;
-
         try
         {
             NMainMenuTextButton? settingsButton =
                 __instance.GetNodeOrNull<NMainMenuTextButton>("MainMenuTextButtons/SettingsButton");
-            if (settingsButton == null ||
-                __instance.GetNodeOrNull<NMainMenuTextButton>($"MainMenuTextButtons/{ButtonName}") != null)
+            if (settingsButton == null)
+                return;
+
+            NMainMenuTextButton? existing =
+                __instance.GetNodeOrNull<NMainMenuTextButton>($"MainMenuTextButtons/{ButtonName}");
+            if (!ShinGetterChunibyoConfigService.Current.ShowInMainMenu)
             {
+                if (existing != null)
+                {
+                    NShinGetterUpdateBadge.RemoveFrom(existing);
+                    existing.Visible = false;
+                    existing.GetParent()?.RemoveChild(existing);
+                    existing.QueueFreeSafely();
+                }
+                NShinGetterUpdateBadge.AttachTo(settingsButton);
+                return;
+            }
+
+            NShinGetterUpdateBadge.RemoveFrom(settingsButton);
+            if (existing != null)
+            {
+                NShinGetterUpdateBadge.AttachTo(existing);
                 return;
             }
 
@@ -77,6 +94,7 @@ internal static class ShinGetterChunibyoMainMenuPatch
             var self = new NodePath(".");
             button.FocusNeighborLeft = self;
             button.FocusNeighborRight = self;
+            NShinGetterUpdateBadge.AttachTo(button);
         }
         catch (Exception ex)
         {
@@ -97,9 +115,15 @@ internal static class ShinGetterChunibyoSettingsEntryPatch
             var modding = __instance.GetNodeOrNull<MarginContainer>("%Modding");
             var sourceButton = __instance.GetNodeOrNull<NOpenModdingScreenButton>("%ModdingButton");
             if (modding?.GetParent() is not VBoxContainer content
-                || sourceButton == null
-                || content.GetNodeOrNull<MarginContainer>(EntryName) != null)
+                || sourceButton == null)
             {
+                return;
+            }
+
+            if (content.GetNodeOrNull<MarginContainer>(EntryName) is { } existingEntry)
+            {
+                NShinGetterUpdateBadge.AttachOutsideLeft(
+                    existingEntry.GetNode<NOpenModdingScreenButton>("OpenChunibyoConfigButton"));
                 return;
             }
 
@@ -134,6 +158,7 @@ internal static class ShinGetterChunibyoSettingsEntryPatch
             content.MoveChild(divider, insertAt + 1);
             button.GetNode<MegaCrit.Sts2.addons.mega_text.MegaLabel>("Label").SetTextAutoSize(
                 Localize("SHIN_GETTER_CHUNIBYO.OPEN_CONFIG", "Open Config"));
+            NShinGetterUpdateBadge.AttachOutsideLeft(button);
 
             if (!sourceButton.IsEnabled)
                 Callable.From(button.Disable).CallDeferred();

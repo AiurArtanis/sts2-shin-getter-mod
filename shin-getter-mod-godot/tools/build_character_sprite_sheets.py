@@ -20,6 +20,7 @@ FRAME_COUNTS = {
     "getter_one_death": 48,
     "getter_one_idle": 24,
     "getter_one_fusion": 30,
+    "getter_one_stoner_sunshine": 90,
     "getter_two_attack": 40,
     "getter_two_block": 24,
     "getter_two_cast": 32,
@@ -40,8 +41,10 @@ FRAME_COUNTS = {
     "shin_getter_dragon_dash": 48,
     "shin_getter_dragon_death": 48,
     "shin_getter_dragon_idle": 36,
+    "shin_getter_dragon_stoner_sunshine": 90,
 }
-COLUMNS_BY_FRAME_COUNT = {24: 6, 30: 6, 32: 8, 36: 6, 40: 8, 48: 8, 60: 10}
+COLUMNS_BY_FRAME_COUNT = {24: 6, 30: 6, 32: 8, 36: 6, 40: 8, 48: 8, 60: 10, 90: 10}
+COLUMNS_BY_ACTION = {}
 IDLE_RESOURCES = {
     "getter_one_idle": "shin_getter_one_idle_frames.tres",
     "getter_two_idle": "shin_getter_two_idle_frames.tres",
@@ -95,20 +98,20 @@ def frame_paths(source_dir: Path, expected_count: int, frame_numbers: tuple[int,
     return paths
 
 
-def sheet_geometry(frame_count: int) -> tuple[int, int]:
-    columns = COLUMNS_BY_FRAME_COUNT[frame_count]
+def sheet_geometry(action: str, frame_count: int) -> tuple[int, int]:
+    columns = COLUMNS_BY_ACTION[action] if action in COLUMNS_BY_ACTION else COLUMNS_BY_FRAME_COUNT[frame_count]
     rows = (frame_count + columns - 1) // columns
     width, height = columns * FRAME_SIZE, rows * FRAME_SIZE
     if width > MAX_TEXTURE_SIZE or height > MAX_TEXTURE_SIZE:
         raise ValueError(f"sheet {width}x{height} exceeds {MAX_TEXTURE_SIZE}x{MAX_TEXTURE_SIZE}")
-    if columns * rows != frame_count:
+    if action not in COLUMNS_BY_ACTION and columns * rows != frame_count:
         raise ValueError(f"frame count {frame_count} does not exactly fill {columns}x{rows}")
     return columns, rows
 
 
-def build_sheet(source_dir: Path, output_dir: Path, frame_count: int, frame_numbers: tuple[int, ...]) -> None:
+def build_sheet(action: str, source_dir: Path, output_dir: Path, frame_count: int, frame_numbers: tuple[int, ...]) -> None:
     paths = frame_paths(source_dir, frame_count, frame_numbers)
-    columns, rows = sheet_geometry(frame_count)
+    columns, rows = sheet_geometry(action, frame_count)
     sheet = Image.new("RGBA", (columns * FRAME_SIZE, rows * FRAME_SIZE))
     for index, path in enumerate(paths):
         with Image.open(path) as frame:
@@ -125,9 +128,9 @@ def build_sheet(source_dir: Path, output_dir: Path, frame_count: int, frame_numb
     print(f"BUILT {output_dir.name}: {frame_count} frames, {columns}x{rows}, {sheet.width}x{sheet.height}")
 
 
-def verify_sheet(source_dir: Path, output_dir: Path, frame_count: int, frame_numbers: tuple[int, ...]) -> None:
+def verify_sheet(action: str, source_dir: Path, output_dir: Path, frame_count: int, frame_numbers: tuple[int, ...]) -> None:
     paths = frame_paths(source_dir, frame_count, frame_numbers)
-    columns, rows = sheet_geometry(frame_count)
+    columns, rows = sheet_geometry(action, frame_count)
     output_path = output_dir / SHEET_NAME
     with Image.open(output_path) as sheet:
         sheet = sheet.convert("RGBA")
@@ -144,11 +147,20 @@ def verify_sheet(source_dir: Path, output_dir: Path, frame_count: int, frame_num
             with Image.open(path) as frame:
                 if ImageChops.difference(sheet.crop(box), frame.convert("RGBA")).getbbox() is not None:
                     raise ValueError(f"{output_path}: frame {index + 1} differs from {path}")
+        if frame_count < columns * rows:
+            trailing_box = (
+                (frame_count % columns) * FRAME_SIZE,
+                (frame_count // columns) * FRAME_SIZE,
+                columns * FRAME_SIZE,
+                rows * FRAME_SIZE,
+            )
+            if sheet.crop(trailing_box).getbbox() is not None:
+                raise ValueError(f"{output_path}: trailing cells must remain transparent")
     print(f"VERIFIED {output_dir.name}: {frame_count} frames")
 
 
 def write_idle_resource(project_root: Path, action: str, frame_count: int) -> None:
-    columns, _ = sheet_geometry(frame_count)
+    columns, _ = sheet_geometry(action, frame_count)
     sheet_path = f"res://images/characters/shin_getter/forms/{action}/{SHEET_NAME}"
     lines = [
         f'[gd_resource type="SpriteFrames" load_steps={frame_count + 2} format=3]',
@@ -202,9 +214,9 @@ def main() -> None:
         source_dir = source_root / action
         output_dir = output_root / action
         if args.check:
-            verify_sheet(source_dir, output_dir, frame_count, frame_manifest[action])
+            verify_sheet(action, source_dir, output_dir, frame_count, frame_manifest[action])
         else:
-            build_sheet(source_dir, output_dir, frame_count, frame_manifest[action])
+            build_sheet(action, source_dir, output_dir, frame_count, frame_manifest[action])
 
     if not args.check:
         for action in IDLE_RESOURCES:

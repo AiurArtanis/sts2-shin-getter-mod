@@ -53,9 +53,16 @@ const REQUIRED_RESOURCES := {
 	"res://audio/sfx/characters/shin_getter/voices/hayato_drill_hurricane_long.wav": false,
 	"res://audio/sfx/characters/shin_getter/voices/hayato_drill_arm.wav": false,
 	"res://audio/sfx/characters/shin_getter/voices/hayato_kill.wav": false,
+	"res://audio/sfx/characters/shin_getter/voices/hayato_no_hp_loss.wav": false,
+	"res://audio/sfx/characters/shin_getter/voices/benkei_no_hp_loss.wav": false,
 	"res://audio/sfx/characters/shin_getter/voices/ryoma_open_get.wav": false,
 	"res://audio/sfx/characters/shin_getter/voices/hayato_open_get.wav": false,
 	"res://audio/sfx/characters/shin_getter/voices/benkei_open_get.wav": false,
+	"res://audio/sfx/characters/shin_getter/voices/ryoma_feel_getter_power.wav": false,
+	"res://audio/sfx/characters/shin_getter/voices/ryoma_three_hearts_one.wav": false,
+	"res://audio/sfx/characters/shin_getter/voices/ryoma_our_will_getter_power.wav": false,
+	"res://audio/sfx/characters/shin_getter/voices/hayato_unite_hearts.wav": false,
+	"res://audio/sfx/characters/shin_getter/voices/benkei_use_stoner_sunshine.wav": false,
 	"res://audio/music/shin_getter/execution_theme.mp3": false,
 	"res://audio/music/shin_getter/encounters/elite_overgrowth.mp3": false,
 	"res://audio/music/shin_getter/encounters/elite_underdocks.mp3": false,
@@ -86,6 +93,8 @@ const REQUIRED_RESOURCES := {
 	"res://images/atlases/ui_atlas.png": false,
 	"res://images/atlases/ui_atlas.sprites/card/energy_shin_getter.tres": false,
 	"res://images/packed/sprite_fonts/shin_getter_energy_icon.png": false,
+	"res://images/packed/card_portraits/shin_getter/s_g_c_getter_landing.png": false,
+	"res://images/packed/card_single/shin_getter/s_g_c_getter_landing_card.png": false,
 	"res://images/atlases/card_atlas.sprites/shin_getter/s_g_c_ki.tres": false,
 	"res://images/atlases/card_atlas.sprites/shin_getter/s_g_c_petal_breakthrough.tres": false,
 	"res://images/atlases/card_atlas.sprites/shin_getter/s_g_c_reschedule_ticket.tres": false,
@@ -165,6 +174,7 @@ const REQUIRED_RESOURCES := {
 	"res://images/characters/shin_getter/forms/getter_one_death/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/forms/getter_one_idle/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/forms/getter_one_fusion/sprite_sheet.png": false,
+	"res://images/characters/shin_getter/forms/getter_one_stoner_sunshine/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/forms/getter_two_attack/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/forms/getter_two_block/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/forms/getter_two_cast/sprite_sheet.png": false,
@@ -185,6 +195,7 @@ const REQUIRED_RESOURCES := {
 	"res://images/characters/shin_getter/forms/shin_getter_dragon_dash/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/forms/shin_getter_dragon_death/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/forms/shin_getter_dragon_idle/sprite_sheet.png": false,
+	"res://images/characters/shin_getter/forms/shin_getter_dragon_stoner_sunshine/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/merchant/s_g_o_merchant_ryoma_citizen.png": false,
 	"res://images/characters/shin_getter/merchant/s_g_o_merchant_ryoma_normal.png": false,
 	"res://images/characters/shin_getter/rest/s_g_o_ryoma_rest.png": false,
@@ -256,7 +267,7 @@ const FORBIDDEN_RESOURCE_DEPENDENCIES := {
 }
 
 const CHARACTER_FRAME_MANIFEST_PATH := "art_sources/characters/shin_getter/forms/frame_manifest.txt"
-const EXPECTED_CHARACTER_SOURCE_FRAME_COUNT := 1010
+const EXPECTED_CHARACTER_SOURCE_FRAME_COUNT := 1190
 
 
 func _initialize() -> void:

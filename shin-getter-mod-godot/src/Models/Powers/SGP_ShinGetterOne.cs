@@ -31,7 +31,12 @@ public sealed class SGP_ShinGetterOne : PowerModel
             Flash();
             await PowerCmd.Apply<VigorPower>(new ThrowingPlayerChoiceContext(), base.Owner, 1m, base.Owner, null);
             bool isCombatStart = cardSource == null;
-            float speedScale = cardSource is SGC_ChangeAttack ? SGC_ChangeAttack.TransformSpeedScale : 1f;
+            float speedScale = cardSource switch
+            {
+                SGC_ChangeAttack => SGC_ChangeAttack.TransformSpeedScale,
+                SGC_TacticalRetreat => SGC_TacticalRetreat.TransformSpeedScale,
+                _ => 1f,
+            };
             // Relics start the opening fusion only after all combat-start setup is ready,
             // immediately alongside the prepared opening voice.
             if (isCombatStart)

@@ -25,6 +25,8 @@ internal static partial class ShinGetterCombatVfx
 {
     private const string VineShamblerVinesScenePath = "res://scenes/vfx/monsters/vine_shambler_vines/vine_shambler_vines_vfx.tscn";
     private const string AwakenedSoulFlashTexturePath = "res://images/powers/s_g_p_awakened_soul.png";
+    private const float TacticalRetreatDistance = 480f;
+    private const float TacticalRetreatReturnSeconds = 1.5f;
 
     public static async Task PlayDiveStrike(Creature owner, Creature target)
     {
@@ -103,26 +105,35 @@ internal static partial class ShinGetterCombatVfx
     {
         NCreature? ownerNode = NCombatRoom.Instance?.GetCreatureNode(owner);
         if (ownerNode == null)
+        {
+            await transform();
             return;
+        }
 
         Vector2 origin = ownerNode.GlobalPosition;
         Vector2 originCenter = ownerNode.VfxSpawnPosition;
         Vector2 retreatDirection = owner.IsEnemy ? Vector2.Right : Vector2.Left;
-        Vector2 offscreen = origin + retreatDirection * 980f;
-        AddAfterimageLines(originCenter, originCenter + retreatDirection * 520f, RushLine, 6, 18f);
+        Vector2 retreatPosition = origin + retreatDirection * TacticalRetreatDistance;
+        await NShinGetterStaticVisuals.PlayCreatureActionAnimationAndWait(
+            owner,
+            "Block",
+            fallbackDuration: 0.4f);
+        AddAfterimageLines(originCenter, originCenter + retreatDirection * TacticalRetreatDistance, RushLine, 6, 18f);
 
         Tween tween = ownerNode.CreateTween();
-        tween.TweenProperty(ownerNode, "global_position", offscreen, 0.16f).SetEase(Tween.EaseType.In).SetTrans(Tween.TransitionType.Cubic);
-        tween.TweenInterval(0.10f);
-        await Cmd.Wait(0.27f);
-
-        await transform();
-        AddAfterimageLines(originCenter + retreatDirection * 520f, originCenter, GetterRay, 6, 18f);
-        Tween returnTween = ownerNode.CreateTween();
-        returnTween.TweenProperty(ownerNode, "global_position", origin, 0.36f)
+        tween.TweenProperty(ownerNode, "global_position", retreatPosition, 0.24f)
             .SetEase(Tween.EaseType.Out)
             .SetTrans(Tween.TransitionType.Cubic);
-        await Cmd.Wait(0.37f);
+        await ownerNode.ToSignal(tween, Tween.SignalName.Finished);
+
+        AddAfterimageLines(originCenter + retreatDirection * TacticalRetreatDistance, originCenter, GetterRay, 6, 18f);
+        Tween returnTween = ownerNode.CreateTween();
+        returnTween.TweenProperty(ownerNode, "global_position", origin, TacticalRetreatReturnSeconds)
+            .SetEase(Tween.EaseType.Out)
+            .SetTrans(Tween.TransitionType.Sine);
+        Task transformTask = transform();
+        await ownerNode.ToSignal(returnTween, Tween.SignalName.Finished);
+        await transformTask;
     }
 
     public static async Task PlayDaggerSpray(Creature owner, IEnumerable<Creature> targets)

@@ -8,5 +8,9 @@
   "SHIN_GETTER_INFINITE_EVOLUTION_TOTAL.title": "无限进化累计",
   "SHIN_GETTER_INFINITE_EVOLUTION_TOTAL.description": "本局游戏累计增长力量：{Strength}；敏捷：{Dexterity}；最大生命：{MaxHp}。",
   "SHIN_GETTER_STACK.title": "叠加",
-  "SHIN_GETTER_STACK.description": "将所选卡牌卡面上的数值累加到本牌伤害，叠加总值最多为50。"
+  "SHIN_GETTER_STACK.description": "将所选卡牌卡面上的数值累加到本牌伤害，叠加总值最多为50。",
+  "SHIN_GETTER_OPEN_GET_INTENT_SINGLE": "{Damage}[url=shin_getter_open_get][color=#ff0000] X[/color][/url]",
+  "SHIN_GETTER_OPEN_GET_INTENT_MULTI": "{Damage}[font_size=18]×{Repeat}[/font_size][url=shin_getter_open_get][color=#ff0000] X[/color][/url]",
+  "SHIN_GETTER_OPEN_GET_INTENT.title": "战机分离",
+  "SHIN_GETTER_OPEN_GET_INTENT.description": "这个攻击将被回避"
 }

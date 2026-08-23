@@ -22,6 +22,7 @@ internal static class NShinGetterSpriteAnimationStateMachine
             "Attack" => NShinGetterSpriteSequence.AttackAnimationName,
             "HeavyAttack" => NShinGetterSpriteSequence.HeavyAttackAnimationName,
             "Cast" => NShinGetterSpriteSequence.CastAnimationName,
+            "StonerSunshine" => NShinGetterSpriteSequence.StonerSunshineAnimationName,
             "Dash" => NShinGetterSpriteSequence.DashAnimationName,
             "Hit" => NShinGetterSpriteSequence.BlockAnimationName,
             "Block" => NShinGetterSpriteSequence.BlockAnimationName,

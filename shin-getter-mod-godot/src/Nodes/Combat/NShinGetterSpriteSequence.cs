@@ -45,6 +45,7 @@ internal static class NShinGetterSpriteSequence
     public const string GetterThreeBlockFrameDirectory = "res://images/characters/shin_getter/forms/getter_three_block";
     public const string GetterThreeDeathFrameDirectory = "res://images/characters/shin_getter/forms/getter_three_death";
     public const string GetterOneFusionFrameDirectory = "res://images/characters/shin_getter/forms/getter_one_fusion";
+    public const string GetterOneStonerSunshineFrameDirectory = "res://images/characters/shin_getter/forms/getter_one_stoner_sunshine";
     public const string GetterTwoFusionFrameDirectory = "res://images/characters/shin_getter/forms/getter_two_fusion";
     public const string GetterThreeFusionFrameDirectory = "res://images/characters/shin_getter/forms/getter_three_fusion";
     public const string ShinDragonIdleFrameDirectory = "res://images/characters/shin_getter/forms/shin_getter_dragon_idle";
@@ -53,6 +54,7 @@ internal static class NShinGetterSpriteSequence
     public const string ShinDragonBlockFrameDirectory = "res://images/characters/shin_getter/forms/shin_getter_dragon_block";
     public const string ShinDragonDashFrameDirectory = "res://images/characters/shin_getter/forms/shin_getter_dragon_dash";
     public const string ShinDragonDeathFrameDirectory = "res://images/characters/shin_getter/forms/shin_getter_dragon_death";
+    public const string ShinDragonStonerSunshineFrameDirectory = "res://images/characters/shin_getter/forms/shin_getter_dragon_stoner_sunshine";
     public const string IdleAnimationName = "idle";
     public const string AttackAnimationName = "attack";
     public const string HeavyAttackAnimationName = "heavy_attack";
@@ -61,6 +63,7 @@ internal static class NShinGetterSpriteSequence
     public const string BlockAnimationName = "block";
     public const string DeathAnimationName = "death";
     public const string FusionAnimationName = "fusion";
+    public const string StonerSunshineAnimationName = "stoner_sunshine";
     public const int IdleMaxFrames = 24;
     public const int AttackMaxFrames = 40;
     public const int CastMaxFrames = 32;
@@ -86,6 +89,7 @@ internal static class NShinGetterSpriteSequence
     public const int ShinDragonDashMaxFrames = 48;
     public const int ShinDragonDeathMaxFrames = 48;
     public const int FusionMaxFrames = 30;
+    public const int StonerSunshineMaxFrames = 90;
     public const double IdleFramesPerSecond = 24d;
     public const double AttackFramesPerSecond = 36d;
     public const double ActionFramesPerSecond = 30d;
@@ -93,6 +97,7 @@ internal static class NShinGetterSpriteSequence
     public const double ShinDragonAttackFramesPerSecond = 54d;
     public const double ShinDragonBlockFramesPerSecond = 60d;
     public const double FusionFramesPerSecond = 60d;
+    public const double StonerSunshineFramesPerSecond = 30d;
 
     public const string FrameDirectory = IdleFrameDirectory;
     public const string AnimationName = IdleAnimationName;
@@ -109,6 +114,7 @@ internal static class NShinGetterSpriteSequence
         EnsureRequestedAnimation(frames, animationName,
             (AttackAnimationName, AttackFrameDirectory, AttackMaxFrames, AttackFramesPerSecond),
             (CastAnimationName, CastFrameDirectory, CastMaxFrames, ActionFramesPerSecond),
+            (StonerSunshineAnimationName, GetterOneStonerSunshineFrameDirectory, StonerSunshineMaxFrames, StonerSunshineFramesPerSecond),
             (BlockAnimationName, GetterOneBlockFrameDirectory, GetterOneBlockMaxFrames, GetterOneBlockFramesPerSecond),
             (DashAnimationName, GetterOneDashFrameDirectory, GetterOneDashMaxFrames, ActionFramesPerSecond),
             (DeathAnimationName, DeathFrameDirectory, DeathMaxFrames, ActionFramesPerSecond));
@@ -178,6 +184,7 @@ internal static class NShinGetterSpriteSequence
         EnsureRequestedAnimation(frames, animationName,
             (AttackAnimationName, ShinDragonAttackFrameDirectory, ShinDragonAttackMaxFrames, ShinDragonAttackFramesPerSecond),
             (CastAnimationName, ShinDragonCastFrameDirectory, ShinDragonCastMaxFrames, ActionFramesPerSecond),
+            (StonerSunshineAnimationName, ShinDragonStonerSunshineFrameDirectory, StonerSunshineMaxFrames, StonerSunshineFramesPerSecond),
             (BlockAnimationName, ShinDragonBlockFrameDirectory, ShinDragonBlockMaxFrames, ShinDragonBlockFramesPerSecond),
             (DashAnimationName, ShinDragonDashFrameDirectory, ShinDragonDashMaxFrames, ActionFramesPerSecond),
             (DeathAnimationName, ShinDragonDeathFrameDirectory, ShinDragonDeathMaxFrames, ActionFramesPerSecond));
@@ -245,6 +252,7 @@ internal static class NShinGetterSpriteSequence
         BlockAnimationName,
         DashAnimationName,
         DeathAnimationName,
+        StonerSunshineAnimationName,
     };
 
     private static void EnsureRequestedAnimation(

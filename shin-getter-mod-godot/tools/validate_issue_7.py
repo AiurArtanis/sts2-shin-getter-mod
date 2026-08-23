@@ -29,13 +29,15 @@ def validate_update_history() -> None:
     popup = UPDATE_HISTORY_POPUP_PATH.read_text(encoding="utf-8")
     entries = json.loads(UPDATE_HISTORY_PATH.read_text(encoding="utf-8"))
     history_popup = submenu.split(
-        "private void ShowUpdateHistoryPopup", 1
+        "private bool ShowUpdateHistoryPopup", 1
     )[1].split("private static string Localize", 1)[0]
     require(
         submenu,
-        "private void ShowUpdateHistoryPopup(string title, string body)",
+        "private bool ShowUpdateHistoryPopup(string title, string body)",
         "Control? returnFocus = GetViewport().GuiGetFocusOwner()",
-        "modalContainer.Add(NChunibyoUpdateHistoryPopup.Create(title, body, returnFocus))",
+        "NChunibyoUpdateHistoryPopup popup = NChunibyoUpdateHistoryPopup.Create(title, body, returnFocus)",
+        "modalContainer.Add(popup)",
+        "popup.IsInsideTree() && popup.IsVisibleInTree()",
     )
     require(
         popup,

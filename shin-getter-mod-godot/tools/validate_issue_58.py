@@ -339,11 +339,11 @@ def validate_service() -> None:
     ):
         before_combat = method_body(relic_source, "public override async Task BeforeCombatStart")
         require(before_combat, "ApplyPendingPreCombatSetup(Owner)")
-        after_draw = method_body(relic_source, "public override Task AfterPlayerTurnStart")
+        after_draw = method_body(relic_source, "public override async Task AfterPlayerTurnStart")
         require(
             after_draw,
             "if (player != Owner)",
-            "ApplyPendingTrialAfterHandDraw(choiceContext, Owner)",
+            "await ShinGetterEventInvasionService.ApplyPendingTrialAfterHandDraw(choiceContext, Owner)",
         )
 
     spirit_play = method_body(spirit_card, "protected override async Task OnPlay")
