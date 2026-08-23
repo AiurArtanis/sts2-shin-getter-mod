@@ -66,15 +66,15 @@ internal static class ShinGetterArchaicToothSetupPatch
         if (player.Character is not ShinGetter)
             return true;
 
-        CardModel? getterBeam = ShinGetterArchaicToothPatchHelpers.FindGetterBeam(player);
-        if (getterBeam == null)
+        CardModel? getterLaunch = ShinGetterArchaicToothPatchHelpers.FindGetterLaunch(player);
+        if (getterLaunch == null)
         {
             __result = false;
             return false;
         }
 
-        CardModel stonerSunshine = ShinGetterArchaicToothPatchHelpers.CreateStonerSunshineFrom(getterBeam);
-        __instance.SetupForTests(getterBeam.ToSerializable(), stonerSunshine.ToSerializable());
+        CardModel getterLanding = ShinGetterArchaicToothPatchHelpers.CreateGetterLandingFrom(getterLaunch);
+        __instance.SetupForTests(getterLaunch.ToSerializable(), getterLanding.ToSerializable());
         __result = true;
         return false;
     }
@@ -89,7 +89,7 @@ internal static class ShinGetterArchaicToothAfterObtainedPatch
         if (player.Character is not ShinGetter)
             return true;
 
-        __result = ShinGetterArchaicToothPatchHelpers.TransformGetterBeam(player);
+        __result = ShinGetterArchaicToothPatchHelpers.TransformGetterLaunch(player);
         return false;
     }
 }
@@ -111,31 +111,31 @@ internal static class ShinGetterTouchOfOrobasPatchHelpers
 
 internal static class ShinGetterArchaicToothPatchHelpers
 {
-    internal static CardModel? FindGetterBeam(Player player) =>
-        player.Deck.Cards.FirstOrDefault(card => card.Id == ModelDb.Card<SGC_GetterBeam>().Id);
+    internal static CardModel? FindGetterLaunch(Player player) =>
+        player.Deck.Cards.FirstOrDefault(card => card.Id == ModelDb.Card<SGC_GetterLaunch>().Id);
 
-    internal static CardModel CreateStonerSunshineFrom(CardModel getterBeam)
+    internal static CardModel CreateGetterLandingFrom(CardModel getterLaunch)
     {
-        CardModel stonerSunshine = getterBeam.Owner.RunState.CreateCard<SGC_StonerSunshine>(getterBeam.Owner);
-        if (getterBeam.IsUpgraded)
-            CardCmd.Upgrade(stonerSunshine);
+        CardModel getterLanding = getterLaunch.Owner.RunState.CreateCard<SGC_GetterLanding>(getterLaunch.Owner);
+        if (getterLaunch.IsUpgraded)
+            CardCmd.Upgrade(getterLanding);
 
-        if (getterBeam.Enchantment != null)
+        if (getterLaunch.Enchantment != null)
         {
-            var enchantment = (EnchantmentModel)getterBeam.Enchantment.MutableClone();
-            CardCmd.Enchant(enchantment, stonerSunshine, enchantment.Amount);
+            var enchantment = (EnchantmentModel)getterLaunch.Enchantment.MutableClone();
+            CardCmd.Enchant(enchantment, getterLanding, enchantment.Amount);
         }
 
-        return stonerSunshine;
+        return getterLanding;
     }
 
-    internal static async Task TransformGetterBeam(Player player)
+    internal static async Task TransformGetterLaunch(Player player)
     {
-        CardModel? getterBeam = FindGetterBeam(player);
-        if (getterBeam == null)
+        CardModel? getterLaunch = FindGetterLaunch(player);
+        if (getterLaunch == null)
             return;
 
-        CardModel stonerSunshine = CreateStonerSunshineFrom(getterBeam);
-        await CardCmd.Transform(getterBeam, stonerSunshine);
+        CardModel getterLanding = CreateGetterLandingFrom(getterLaunch);
+        await CardCmd.Transform(getterLaunch, getterLanding);
     }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
@@ -19,6 +20,17 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_GetterLanding : ShinGetterCardBase
 {
+    public override string PortraitPath =>
+        ImageHelper.GetImagePath("packed/card_single/shin_getter/s_g_c_getter_landing_card.png");
+
+    public override string BetaPortraitPath => PortraitPath;
+
+    public override IEnumerable<string> AllPortraitPaths => new[]
+    {
+        PortraitPath,
+        ImageHelper.GetImagePath("packed/card_portraits/shin_getter/s_g_c_getter_landing.png"),
+    };
+
     protected override IEnumerable<IHoverTip> ExtraHoverTips => WithContextualHoverTips(new IHoverTip[]
     {
         HoverTipFactory.FromPower<SGP_Ki>(),

@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
 using ShinGetterMod.Models.Powers;
+using ShinGetterMod.Audio;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -62,7 +63,8 @@ public sealed class SGC_Desperation : ShinGetterCardBase
         int hpLost = Math.Max(Owner.Creature.CurrentHp - 1, 0);
         if (hpLost > 0)
         {
-            await CreatureCmd.SetCurrentHp(Owner.Creature, 1m);
+            using (ShinGetterVoiceService.SuppressLowHpThresholdVoices(Owner))
+                await CreatureCmd.SetCurrentHp(Owner.Creature, 1m);
             await PowerCmd.Apply<SGP_Desperation>(
                 choiceContext, Owner.Creature, hpLost, Owner.Creature, this);
         }

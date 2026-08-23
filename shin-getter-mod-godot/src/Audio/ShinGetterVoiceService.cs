@@ -78,6 +78,11 @@ internal enum ShinGetterVoiceCue
     OpenGetOne = 46,
     OpenGetTwo = 47,
     OpenGetThree = 48,
+    StonerArrivalFeelPower = 49,
+    StonerArrivalThreeHearts = 50,
+    StonerArrivalOurWill = 51,
+    StonerArrivalUniteHearts = 52,
+    StonerArrivalUseSunshine = 53,
 }
 
 internal static class ShinGetterVoiceService
@@ -155,6 +160,11 @@ internal static class ShinGetterVoiceService
         new("058", ShinGetterVoiceCue.OpenGetOne, "ryoma_open_get.wav", "SHIN_GETTER.voice.openGetOne", ShinGetterForm.Getter1, VoicePlaybackCategory.DamageResponse),
         new("059", ShinGetterVoiceCue.OpenGetTwo, "hayato_open_get.wav", "SHIN_GETTER.voice.openGetTwo", ShinGetterForm.Getter2, VoicePlaybackCategory.DamageResponse),
         new("060", ShinGetterVoiceCue.OpenGetThree, "benkei_open_get.wav", "SHIN_GETTER.voice.openGetThree", ShinGetterForm.Getter3, VoicePlaybackCategory.DamageResponse),
+        new("061", ShinGetterVoiceCue.StonerArrivalFeelPower, "ryoma_feel_getter_power.wav", "SHIN_GETTER.voice.stonerArrivalFeelPower", ShinGetterForm.Getter1),
+        new("062", ShinGetterVoiceCue.StonerArrivalThreeHearts, "ryoma_three_hearts_one.wav", "SHIN_GETTER.voice.stonerArrivalThreeHearts", ShinGetterForm.Getter1),
+        new("063", ShinGetterVoiceCue.StonerArrivalOurWill, "ryoma_our_will_getter_power.wav", "SHIN_GETTER.voice.stonerArrivalOurWill", ShinGetterForm.Getter1),
+        new("064", ShinGetterVoiceCue.StonerArrivalUniteHearts, "hayato_unite_hearts.wav", "SHIN_GETTER.voice.stonerArrivalUniteHearts", ShinGetterForm.Getter2),
+        new("065", ShinGetterVoiceCue.StonerArrivalUseSunshine, "benkei_use_stoner_sunshine.wav", "SHIN_GETTER.voice.stonerArrivalUseSunshine", ShinGetterForm.Getter3),
     };
 
     private static readonly IReadOnlyDictionary<ShinGetterVoiceCue, VoiceLine> Lines = VoiceLines
@@ -292,6 +302,60 @@ internal static class ShinGetterVoiceService
         return Task.CompletedTask;
     }
 
+    internal static void PlayStonerSunshineArrival(Player player)
+    {
+        bool isShinDragon = player.Creature.GetPower<SGP_ShinForm>() != null;
+        ShinGetterVoiceCue[] candidates = isShinDragon
+            ? new[]
+            {
+                ShinGetterVoiceCue.StonerArrivalThreeHearts,
+                ShinGetterVoiceCue.StonerArrivalOurWill,
+                ShinGetterVoiceCue.StonerArrivalUniteHearts,
+                ShinGetterVoiceCue.StonerArrivalUseSunshine,
+            }
+            : player.Creature.GetPower<SGP_ShinGetterOne>() != null
+                ? new[]
+                {
+                    ShinGetterVoiceCue.StonerArrivalFeelPower,
+                    ShinGetterVoiceCue.StonerArrivalThreeHearts,
+                    ShinGetterVoiceCue.StonerArrivalOurWill,
+                }
+                : player.Creature.GetPower<SGP_ShinGetterTwo>() != null
+                    ? new[] { ShinGetterVoiceCue.StonerArrivalUniteHearts }
+                    : player.Creature.GetPower<SGP_ShinGetterThree>() != null
+                        ? new[] { ShinGetterVoiceCue.StonerArrivalUseSunshine }
+                        : Array.Empty<ShinGetterVoiceCue>();
+        if (candidates.Length == 0)
+            return;
+
+        ShinGetterVoiceCue[] available = candidates
+            .Where(candidate => CanClaimVoiceCue(player, candidate))
+            .ToArray();
+        if (available.Length == 0)
+            return;
+
+        ShinGetterVoiceCue cue = available[MegaCrit.Sts2.Core.Random.Rng.Chaotic.NextInt(available.Length)];
+        VoiceLine line = Lines[cue];
+        if (!TryClaimVoiceCue(player, cue))
+            return;
+
+        TryPlayLine(player, line, out _, ignoreRequiredForm: isShinDragon);
+    }
+
+    /// <summary>
+    /// Suppresses the low-HP threshold voice family (workbook codes 052-057) while a card
+    /// deliberately sets HP. This prevents Desperation from masquerading as incoming damage.
+    /// </summary>
+    internal static IDisposable SuppressLowHpThresholdVoices(Player player)
+    {
+        VoicePlaybackState state = PlaybackStates.GetOrCreateValue(player);
+        state.LowHpVoiceSuppressionDepth++;
+        return new LowHpVoiceSuppression(state);
+    }
+
+    internal static bool AreLowHpThresholdVoicesSuppressed(Player player) =>
+        PlaybackStates.GetOrCreateValue(player).LowHpVoiceSuppressionDepth > 0;
+
     internal static void PlayShinDragonTransform(Player player)
     {
         PlayAudio(TransformSfxPath);
@@ -365,6 +429,7 @@ internal static class ShinGetterVoiceService
             VoicePlaybackState state = PlaybackStates.GetOrCreateValue(runPlayer);
             state.ShouldPlayShiningSparkFollowUp = false;
             state.HasHandledFirstDamage = false;
+            state.LowHpVoiceSuppressionDepth = 0;
             state.CombatStartContext = null;
             state.PendingKillVoiceLines.Clear();
             StopAllVoiceAudio(state);
@@ -481,7 +546,7 @@ internal static class ShinGetterVoiceService
 
         if (!LinesByCode.TryGetValue(code, out VoiceLine? line))
         {
-            message = "Usage: sgs <001-047|058-060>";
+            message = "Usage: sgs <001-047|058-065>";
             return false;
         }
 
@@ -950,7 +1015,27 @@ internal static class ShinGetterVoiceService
         public int SubtitleGeneration;
         public bool ShouldPlayShiningSparkFollowUp;
         public bool HasHandledFirstDamage;
+        public int LowHpVoiceSuppressionDepth;
         public CombatStartVoiceContext? CombatStartContext;
+    }
+
+    private sealed class LowHpVoiceSuppression : IDisposable
+    {
+        private VoicePlaybackState? _state;
+
+        internal LowHpVoiceSuppression(VoicePlaybackState state)
+        {
+            _state = state;
+        }
+
+        public void Dispose()
+        {
+            if (_state is not { } state)
+                return;
+
+            _state = null;
+            state.LowHpVoiceSuppressionDepth = Math.Max(0, state.LowHpVoiceSuppressionDepth - 1);
+        }
     }
 
     private sealed class CombatStartVoiceContext

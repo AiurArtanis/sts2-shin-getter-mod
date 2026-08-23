@@ -15,6 +15,19 @@ REPOSITORY = PROJECT.parent
 FRAME_SIZE = 720
 FUSION_ACTIONS = ("getter_one_fusion", "getter_two_fusion", "getter_three_fusion")
 EXPECTED_FIRST_FRAME_SHA256 = "31ebc1f3e222299e09c7448ee52cf6cd307c8a18ea5f832844a60dffaf9770ee"
+EXPECTED_GETTER_LANDING_ART = {
+    "images/packed/card_portraits/shin_getter/s_g_c_getter_landing.png":
+        "8d7714c7d29bf73f2af7f8eec80bfe5bbc0342579f805c8ca1d5524835a4c395",
+    "images/packed/card_single/shin_getter/s_g_c_getter_landing_card.png":
+        "6390ca0224244848a3ad33e325454d3361217067ed1af298e745e028d30d31ea",
+}
+EXPECTED_STONER_ARRIVAL_AUDIO = {
+    "ryoma_feel_getter_power.wav": "0f3d5e2c06e65cf78f3badedbdf09451e5fa7b0d3cebb413b255feb60ef17d0f",
+    "ryoma_three_hearts_one.wav": "1db52dfe0b3bf1bf0b42fc6cd35fedc77f05c98a2e457c374923f1019a2b07b7",
+    "ryoma_our_will_getter_power.wav": "ff6ecb51b3cc2afe0218629128d41a18ef72875411daacabfab0bec38c118cd3",
+    "hayato_unite_hearts.wav": "268ff77eeec5c19e8c615c74aaa890a7f7227313b28c3712863f0e60f88ae124",
+    "benkei_use_stoner_sunshine.wav": "fcbb7c2750e6707343f22adb1b437dd8de8e4f1a58fcc6c723edc58b7a18002c",
+}
 
 
 def require(condition: bool, message: str) -> None:
@@ -73,6 +86,12 @@ def check_code_wiring() -> None:
     radiated_card = read(PROJECT / "src/Models/Cards/SGC_Radiated.cs")
     combat_vfx = read(PROJECT / "src/Nodes/Vfx/ShinGetterCombatVfx.Extra.cs")
     tactical_retreat = read(PROJECT / "src/Models/Cards/SGC_TacticalRetreat.cs")
+    stoner_service = read(PROJECT / "src/Services/ShinGetterStonerSunshineService.cs")
+    stoner_card = read(PROJECT / "src/Models/Cards/SGC_StonerSunshine.cs")
+    shin_form_card = read(PROJECT / "src/Models/Cards/SGC_ShinForm.cs")
+    ancient_reward_patch = read(PROJECT / "src/Patches/ShinGetterAncientRewardPatch.cs")
+    execution_music = read(PROJECT / "src/Audio/ShinGetterExecutionMusicService.cs")
+    desperation = read(PROJECT / "src/Models/Cards/SGC_Desperation.cs")
     form_powers = "\n".join(read(PROJECT / f"src/Models/Powers/{name}") for name in (
         "SGP_ShinGetterOne.cs", "SGP_ShinGetterTwo.cs", "SGP_ShinGetterThree.cs"))
 
@@ -109,6 +128,14 @@ def check_code_wiring() -> None:
             "replaying Getter Landing must retain Open Get's accumulated damage")
     require("ModelDb.Card<SGC_GetterLanding>()" in pool, "Getter Landing is not registered")
     require("and not SGC_GetterLanding" in pool, "Getter Landing must stay out of reward epochs")
+    require("and not SGC_StonerSunshine" in pool,
+            "Stoner Sunshine must stay out of ordinary card rewards")
+    require("public override bool CanBeGeneratedInCombat => false" in stoner_card,
+            "Stoner Sunshine must be excluded from generic in-combat card generation")
+    require('s_g_c_getter_landing_card.png' in landing
+            and 's_g_c_getter_landing.png' in landing
+            and "AllPortraitPaths" in landing,
+            "Getter Landing must use its authoritative standalone large and small art")
     require("PlayerChoiceSynchronizer" in choice and "PlayerChoiceResult.FromIndex" in choice, "form choice must synchronize in multiplayer")
     require("ShouldSelectLocalForm" in choice and "CardSelectCmd.ShouldSelectLocalCard" not in choice,
             "form choice must not call CardSelectCmd's private selector")
@@ -261,6 +288,168 @@ def check_code_wiring() -> None:
     require("GetPower<SGP_ShinForm>() != null" in voice,
             "Shin Dragon Open Get must retain Ryoma's voice cue")
 
+    for code in ("061", "062", "063", "064", "065"):
+        require(f'new("{code}"' in voice, f"Stoner Sunshine arrival voice {code} is missing")
+    require("PlayStonerSunshineArrival" in voice
+            and "StonerArrivalFeelPower" in voice
+            and "MegaCrit.Sts2.Core.Random.Rng.Chaotic.NextInt" in voice,
+            "Stoner Sunshine arrival must implement voice 061 and cosmetic random selection")
+    dragon_voice_start = voice.index("bool isShinDragon")
+    dragon_voice_end = voice.index(": player.Creature.GetPower<SGP_ShinGetterOne>()", dragon_voice_start)
+    dragon_voice_pool = voice[dragon_voice_start:dragon_voice_end]
+    require("StonerArrivalThreeHearts" in dragon_voice_pool
+            and "StonerArrivalOurWill" in dragon_voice_pool
+            and "StonerArrivalUniteHearts" in dragon_voice_pool
+            and "StonerArrivalUseSunshine" in dragon_voice_pool
+            and "StonerArrivalFeelPower" not in dragon_voice_pool,
+            "Shin Dragon must randomly use exactly workbook voices 062-065")
+    getter_one_voice_start = voice.index(
+        ": player.Creature.GetPower<SGP_ShinGetterOne>()", dragon_voice_end)
+    getter_two_voice_start = voice.index(
+        ": player.Creature.GetPower<SGP_ShinGetterTwo>()", getter_one_voice_start)
+    getter_three_voice_start = voice.index(
+        ": player.Creature.GetPower<SGP_ShinGetterThree>()", getter_two_voice_start)
+    getter_one_voice_pool = voice[getter_one_voice_start:getter_two_voice_start]
+    getter_two_voice_pool = voice[getter_two_voice_start:getter_three_voice_start]
+    getter_three_voice_pool = voice[getter_three_voice_start:voice.index(": Array.Empty<ShinGetterVoiceCue>()", getter_three_voice_start)]
+    require(all(cue in getter_one_voice_pool for cue in (
+                "StonerArrivalFeelPower", "StonerArrivalThreeHearts", "StonerArrivalOurWill"))
+            and "StonerArrivalUniteHearts" not in getter_one_voice_pool
+            and "StonerArrivalUseSunshine" not in getter_one_voice_pool,
+            "Getter One must select only Ryoma workbook voices 061-063")
+    require("new[] { ShinGetterVoiceCue.StonerArrivalUniteHearts }" in getter_two_voice_pool,
+            "Getter Two must use Hayato workbook voice 064")
+    require("new[] { ShinGetterVoiceCue.StonerArrivalUseSunshine }" in getter_three_voice_pool,
+            "Getter Three must use Benkei workbook voice 065")
+    arrival_voice_start = voice.index("internal static void PlayStonerSunshineArrival")
+    arrival_voice_end = voice.index("internal static IDisposable SuppressLowHpThresholdVoices", arrival_voice_start)
+    arrival_voice = voice[arrival_voice_start:arrival_voice_end]
+    require("CanClaimVoiceCue(player, candidate)" in arrival_voice
+            and "TryClaimVoiceCue(player, cue)" in arrival_voice
+            and "ignoreRequiredForm: isShinDragon" in arrival_voice,
+            "arrival voices must filter already-played cues and retain the Chunibyo voice-mode claim boundary")
+    require(arrival_voice.index("CanClaimVoiceCue(player, candidate)")
+            < arrival_voice.index("Rng.Chaotic.NextInt")
+            < arrival_voice.index("TryClaimVoiceCue(player, cue)")
+            < arrival_voice.index("TryPlayLine(player, line"),
+            "arrival voice selection must choose an eligible cosmetic cue before claiming and playing it")
+
+    for needle in (
+        "ConditionalWeakTable<CombatState, CombatProgress>",
+        "ResetCombat(Player owner)",
+        "TurnChancePerCompletedTurn = 0.05m",
+        "AllFormsChance = 0.10m",
+        "TripleUnityChancePerPlay = 0.10m",
+        "AllEnemiesLowHpChance = 0.15m",
+        "SpiritCommandChancePerPlay = 0.05m",
+        "Math.Max((owner.PlayerCombatState?.TurnNumber ?? 1) - 1, 0)",
+        "SGC_TripleUnity",
+        "SGC_Ki or SGC_Spirit or SGC_SuperKi",
+        "enemy.CurrentHp * 100m < enemy.MaxHp * 30m",
+        "DeckAlreadyContainsStonerSunshine(owner)",
+        "progress.HasGrantedCard",
+        "PileType.Hand.GetPile(owner).Cards.Count >= CardPile.MaxCardsInHand",
+        "owner.RunState.Rng.CombatCardSelection.NextFloat()",
+        "combatState.CreateCard<SGC_StonerSunshine>(owner)",
+        "CardPileCmd.AddGeneratedCardToCombat(card, PileType.Hand, owner)",
+        "TryStartFromStonerSunshineArrival(owner, card)",
+        "PlayStonerSunshineArrival(owner)",
+        "attackCommand.ModelSource is not SGC_StonerSunshine cardSource",
+        "attackCommand.Results.SelectMany(results => results)",
+        "combatState.Enemies.Any(enemy => enemy.IsAlive)",
+        "room.AddExtraReward(owner, new SpecialCardReward(rewardCard, owner))",
+    ):
+        require(needle in stoner_service, f"missing Stoner Sunshine special-arrival boundary: {needle}")
+    require("progress.AtomicFormsMask = AllAtomicFormsMask" in stoner_service
+            and "RecordShinDragonTransform(Owner)" in shin_form_card
+            and "RecordShinDragonTransform(player)" in card_base,
+            "one Shin Dragon transform must substitute for all three atomic-form transforms")
+    atomic_apply = card_base.index("await ApplyFormPower(choiceContext, creature, next, player, cardSource)")
+    atomic_record = card_base.index("ShinGetterStonerSunshineService.RecordAtomicTransform(player, next)")
+    atomic_block_end = card_base.index("        }\n        finally", atomic_record)
+    require(atomic_apply < atomic_record < atomic_block_end,
+            "only successful, non-duplicate atomic transforms may accumulate across turns")
+    shin_apply = shin_form_card.index("await PowerCmd.Apply<SGP_ShinForm>")
+    shin_record = shin_form_card.index("ShinGetterStonerSunshineService.RecordShinDragonTransform(Owner)")
+    require(shin_apply < shin_record,
+            "Shin Dragon may substitute for all forms only after its power is applied")
+    full_hand_guard = stoner_service.index(
+        "PileType.Hand.GetPile(owner).Cards.Count >= CardPile.MaxCardsInHand")
+    probability_roll = stoner_service.index("owner.RunState.Rng.CombatCardSelection.NextFloat()")
+    generated_add = stoner_service.index(
+        "CardPileCmd.AddGeneratedCardToCombat(card, PileType.Hand, owner)")
+    require(full_hand_guard < probability_roll < generated_add,
+            "a full hand must defer the roll so Stoner Sunshine cannot be redirected to discard")
+    grant_success = stoner_service.index("if (!result.success)")
+    grant_flag = stoner_service.index("progress.HasGrantedCard = true")
+    grant_preview = stoner_service.index("CardCmd.PreviewCardPileAdd")
+    grant_music = stoner_service.index("TryStartFromStonerSunshineArrival")
+    grant_voice = stoner_service.index("PlayStonerSunshineArrival")
+    require(generated_add < grant_success < grant_flag < grant_preview < grant_music < grant_voice,
+            "failed generated-card adds must remain retryable and must not preview, switch BGM, or play a voice")
+    require("ConditionalWeakTable<CombatState, CombatProgress>" in stoner_service
+            and "ConditionalWeakTable<Player, PlayerProgress>" in stoner_service
+            and "Players.GetValue(\n            owner" in stoner_service,
+            "Stoner Sunshine progress must be isolated by both combat and player")
+    require("ReferenceEquals(cardPlay.Card.Owner, owner)" in stoner_service,
+            "other players' card plays must not change this player's probability")
+    require("ReferenceEquals(attackCommand.Attacker, owner.Creature)" in stoner_service
+            and "ReferenceEquals(cardSource.Owner, owner)" in stoner_service
+            and "result.Receiver.Side == CombatSide.Enemy" in stoner_service,
+            "the final-kill reward must be isolated to the owner's Stoner Sunshine enemy kill")
+    require(stoner_card.count("attackCommand = await DamageCmd.Attack") == 2
+            and stoner_card.count(".Execute(choiceContext);") == 2,
+            "both Stoner Sunshine visual branches must retain the executed AttackCommand")
+    final_execute = stoner_card.rindex(".Execute(choiceContext);")
+    final_kill_confirmation = stoner_card.index(
+        "ShinGetterStonerSunshineService.RecordFinalKill(Owner, attackCommand);")
+    require(final_execute < final_kill_confirmation,
+            "Stoner Sunshine may confirm the final kill only after Damage, Kill, AfterDeath, and reinforcements finish")
+    reward_guard = stoner_service.index(
+        "if (!progress.FinishedCombatWithStonerSunshine || progress.VictoryRewardAdded)")
+    reward_flag = stoner_service.index("progress.VictoryRewardAdded = true")
+    reward_add = stoner_service.index("room.AddExtraReward")
+    require(reward_guard < reward_flag < reward_add,
+            "Stoner Sunshine's fixed victory reward must be added at most once")
+    require("FindGetterLaunch" in ancient_reward_patch
+            and "CreateGetterLandingFrom" in ancient_reward_patch
+            and "TransformGetterLaunch" in ancient_reward_patch
+            and "ModelDb.Card<SGC_GetterLaunch>()" in ancient_reward_patch
+            and "CreateCard<SGC_GetterLanding>" in ancient_reward_patch,
+            "Orobas ancient-card option must transform Getter Launch into Getter Landing")
+    require("FindGetterBeam" not in ancient_reward_patch
+            and "CreateStonerSunshineFrom" not in ancient_reward_patch,
+            "the obsolete Getter Beam to Stoner Sunshine Orobas mapping must not return")
+    require("if (getterLaunch.IsUpgraded)" in ancient_reward_patch
+            and "CardCmd.Upgrade(getterLanding)" in ancient_reward_patch
+            and "getterLaunch.Enchantment != null" in ancient_reward_patch
+            and "CardCmd.Enchant(enchantment, getterLanding, enchantment.Amount)" in ancient_reward_patch,
+            "Getter Launch to Getter Landing must preserve upgrade and enchantment state")
+    require("TryStartFromStonerSunshineArrival" in execution_music
+            and "allowFirstTurn: true" in execution_music,
+            "special Stoner Sunshine arrival must start execution BGM even on turn one")
+    require("SuppressLowHpThresholdVoices(Owner)" in desperation
+            and "using (" in desperation
+            and "AreLowHpThresholdVoicesSuppressed" in voice
+            and "LowHpVoiceSuppressionDepth" in voice,
+            "Desperation's deliberate HP set must suppress workbook low-HP voices 052-057")
+
+    for relic_name, relic in (("Getter Furnace", getter_furnace), ("Emperor's Fragment", emperors_fragment)):
+        require("ShinGetterStonerSunshineService.ResetCombat(Owner);" in relic,
+                f"{relic_name} must reset Stoner Sunshine progress per combat")
+        trial = relic.index("await ShinGetterEventInvasionService.ApplyPendingTrialAfterHandDraw")
+        roll = relic.index("await ShinGetterStonerSunshineService.TryGrantAfterHandDraw")
+        require(trial < roll,
+                f"{relic_name} must roll Stoner Sunshine only after the normal start-of-turn hand setup")
+        require("RecordCardPlayed(Owner, cardPlay)" in relic,
+                f"{relic_name} must track Triple Unity and spirit-command plays")
+        require("RecordFinalKill(" not in relic and "AddVictoryReward(Owner, room)" in relic,
+                f"{relic_name} must not record final kills from the pre-AfterDeath damage hook")
+        reset = relic.index("ShinGetterStonerSunshineService.ResetCombat(Owner)")
+        initial_form = relic.index("await PowerCmd.Apply<SGP_ShinGetterOne>")
+        require(reset < initial_form,
+                f"{relic_name} must reset progress before initial Getter One setup without counting it as a transform")
+
 
 def check_open_get_final_damage_contract() -> None:
     """Lock final-stage Weak, Cap, and multi-hit+Grapple eligibility boundaries."""
@@ -287,6 +476,64 @@ def check_open_get_final_damage_contract() -> None:
             "Weak multi-hit plus Grapple negative gate must reject a threshold below 14")
 
 
+def check_stoner_sunshine_probability_contract() -> None:
+    """Lock every additive factor, cross-turn accumulation, and strict thresholds."""
+
+    def chance(turn: int, forms_mask: int, triple_plays: int,
+               all_enemies_low: bool, spirit_plays: int) -> float:
+        return round(max(turn - 1, 0) * 0.05
+                     + (0.10 if forms_mask & 0b111 == 0b111 else 0.0)
+                     + triple_plays * 0.10
+                     + (0.15 if all_enemies_low else 0.0)
+                     + spirit_plays * 0.05, 2)
+
+    require(chance(1, 0, 0, False, 0) == 0.0,
+            "turn one must have zero base chance without bonuses")
+    require(chance(4, 0, 0, False, 0) == 0.15,
+            "base chance must be (turn - 1) x 5%")
+    require(chance(1, 0b011, 0, False, 0) == 0.0
+            and chance(1, 0b111, 0, False, 0) == 0.10,
+            "all three form bits must accumulate before the 10% bonus")
+    dragon_substitute_mask = 0b111
+    require(chance(1, dragon_substitute_mask, 0, False, 0) == 0.10,
+            "one Shin Dragon transform must grant the full form bonus")
+    require(chance(1, 0, 2, False, 0) == 0.20,
+            "each Triple Unity play must add 10%")
+    require(chance(1, 0, 0, True, 0) == 0.15,
+            "all living enemies strictly below 30% must add 15%")
+    require(not (30 < 30) and (29 < 30),
+            "exactly 30% HP must not satisfy the strict all-enemies-low threshold")
+    require(chance(1, 0, 0, False, 3) == 0.15,
+            "Ki, Spirit, and Super Ki plays must each add 5%")
+    require(chance(3, 0b111, 2, True, 3) == 0.70,
+            "all Stoner Sunshine probability factors must be additive")
+
+
+def check_stoner_sunshine_final_kill_contract() -> None:
+    """Lock post-AfterDeath confirmation for Infested and other reinforcement fights."""
+
+    def confirms_reward(stoner_killed_enemy: bool, living_enemies_after_execute: int) -> bool:
+        return stoner_killed_enemy and living_enemies_after_execute == 0
+
+    infested_spawned_wrigglers = 4
+    recorded = confirms_reward(
+        stoner_killed_enemy=True,
+        living_enemies_after_execute=infested_spawned_wrigglers,
+    )
+    require(not recorded,
+            "killing an Infested host must not record the reward after AfterDeath spawns Wrigglers")
+
+    # A later non-Stoner card does not invoke the Stoner-only confirmation path.
+    infested_spawned_wrigglers = 0
+    require(not recorded and infested_spawned_wrigglers == 0,
+            "clearing Infested reinforcements with another card must not retroactively record the reward")
+
+    require(confirms_reward(stoner_killed_enemy=True, living_enemies_after_execute=0),
+            "Stoner Sunshine must record a real final enemy kill when AfterDeath adds no reinforcements")
+    require(not confirms_reward(stoner_killed_enemy=False, living_enemies_after_execute=0),
+            "an empty enemy side reached without a Stoner Sunshine kill must not record the reward")
+
+
 def check_localization_and_assets() -> None:
     for locale in ("zhs", "eng", "jpn"):
         root = PROJECT / "ShinGetterMod/localization" / locale
@@ -299,6 +546,14 @@ def check_localization_and_assets() -> None:
         require("S_G_P_OPEN_GET.title" in powers, f"{locale} Open Get title is missing")
         require("S_G_P_OPEN_GET.description" in powers, f"{locale} Open Get description is missing")
         for key in ("SHIN_GETTER.voice.openGetOne", "SHIN_GETTER.voice.openGetTwo", "SHIN_GETTER.voice.openGetThree"):
+            require(key in characters, f"{locale} {key} is missing")
+        for key in (
+            "SHIN_GETTER.voice.stonerArrivalFeelPower",
+            "SHIN_GETTER.voice.stonerArrivalThreeHearts",
+            "SHIN_GETTER.voice.stonerArrivalOurWill",
+            "SHIN_GETTER.voice.stonerArrivalUniteHearts",
+            "SHIN_GETTER.voice.stonerArrivalUseSunshine",
+        ):
             require(key in characters, f"{locale} {key} is missing")
         for key in ("SHIN_GETTER_OPEN_GET_INTENT_SINGLE", "SHIN_GETTER_OPEN_GET_INTENT_MULTI",
                     "SHIN_GETTER_OPEN_GET_INTENT.title", "SHIN_GETTER_OPEN_GET_INTENT.description"):
@@ -337,6 +592,32 @@ def check_localization_and_assets() -> None:
     require("benkei_open_get.wav-fd2c371e41ad6859b6a943a944786c09.sample" in benkei_import,
             "Benkei Open Get import must use the renamed source hash")
 
+    for relative_path, expected_hash in EXPECTED_GETTER_LANDING_ART.items():
+        path = PROJECT / relative_path
+        require(path.is_file(), f"missing authoritative Getter Landing art: {relative_path}")
+        require(hashlib.sha256(path.read_bytes()).hexdigest() == expected_hash,
+                f"Getter Landing art does not match its authoritative source: {relative_path}")
+        import_path = path.with_name(f"{path.name}.import")
+        require(import_path.is_file(), f"missing Getter Landing import sidecar: {import_path}")
+        require(f'source_file="res://{relative_path}"' in read(import_path),
+                f"Getter Landing import has the wrong source: {relative_path}")
+        require(f"res://{relative_path}" in resource_gate,
+                f"resource gate is missing Getter Landing art: {relative_path}")
+
+    for filename, expected_hash in EXPECTED_STONER_ARRIVAL_AUDIO.items():
+        path = voice_root / filename
+        require(path.is_file(), f"missing Stoner Sunshine arrival voice: {filename}")
+        require(hashlib.sha256(path.read_bytes()).hexdigest() == expected_hash,
+                f"Stoner Sunshine arrival voice does not match the workbook source: {filename}")
+        import_path = path.with_name(f"{filename}.import")
+        require(import_path.is_file(), f"missing arrival voice import sidecar: {filename}")
+        import_text = read(import_path)
+        require(f'source_file="res://audio/sfx/characters/shin_getter/voices/{filename}"' in import_text
+                and "compress/mode=2" in import_text,
+                f"arrival voice import is stale: {filename}")
+        require(filename in resource_gate,
+                f"resource gate is missing arrival voice: {filename}")
+
     for action in FUSION_ACTIONS:
         sheet = PROJECT / "images/characters/shin_getter/forms" / action / "sprite_sheet.png"
         sidecar = sheet.with_name("sprite_sheet.png.import")
@@ -351,6 +632,8 @@ def main() -> None:
     check_fusion_sheets()
     check_code_wiring()
     check_open_get_final_damage_contract()
+    check_stoner_sunshine_probability_contract()
+    check_stoner_sunshine_final_kill_contract()
     check_localization_and_assets()
     print("issue#10 validation passed")
 

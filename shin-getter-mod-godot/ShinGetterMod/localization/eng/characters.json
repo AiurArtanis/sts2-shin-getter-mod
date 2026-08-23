@@ -62,5 +62,10 @@
   "SHIN_GETTER.voice.hayatoKill": "Shut up and watch.",
   "SHIN_GETTER.voice.openGetOne": "[sine][red]OPEN GET[/red][/sine]",
   "SHIN_GETTER.voice.openGetTwo": "[sine][white]OPEN GET[/white][/sine]",
-  "SHIN_GETTER.voice.openGetThree": "[sine][yellow]OPEN GET[/yellow][/sine]"
+  "SHIN_GETTER.voice.openGetThree": "[sine][yellow]OPEN GET[/yellow][/sine]",
+  "SHIN_GETTER.voice.stonerArrivalFeelPower": "I can feel it—the Getter's power!",
+  "SHIN_GETTER.voice.stonerArrivalThreeHearts": "Three hearts become one!",
+  "SHIN_GETTER.voice.stonerArrivalOurWill": "My will—our wills—will draw out the Getter's power!",
+  "SHIN_GETTER.voice.stonerArrivalUniteHearts": "Let's unite our hearts as one!",
+  "SHIN_GETTER.voice.stonerArrivalUseSunshine": "Ryoma! Use [red]Stoner[/red] [yellow]Sunshine[/yellow]!"
 }

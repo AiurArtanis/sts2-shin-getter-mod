@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Combat.History.Entries;
 using MegaCrit.Sts2.Core.Helpers;
 using ShinGetterMod.Models.Powers;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
@@ -17,6 +18,7 @@ using MegaCrit.Sts2.Core.Models.Powers;
 using ShinGetterMod.Audio;
 using ShinGetterMod.Nodes.Combat;
 using ShinGetterMod.Nodes.Vfx;
+using ShinGetterMod.Services;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -26,6 +28,8 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_StonerSunshine : ShinGetterCardBase
 {
+    public override bool CanBeGeneratedInCombat => false;
+
     public override string PortraitPath =>
         ImageHelper.GetImagePath("packed/card_single/shin_getter/s_g_c_stoner_sunshine_card.png");
 
@@ -54,6 +58,7 @@ public sealed class SGC_StonerSunshine : ShinGetterCardBase
     {
         ArgumentNullException.ThrowIfNull(CombatState);
         var combatState = CombatState;
+        AttackCommand attackCommand;
 
         if (HasForm(Owner, ShinGetterForm.Getter1))
         {
@@ -67,7 +72,7 @@ public sealed class SGC_StonerSunshine : ShinGetterCardBase
             NShinGetterStaticVisuals.QueueNextActionSpeed(Owner.Creature, 0.3f);
             NShinGetterStaticVisuals.TryPlayCreatureActionAnimation(Owner.Creature, "Cast");
 
-            await DamageCmd.Attack(DynamicVars.CalculatedDamage).FromCard(this)
+            attackCommand = await DamageCmd.Attack(DynamicVars.CalculatedDamage).FromCard(this)
                 .TargetingAllOpponents(combatState)
                 .WithNoAttackerAnim()
                 .BeforeDamage(() => ShinGetterCombatVfx.PlayStonerSunshine(
@@ -80,7 +85,7 @@ public sealed class SGC_StonerSunshine : ShinGetterCardBase
         {
             NShinGetterStaticVisuals.TryPlayCreatureActionAnimation(Owner.Creature, "Cast");
 
-            await DamageCmd.Attack(DynamicVars.CalculatedDamage).FromCard(this)
+            attackCommand = await DamageCmd.Attack(DynamicVars.CalculatedDamage).FromCard(this)
                 .TargetingAllOpponents(combatState)
                 .WithNoAttackerAnim()
                 .BeforeDamage(() => ShinGetterCombatVfx.PlayEnergyBall(
@@ -88,6 +93,8 @@ public sealed class SGC_StonerSunshine : ShinGetterCardBase
                     combatState.GetOpponentsOf(Owner.Creature)))
                 .WithHitFx("vfx/vfx_starry_impact").Execute(choiceContext);
         }
+
+        ShinGetterStonerSunshineService.RecordFinalKill(Owner, attackCommand);
 
         foreach (var enemy in combatState.GetOpponentsOf(Owner.Creature).Where(creature => creature.IsAlive))
             await PowerCmd.Apply<SGP_Wane>(choiceContext, enemy, DynamicVars["Wane"].BaseValue, Owner.Creature, this);

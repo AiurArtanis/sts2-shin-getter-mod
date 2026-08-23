@@ -32,11 +32,22 @@ internal static class ShinGetterExecutionMusicService
 
     internal static void TryStart(Player owner, CardModel card)
     {
+        TryStart(owner, card, allowFirstTurn: false);
+    }
+
+    internal static void TryStartFromStonerSunshineArrival(Player owner, CardModel card)
+    {
+        if (card is SGC_StonerSunshine)
+            TryStart(owner, card, allowFirstTurn: true);
+    }
+
+    private static void TryStart(Player owner, CardModel card, bool allowFirstTurn)
+    {
         if (!ReferenceEquals(card.Owner, owner)
             || card.Pile?.Type != PileType.Hand
             || card.CombatState is not CombatState combatState
             || card is not (SGC_StonerSunshine or SGC_StarSlash or SGC_ShiningSpark)
-            || owner.PlayerCombatState is not { TurnNumber: >= 2 }
+            || (!allowFirstTurn && owner.PlayerCombatState is not { TurnNumber: >= 2 })
             || !CombatManager.Instance.IsInProgress
             || CombatManager.Instance.IsOverOrEnding
             || !ReferenceEquals(CombatManager.Instance.DebugOnlyGetState(), combatState))

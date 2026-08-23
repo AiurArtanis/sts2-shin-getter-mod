@@ -22,6 +22,7 @@ using ShinGetterMod.Models.Powers;
 using ShinGetterMod.Models.Relics;
 using ShinGetterMod.Nodes.Combat;
 using ShinGetterMod.Patches;
+using ShinGetterMod.Services;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -613,7 +614,10 @@ public abstract class ShinGetterCardBase : CardModel
             };
 
             if (!alreadyInTargetForm)
+            {
                 await ApplyFormPower(choiceContext, creature, next, player, cardSource);
+                ShinGetterStonerSunshineService.RecordAtomicTransform(player, next);
+            }
         }
         finally
         {
@@ -651,7 +655,10 @@ public abstract class ShinGetterCardBase : CardModel
         bool playVoice)
     {
         if (creature.Player is { } player)
+        {
             _ = ShinGetterVoiceService.PlayTransform(player, ShinGetterForm.None, playVoice);
+            ShinGetterStonerSunshineService.RecordShinDragonTransform(player);
+        }
 
         await PowerCmd.Apply<VigorPower>(choiceContext, creature, 1m, creature, cardSource);
         await PowerCmd.Apply<RegenPower>(choiceContext, creature, 1m, creature, cardSource);

@@ -67,6 +67,11 @@ EXPECTED_LATER_AUDIO = {
     "058": "ryoma_open_get.wav",
     "059": "hayato_open_get.wav",
     "060": "benkei_open_get.wav",
+    "061": "ryoma_feel_getter_power.wav",
+    "062": "ryoma_three_hearts_one.wav",
+    "063": "ryoma_our_will_getter_power.wav",
+    "064": "hayato_unite_hearts.wav",
+    "065": "benkei_use_stoner_sunshine.wav",
 }
 ALL_EXPECTED_AUDIO = EXPECTED_AUDIO | EXPECTED_LATER_AUDIO
 
@@ -82,7 +87,7 @@ require(
     {code: rows.get(code) for code in EXPECTED_AUDIO} == EXPECTED_AUDIO,
     "001-047 voice code mapping does not match the authoritative workbook",
 )
-require(rows == ALL_EXPECTED_AUDIO, "voice mapping must contain only 001-047 and issue#10 codes 058-060")
+require(rows == ALL_EXPECTED_AUDIO, "voice mapping must contain only 001-047 and issue#10 codes 058-065")
 
 for code, file_name in EXPECTED_AUDIO.items():
     audio = VOICE_DIR / file_name
@@ -102,12 +107,12 @@ for code, file_name in EXPECTED_AUDIO.items():
 actual_audio = {path.name for path in VOICE_DIR.glob("*.wav")}
 require(
     actual_audio == set(ALL_EXPECTED_AUDIO.values()),
-    "voice directory must contain the 47 workbook WAVs plus issue#10 codes 058-060",
+    "voice directory must contain the 47 workbook WAVs plus issue#10 codes 058-065",
 )
 actual_imports = {path.name for path in VOICE_DIR.glob("*.wav.import")}
 require(
     actual_imports == {f"{name}.import" for name in ALL_EXPECTED_AUDIO.values()},
-    "voice directory must contain matching import sidecars for 001-047 and 058-060",
+    "voice directory must contain matching import sidecars for 001-047 and 058-065",
 )
 
 pck_validator = PCK_VALIDATOR_PATH.read_text(encoding="utf-8")
@@ -119,7 +124,7 @@ pck_voice_resources = set(
 )
 require(
     pck_voice_resources == set(ALL_EXPECTED_AUDIO.values()),
-    "PCK validator voice resources must match 001-047 and issue#10 codes 058-060 exactly",
+    "PCK validator voice resources must match 001-047 and issue#10 codes 058-065 exactly",
 )
 
 required_card_mappings = (
@@ -308,12 +313,12 @@ console_patch = (ROOT / "src" / "Patches" / "ShinGetterConsoleCommandPatch.cs").
 console_cmd = (ROOT / "src" / "Diagnostics" / "ShinGetterChunibyoConsoleCmd.cs").read_text(encoding="utf-8")
 require('ShinGetterSoundCommandName = "sgs"' in console_patch, "sgs command routing is missing")
 require(
-    'Args => "<001-047|058-060>"' in console_cmd and "TryPlayCode" in console_cmd,
-    "sgs 001-047 and 058-060 command is incomplete",
+    'Args => "<001-047|058-065>"' in console_cmd and "TryPlayCode" in console_cmd,
+    "sgs 001-047 and 058-065 command is incomplete",
 )
 
 service_keys = set(re.findall(r'"(SHIN_GETTER\.voice\.[A-Za-z0-9]+)"', service))
-require(len(service_keys) == 49, f"expected 49 subtitle keys, found {len(service_keys)}")
+require(len(service_keys) == 54, f"expected 54 subtitle keys, found {len(service_keys)}")
 language_voice_keys: dict[str, set[str]] = {}
 language_data: dict[str, dict[str, str]] = {}
 for language in ("zhs", "eng", "jpn"):
@@ -372,4 +377,4 @@ require(
     "existing black effects must be removed before the mod black effect is installed",
 )
 
-print("issue#21/#31 static validation PASS: 47 workbook codes plus issue#10 codes 058-060, triggers, timing, sgs, trilingual keys")
+print("issue#21/#31 static validation PASS: 47 workbook codes plus issue#10 codes 058-065, triggers, timing, sgs, trilingual keys")
