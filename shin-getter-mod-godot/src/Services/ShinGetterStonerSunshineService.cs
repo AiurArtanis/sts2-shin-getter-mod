@@ -28,6 +28,8 @@ internal static class ShinGetterStonerSunshineService
     private const decimal TripleUnityChancePerPlay = 0.10m;
     private const decimal AllEnemiesLowHpChance = 0.15m;
     private const decimal SpiritCommandChancePerPlay = 0.05m;
+    private const decimal FloorMultiplierBase = 0.15m;
+    private const decimal FloorMultiplierPerFloor = 0.01m;
     private const int AllAtomicFormsMask = 0b111;
 
     private static readonly ConditionalWeakTable<CombatState, CombatProgress> CombatStates = new();
@@ -110,11 +112,41 @@ internal static class ShinGetterStonerSunshineService
         ShinGetterVoiceService.PlayStonerSunshineArrival(owner);
     }
 
+    internal static bool TryGetCurrentAppearanceChance(
+        Player? owner,
+        out decimal chance,
+        out string error)
+    {
+        chance = 0m;
+        error = string.Empty;
+        if (owner == null)
+        {
+            error = "stoner_sunshine_rate requires an issuing player.";
+            return false;
+        }
+
+        if (owner.Creature.CombatState is not CombatState combatState
+            || !CombatManager.Instance.IsInProgress
+            || CombatManager.Instance.IsOverOrEnding)
+        {
+            error = "stoner_sunshine_rate requires an active combat.";
+            return false;
+        }
+
+        PlayerProgress progress = GetProgress(combatState, owner);
+        if (progress.HasGrantedCard || DeckAlreadyContainsStonerSunshine(owner))
+            return true;
+
+        chance = CalculateAppearanceChance(owner, combatState, progress);
+        return true;
+    }
+
     internal static void RecordFinalKill(Player owner, AttackCommand attackCommand)
     {
         if (!ReferenceEquals(attackCommand.Attacker, owner.Creature)
             || attackCommand.ModelSource is not SGC_StonerSunshine cardSource
             || !ReferenceEquals(cardSource.Owner, owner)
+            || DeckAlreadyContainsStonerSunshine(owner)
             || owner.Creature.CombatState is not CombatState combatState
             || !attackCommand.Results.SelectMany(results => results).Any(
                 result => result.WasTargetKilled && result.Receiver.Side == CombatSide.Enemy)
@@ -129,7 +161,9 @@ internal static class ShinGetterStonerSunshineService
     internal static void AddVictoryReward(Player owner, CombatRoom room)
     {
         PlayerProgress progress = GetProgress(room.CombatState, owner);
-        if (!progress.FinishedCombatWithStonerSunshine || progress.VictoryRewardAdded)
+        if (!progress.FinishedCombatWithStonerSunshine
+            || progress.VictoryRewardAdded
+            || DeckAlreadyContainsStonerSunshine(owner))
             return;
 
         progress.VictoryRewardAdded = true;
@@ -143,15 +177,18 @@ internal static class ShinGetterStonerSunshineService
         PlayerProgress progress)
     {
         int completedTurns = Math.Max((owner.PlayerCombatState?.TurnNumber ?? 1) - 1, 0);
-        decimal chance = completedTurns * TurnChancePerCompletedTurn;
+        decimal additiveChance = completedTurns * TurnChancePerCompletedTurn;
         if ((progress.AtomicFormsMask & AllAtomicFormsMask) == AllAtomicFormsMask)
-            chance += AllFormsChance;
+            additiveChance += AllFormsChance;
 
-        chance += progress.TripleUnityPlayCount * TripleUnityChancePerPlay;
+        additiveChance += progress.TripleUnityPlayCount * TripleUnityChancePerPlay;
         if (AreAllLivingEnemiesBelowThirtyPercent(combatState))
-            chance += AllEnemiesLowHpChance;
-        chance += progress.SpiritCommandPlayCount * SpiritCommandChancePerPlay;
-        return chance;
+            additiveChance += AllEnemiesLowHpChance;
+        additiveChance += progress.SpiritCommandPlayCount * SpiritCommandChancePerPlay;
+
+        decimal floorMultiplier = FloorMultiplierBase
+                                  + Math.Max(owner.RunState.TotalFloor, 0) * FloorMultiplierPerFloor;
+        return additiveChance * floorMultiplier;
     }
 
     private static bool AreAllLivingEnemiesBelowThirtyPercent(CombatState combatState)
