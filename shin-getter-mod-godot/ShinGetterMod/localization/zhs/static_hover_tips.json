@@ -12,5 +12,7 @@
   "SHIN_GETTER_OPEN_GET_INTENT_SINGLE": "{Damage}[url=shin_getter_open_get][color=#ff0000] X[/color][/url]",
   "SHIN_GETTER_OPEN_GET_INTENT_MULTI": "{Damage}[font_size=18]×{Repeat}[/font_size][url=shin_getter_open_get][color=#ff0000] X[/color][/url]",
   "SHIN_GETTER_OPEN_GET_INTENT.title": "战机分离",
-  "SHIN_GETTER_OPEN_GET_INTENT.description": "这个攻击将被回避"
+  "SHIN_GETTER_OPEN_GET_INTENT.description": "这个攻击将被回避",
+  "SHIN_GETTER_BEACON_PRISM_COLOR.title": "不同颜色",
+  "SHIN_GETTER_BEACON_PRISM_COLOR.description": "真盖塔奖励池卡牌、初始攻击、初始防御、盖塔光束和盖塔出击视为盖塔线颜色。其他角色卡、无色卡（包括状态卡）、先古卡、事件卡和诅咒卡均视为不同颜色。只统计出牌阶段从抽牌堆抽入手牌的卡牌。"
 }
