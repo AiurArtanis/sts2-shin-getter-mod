@@ -92,6 +92,10 @@ def check_code_wiring() -> None:
     ancient_reward_patch = read(PROJECT / "src/Patches/ShinGetterAncientRewardPatch.cs")
     execution_music = read(PROJECT / "src/Audio/ShinGetterExecutionMusicService.cs")
     desperation = read(PROJECT / "src/Models/Cards/SGC_Desperation.cs")
+    console_patch = read(PROJECT / "src/Patches/ShinGetterConsoleCommandPatch.cs")
+    rate_command_path = PROJECT / "src/Diagnostics/ShinGetterStonerSunshineRateConsoleCmd.cs"
+    require(rate_command_path.is_file(), "stoner_sunshine_rate console command is missing")
+    rate_command = read(rate_command_path)
     form_powers = "\n".join(read(PROJECT / f"src/Models/Powers/{name}") for name in (
         "SGP_ShinGetterOne.cs", "SGP_ShinGetterTwo.cs", "SGP_ShinGetterThree.cs"))
 
@@ -248,6 +252,15 @@ def check_code_wiring() -> None:
             "Tactical Retreat fusion must run at 0.75 speed in every atomic form")
     require("PrepareOpeningGetterOneFusion" in getter_one,
             "combat-start form setup must hide the idle form before opening fusion")
+    prepare_start = visuals.index("public static void PrepareOpeningGetterOneFusion(Creature creature)")
+    prepare_end = visuals.index("    public static Task ShowShinDragon", prepare_start)
+    opening_prepare = visuals[prepare_start:prepare_end]
+    require("TryGetRawFormSprites" in opening_prepare
+            and "TryPrepareFusionAnimation" in opening_prepare,
+            "combat-start preparation must bypass idle activation and prepare A/fusion frame one directly")
+    require(opening_prepare.index("TryPrepareFusionAnimation")
+            < opening_prepare.index("sprite.Item.Visible = false"),
+            "A/fusion frame one must replace the default Getter One idle frame before forms are hidden")
     opening_start = visuals.index("private static async Task PlayOpeningGetterOneFusion(FormSprites sprites)")
     opening_end = visuals.index("    private static async Task<bool> TryPlayFusionTransition", opening_start)
     opening_fusion = visuals[opening_start:opening_end]
@@ -342,6 +355,8 @@ def check_code_wiring() -> None:
         "TripleUnityChancePerPlay = 0.10m",
         "AllEnemiesLowHpChance = 0.15m",
         "SpiritCommandChancePerPlay = 0.05m",
+        "FloorMultiplierBase = 0.15m",
+        "FloorMultiplierPerFloor = 0.01m",
         "Math.Max((owner.PlayerCombatState?.TurnNumber ?? 1) - 1, 0)",
         "SGC_TripleUnity",
         "SGC_Ki or SGC_Spirit or SGC_SuperKi",
@@ -397,6 +412,8 @@ def check_code_wiring() -> None:
             and "ReferenceEquals(cardSource.Owner, owner)" in stoner_service
             and "result.Receiver.Side == CombatSide.Enemy" in stoner_service,
             "the final-kill reward must be isolated to the owner's Stoner Sunshine enemy kill")
+    require(stoner_service.count("DeckAlreadyContainsStonerSunshine(owner)") >= 3,
+            "a permanent Stoner Sunshine must suppress the roll, final-kill record, and victory reward")
     require(stoner_card.count("attackCommand = await DamageCmd.Attack") == 2
             and stoner_card.count(".Execute(choiceContext);") == 2,
             "both Stoner Sunshine visual branches must retain the executed AttackCommand")
@@ -405,8 +422,7 @@ def check_code_wiring() -> None:
         "ShinGetterStonerSunshineService.RecordFinalKill(Owner, attackCommand);")
     require(final_execute < final_kill_confirmation,
             "Stoner Sunshine may confirm the final kill only after Damage, Kill, AfterDeath, and reinforcements finish")
-    reward_guard = stoner_service.index(
-        "if (!progress.FinishedCombatWithStonerSunshine || progress.VictoryRewardAdded)")
+    reward_guard = stoner_service.index("if (!progress.FinishedCombatWithStonerSunshine")
     reward_flag = stoner_service.index("progress.VictoryRewardAdded = true")
     reward_add = stoner_service.index("room.AddExtraReward")
     require(reward_guard < reward_flag < reward_add,
@@ -433,6 +449,15 @@ def check_code_wiring() -> None:
             and "AreLowHpThresholdVoicesSuppressed" in voice
             and "LowHpVoiceSuppressionDepth" in voice,
             "Desperation's deliberate HP set must suppress workbook low-HP voices 052-057")
+    require('StonerSunshineRateCommandName = "stoner_sunshine_rate"' in console_patch
+            and "ShinGetterStonerSunshineRateConsoleCmd" in console_patch,
+            "stoner_sunshine_rate must be routed through the existing console patch")
+    require('CmdName => "stoner_sunshine_rate"' in rate_command
+            and "public sealed class ShinGetterStonerSunshineRateConsoleCmd : AbstractConsoleCmd" in rate_command
+            and "DebugOnly => false" in rate_command
+            and "TryGetCurrentAppearanceChance" in rate_command
+            and 'ToString("P2"' in rate_command,
+            "stoner_sunshine_rate must be a discoverable non-debug command and report the issuing player's current percentage")
 
     for relic_name, relic in (("Getter Furnace", getter_furnace), ("Emperor's Fragment", emperors_fragment)):
         require("ShinGetterStonerSunshineService.ResetCombat(Owner);" in relic,
@@ -477,36 +502,40 @@ def check_open_get_final_damage_contract() -> None:
 
 
 def check_stoner_sunshine_probability_contract() -> None:
-    """Lock every additive factor, cross-turn accumulation, and strict thresholds."""
+    """Lock additive factors, floor multiplier, cross-turn accumulation, and strict thresholds."""
 
     def chance(turn: int, forms_mask: int, triple_plays: int,
-               all_enemies_low: bool, spirit_plays: int) -> float:
-        return round(max(turn - 1, 0) * 0.05
-                     + (0.10 if forms_mask & 0b111 == 0b111 else 0.0)
-                     + triple_plays * 0.10
-                     + (0.15 if all_enemies_low else 0.0)
-                     + spirit_plays * 0.05, 2)
+               all_enemies_low: bool, spirit_plays: int, floor: int) -> float:
+        additive = (max(turn - 1, 0) * 0.05
+                    + (0.10 if forms_mask & 0b111 == 0b111 else 0.0)
+                    + triple_plays * 0.10
+                    + (0.15 if all_enemies_low else 0.0)
+                    + spirit_plays * 0.05)
+        multiplier = 0.15 + max(floor, 0) * 0.01
+        return round(additive * multiplier, 6)
 
-    require(chance(1, 0, 0, False, 0) == 0.0,
+    require(chance(1, 0, 0, False, 0, 1) == 0.0,
             "turn one must have zero base chance without bonuses")
-    require(chance(4, 0, 0, False, 0) == 0.15,
-            "base chance must be (turn - 1) x 5%")
-    require(chance(1, 0b011, 0, False, 0) == 0.0
-            and chance(1, 0b111, 0, False, 0) == 0.10,
+    require(chance(4, 0, 0, False, 0, 16) == 0.0465,
+            "floor 16 must multiply the 15% turn base by 0.31")
+    require(chance(1, 0b011, 0, False, 0, 1) == 0.0
+            and chance(1, 0b111, 0, False, 0, 1) == 0.016,
             "all three form bits must accumulate before the 10% bonus")
     dragon_substitute_mask = 0b111
-    require(chance(1, dragon_substitute_mask, 0, False, 0) == 0.10,
+    require(chance(1, dragon_substitute_mask, 0, False, 0, 1) == 0.016,
             "one Shin Dragon transform must grant the full form bonus")
-    require(chance(1, 0, 2, False, 0) == 0.20,
+    require(chance(1, 0, 2, False, 0, 1) == 0.032,
             "each Triple Unity play must add 10%")
-    require(chance(1, 0, 0, True, 0) == 0.15,
+    require(chance(1, 0, 0, True, 0, 1) == 0.024,
             "all living enemies strictly below 30% must add 15%")
     require(not (30 < 30) and (29 < 30),
             "exactly 30% HP must not satisfy the strict all-enemies-low threshold")
-    require(chance(1, 0, 0, False, 3) == 0.15,
+    require(chance(1, 0, 0, False, 3, 1) == 0.024,
             "Ki, Spirit, and Super Ki plays must each add 5%")
-    require(chance(3, 0b111, 2, True, 3) == 0.70,
-            "all Stoner Sunshine probability factors must be additive")
+    require(chance(3, 0b111, 2, True, 3, 17) == 0.224,
+            "all additive factors must be multiplied by the floor 17 multiplier 0.32")
+    require(chance(4, 0, 0, False, 0, -5) == 0.0225,
+            "negative synthetic floors must clamp to zero before applying the 0.15 base multiplier")
 
 
 def check_stoner_sunshine_final_kill_contract() -> None:

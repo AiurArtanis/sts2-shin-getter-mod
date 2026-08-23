@@ -56,8 +56,11 @@ public static class NShinGetterStaticVisuals
     /// </summary>
     public static void PrepareOpeningGetterOneFusion(Creature creature)
     {
-        if (!TryGetFormSprites(creature, out _, out var sprites))
+        if (!TryGetRawFormSprites(creature, out _, out var sprites))
             return;
+
+        if (sprites.GetterOne.Node is AnimatedSprite2D getterOneSprite)
+            TryPrepareFusionAnimation(getterOneSprite, ShinGetterForm.Getter1, backwards: false, out _);
 
         foreach (FormVisual sprite in sprites.All)
         {
@@ -462,6 +465,45 @@ public static class NShinGetterStaticVisuals
         out NCreatureVisuals visuals,
         out FormSprites sprites)
     {
+        if (!TryGetRawFormSprites(creature, out visuals, out sprites))
+            return false;
+
+        if (sprites.GetterOne.Node is AnimatedSprite2D getterOneAnimation)
+        {
+            NShinGetterSpriteSequence.EnsureIdleLoaded(getterOneAnimation);
+            if (getterOneAnimation.Visible && !getterOneAnimation.IsPlaying())
+                NShinGetterSpriteAnimationStateMachine.PlayIdle(getterOneAnimation);
+        }
+
+        if (sprites.GetterTwo.Node is AnimatedSprite2D getterTwoAnimation)
+        {
+            NShinGetterSpriteSequence.EnsureGetterTwoIdleLoaded(getterTwoAnimation);
+            if (getterTwoAnimation.Visible && !getterTwoAnimation.IsPlaying())
+                NShinGetterSpriteAnimationStateMachine.PlayIdle(getterTwoAnimation, NShinGetterSpriteSequence.EnsureGetterTwoIdleLoaded);
+        }
+
+        if (sprites.GetterThree.Node is AnimatedSprite2D getterThreeAnimation)
+        {
+            NShinGetterSpriteSequence.EnsureGetterThreeIdleLoaded(getterThreeAnimation);
+            if (getterThreeAnimation.Visible && !getterThreeAnimation.IsPlaying())
+                NShinGetterSpriteAnimationStateMachine.PlayIdle(getterThreeAnimation, NShinGetterSpriteSequence.EnsureGetterThreeIdleLoaded);
+        }
+
+        if (sprites.ShinDragon.Node is AnimatedSprite2D shinDragonAnimation)
+        {
+            NShinGetterSpriteSequence.EnsureShinDragonIdleLoaded(shinDragonAnimation);
+            if (shinDragonAnimation.Visible && !shinDragonAnimation.IsPlaying())
+                NShinGetterSpriteAnimationStateMachine.PlayIdle(shinDragonAnimation, NShinGetterSpriteSequence.EnsureShinDragonIdleLoaded);
+        }
+
+        return true;
+    }
+
+    private static bool TryGetRawFormSprites(
+        Creature creature,
+        out NCreatureVisuals visuals,
+        out FormSprites sprites)
+    {
         visuals = null!;
         sprites = default;
 
@@ -470,41 +512,13 @@ public static class NShinGetterStaticVisuals
             return false;
 
         Node2D? getterOneNode = creatureNode.Visuals.GetNodeOrNull<Node2D>("Visuals/GetterOne");
-        if (getterOneNode is AnimatedSprite2D getterOneAnimation)
-        {
-            NShinGetterSpriteSequence.EnsureIdleLoaded(getterOneAnimation);
-            if (getterOneAnimation.Visible && !getterOneAnimation.IsPlaying())
-                NShinGetterSpriteAnimationStateMachine.PlayIdle(getterOneAnimation);
-        }
-
         Node2D? getterTwoNode = creatureNode.Visuals.GetNodeOrNull<Node2D>("Visuals/GetterTwo");
-        if (getterTwoNode is AnimatedSprite2D getterTwoAnimation)
-        {
-            NShinGetterSpriteSequence.EnsureGetterTwoIdleLoaded(getterTwoAnimation);
-            if (getterTwoAnimation.Visible && !getterTwoAnimation.IsPlaying())
-                NShinGetterSpriteAnimationStateMachine.PlayIdle(getterTwoAnimation, NShinGetterSpriteSequence.EnsureGetterTwoIdleLoaded);
-        }
-
         Node2D? getterThreeNode = creatureNode.Visuals.GetNodeOrNull<Node2D>("Visuals/GetterThree");
-        if (getterThreeNode is AnimatedSprite2D getterThreeAnimation)
-        {
-            NShinGetterSpriteSequence.EnsureGetterThreeIdleLoaded(getterThreeAnimation);
-            if (getterThreeAnimation.Visible && !getterThreeAnimation.IsPlaying())
-                NShinGetterSpriteAnimationStateMachine.PlayIdle(getterThreeAnimation, NShinGetterSpriteSequence.EnsureGetterThreeIdleLoaded);
-        }
-
         Node2D? shinDragonNode = creatureNode.Visuals.GetNodeOrNull<Node2D>("Visuals/ShinDragon");
-        if (shinDragonNode is AnimatedSprite2D shinDragonAnimation)
-        {
-            NShinGetterSpriteSequence.EnsureShinDragonIdleLoaded(shinDragonAnimation);
-            if (shinDragonAnimation.Visible && !shinDragonAnimation.IsPlaying())
-                NShinGetterSpriteAnimationStateMachine.PlayIdle(shinDragonAnimation, NShinGetterSpriteSequence.EnsureShinDragonIdleLoaded);
-        }
-
-        var getterOne = ToFormVisual(getterOneNode);
-        var getterTwo = ToFormVisual(getterTwoNode);
-        var getterThree = ToFormVisual(getterThreeNode);
-        var shinDragon = ToFormVisual(shinDragonNode);
+        FormVisual? getterOne = ToFormVisual(getterOneNode);
+        FormVisual? getterTwo = ToFormVisual(getterTwoNode);
+        FormVisual? getterThree = ToFormVisual(getterThreeNode);
+        FormVisual? shinDragon = ToFormVisual(shinDragonNode);
         if (getterOne == null || getterTwo == null || getterThree == null || shinDragon == null)
             return false;
 
