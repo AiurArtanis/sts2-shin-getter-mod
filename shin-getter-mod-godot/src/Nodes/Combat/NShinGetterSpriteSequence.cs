@@ -89,7 +89,7 @@ internal static class NShinGetterSpriteSequence
     public const int ShinDragonDashMaxFrames = 48;
     public const int ShinDragonDeathMaxFrames = 48;
     public const int FusionMaxFrames = 30;
-    public const int StonerSunshineMaxFrames = 60;
+    public const int StonerSunshineMaxFrames = 90;
     public const double IdleFramesPerSecond = 24d;
     public const double AttackFramesPerSecond = 36d;
     public const double ActionFramesPerSecond = 30d;

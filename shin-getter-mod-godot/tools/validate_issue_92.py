@@ -69,7 +69,7 @@ def validate_stoner_sunshine() -> None:
         "TryPlayCardVoiceAtCustomTiming",
         "TryPlayStonerSunshineAnimation(",
         "await ShinGetterCombatVfx.PlayStonerSunshine(",
-        "const int impactFrame = 47",
+        "const int impactFrame = 71",
         "recoveryDurationSeconds",
         ".WithNoAttackerAnim()",
         "ShinGetterCombatVfx.PlayEnergyBall(",
@@ -100,7 +100,7 @@ def validate_stoner_sunshine() -> None:
         'StonerSunshineAnimationName = "stoner_sunshine"',
         "GetterOneStonerSunshineFrameDirectory",
         "ShinDragonStonerSunshineFrameDirectory",
-        "StonerSunshineMaxFrames = 60",
+        "StonerSunshineMaxFrames = 90",
         "StonerSunshineFramesPerSecond = 30d",
     )
     sequence_text = read("src/Nodes/Combat/NShinGetterSpriteSequence.cs")
@@ -120,10 +120,11 @@ def validate_stoner_sunshine() -> None:
     require(
         "src/Nodes/Vfx/ShinGetterCombatVfx.cs",
         "PlayStonerSunshine(",
-        "const int chargeStartFrame = 20",
-        "const int lightningStartFrame = 30",
-        "const int launchFrame = 42",
-        "const int impactFrame = 47",
+        "const int frameCount = 90",
+        "const int chargeStartFrame = 30",
+        "const int lightningStartFrame = 45",
+        "const int launchFrame = 63",
+        "const int impactFrame = 71",
         "new Vector2(56f, -118f)",
         "new Vector2(150f, -95f)",
         "chargeStartDelay",
@@ -150,12 +151,12 @@ def validate_stoner_sunshine() -> None:
     ):
         source_dir = ROOT.parent / "art_sources/characters/shin_getter/forms" / action
         source_frames = sorted(source_dir.glob("sprite_*.png"))
-        if len(source_frames) != 60:
-            raise AssertionError(f"{action}: expected 60 source frames, got {len(source_frames)}")
+        if len(source_frames) != 90:
+            raise AssertionError(f"{action}: expected 90 source frames, got {len(source_frames)}")
         sheet_path = ROOT / "images/characters/shin_getter/forms" / action / "sprite_sheet.png"
         with Image.open(sheet_path) as sheet:
-            if sheet.size != (5760, 5760):
-                raise AssertionError(f"{action}: expected 5760x5760 sheet, got {sheet.size}")
+            if sheet.size != (7200, 6480):
+                raise AssertionError(f"{action}: expected 7200x6480 sheet, got {sheet.size}")
         require(
             f"images/characters/shin_getter/forms/{action}/sprite_sheet.png.import",
             '"vram_texture": false',

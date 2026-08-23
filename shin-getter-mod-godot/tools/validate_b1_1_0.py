@@ -160,8 +160,8 @@ def validate_sprite_sheets() -> None:
 
     source_root = REPO_ROOT / "art_sources/characters/shin_getter/forms"
     source_frames = list(source_root.glob("*/sprite_*.png"))
-    if len(source_frames) != 1130:
-        raise AssertionError(f"expected 1130 source frames, got {len(source_frames)}")
+    if len(source_frames) != 1190:
+        raise AssertionError(f"expected 1190 source frames, got {len(source_frames)}")
     frame_manifest = load_frame_manifest(source_root / "frame_manifest.txt")
     manifest_frame_paths = {
         f"{action}/sprite_{frame_number:06d}.png"
@@ -170,11 +170,11 @@ def validate_sprite_sheets() -> None:
     }
     actual_frame_paths = {path.relative_to(source_root).as_posix() for path in source_frames}
     manifest_entry_count = sum(len(frame_numbers) for frame_numbers in frame_manifest.values())
-    if manifest_entry_count != 1130 or manifest_frame_paths != actual_frame_paths:
+    if manifest_entry_count != 1190 or manifest_frame_paths != actual_frame_paths:
         missing = sorted(actual_frame_paths - manifest_frame_paths)
         extra = sorted(manifest_frame_paths - actual_frame_paths)
         raise AssertionError(
-            "PCK forbidden frame set does not exactly match the 1130 source files; "
+            "PCK forbidden frame set does not exactly match the 1190 source files; "
             f"missing={missing[:3]}, extra={extra[:3]}"
         )
     validator_path = "tools/validate-mod-resources.gd"
@@ -182,7 +182,7 @@ def validate_sprite_sheets() -> None:
         validator_path,
         "CHARACTER_FRAME_MANIFEST_PATH",
         "_load_character_frame_manifest(pck_path)",
-        "EXPECTED_CHARACTER_SOURCE_FRAME_COUNT := 1130",
+        "EXPECTED_CHARACTER_SOURCE_FRAME_COUNT := 1190",
     )
     reject(validator_path, "FORBIDDEN_CHARACTER_FRAME_COUNTS", "range(1, FORBIDDEN_CHARACTER_FRAME_COUNTS")
     if (ROOT / "art_sources/characters/shin_getter/forms").exists():

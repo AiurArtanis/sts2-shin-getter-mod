@@ -267,7 +267,7 @@ const FORBIDDEN_RESOURCE_DEPENDENCIES := {
 }
 
 const CHARACTER_FRAME_MANIFEST_PATH := "art_sources/characters/shin_getter/forms/frame_manifest.txt"
-const EXPECTED_CHARACTER_SOURCE_FRAME_COUNT := 1130
+const EXPECTED_CHARACTER_SOURCE_FRAME_COUNT := 1190
 
 
 func _initialize() -> void:
