@@ -20,7 +20,7 @@ FRAME_COUNTS = {
     "getter_one_death": 48,
     "getter_one_idle": 24,
     "getter_one_fusion": 30,
-    "getter_one_stoner_sunshine": 60,
+    "getter_one_stoner_sunshine": 90,
     "getter_two_attack": 40,
     "getter_two_block": 24,
     "getter_two_cast": 32,
@@ -41,13 +41,10 @@ FRAME_COUNTS = {
     "shin_getter_dragon_dash": 48,
     "shin_getter_dragon_death": 48,
     "shin_getter_dragon_idle": 36,
-    "shin_getter_dragon_stoner_sunshine": 60,
+    "shin_getter_dragon_stoner_sunshine": 90,
 }
-COLUMNS_BY_FRAME_COUNT = {24: 6, 30: 6, 32: 8, 36: 6, 40: 8, 48: 8, 60: 10}
-COLUMNS_BY_ACTION = {
-    "getter_one_stoner_sunshine": 8,
-    "shin_getter_dragon_stoner_sunshine": 8,
-}
+COLUMNS_BY_FRAME_COUNT = {24: 6, 30: 6, 32: 8, 36: 6, 40: 8, 48: 8, 60: 10, 90: 10}
+COLUMNS_BY_ACTION = {}
 IDLE_RESOURCES = {
     "getter_one_idle": "shin_getter_one_idle_frames.tres",
     "getter_two_idle": "shin_getter_two_idle_frames.tres",

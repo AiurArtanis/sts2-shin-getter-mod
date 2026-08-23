@@ -84,8 +84,8 @@ public sealed class SGC_StonerSunshine : ShinGetterCardBase
                 .WithNoAttackerAnim()
                 .WithHitFx("vfx/vfx_starry_impact").Execute(choiceContext);
 
-            const int totalFrames = 60;
-            const int impactFrame = 47;
+            const int totalFrames = 90;
+            const int impactFrame = 71;
             float recoveryDurationSeconds = sequenceDurationSeconds * (totalFrames - impactFrame) / totalFrames;
             await Cmd.Wait(recoveryDurationSeconds);
         }

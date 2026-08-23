@@ -216,11 +216,11 @@ internal static partial class ShinGetterCombatVfx
         if (ownerNode == null || targetPositions.Count == 0)
             return;
 
-        const int frameCount = 60;
-        const int chargeStartFrame = 20;
-        const int lightningStartFrame = 30;
-        const int launchFrame = 42;
-        const int impactFrame = 47;
+        const int frameCount = 90;
+        const int chargeStartFrame = 30;
+        const int lightningStartFrame = 45;
+        const int launchFrame = 63;
+        const int impactFrame = 71;
         float totalDuration = Math.Max(2.6f, sequenceDurationSeconds);
         float chargeStartDelay = totalDuration * chargeStartFrame / frameCount;
         float firstGrowthDuration = totalDuration * (lightningStartFrame - chargeStartFrame) / frameCount;
