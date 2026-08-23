@@ -138,13 +138,12 @@ def validate_localization() -> None:
             "jpn": ("保留",),
             "zhs": ("保留",),
         }[language]
-        spirit_command_descriptions = {
-            powers_path: powers["S_G_P_KI.description"],
-            hover_tips_path: hover_tips["SHIN_GETTER_SPIRIT_COMMAND.description"],
-        }
-        for path, description in spirit_command_descriptions.items():
-            if any(marker in description.lower() for marker in forbidden_retain_markers):
-                raise AssertionError(f"{path}: Spirit Command description still claims Retain")
+        ki_description = powers["S_G_P_KI.description"]
+        if any(marker in ki_description.lower() for marker in forbidden_retain_markers):
+            raise AssertionError(f"{powers_path}: Ki power still claims unconditional Retain")
+        spirit_command_tip = hover_tips["SHIN_GETTER_SPIRIT_COMMAND.description"]
+        if not any(marker in spirit_command_tip.lower() for marker in forbidden_retain_markers):
+            raise AssertionError(f"{hover_tips_path}: Spirit Command tip is missing conditional Retain")
 
 
 def validate_sprite_sheets() -> None:
