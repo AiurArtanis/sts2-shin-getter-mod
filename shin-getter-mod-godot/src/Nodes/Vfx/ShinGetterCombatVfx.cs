@@ -216,35 +216,28 @@ internal static partial class ShinGetterCombatVfx
         if (ownerNode == null || targetPositions.Count == 0)
             return;
 
-        const float flightDurationSeconds = 0.4f;
-        const float ascentDurationSeconds = 0.75f;
-        const float landingDurationSeconds = 0.4f;
+        const int frameCount = 60;
+        const int chargeStartFrame = 20;
+        const int lightningStartFrame = 30;
+        const int launchFrame = 42;
+        const int impactFrame = 47;
         float totalDuration = Math.Max(2.6f, sequenceDurationSeconds);
-        float firstGrowthDuration = Math.Min(2f, totalDuration - flightDurationSeconds - 0.2f);
-        float secondGrowthDuration = Math.Max(0.2f,
-            totalDuration - firstGrowthDuration - flightDurationSeconds);
-        Vector2 ownerOrigin = ownerNode.GlobalPosition;
-        Vector2 airborneOffset = new(-90f, -150f);
+        float chargeStartDelay = totalDuration * chargeStartFrame / frameCount;
+        float firstGrowthDuration = totalDuration * (lightningStartFrame - chargeStartFrame) / frameCount;
+        float secondGrowthDuration = totalDuration * (launchFrame - lightningStartFrame) / frameCount;
+        float flightDurationSeconds = totalDuration * (impactFrame - launchFrame) / frameCount;
+        Vector2 chargeStart = ownerNode.VfxSpawnPosition + new Vector2(56f, -118f);
+        Vector2 fullyCharged = ownerNode.VfxSpawnPosition + new Vector2(150f, -95f);
+        Vector2 firstGrowthPosition = chargeStart.Lerp(
+            fullyCharged,
+            (lightningStartFrame - chargeStartFrame) / (float)(launchFrame - chargeStartFrame));
         Vector2 destination = targetPositions.Aggregate(Vector2.Zero, (sum, pos) => sum + pos)
             / targetPositions.Count;
 
-        Tween movementTween = ownerNode.CreateTween();
-        movementTween.TweenProperty(
-                ownerNode,
-                "global_position",
-                ownerOrigin + airborneOffset,
-                ascentDurationSeconds)
-            .SetEase(Tween.EaseType.InOut)
-            .SetTrans(Tween.TransitionType.Sine);
-        movementTween.TweenInterval(Math.Max(
-            0f,
-            totalDuration - ascentDurationSeconds - landingDurationSeconds));
-        movementTween.TweenProperty(ownerNode, "global_position", ownerOrigin, landingDurationSeconds)
-            .SetEase(Tween.EaseType.In)
-            .SetTrans(Tween.TransitionType.Cubic);
+        await Cmd.Wait(chargeStartDelay);
 
         Node2D ball = CreateSolarEnergyBall();
-        ball.GlobalPosition = ownerNode.VfxSpawnPosition + Vector2.Up * 168f;
+        ball.GlobalPosition = chargeStart;
         NCombatRoom.Instance?.CombatVfxContainer.AddChildSafely(ball);
 
         Tween firstGrowthTween = ball.CreateTween().SetParallel();
@@ -254,6 +247,9 @@ internal static partial class ShinGetterCombatVfx
             .SetTrans(Tween.TransitionType.Cubic);
         firstGrowthTween.TweenProperty(ball, "rotation", Mathf.Tau * 0.35f, firstGrowthDuration)
             .AsRelative();
+        firstGrowthTween.TweenProperty(ball, "global_position", firstGrowthPosition, firstGrowthDuration)
+            .SetEase(Tween.EaseType.InOut)
+            .SetTrans(Tween.TransitionType.Sine);
         await Cmd.Wait(firstGrowthDuration);
 
         for (int index = 0; index < 16; index++)
@@ -266,6 +262,9 @@ internal static partial class ShinGetterCombatVfx
             .SetTrans(Tween.TransitionType.Cubic);
         secondGrowthTween.TweenProperty(ball, "rotation", Mathf.Tau * 0.55f, secondGrowthDuration)
             .AsRelative();
+        secondGrowthTween.TweenProperty(ball, "global_position", fullyCharged, secondGrowthDuration)
+            .SetEase(Tween.EaseType.InOut)
+            .SetTrans(Tween.TransitionType.Sine);
         await Cmd.Wait(secondGrowthDuration);
 
         Tween flightTween = ball.CreateTween().SetParallel();
