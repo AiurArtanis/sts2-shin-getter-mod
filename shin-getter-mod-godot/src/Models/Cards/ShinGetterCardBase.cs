@@ -122,7 +122,7 @@ public abstract class ShinGetterCardBase : CardModel
             ["SGC_Insight"] = new[] { "精神", "敏捷", "力量", "荆棘" },
             ["SGC_IronWall"] = new[] { "精神", "三号机", "覆甲" },
             ["SGC_Jammer"] = new[] { "分身", "变形", "二号机" },
-            ["SGC_Ki"] = new[] { "气力", "活力" },
+            ["SGC_Ki"] = new[] { "气力", "活力", "精神指令卡" },
             ["SGC_LigerAssault"] = new[] { "二号机", "分身", "缓冲" },
             ["SGC_Meltdown"] = new[] { "放射能" },
             ["SGC_Overload"] = new[] { "能量" },
@@ -147,6 +147,13 @@ public abstract class ShinGetterCardBase : CardModel
             ["SGC_RescheduleTicket"] = new[] { "抽牌", "二号机" },
             ["SGC_PressureBreath"] = new[] { "格挡", "覆甲", "三号机" },
             ["SGC_WispCoordinate"] = new[] { "抽牌", "辐射", "二号机" },
+        };
+
+    private static readonly IReadOnlyDictionary<string, IReadOnlySet<string>> ContextualHoverTipExclusions =
+        new Dictionary<string, IReadOnlySet<string>>
+        {
+            ["SGC_Insight"] = new HashSet<string>(new[] { "一号机", "二号机", "三号机" }, StringComparer.Ordinal),
+            ["SGC_Desperation"] = new HashSet<string>(new[] { "一号机", "二号机", "三号机" }, StringComparer.Ordinal),
         };
 
     private static readonly IReadOnlyDictionary<string, ShinGetterForm> FormGlowTerms =
@@ -274,10 +281,12 @@ public abstract class ShinGetterCardBase : CardModel
         {
             string description = Description.GetRawText();
             CardDescriptionTerms.TryGetValue(GetType().Name, out string[]? registeredTerms);
+            ContextualHoverTipExclusions.TryGetValue(GetType().Name, out IReadOnlySet<string>? excludedTerms);
             return TermTips.Keys
                 .Where(term => description.Contains(term, StringComparison.Ordinal))
                 .Concat(registeredTerms ?? Array.Empty<string>())
                 .Distinct(StringComparer.Ordinal)
+                .Where(term => excludedTerms?.Contains(term) != true)
                 .Where(TermTips.ContainsKey)
                 .Select(term => TermTips[term](this));
         }
