@@ -85,6 +85,12 @@ internal enum ShinGetterVoiceCue
     StonerArrivalUseSunshine = 53,
     HayatoNoHpLoss = 54,
     BenkeiNoHpLoss = 55,
+    RyomaLowHp50 = 56,
+    RyomaLowHp25 = 57,
+    HayatoLowHp50 = 58,
+    HayatoLowHp25 = 59,
+    BenkeiLowHp50 = 60,
+    BenkeiLowHp25 = 61,
 }
 
 internal static class ShinGetterVoiceService
@@ -161,6 +167,12 @@ internal static class ShinGetterVoiceService
         new("047", ShinGetterVoiceCue.HayatoKill, "hayato_kill.wav", "SHIN_GETTER.voice.hayatoKill", ShinGetterForm.Getter2, VoicePlaybackCategory.InterruptingNonCard),
         new("049", ShinGetterVoiceCue.HayatoNoHpLoss, "hayato_no_hp_loss.wav", "SHIN_GETTER.voice.hayatoNoHpLoss", ShinGetterForm.Getter2, VoicePlaybackCategory.DamageResponse),
         new("050", ShinGetterVoiceCue.BenkeiNoHpLoss, "benkei_no_hp_loss.wav", "SHIN_GETTER.voice.benkeiNoHpLoss", ShinGetterForm.Getter3, VoicePlaybackCategory.DamageResponse),
+        new("052", ShinGetterVoiceCue.RyomaLowHp50, "ryoma_low_hp_50.wav", "SHIN_GETTER.voice.ryomaLowHp50", ShinGetterForm.Getter1, VoicePlaybackCategory.DamageResponse),
+        new("053", ShinGetterVoiceCue.RyomaLowHp25, "ryoma_low_hp_25.wav", "SHIN_GETTER.voice.ryomaLowHp25", ShinGetterForm.Getter1, VoicePlaybackCategory.DamageResponse),
+        new("054", ShinGetterVoiceCue.HayatoLowHp50, "hayato_low_hp_50.wav", "SHIN_GETTER.voice.hayatoLowHp50", ShinGetterForm.Getter2, VoicePlaybackCategory.DamageResponse),
+        new("055", ShinGetterVoiceCue.HayatoLowHp25, "hayato_low_hp_25.wav", "SHIN_GETTER.voice.hayatoLowHp25", ShinGetterForm.Getter2, VoicePlaybackCategory.DamageResponse),
+        new("056", ShinGetterVoiceCue.BenkeiLowHp50, "benkei_low_hp_50.wav", "SHIN_GETTER.voice.benkeiLowHp50", ShinGetterForm.Getter3, VoicePlaybackCategory.DamageResponse),
+        new("057", ShinGetterVoiceCue.BenkeiLowHp25, "benkei_low_hp_25.wav", "SHIN_GETTER.voice.benkeiLowHp25", ShinGetterForm.Getter3, VoicePlaybackCategory.DamageResponse),
         new("058", ShinGetterVoiceCue.OpenGetOne, "ryoma_open_get.wav", "SHIN_GETTER.voice.openGetOne", ShinGetterForm.Getter1, VoicePlaybackCategory.DamageResponse),
         new("059", ShinGetterVoiceCue.OpenGetTwo, "hayato_open_get.wav", "SHIN_GETTER.voice.openGetTwo", ShinGetterForm.Getter2, VoicePlaybackCategory.DamageResponse),
         new("060", ShinGetterVoiceCue.OpenGetThree, "benkei_open_get.wav", "SHIN_GETTER.voice.openGetThree", ShinGetterForm.Getter3, VoicePlaybackCategory.DamageResponse),
@@ -433,6 +445,8 @@ internal static class ShinGetterVoiceService
             VoicePlaybackState state = PlaybackStates.GetOrCreateValue(runPlayer);
             state.ShouldPlayShiningSparkFollowUp = false;
             state.HasHandledFirstDamage = false;
+            state.HasHandledLowHp50 = false;
+            state.HasHandledLowHp25 = false;
             state.LowHpVoiceSuppressionDepth = 0;
             state.CombatStartContext = null;
             state.PendingKillVoiceLines.Clear();
@@ -498,6 +512,22 @@ internal static class ShinGetterVoiceService
         TryQueueRandomOneTimeAfterCurrentVoice(player, pool);
     }
 
+    internal static void OnAfterCurrentHpChanged(
+        Player player,
+        Creature creature,
+        decimal delta)
+    {
+        if (creature != player.Creature
+            || delta >= 0m
+            || AreLowHpThresholdVoicesSuppressed(player))
+        {
+            return;
+        }
+
+        VoicePlaybackState state = PlaybackStates.GetOrCreateValue(player);
+        TryHandleLowHpThresholdVoice(player, creature, delta, state);
+    }
+
     internal static void OnAfterDamageReceived(
         Player player,
         Creature target,
@@ -521,6 +551,53 @@ internal static class ShinGetterVoiceService
 
         if (dealer?.Side == CombatSide.Enemy && props.HasFlag(ValueProp.Move))
             TryPlayOneTime(player, Lines[GetNoHpLossVoiceCue(player)]);
+    }
+
+    private static bool TryHandleLowHpThresholdVoice(
+        Player player,
+        Creature target,
+        decimal delta,
+        VoicePlaybackState state)
+    {
+        if (target.MaxHp <= 0)
+            return false;
+
+        decimal previousHp = target.CurrentHp - delta;
+        bool crossedTwentyFivePercent = !state.HasHandledLowHp25
+            && previousHp * 4m >= target.MaxHp
+            && target.CurrentHp * 4m < target.MaxHp;
+        if (crossedTwentyFivePercent)
+        {
+            state.HasHandledLowHp50 = true;
+            state.HasHandledLowHp25 = true;
+            TryPlayOneTime(player, Lines[GetLowHpVoiceCue(player, true)]);
+            return true;
+        }
+
+        bool crossedFiftyPercent = !state.HasHandledLowHp50
+            && previousHp * 2m >= target.MaxHp
+            && target.CurrentHp * 2m < target.MaxHp;
+        if (!crossedFiftyPercent)
+            return false;
+
+        state.HasHandledLowHp50 = true;
+        TryPlayOneTime(player, Lines[GetLowHpVoiceCue(player, false)]);
+        return true;
+    }
+
+    private static ShinGetterVoiceCue GetLowHpVoiceCue(Player player, bool isBelowTwentyFivePercent)
+    {
+        bool isGetterTwo = player.Creature.GetPower<SGP_ShinGetterTwo>() != null;
+        bool isGetterThree = player.Creature.GetPower<SGP_ShinGetterThree>() != null;
+        return (isGetterTwo, isGetterThree, isBelowTwentyFivePercent) switch
+        {
+            (true, _, false) => ShinGetterVoiceCue.HayatoLowHp50,
+            (true, _, true) => ShinGetterVoiceCue.HayatoLowHp25,
+            (_, true, false) => ShinGetterVoiceCue.BenkeiLowHp50,
+            (_, true, true) => ShinGetterVoiceCue.BenkeiLowHp25,
+            (_, _, false) => ShinGetterVoiceCue.RyomaLowHp50,
+            _ => ShinGetterVoiceCue.RyomaLowHp25,
+        };
     }
 
     private static ShinGetterVoiceCue GetNoHpLossVoiceCue(Player player)
@@ -566,7 +643,7 @@ internal static class ShinGetterVoiceService
 
         if (!LinesByCode.TryGetValue(code, out VoiceLine? line))
         {
-            message = "Usage: sgs <001-047|049-050|058-065>";
+            message = "Usage: sgs <001-047|049-050|052-065>";
             return false;
         }
 
@@ -1035,6 +1112,8 @@ internal static class ShinGetterVoiceService
         public int SubtitleGeneration;
         public bool ShouldPlayShiningSparkFollowUp;
         public bool HasHandledFirstDamage;
+        public bool HasHandledLowHp50;
+        public bool HasHandledLowHp25;
         public int LowHpVoiceSuppressionDepth;
         public CombatStartVoiceContext? CombatStartContext;
     }
