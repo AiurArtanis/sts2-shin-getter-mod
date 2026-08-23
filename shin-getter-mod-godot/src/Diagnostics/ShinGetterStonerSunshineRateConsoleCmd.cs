@@ -13,6 +13,7 @@ public sealed class ShinGetterStonerSunshineRateConsoleCmd : AbstractConsoleCmd
     public override string Args => string.Empty;
     public override string Description => "Shows the current Stoner Sunshine special-arrival probability.";
     public override bool IsNetworked => false;
+    public override bool DebugOnly => false;
 
     public override CmdResult Process(Player? issuingPlayer, string[] args)
     {

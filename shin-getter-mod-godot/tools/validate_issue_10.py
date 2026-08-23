@@ -453,9 +453,11 @@ def check_code_wiring() -> None:
             and "ShinGetterStonerSunshineRateConsoleCmd" in console_patch,
             "stoner_sunshine_rate must be routed through the existing console patch")
     require('CmdName => "stoner_sunshine_rate"' in rate_command
+            and "public sealed class ShinGetterStonerSunshineRateConsoleCmd : AbstractConsoleCmd" in rate_command
+            and "DebugOnly => false" in rate_command
             and "TryGetCurrentAppearanceChance" in rate_command
             and 'ToString("P2"' in rate_command,
-            "stoner_sunshine_rate must report the issuing player's current percentage")
+            "stoner_sunshine_rate must be a discoverable non-debug command and report the issuing player's current percentage")
 
     for relic_name, relic in (("Getter Furnace", getter_furnace), ("Emperor's Fragment", emperors_fragment)):
         require("ShinGetterStonerSunshineService.ResetCombat(Owner);" in relic,
