@@ -105,7 +105,7 @@ internal static class NShinGetterSpriteSequence
     public const double ShinDragonBlockFramesPerSecond = 60d;
     public const double FusionFramesPerSecond = 60d;
     public const double StonerSunshineFramesPerSecond = 30d;
-    public const double ShinDragonSpecialFramesPerSecond = 24d;
+    public const double ShinDragonSpecialFramesPerSecond = 30d;
 
     public const string FrameDirectory = IdleFrameDirectory;
     public const string AnimationName = IdleAnimationName;
