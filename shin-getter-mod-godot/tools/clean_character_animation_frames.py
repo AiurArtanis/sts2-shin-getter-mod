@@ -3,10 +3,10 @@
 
 The captures use a bright magenta background and, on some runs, a detached
 dynamic watermark.  This tool keeps the approved frame selection, tightens
-background-colored chroma pixels, repairs keyed edge RGB from the nearest
-solid foreground pixel, and removes only detached components fully contained
-inside the known watermark corner.  It deliberately does not use generative
-image editing so animation identity stays stable frame to frame.
+background-colored chroma pixels by changing alpha only, preserves every RGB
+pixel from the approved matte, and removes only detached components fully
+contained inside the known watermark corner.  It deliberately does not use
+generative image editing so animation identity stays stable frame to frame.
 """
 
 from __future__ import annotations
@@ -28,7 +28,6 @@ FRAME_SIZE = 720
 BACKGROUND_DISTANCE_ZERO = 120.0
 BACKGROUND_DISTANCE_SOLID = 200.0
 ALPHA_FLOOR = 4
-SOLID_ALPHA = 240
 
 
 @dataclass(frozen=True)
@@ -122,24 +121,6 @@ def remove_corner_watermark(alpha: np.ndarray, frame_number: int, capture_count:
     return removed
 
 
-def propagate_solid_edge_rgb(rgb: np.ndarray, alpha: np.ndarray, repair: np.ndarray) -> np.ndarray:
-    seeds = alpha >= SOLID_ALPHA
-    if not seeds.any() or not repair.any():
-        return rgb.copy()
-    distance_input = (~seeds).astype(np.uint8)
-    _, nearest_labels = cv2.distanceTransformWithLabels(
-        distance_input,
-        cv2.DIST_L2,
-        5,
-        labelType=cv2.DIST_LABEL_PIXEL,
-    )
-    nearest_colors = np.zeros((int(nearest_labels.max()) + 1, 3), dtype=np.uint8)
-    nearest_colors[nearest_labels[seeds]] = rgb[seeds]
-    repaired = rgb.copy()
-    repaired[repair] = nearest_colors[nearest_labels[repair]]
-    return repaired
-
-
 def clean_frame(raw_path: Path, approved_path: Path, clean_chroma: bool,
                 remove_watermark: bool, frame_number: int,
                 capture_count: int) -> tuple[Image.Image, int]:
@@ -151,12 +132,10 @@ def clean_frame(raw_path: Path, approved_path: Path, clean_chroma: bool,
         raise ValueError(f"{raw_path}: expected {FRAME_SIZE}x{FRAME_SIZE}")
 
     alpha = approved_rgba[:, :, 3].copy()
-    repair = np.zeros_like(alpha, dtype=bool)
     if clean_chroma:
         background = estimate_background(raw_rgb)
         distance = np.linalg.norm(raw_rgb.astype(np.float32) - background, axis=2)
         keyed_alpha = smooth_alpha(distance)
-        previous_alpha = alpha.copy()
         # Key background-colored pixels even when they are enclosed by wings,
         # shields, or other effects.  Those enclosed pockets caused several of
         # the solid magenta blocks reported on black backgrounds.
@@ -199,19 +178,16 @@ def clean_frame(raw_path: Path, approved_path: Path, clean_chroma: bool,
             alpha[magenta_edge],
             feathered_edge_alpha[magenta_edge],
         )
-        repair = (alpha < previous_alpha) & (alpha > 0) & (alpha < SOLID_ALPHA)
     alpha[alpha < ALPHA_FLOOR] = 0
 
     removed = 0
     if remove_watermark:
         removed = remove_corner_watermark(alpha, frame_number, capture_count)
 
-    # Keep the approved RGB everywhere.  Re-reading raw capture RGB here would
-    # reintroduce the old magenta fringe even when the requested change is only
-    # watermark removal.
-    cleaned_rgb = propagate_solid_edge_rgb(approved_rgba[:, :, :3], alpha, repair)
-    cleaned_rgb[alpha == 0] = 0
-    rgba = np.dstack((cleaned_rgb, alpha))
+    # The approved matte owns RGB.  Chroma cleanup and watermark removal may
+    # only lower alpha; even fully transparent pixels retain the approved RGB
+    # so the invariant can be verified without reconstructing a foreground.
+    rgba = np.dstack((approved_rgba[:, :, :3], alpha))
     return Image.fromarray(rgba, mode="RGBA"), removed
 
 
@@ -251,6 +227,7 @@ def select_qa_frames(frame_numbers: tuple[int, ...]) -> set[int]:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--capture-root", type=Path, default=DEFAULT_CAPTURE_ROOT)
+    parser.add_argument("--approved-root", type=Path, default=SOURCE_ROOT)
     parser.add_argument("--output-root", type=Path, default=SOURCE_ROOT)
     parser.add_argument("--qa-dir", type=Path)
     args = parser.parse_args()
@@ -269,7 +246,7 @@ def main() -> None:
                 args.capture_root / capture.form / capture.action
                 / f"frame_{frame_number:06d}.png"
             )
-            approved_path = SOURCE_ROOT / action / f"sprite_{frame_number:06d}.png"
+            approved_path = args.approved_root / action / f"sprite_{frame_number:06d}.png"
             if not raw_path.is_file() or not approved_path.is_file():
                 raise FileNotFoundError(raw_path if not raw_path.is_file() else approved_path)
             with Image.open(approved_path) as approved:
