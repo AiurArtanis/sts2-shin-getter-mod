@@ -41,6 +41,7 @@ public sealed class SGC_Avalanche : ShinGetterCardBase
             ? Owner.Creature.GetPower<PlatingPower>()?.Amount ?? 0
             : 0;
         await CreatureCmd.LoseBlock(Owner.Creature, consumedBlock);
+        await WaitForShinDragonSpecialEffect(1.2f);
         await DamageCmd.Attack(DynamicVars.CalculatedDamage.BaseValue + consumedBlock + plating)
             .FromCard(this).Targeting(cardPlay.Target)
             .BeforeDamage(() => ShinGetterCombatVfx.PlayAvalanche(cardPlay.Target))
