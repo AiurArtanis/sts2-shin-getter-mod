@@ -8,7 +8,7 @@
 
 Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter 1's explosive offense, Shin Getter 2's high-speed tactics, and Shin Getter 3's iron defense; then awaken Shin Getter Dragon and let the Getter Rays consume the tower. This is a gameplay character mod built around transformations, deckbuilding, and presentation, not a simple reskin.
 
-> Current version `v1.1.0` · Minimum game version `0.107.0` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> Current version `v1.2.0` · Minimum game version `0.107.0` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
 [Download latest release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest) · [Report an issue](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
@@ -30,24 +30,25 @@ Morale supports several high-impact effects. Evolution and Radiation create addi
 
 ## 📦 What's included
 
-The content currently registered in `v1.1.0` includes:
+The content currently registered in `v1.2.0` includes:
 
-- **72 cards** spanning four forms and several core mechanics
-- **11 relics**, **3 potions**, and **2 enchantments**
+- **77 cards** spanning four forms and several core mechanics
+- **13 relics**, **6 potions**, and **2 enchantments**
 - Multiple **event invasions**, **1 exclusive event**, and dedicated Ancient dialogue
 - Simplified Chinese, English, and Japanese localization
 - A complete character mod loaded through DLL, PCK, and JSON artifacts
 
-## 🆕 v1.1.0 release notes
+## 🆕 v1.2.0 release notes
 
-[Download v1.1.0](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.1.0) (`shin-getter-mod-v1.1.0.zip`)
+[Download v1.2.0](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0) (`shin-getter-mod-v1.2.0.zip`)
 
-- **Event invasions:** Multiple base-game events now include Shin Getter options, conditions, story branches, combats, and rewards, plus the new *Triple Wood Carving* relic.
-- **Chunibyo settings:** Added in-game independent toggles, three voice-line levels, update history, and persistent configuration.
-- **Encounter music:** Added eight Shin Getter tracks for Elite and Boss combats in the Overgrowth, Underdocks, Hive, and Glory.
-- **Flow and resolution fixes:** Fixed transformation, card resolution, event rewards and return flow, autoplay, execution-music takeover, and multiplayer music scope.
-- **Balance and rules:** Updated card values, form rewards, Evolution mechanics, and Spirit Command rules.
-- **Animation and scene polish:** Optimized 24 actions and 920 animation frames for smoother transitions, smaller packages, and lower memory use, while improving the character's fit in shop and campfire scenes.
+- **Transformations and signature animation:** The three standard forms now have complete fighter separation and fusion sequences. Shin Getter Dragon gains three 30 fps signature actions, while Stoner Sunshine uses dedicated 90-frame animations for Shin Getter 1 and Dragon.
+- **New combat content:** Added the Ancient card *Getter Landing*, Open Get and Shade presentation, plus Stoner Sunshine's in-combat special acquisition, preview, and finishing reward.
+- **Expanded Event Invasions:** Eighteen base-game events gain Shin Getter routes, alongside four event cards, two event relics, and three event potions. These rewards stay out of normal random pools.
+- **Music and voices:** Chunibyo Config can select, randomize, and preview Execution, normal, event, Elite, and Boss music. Combat responses, low-HP lines, and subtitle timing are also expanded.
+- **Art and interface:** Updated twelve card portraits, added the animated rainbow `NEW` update badge, and corrected card-frame types, hover tips, and config interactions.
+- **Balance and rules:** Reworked Final Getter Beam and refined Stoner Sunshine, Evolution Engine, Bold Plan, Getter Will, Spirit Commands, and related mechanics.
+- **Stability fixes:** Fixed Radiation, Morale damage reduction, Spirit Command retention, Airborne Vulnerable duration, Maul animation, event rewards, multiplayer scope, and form-specific voices.
 
 ## 🃏 Full card gallery
 
@@ -57,7 +58,7 @@ The content currently registered in `v1.1.0` includes:
 
 ### Install the release
 
-1. Download `shin-getter-mod-v1.1.0.zip` from the [v1.1.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.1.0), then extract `ShinGetterMod.pck`, `ShinGetterMod.dll`, `ShinGetterMod.json`, and `mod_image.png`.
+1. Download `shin-getter-mod-v1.2.0.zip` from the [v1.2.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0), then extract `ShinGetterMod.pck`, `ShinGetterMod.dll`, `ShinGetterMod.json`, and `mod_image.png`.
 2. Create a `ShinGetterMod` folder inside the game's mod-loading directory and place all four files together.
 3. Launch the game, open **Settings → Mod Settings**, and enable “真盖塔模组” (Shin Getter Mod) under **Installed Mods**.
 4. Accept the load prompt, fully quit, and relaunch the game. Start a new run and select **Shin Getter**.
@@ -89,7 +90,7 @@ Once the Workshop edition is available, enable it as follows:
 
 ### Requirements
 
-- *Slay the Spire 2* `0.106.1` or later
+- *Slay the Spire 2* `0.107.0` or later
 - Godot `4.5.1 Mono`
 - .NET SDK `9`
 - A local game project directory that Godot can load for validation
