@@ -10,6 +10,8 @@ import cv2
 import numpy as np
 from PIL import Image
 
+from clean_character_animation_frames import remove_corner_watermark
+
 
 PROJECT = Path(__file__).resolve().parents[1]
 REPOSITORY = PROJECT.parent
@@ -18,29 +20,30 @@ OUTPUT_ROOT = PROJECT / "images/characters/shin_getter/forms"
 FRAME_SIZE = 720
 
 EXPECTED_SOURCE_DIGESTS = {
-    "getter_one_idle": "973dae6982e9f154d665e939040b56f354cee3bbbd1228573febfeeb00977aba",
-    "getter_one_attack": "6d146286a92698bcca492d1c2dfe8a2d0ababf43ce90498ca2c95dcf637a5713",
-    "getter_one_block": "171245bf6405ecbb3b86e1c752bd01bca3c1a4e0a40c234c99fec45816fb1d51",
-    "getter_one_cast": "6826b1bc6538bfad597dd0e099be1aa8a9204ee13f25a8891d78a641e44c726a",
-    "getter_one_dash": "7449560fae8a3519df1347d438a253f0d45dea6fe56b51bf6bb6f53240b3ba23",
+    "getter_one_idle": "2d7009352c4c2533f5e5d35c636ee0af80acf06df02e4fd3f93a205083baccc6",
+    "getter_one_attack": "8b4cadd1cbf421d0b0cc78d6fb2da7d0857e4db57026880bfdbd0fb9734873a9",
+    "getter_one_block": "52531c5cca5a4997f34148056c1b7d187d80ad67617af7a766e544297d265110",
+    "getter_one_cast": "68ca596958798bcdce1d6730c8be337671bdfb55941bedd6291bbf073aab89bb",
+    "getter_one_dash": "92fe6c8c4f5eb38a5f1afab808b9355c7a2af5f0b02cbfb3a89505a7811b983c",
     "getter_one_death": "a05f17270502067bb85ce953384bee1edcbe9e8c016f1e54fc77d5fcf612e22b",
     "getter_one_fusion": "2f7fe0bc985a4d209468e575c9f933a17d0919b9150cb8e13fb8c9f8ad7af138",
-    "getter_two_idle": "ed88c3ddf56918ad78f780287425136bc425a758bd8b2dbf6911817c43aef4ce",
-    "getter_two_attack": "7efb2a202bf9363e23b309713147395f3ebee4b72758cba95bbc9eeb97aafa07",
+    "getter_one_stoner_sunshine": "78bc0b1f441ead173332a3484e5155bdb117687116dca896a9043a83e35cc7e1",
+    "getter_two_idle": "6e0df21b7f0c2c80b746d837b2ffc7fbd26e986619689ac27e79d799ba3bd942",
+    "getter_two_attack": "5d50176216c71789adaa4996b79fbfa26c6133efddcaa4d358f91a126b9222fe",
     "getter_two_block": "d9b576fd4e5958c15a82fac41053e2262b7f91cd7216174b38c5ffef979cb4f7",
     "getter_two_cast": "c8296f80ff69ef585c75f52cefab8bfacf0a77d0186a2eec29ac74701bcaa057",
     "getter_two_dash": "f51745748dd115bb3c9566dfbd02436b8a6414d15c3f1ed30ff68733777b61f3",
     "getter_two_death": "776d6499743c392ffd238b48dd93d0620696e9849e96b354a7a0097089456f82",
     "getter_two_fusion": "bba8a9c1008b5bd67f117579f2ff6665800d2e7aa032468e1d1c0671bdc30f44",
-    "getter_three_idle": "5f89bb59f5181b5f2c9f9e4265f90ca6f26c784a4431399da1e14a3330ba181e",
+    "getter_three_idle": "34ec6fc021884613011365fcf3df142df62475a8bc1a0c2b2fc47376562aa1ad",
     "getter_three_attack": "edbd2a9ac5a519bfe99c1234edb3bc4af0e4555e47df6078adc7d79d2be84494",
     "getter_three_block": "e6cbc01151cf1d1b6fb9289a0360bbe9b19c92bec51ea88563503b5c29daf6a3",
     "getter_three_cast": "385cf66d10affa6658a13d842e9e68180d331f9063fb409e9ca3aabb9e4a723d",
     "getter_three_dash": "6755c5c0032f390cc70f0020809eb1a7e96e9a26d9a63670d4370e0ee434e6ae",
     "getter_three_death": "605676f27ce83226f3e9e9506887b3b70505685b190d913d41d78e2d6b918f0f",
     "getter_three_fusion": "cbd9d0e8f6fd819e23fb1a554805cda2129e7ab46cff53da4290ecd0057b295b",
-    "shin_getter_dragon_idle": "00956d92f9106f3bed76d76cc4f0a32f34b2cc59be71c26b88b762a17f43d8fb",
-    "shin_getter_dragon_attack": "20193be677f805953822e5987d5cf05546db7bac37c6cdbd1327213e272ededd",
+    "shin_getter_dragon_idle": "f15b59c00aee5953202bfe513eb10f3de05d4aeeacd305299374779320cd3260",
+    "shin_getter_dragon_attack": "92971e2f5d7062a7e169e572fad3a87775a8ee1abfe7270761cd7c35e6d9f27e",
     "shin_getter_dragon_block": "afcb546cf449d79638697728fbae095b9c07b30182b1948c79cb95c027705002",
     "shin_getter_dragon_cast": "8d1bf7518cb48a283e8090a1aa167aaad54b7e5e26627cda6f9c22d994d1ad14",
     "shin_getter_dragon_dash": "27f81876b12d4d2e879d55d992f317d79daba5600503ec4efbe41cdb9bf2fab3",
@@ -48,26 +51,39 @@ EXPECTED_SOURCE_DIGESTS = {
     "shin_getter_dragon_cyclone": "b98b6603cabc197962228ace4c1999aca6e436f509cda4f4bf5cde8e6d88ba33",
     "shin_getter_dragon_dash_v2": "1439ad27e079681fdd3636423cee7587e312ad618c3bf5297d9a2a099bbff443",
     "shin_getter_dragon_drill_attack": "be97edf3f43d5e197173b72f7ae6e70fe014149d47c5dd6102eef64140e1d46a",
+    "shin_getter_dragon_stoner_sunshine": "d878cab0b7cff8a91537ef5b9704ce360962f7fa237d9bbff404f7ab924d6842",
 }
 
-EXPECTED_APPROVED_RGB_DIGESTS = {
-    "getter_one_attack": "9351566d5282f20a89ce54ef45c9b4d3488bb34feac86becb1899d0f1b3e09b9",
-    "getter_one_block": "1c8f6d98114a21864a632a02a320fb0d4b5e1ff34365934e686cfc185f99fe65",
-    "getter_one_cast": "74bbee1dccf2431bc67a93cce31624f4befe5e8faececeb091e1b44d68f5d6c4",
-    "getter_one_dash": "d489bc3c2e0d1b84f5a08423774d66aa8152a5aa59f4885c47a94a275ffed748",
+EXPECTED_CLEAN_RGB_DIGESTS = {
+    "getter_one_attack": "523980b3d107ca36182d26415d67281fa74bd934520ecff06d0922f7571969bd",
+    "getter_one_block": "209d8299200d46c1571ae5d205eda5aeccd8d3711f448fa8325c84dc32ea5c15",
+    "getter_one_cast": "174fc4314f1b77abdce0b298c1beff3ca5cfebe349222ac1e623b7803dc46aaa",
+    "getter_one_dash": "e026b19e0cc3b7748783889a00152cc598defd224369342075f98144fc54ff88",
     "getter_one_idle": "69b2bc5bf35d7a975ca427dd15f7b4e38570382e07af77dcc18adb81d7f6886b",
     "getter_three_attack": "a67a200a78bc7cd41cd821e00baeb160e51c5ab179cdee33a54e757cd8f3728f",
     "getter_three_cast": "469d1737c4c3402df2667cbfc58512aa8f9023b4ac922aef86325a9a22e157f8",
     "getter_three_dash": "c1caf734bddc229cdca60dee5223cbc4545652dc5892b607a729774621fff71c",
-    "getter_three_idle": "76ae08d7c26b4134c65335bad0bf56c3c8b07fefa0d2ffaee67eeef50d20356c",
+    "getter_three_idle": "35a533f7b1912b2bd95b17aee80db22aeb122eb8824580cced517903b96fd5fe",
     "getter_two_cast": "c5f44918e3e91da7638f020f9d21600e32d13272af56abe554cec4d90db4a01a",
-    "getter_two_attack": "8e60db8b384ea888410f2c17f8684c39baa24b17247f579f96822bbafa58e3d7",
+    "getter_two_attack": "edb169b118bd52c638eef023be4023f7673060bbee2ebcd20afac6ab31c7c510",
     "getter_two_dash": "f266cfbe053c002916d74ce09921cdf2f5ea6d867b1baf27f466f55b1cb5109a",
     "getter_two_death": "7e0e0c95d78286ec368868811f6b6bdb080955f610455b32151761476e94ab12",
-    "getter_two_idle": "78c13b875213ada62b6d31fd5f70cb51c39016badec736fcdcb9ab4e796af455",
-    "shin_getter_dragon_attack": "7d8f0ca9af75ae810e2ded7d61bfde5b5f9d93e1d8f2313349a51f0d5dc7a20a",
+    "getter_two_idle": "06088b6896dcef125546631431f0c2873cc6a5237aed7302964cbeaea9da547b",
+    "shin_getter_dragon_attack": "b183889f175a29ea9cfc96f859d39e919ec28220021a6c8201abbeeb022fb080",
     "shin_getter_dragon_cast": "c5ef0f7da34483c69e15be09c28a41cc772fd31aa170ec5e961da495d9a1f90e",
-    "shin_getter_dragon_idle": "2756463fa033ae4d316bc8a69fba988204d6f075075f1c52901f93d5eecaeac0",
+    "shin_getter_dragon_idle": "3eaeb2b30c5762ed274786892ed855ebd029aa31d140d83ed6e04ef476524b85",
+}
+
+EXPECTED_WATERMARK_ALPHA_DIGESTS = {
+    "getter_one_attack": "5455a4048326d8064f120d3aa4ea55e083699dee00542c3d95cbb6ca565d2816",
+    "getter_one_block": "4806b4d0f4f58a143a3d9f247fa2d61cf890e5c3165b553e3aa508ae1959fe7f",
+    "getter_one_cast": "ed997ed5ecb11ca3312055cd5c6dc0e48b5998087e012812b82adde151f23e22",
+    "getter_one_dash": "7b2c8b0d312277a868b9e90194e0f0c125c2041be0f58f6d47e3c3a2896db9ab",
+    "getter_two_idle": "a1b2852beec0e0254cfe1c9d5df5f5dea7661e4d753a7871a566b1083108e9b5",
+    "getter_two_attack": "59c87c282f4f84b17162dd1773a65685e11033bf00a8b628fea3cc9d176035bc",
+    "getter_three_idle": "b0adf68507686ad6f514b37bf798d9e5f86bbb9b8b10a3943bd85bc183a63a14",
+    "shin_getter_dragon_attack": "760110700863627117e741cb5199cc38f38813871fc8802187b5ddc3f57b840a",
+    "shin_getter_dragon_idle": "53988a193d71e56999999d2a843c0dc97a367ad6e7fb7630c11d8466cb001e8d",
 }
 
 EXPECTED_FRAME_COUNTS = {
@@ -78,6 +94,7 @@ EXPECTED_FRAME_COUNTS = {
     "getter_one_dash": 48,
     "getter_one_death": 48,
     "getter_one_fusion": 30,
+    "getter_one_stoner_sunshine": 90,
     "getter_two_idle": 24,
     "getter_two_attack": 40,
     "getter_two_block": 24,
@@ -101,6 +118,7 @@ EXPECTED_FRAME_COUNTS = {
     "shin_getter_dragon_cyclone": 60,
     "shin_getter_dragon_dash_v2": 60,
     "shin_getter_dragon_drill_attack": 60,
+    "shin_getter_dragon_stoner_sunshine": 90,
 }
 
 SPECIAL_CARD_GROUPS = {
@@ -180,6 +198,14 @@ def aggregate_rgb_digest(frames: list[Path]) -> str:
     return digest.hexdigest()
 
 
+def aggregate_alpha_digest(frames: list[Path]) -> str:
+    digest = hashlib.sha256()
+    for frame in frames:
+        with Image.open(frame) as image:
+            digest.update(np.asarray(image.convert("RGBA"), dtype=np.uint8)[:, :, 3].tobytes())
+    return digest.hexdigest()
+
+
 def visible_rgb_is_unchanged(approved: np.ndarray, cleaned: np.ndarray) -> bool:
     visible = cleaned[:, :, 3] > 0
     return np.array_equal(approved[:, :, :3][visible], cleaned[:, :, :3][visible])
@@ -189,16 +215,19 @@ def frame_number(path: Path) -> int:
     return int(path.stem.rsplit("_", 1)[1])
 
 
-def has_detached_corner_component(image: Image.Image, number: int, capture_count: int) -> bool:
-    alpha = np.asarray(image.getchannel("A"), dtype=np.uint8)
-    height, width = alpha.shape
+def has_fully_contained_corner_component(
+    mask: np.ndarray,
+    number: int,
+    capture_count: int,
+) -> bool:
+    height, width = mask.shape
     switch_frame = int(capture_count * 0.8)
     if number <= switch_frame:
         corner = (570, 660, width, height)
     else:
         corner = (0, 0, 160, 80)
     count, _, stats, _ = cv2.connectedComponentsWithStats(
-        (alpha >= 4).astype(np.uint8),
+        mask.astype(np.uint8),
         connectivity=8,
     )
     for label in range(1, count):
@@ -212,6 +241,28 @@ def has_detached_corner_component(image: Image.Image, number: int, capture_count
         if fully_inside and area <= 9000:
             return True
     return False
+
+
+def has_detached_corner_component(image: Image.Image, number: int, capture_count: int) -> bool:
+    alpha = np.asarray(image.getchannel("A"), dtype=np.uint8)
+    return has_fully_contained_corner_component(
+        alpha >= 4,
+        number,
+        capture_count,
+    )
+
+
+def has_detached_corner_rgb_component(
+    image: Image.Image,
+    number: int,
+    capture_count: int,
+) -> bool:
+    rgb = np.asarray(image.convert("RGB"), dtype=np.uint8)
+    return has_fully_contained_corner_component(
+        np.any(rgb != 0, axis=2),
+        number,
+        capture_count,
+    )
 
 
 def count_visible_strong_magenta(image: Image.Image) -> int:
@@ -245,15 +296,25 @@ def count_visible_magenta_silhouette_edge(image: Image.Image) -> int:
 
 
 def check_authoritative_sources() -> None:
+    actual_actions = {path.name for path in SOURCE_ROOT.iterdir() if path.is_dir()}
+    require(
+        actual_actions == set(EXPECTED_SOURCE_DIGESTS),
+        "all 32 character actions must be covered by approved source digests",
+    )
     for action, expected_hash in EXPECTED_SOURCE_DIGESTS.items():
         frames = sorted((SOURCE_ROOT / action).glob("sprite_*.png"))
         expected_count = EXPECTED_FRAME_COUNTS[action]
         require(len(frames) == expected_count, f"{action}: expected {expected_count} source frames")
         require(aggregate_digest(frames) == expected_hash, f"{action}: source frames differ from the approved cleanup")
-        if action in EXPECTED_APPROVED_RGB_DIGESTS:
+        if action in EXPECTED_CLEAN_RGB_DIGESTS:
             require(
-                aggregate_rgb_digest(frames) == EXPECTED_APPROVED_RGB_DIGESTS[action],
-                f"{action}: cleanup must preserve every RGB pixel from the approved matte",
+                aggregate_rgb_digest(frames) == EXPECTED_CLEAN_RGB_DIGESTS[action],
+                f"{action}: cleaned RGB differs from the approved result",
+            )
+        if action in EXPECTED_WATERMARK_ALPHA_DIGESTS:
+            require(
+                aggregate_alpha_digest(frames) == EXPECTED_WATERMARK_ALPHA_DIGESTS[action],
+                f"{action}: watermark-only cleanup must not change approved alpha",
             )
         for frame in frames:
             with Image.open(frame) as image:
@@ -280,6 +341,80 @@ def check_rgb_invariant_guard() -> None:
     )
 
 
+def check_hidden_watermark_guard() -> None:
+    fixture = np.zeros((FRAME_SIZE, FRAME_SIZE, 4), dtype=np.uint8)
+    fixture[670:680, 580:600, :3] = 220
+    image = Image.fromarray(fixture, mode="RGBA")
+    require(
+        not has_detached_corner_component(image, 1, 121),
+        "alpha-only watermark guard fixture must remain invisible",
+    )
+    require(
+        has_detached_corner_rgb_component(image, 1, 121),
+        "hidden watermark guard must reject transparent nonzero RGB text",
+    )
+
+    cleaned = fixture.copy()
+    removed = remove_corner_watermark(cleaned, 1, 121)
+    require(
+        removed == 200 and not np.any(cleaned),
+        "cleaner must clear the full RGBA value of a hidden watermark component",
+    )
+
+    fixture[670:680, 580:600] = 0
+    require(
+        not has_detached_corner_rgb_component(
+            Image.fromarray(fixture, mode="RGBA"),
+            1,
+            121,
+        ),
+        "fully cleared watermark RGBA must pass the hidden watermark guard",
+    )
+
+    fixture[670:680, 560:600, :3] = 220
+    untouched = fixture.copy()
+    require(
+        remove_corner_watermark(untouched, 1, 121) == 0
+        and np.array_equal(untouched, fixture),
+        "cleaner must leave components extending outside the active corner unchanged",
+    )
+    require(
+        not has_detached_corner_rgb_component(
+            Image.fromarray(fixture, mode="RGBA"),
+            1,
+            121,
+        ),
+        "components extending outside the active watermark corner must not be auto-classified",
+    )
+
+    overlap = np.zeros((FRAME_SIZE, FRAME_SIZE, 4), dtype=np.uint8)
+    overlap[670:680, 560:600, :3] = 220
+    overlap[670:680, 560:570, 3] = 255
+    overlap_before = overlap.copy()
+    removed = remove_corner_watermark(
+        overlap,
+        66,
+        121,
+        scrub_hidden_overlap=True,
+    )
+    require(
+        removed == 300,
+        "overlap cleanup must count only transparent RGB inside the active corner",
+    )
+    require(
+        not np.any(overlap[670:680, 570:600, :3]),
+        "overlap cleanup must erase hidden RGB joined to a visible effect",
+    )
+    require(
+        np.array_equal(overlap[:, :, 3], overlap_before[:, :, 3])
+        and np.array_equal(
+            overlap[670:680, 560:570, :3],
+            overlap_before[670:680, 560:570, :3],
+        ),
+        "overlap cleanup must preserve visible effect alpha and RGB",
+    )
+
+
 def check_black_background_cleanup() -> None:
     for action, capture_count in WATERMARK_ACTIONS.items():
         for frame in sorted((SOURCE_ROOT / action).glob("sprite_*.png")):
@@ -291,6 +426,14 @@ def check_black_background_cleanup() -> None:
                         capture_count,
                     ),
                     f"{frame}: detached dynamic watermark remains in the known corner",
+                )
+                require(
+                    not has_detached_corner_rgb_component(
+                        image.convert("RGBA"),
+                        frame_number(frame),
+                        capture_count,
+                    ),
+                    f"{frame}: transparent RGB watermark remains in the known corner",
                 )
 
     for action in CHROMA_CLEAN_ACTIONS:
@@ -307,11 +450,11 @@ def check_black_background_cleanup() -> None:
             edge_count = count_visible_magenta_silhouette_edge(image.convert("RGBA"))
             idle_magenta_edge_counts.append(edge_count)
             require(
-                edge_count <= 1000,
+                edge_count <= 10,
                 f"{frame}: reopened idle rose/magenta silhouette fringe remains visible on black",
             )
     require(
-        sum(idle_magenta_edge_counts) <= 8000,
+        sum(idle_magenta_edge_counts) <= 100,
         "Getter One idle rose/magenta silhouette fringe regressed across the animation",
     )
 
@@ -361,9 +504,18 @@ def check_builder_and_sheets() -> None:
     require("propagate_solid_edge_rgb" not in cleaner,
             "cleanup must not propagate neighboring foreground RGB")
     require("np.dstack((approved_rgba[:, :, :3], alpha))" in cleaner,
-            "cleanup must combine approved RGB with adjusted alpha only")
+            "cleanup must begin with approved RGB and adjusted alpha")
+    require("alpha_present | rgb_present" in cleaner,
+            "watermark detection must include transparent nonzero RGB components")
+    require("rgba[labels == label] = 0" in cleaner,
+            "watermark cleanup must clear full RGBA instead of hiding text with alpha")
+    require("active_corner[hidden_rgb] = 0" in cleaner,
+            "overlapped hidden watermark cleanup must clear transparent RGB")
     require("(keyed_alpha >= ALPHA_FLOOR).astype(np.uint8)" in cleaner,
             "reopened silhouette cleanup must derive its edge from the stable raw-source key")
+    require("(silhouette_distance - 8.0) / 4.0" in cleaner
+            and "silhouette_distance <= 12.0" in cleaner,
+            "Getter One idle must retain the approved stronger rose-edge cleanup")
 
 
 def check_runtime_wiring() -> None:
@@ -517,6 +669,7 @@ def check_runtime_wiring() -> None:
 def main() -> None:
     check_authoritative_sources()
     check_rgb_invariant_guard()
+    check_hidden_watermark_guard()
     check_black_background_cleanup()
     check_builder_and_sheets()
     check_runtime_wiring()

@@ -3,10 +3,11 @@
 
 The captures use a bright magenta background and, on some runs, a detached
 dynamic watermark.  This tool keeps the approved frame selection, tightens
-background-colored chroma pixels by changing alpha only, preserves every RGB
-pixel from the approved matte, and removes only detached components fully
-contained inside the known watermark corner.  It deliberately does not use
-generative image editing so animation identity stays stable frame to frame.
+background-colored chroma pixels by changing alpha only, preserves every
+non-watermark RGB pixel from the approved matte, and clears the full RGBA value
+of detached components fully contained inside the known watermark corner.  It
+deliberately does not use generative image editing so animation identity stays
+stable frame to frame.
 """
 
 from __future__ import annotations
@@ -64,6 +65,14 @@ CAPTURE_SOURCES = {
     "shin_getter_dragon_cast": CaptureSource("真盖塔龙", "施法", 121),
 }
 
+# In these frames the detached Doubao mark touches the Dragon attack effect in
+# RGB space.  The component guard intentionally refuses to erase the joined
+# component, so clear only already-transparent RGB in the active watermark
+# corner.  Visible effect pixels (alpha > 0) remain byte-for-byte unchanged.
+HIDDEN_WATERMARK_OVERLAP_FRAMES = {
+    "shin_getter_dragon_attack": frozenset({66, 68, 70, 72, 80}),
+}
+
 
 def parse_manifest(path: Path) -> dict[str, tuple[int, ...]]:
     sequences: dict[str, tuple[int, ...]] = {}
@@ -106,9 +115,24 @@ def smooth_alpha(distance: np.ndarray) -> np.ndarray:
     return np.rint(fraction * 255.0).astype(np.uint8)
 
 
-def remove_corner_watermark(alpha: np.ndarray, frame_number: int, capture_count: int) -> int:
-    mask = (alpha >= ALPHA_FLOOR).astype(np.uint8)
-    count, labels, stats, _ = cv2.connectedComponentsWithStats(mask, connectivity=8)
+def remove_corner_watermark(
+    rgba: np.ndarray,
+    frame_number: int,
+    capture_count: int,
+    scrub_hidden_overlap: bool = False,
+) -> int:
+    # Earlier cleanup passes intentionally lowered watermark alpha to zero but
+    # retained its RGB.  Build the component mask from both channels so reruns
+    # can remove those hidden pixels as well as a newly imported visible mark.
+    # The character remains one large component extending outside the active
+    # corner and therefore cannot satisfy the fully-contained guard below.
+    alpha_present = rgba[:, :, 3] >= ALPHA_FLOOR
+    rgb_present = np.any(rgba[:, :, :3] != 0, axis=2)
+    component_mask = (alpha_present | rgb_present).astype(np.uint8)
+    count, labels, stats, _ = cv2.connectedComponentsWithStats(
+        component_mask,
+        connectivity=8,
+    )
     switch_frame = int(capture_count * 0.8)
     removed = 0
     for label in range(1, count):
@@ -118,14 +142,26 @@ def remove_corner_watermark(alpha: np.ndarray, frame_number: int, capture_count:
         in_right_bottom = frame_number <= switch_frame and x >= 570 and y >= 660
         in_left_top = frame_number > switch_frame and x2 <= 160 and y2 <= 80
         if (in_right_bottom or in_left_top) and area <= 9000:
-            alpha[labels == label] = 0
+            rgba[labels == label] = 0
             removed += area
+    if scrub_hidden_overlap:
+        if frame_number <= switch_frame:
+            active_corner = rgba[660:720, 570:720]
+        else:
+            active_corner = rgba[0:80, 0:160]
+        hidden_rgb = (
+            (active_corner[:, :, 3] == 0)
+            & np.any(active_corner[:, :, :3] != 0, axis=2)
+        )
+        removed += int(np.count_nonzero(hidden_rgb))
+        active_corner[hidden_rgb] = 0
     return removed
 
 
 def clean_frame(raw_path: Path, approved_path: Path, clean_chroma: bool,
                 remove_watermark: bool, frame_number: int,
                 capture_count: int,
+                scrub_hidden_overlap: bool = False,
                 tighten_magenta_edge: bool = False) -> tuple[Image.Image, int]:
     with Image.open(raw_path) as raw_image:
         raw_rgb = np.asarray(raw_image.convert("RGB"), dtype=np.uint8)
@@ -204,25 +240,29 @@ def clean_frame(raw_path: Path, approved_path: Path, clean_chroma: bool,
             5,
         )
         tightened_edge_alpha = np.clip(
-            (silhouette_distance - 3.0) / 5.0 * 255.0,
+            (silhouette_distance - 8.0) / 4.0 * 255.0,
             0.0,
             255.0,
         ).astype(np.uint8)
-        purple_silhouette_edge = purple_edge_color & (silhouette_distance <= 8.0)
+        purple_silhouette_edge = purple_edge_color & (silhouette_distance <= 12.0)
         alpha[purple_silhouette_edge] = np.minimum(
             alpha[purple_silhouette_edge],
             tightened_edge_alpha[purple_silhouette_edge],
         )
     alpha[alpha < ALPHA_FLOOR] = 0
 
+    # The approved matte owns RGB everywhere except the detached watermark.
+    # Chroma and silhouette cleanup only lower alpha; watermark removal clears
+    # RGBA so exported PNGs do not retain hidden text in transparent pixels.
+    rgba = np.dstack((approved_rgba[:, :, :3], alpha))
     removed = 0
     if remove_watermark:
-        removed = remove_corner_watermark(alpha, frame_number, capture_count)
-
-    # The approved matte owns RGB.  Chroma cleanup and watermark removal may
-    # only lower alpha; even fully transparent pixels retain the approved RGB
-    # so the invariant can be verified without reconstructing a foreground.
-    rgba = np.dstack((approved_rgba[:, :, :3], alpha))
+        removed = remove_corner_watermark(
+            rgba,
+            frame_number,
+            capture_count,
+            scrub_hidden_overlap,
+        )
     return Image.fromarray(rgba, mode="RGBA"), removed
 
 
@@ -296,6 +336,7 @@ def main() -> None:
                 capture.remove_watermark,
                 frame_number,
                 capture.capture_count,
+                frame_number in HIDDEN_WATERMARK_OVERLAP_FRAMES.get(action, ()),
                 capture.tighten_magenta_edge,
             )
             after.save(output_dir / approved_path.name, compress_level=6)
