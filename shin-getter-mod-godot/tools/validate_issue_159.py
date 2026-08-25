@@ -18,7 +18,7 @@ OUTPUT_ROOT = PROJECT / "images/characters/shin_getter/forms"
 FRAME_SIZE = 720
 
 EXPECTED_SOURCE_DIGESTS = {
-    "getter_one_idle": "525f6b672edce8b76ff417498b81b07c577a687c85c51a29f9b1856f9f5a2477",
+    "getter_one_idle": "973dae6982e9f154d665e939040b56f354cee3bbbd1228573febfeeb00977aba",
     "getter_one_attack": "6d146286a92698bcca492d1c2dfe8a2d0ababf43ce90498ca2c95dcf637a5713",
     "getter_one_block": "171245bf6405ecbb3b86e1c752bd01bca3c1a4e0a40c234c99fec45816fb1d51",
     "getter_one_cast": "6826b1bc6538bfad597dd0e099be1aa8a9204ee13f25a8891d78a641e44c726a",
@@ -26,7 +26,7 @@ EXPECTED_SOURCE_DIGESTS = {
     "getter_one_death": "a05f17270502067bb85ce953384bee1edcbe9e8c016f1e54fc77d5fcf612e22b",
     "getter_one_fusion": "2f7fe0bc985a4d209468e575c9f933a17d0919b9150cb8e13fb8c9f8ad7af138",
     "getter_two_idle": "ed88c3ddf56918ad78f780287425136bc425a758bd8b2dbf6911817c43aef4ce",
-    "getter_two_attack": "4b34f35016b32713dc458655db9615a0d86179c493c2ecd0e53c13b15ad4ae98",
+    "getter_two_attack": "7efb2a202bf9363e23b309713147395f3ebee4b72758cba95bbc9eeb97aafa07",
     "getter_two_block": "d9b576fd4e5958c15a82fac41053e2262b7f91cd7216174b38c5ffef979cb4f7",
     "getter_two_cast": "c8296f80ff69ef585c75f52cefab8bfacf0a77d0186a2eec29ac74701bcaa057",
     "getter_two_dash": "f51745748dd115bb3c9566dfbd02436b8a6414d15c3f1ed30ff68733777b61f3",
@@ -61,6 +61,7 @@ EXPECTED_APPROVED_RGB_DIGESTS = {
     "getter_three_dash": "c1caf734bddc229cdca60dee5223cbc4545652dc5892b607a729774621fff71c",
     "getter_three_idle": "76ae08d7c26b4134c65335bad0bf56c3c8b07fefa0d2ffaee67eeef50d20356c",
     "getter_two_cast": "c5f44918e3e91da7638f020f9d21600e32d13272af56abe554cec4d90db4a01a",
+    "getter_two_attack": "8e60db8b384ea888410f2c17f8684c39baa24b17247f579f96822bbafa58e3d7",
     "getter_two_dash": "f266cfbe053c002916d74ce09921cdf2f5ea6d867b1baf27f466f55b1cb5109a",
     "getter_two_death": "7e0e0c95d78286ec368868811f6b6bdb080955f610455b32151761476e94ab12",
     "getter_two_idle": "78c13b875213ada62b6d31fd5f70cb51c39016badec736fcdcb9ab4e796af455",
@@ -108,7 +109,7 @@ SPECIAL_CARD_GROUPS = {
         "SGC_FocusFire", "SGC_Annihilation",
     ),
     "DashV2": (
-        "SGC_StarSlash", "SGC_GetterRush", "SGC_Acceleration",
+        "SGC_ShiningSpark", "SGC_GetterRush", "SGC_Acceleration",
         "SGC_GetterFlash", "SGC_PetalBreakthrough",
     ),
     "DrillAttack": (
@@ -125,7 +126,7 @@ SPECIAL_TIMING_EXEMPT_CARDS = {
     "SGC_GetterRush",
     "SGC_HurricaneStrike",
     "SGC_PoseidonThunder",
-    "SGC_StarSlash",
+    "SGC_ShiningSpark",
 }
 
 WATERMARK_ACTIONS = {
@@ -134,6 +135,7 @@ WATERMARK_ACTIONS = {
     "getter_one_cast": 121,
     "getter_one_dash": 121,
     "getter_two_idle": 241,
+    "getter_two_attack": 121,
     "getter_three_idle": 241,
     "shin_getter_dragon_attack": 121,
     "shin_getter_dragon_idle": 241,
@@ -224,6 +226,24 @@ def count_visible_strong_magenta(image: Image.Image) -> int:
     return int(visible_magenta.sum())
 
 
+def count_visible_magenta_silhouette_edge(image: Image.Image) -> int:
+    rgba = np.asarray(image, dtype=np.int16)
+    red, green, blue, alpha = (rgba[:, :, index] for index in range(4))
+    silhouette_distance = cv2.distanceTransform(
+        (alpha >= 4).astype(np.uint8),
+        cv2.DIST_L2,
+        5,
+    )
+    visible_magenta_edge = (
+        (alpha >= 64)
+        & (red >= 70)
+        & (blue >= 80)
+        & (green * 3 < np.minimum(red, blue) * 2)
+        & (silhouette_distance <= 3.0)
+    )
+    return int(visible_magenta_edge.sum())
+
+
 def check_authoritative_sources() -> None:
     for action, expected_hash in EXPECTED_SOURCE_DIGESTS.items():
         frames = sorted((SOURCE_ROOT / action).glob("sprite_*.png"))
@@ -281,6 +301,20 @@ def check_black_background_cleanup() -> None:
                     f"{frame}: strong magenta pixels remain visible on black",
                 )
 
+    idle_magenta_edge_counts = []
+    for frame in sorted((SOURCE_ROOT / "getter_one_idle").glob("sprite_*.png")):
+        with Image.open(frame) as image:
+            edge_count = count_visible_magenta_silhouette_edge(image.convert("RGBA"))
+            idle_magenta_edge_counts.append(edge_count)
+            require(
+                edge_count <= 1000,
+                f"{frame}: reopened idle rose/magenta silhouette fringe remains visible on black",
+            )
+    require(
+        sum(idle_magenta_edge_counts) <= 8000,
+        "Getter One idle rose/magenta silhouette fringe regressed across the animation",
+    )
+
 
 def check_builder_and_sheets() -> None:
     builder = read(PROJECT / "tools/build_character_sprite_sheets.py")
@@ -309,10 +343,16 @@ def check_builder_and_sheets() -> None:
 
     require("EXPECTED_CHARACTER_SOURCE_FRAME_COUNT := 1370" in resource_validator,
             "PCK source-frame exclusion count must include the three new 60-frame actions")
+    require(
+        '"getter_one_idle": CaptureSource("一号机", "待机_动态水印重跑", 241, True, True, True)'
+        in cleaner,
+        "Getter One idle must combine watermark removal with its explicitly reopened edge cleanup",
+    )
     for fragment in (
         '"getter_one_attack": CaptureSource("一号机", "攻击", 121, False, True)',
         '"getter_one_dash": CaptureSource("一号机", "突进", 121, False, True)',
         '"getter_two_idle": CaptureSource("二号机", "待机", 241, False, True)',
+        '"getter_two_attack": CaptureSource("二号机", "攻击", 121, False, True)',
         '"getter_three_idle": CaptureSource("三号机", "待机", 241, False, True)',
         '"shin_getter_dragon_idle": CaptureSource("真盖塔龙", "待机", 241, False, True)',
     ):
@@ -322,12 +362,19 @@ def check_builder_and_sheets() -> None:
             "cleanup must not propagate neighboring foreground RGB")
     require("np.dstack((approved_rgba[:, :, :3], alpha))" in cleaner,
             "cleanup must combine approved RGB with adjusted alpha only")
+    require("(keyed_alpha >= ALPHA_FLOOR).astype(np.uint8)" in cleaner,
+            "reopened silhouette cleanup must derive its edge from the stable raw-source key")
 
 
 def check_runtime_wiring() -> None:
     sequence = read(PROJECT / "src/Nodes/Combat/NShinGetterSpriteSequence.cs")
     state_machine = read(PROJECT / "src/Nodes/Combat/NShinGetterSpriteAnimationStateMachine.cs")
     card_base = read(PROJECT / "src/Models/Cards/ShinGetterCardBase.cs")
+    static_visuals = read(PROJECT / "src/Nodes/Combat/NShinGetterStaticVisuals.cs")
+    annihilation = read(PROJECT / "src/Models/Cards/SGC_Annihilation.cs")
+    avalanche = read(PROJECT / "src/Models/Cards/SGC_Avalanche.cs")
+    hurricane_strike = read(PROJECT / "src/Models/Cards/SGC_HurricaneStrike.cs")
+    shining_spark = read(PROJECT / "src/Models/Cards/SGC_ShiningSpark.cs")
     star_slash = read(PROJECT / "src/Models/Cards/SGC_StarSlash.cs")
     getter_flash = read(PROJECT / "src/Models/Cards/SGC_GetterFlash.cs")
     getter_missile = read(PROJECT / "src/Models/Cards/SGC_GetterMissile.cs")
@@ -375,9 +422,26 @@ def check_runtime_wiring() -> None:
         for card in cards:
             require(f'["{card}"] = "{trigger}"' in card_base,
                     f"{card}: missing Shin Getter Dragon {trigger} mapping")
+    require('["SGC_StarSlash"] = "DashV2"' not in card_base,
+            "Star Slash is not one of the authoritative 15 special-animation cards")
 
     require("ShinDragonSpecialEffectDelaySeconds = 1.4f" in card_base,
-            "Shin Getter Dragon special effects must begin at 1.4 seconds")
+            "unmodified Shin Getter Dragon special effects must retain the approved 1.4-second timing")
+    for card, delay in (
+        ("SGC_FocusFire", "1.2f"),
+        ("SGC_TornadoDrill", "1.0f"),
+        ("SGC_SpiralDrill", "1.0f"),
+        ("SGC_LigerAssault", "1.0f"),
+        ("SGC_GetterClaw", "1.0f"),
+    ):
+        require(f'["{card}"] = {delay}' in card_base,
+                f"{card}: shared special-animation effect timing must be {delay}")
+    delay_overrides = card_base.split(
+        "private static readonly IReadOnlyDictionary<string, float> ShinDragonSpecialEffectDelayOverrides", 1
+    )[1].split("private static readonly IReadOnlySet<string> DashAnimationCards", 1)[0]
+    require('"SGC_Acceleration"' not in delay_overrides
+            and '"SGC_PetalBreakthrough"' not in delay_overrides,
+            "already-approved Acceleration and Petal Breakthrough timing must remain at the 1.4-second default")
     timing_set = card_base.split(
         "private static readonly IReadOnlySet<string> ShinDragonSpecialTimingHandledByCard", 1
     )[1].split("private static readonly IReadOnlySet<string> MovementVfxTimingCards", 1)[0]
@@ -401,9 +465,51 @@ def check_runtime_wiring() -> None:
     )[0]
     require('"DashV2" => ShinDragonSpecialEffectDelaySeconds' in dash_charge,
             "Getter Rush DashV2 must preserve its movement-VFX delay without restarting the animation")
+    independent_wait = card_base.split(
+        "protected Task WaitForShinDragonSpecialEffect", 1
+    )[1].split("protected Func<Task> AccelerateFollowupAnimations", 1)[0]
+    require("IsShinDragonSpecialAnimationTrigger(animationTrigger)" in independent_wait
+            and ": Task.CompletedTask;" in independent_wait,
+            "card-owned timing waits must not delay the same cards outside the current Shin Dragon form")
+
+    for source, delay, card in (
+        (avalanche, "1.2f", "Avalanche"),
+        (annihilation, "1.2f", "Annihilation"),
+        (hurricane_strike, "1.0f", "Hurricane Strike"),
+    ):
+        require(f"await WaitForShinDragonSpecialEffect({delay});" in source,
+                f"{card}: card-owned hit/VFX timing must wait {delay} only for a Shin Dragon special")
+    require('bool isShinDragonCyclone = GetActionAnimationTrigger() == "Cyclone";' in annihilation
+            and "if (isShinDragonCyclone)" in annihilation
+            and "attack.WithNoAttackerAnim();" in annihilation
+            and 'attack.WithAttackerAnim("Cast", 0.35f);' in annihilation,
+            "Annihilation must not add its ordinary Cast delay after the Shin Dragon 1.2-second gate")
+
+    pause_contract = static_visuals.split(
+        "if (waitBeforeSecondHalf != null)", 3
+    )[-1].split("await onSecondHalf();", 1)[0]
+    require("sprite.SpeedScale = 0f;" in pause_contract
+            and "await waitBeforeSecondHalf();" in pause_contract
+            and pause_contract.index("sprite.SpeedScale = 0f;")
+            < pause_contract.index("await waitBeforeSecondHalf();")
+            < pause_contract.rindex("sprite.SpeedScale = Math.Max(0.05f, secondHalfSpeedScale);"),
+            "phased animation must pause at its midpoint, await the gate, then resume its second half")
+    shining_sequence = shining_spark.split("private async Task PlayShiningSparkSequence", 1)[1]
+    require('GetActionAnimationTrigger() != "DashV2"' in shining_sequence,
+            "Shining Spark split timing must remain gated to the current Shin Dragon form")
+    require("Task intro = ShinGetterVoiceService.PlayShiningSparkIntro(Owner);" in shining_sequence
+            and '"DashV2"' in shining_sequence
+            and "waitBeforeSecondHalf: () => intro" in shining_sequence,
+            "Shining must start with DashV2 first-half playback and gate its midpoint on the intro voice")
+    second_half = shining_sequence.split("() => Task.WhenAll(", 1)[1].split(
+        "fallbackFirstHalfDuration", 1
+    )[0]
+    require("PlayRush(Owner.Creature, target, whiteFlash: true)" in second_half
+            and "PlayShiningSparkFollowUp(Owner)" in second_half,
+            "Spark, the DashV2 second half, and the forward rush must begin together")
 
     require('GetActionAnimationTrigger() ?? "Attack"' in star_slash,
-            "Star Slash manual timing must request DashV2 in Shin Getter Dragon")
+            "Star Slash manual timing must remain intact after removal from the special-card mapping")
     require('GetActionAnimationTrigger() ?? "Attack"' in getter_flash,
             "Getter Flash manual timing must request DashV2 in Shin Getter Dragon")
 

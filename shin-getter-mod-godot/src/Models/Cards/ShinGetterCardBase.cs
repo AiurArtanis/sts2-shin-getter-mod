@@ -173,7 +173,7 @@ public abstract class ShinGetterCardBase : CardModel
             ["SGC_GetterMissile"] = "Cyclone",
             ["SGC_FocusFire"] = "Cyclone",
             ["SGC_Annihilation"] = "Cyclone",
-            ["SGC_StarSlash"] = "DashV2",
+            ["SGC_ShiningSpark"] = "DashV2",
             ["SGC_GetterRush"] = "DashV2",
             ["SGC_Acceleration"] = "DashV2",
             ["SGC_GetterFlash"] = "DashV2",
@@ -183,6 +183,16 @@ public abstract class ShinGetterCardBase : CardModel
             ["SGC_LigerAssault"] = "DrillAttack",
             ["SGC_GetterClaw"] = "DrillAttack",
             ["SGC_HurricaneStrike"] = "DrillAttack",
+        };
+
+    private static readonly IReadOnlyDictionary<string, float> ShinDragonSpecialEffectDelayOverrides =
+        new Dictionary<string, float>(StringComparer.Ordinal)
+        {
+            ["SGC_FocusFire"] = 1.2f,
+            ["SGC_TornadoDrill"] = 1.0f,
+            ["SGC_SpiralDrill"] = 1.0f,
+            ["SGC_LigerAssault"] = 1.0f,
+            ["SGC_GetterClaw"] = 1.0f,
         };
 
     private static readonly IReadOnlySet<string> DashAnimationCards =
@@ -234,7 +244,7 @@ public abstract class ShinGetterCardBase : CardModel
             "SGC_GetterRush",
             "SGC_HurricaneStrike",
             "SGC_PoseidonThunder",
-            "SGC_StarSlash",
+            "SGC_ShiningSpark",
         };
 
     private static readonly IReadOnlySet<string> MovementVfxTimingCards =
@@ -351,6 +361,14 @@ public abstract class ShinGetterCardBase : CardModel
             : Task.CompletedTask;
     }
 
+    protected Task WaitForShinDragonSpecialEffect(float delaySeconds)
+    {
+        string? animationTrigger = GetActionAnimationTrigger();
+        return IsShinDragonSpecialAnimationTrigger(animationTrigger)
+            ? Cmd.CustomScaledWait(delaySeconds, delaySeconds)
+            : Task.CompletedTask;
+    }
+
     protected Func<Task> AccelerateFollowupAnimations(int hitCount)
     {
         int completedHitCount = 0;
@@ -408,9 +426,14 @@ public abstract class ShinGetterCardBase : CardModel
         {
             if (!ShinDragonSpecialTimingHandledByCard.Contains(cardTypeName))
             {
+                float delaySeconds = ShinDragonSpecialEffectDelayOverrides.TryGetValue(
+                    cardTypeName,
+                    out float delayOverride)
+                    ? delayOverride
+                    : ShinDragonSpecialEffectDelaySeconds;
                 await Cmd.CustomScaledWait(
-                    ShinDragonSpecialEffectDelaySeconds,
-                    ShinDragonSpecialEffectDelaySeconds);
+                    delaySeconds,
+                    delaySeconds);
             }
             return;
         }

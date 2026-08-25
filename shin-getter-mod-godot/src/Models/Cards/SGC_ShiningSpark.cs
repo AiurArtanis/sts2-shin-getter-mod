@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using MegaCrit.Sts2.Core.Models.Powers;
 using ShinGetterMod.Audio;
 using ShinGetterMod.Models.Powers;
+using ShinGetterMod.Nodes.Combat;
 using ShinGetterMod.Nodes.Vfx;
 
 namespace ShinGetterMod.Models.Cards;
@@ -37,16 +39,7 @@ public sealed class SGC_ShiningSpark : ShinGetterCardBase
 		await PowerCmd.Apply<FrailPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
 		await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
 			.WithNoAttackerAnim()
-			.BeforeDamage(async () =>
-			{
-				await Task.WhenAll(
-					ShinGetterCombatVfx.PlayWhiteFlash(Owner.Creature),
-					ShinGetterVoiceService.PlayShiningSparkIntro(Owner));
-				await Cmd.Wait(0.2f);
-				await Task.WhenAll(
-					PlayMovementVfx(() => ShinGetterCombatVfx.PlayRush(Owner.Creature, cardPlay.Target, whiteFlash: true)),
-					ShinGetterVoiceService.PlayShiningSparkFollowUp(Owner));
-			})
+			.BeforeDamage(() => PlayShiningSparkSequence(cardPlay.Target))
 			.WithHitFx("vfx/vfx_starry_impact").Execute(choiceContext);
 		int ki = Owner.Creature.GetPower<SGP_Ki>()?.Amount ?? 0;
 		if (ki > 0)
@@ -56,6 +49,36 @@ public sealed class SGC_ShiningSpark : ShinGetterCardBase
 				.AfterAttackerAnim(AccelerateFollowupAnimations(ki))
 				.WithHitFx("vfx/vfx_attack_lightning").Execute(choiceContext);
 		}
+	}
+
+	private async Task PlayShiningSparkSequence(Creature target)
+	{
+		if (GetActionAnimationTrigger() != "DashV2")
+		{
+			await Task.WhenAll(
+				ShinGetterCombatVfx.PlayWhiteFlash(Owner.Creature),
+				ShinGetterVoiceService.PlayShiningSparkIntro(Owner));
+			await Cmd.Wait(0.2f);
+			await Task.WhenAll(
+				PlayMovementVfx(() => ShinGetterCombatVfx.PlayRush(Owner.Creature, target, whiteFlash: true)),
+				ShinGetterVoiceService.PlayShiningSparkFollowUp(Owner));
+			return;
+		}
+
+		Task intro = ShinGetterVoiceService.PlayShiningSparkIntro(Owner);
+		await Task.WhenAll(
+			ShinGetterCombatVfx.PlayWhiteFlash(Owner.Creature),
+			NShinGetterStaticVisuals.PlayPhasedCreatureActionAnimation(
+				Owner.Creature,
+				"DashV2",
+				1f,
+				1f,
+				() => Task.WhenAll(
+					ShinGetterCombatVfx.PlayRush(Owner.Creature, target, whiteFlash: true),
+					ShinGetterVoiceService.PlayShiningSparkFollowUp(Owner)),
+				fallbackFirstHalfDuration: 1.0f,
+				firstHalfDurationOverride: 1.0f,
+				waitBeforeSecondHalf: () => intro));
 	}
 
 	protected override void OnUpgrade()

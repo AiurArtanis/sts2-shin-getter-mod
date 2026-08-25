@@ -37,11 +37,12 @@ class CaptureSource:
     capture_count: int
     clean_chroma: bool = True
     remove_watermark: bool = False
+    tighten_magenta_edge: bool = False
 
 
 # Only actions explicitly reopened by issue#159 feedback are rebuilt here.
 CAPTURE_SOURCES = {
-    "getter_one_idle": CaptureSource("一号机", "待机_动态水印重跑", 241),
+    "getter_one_idle": CaptureSource("一号机", "待机_动态水印重跑", 241, True, True, True),
     # The approved attack/dash mattes are already clean: remove only their
     # detached watermark components so their existing edge treatment stays
     # byte-for-byte unchanged elsewhere.
@@ -50,6 +51,7 @@ CAPTURE_SOURCES = {
     "getter_one_cast": CaptureSource("一号机", "施法", 121, True, True),
     "getter_one_dash": CaptureSource("一号机", "突进", 121, False, True),
     "getter_two_idle": CaptureSource("二号机", "待机", 241, False, True),
+    "getter_two_attack": CaptureSource("二号机", "攻击", 121, False, True),
     "getter_two_cast": CaptureSource("二号机", "施法", 121),
     "getter_two_dash": CaptureSource("二号机", "突进", 121),
     "getter_two_death": CaptureSource("二号机", "死亡", 121),
@@ -123,7 +125,8 @@ def remove_corner_watermark(alpha: np.ndarray, frame_number: int, capture_count:
 
 def clean_frame(raw_path: Path, approved_path: Path, clean_chroma: bool,
                 remove_watermark: bool, frame_number: int,
-                capture_count: int) -> tuple[Image.Image, int]:
+                capture_count: int,
+                tighten_magenta_edge: bool = False) -> tuple[Image.Image, int]:
     with Image.open(raw_path) as raw_image:
         raw_rgb = np.asarray(raw_image.convert("RGB"), dtype=np.uint8)
     with Image.open(approved_path) as approved_image:
@@ -132,6 +135,7 @@ def clean_frame(raw_path: Path, approved_path: Path, clean_chroma: bool,
         raise ValueError(f"{raw_path}: expected {FRAME_SIZE}x{FRAME_SIZE}")
 
     alpha = approved_rgba[:, :, 3].copy()
+    keyed_alpha: np.ndarray | None = None
     if clean_chroma:
         background = estimate_background(raw_rgb)
         distance = np.linalg.norm(raw_rgb.astype(np.float32) - background, axis=2)
@@ -177,6 +181,37 @@ def clean_frame(raw_path: Path, approved_path: Path, clean_chroma: bool,
         alpha[magenta_edge] = np.minimum(
             alpha[magenta_edge],
             feathered_edge_alpha[magenta_edge],
+        )
+
+    if tighten_magenta_edge:
+        # The reopened Getter One idle matte has a thin, fully opaque rose
+        # fringe that survives the source-color key.  Restrict the stronger
+        # cleanup to purple/magenta pixels at the alpha silhouette edge so
+        # the intentional dark-purple wing interior remains untouched.
+        approved_red = approved_rgba[:, :, 0].astype(np.int16)
+        approved_green = approved_rgba[:, :, 1].astype(np.int16)
+        approved_blue = approved_rgba[:, :, 2].astype(np.int16)
+        purple_edge_color = (
+            (approved_red >= 70)
+            & (approved_blue >= 80)
+            & (approved_green * 3 < np.minimum(approved_red, approved_blue) * 2)
+        )
+        if keyed_alpha is None:
+            raise ValueError("tighten_magenta_edge requires clean_chroma")
+        silhouette_distance = cv2.distanceTransform(
+            (keyed_alpha >= ALPHA_FLOOR).astype(np.uint8),
+            cv2.DIST_L2,
+            5,
+        )
+        tightened_edge_alpha = np.clip(
+            (silhouette_distance - 3.0) / 5.0 * 255.0,
+            0.0,
+            255.0,
+        ).astype(np.uint8)
+        purple_silhouette_edge = purple_edge_color & (silhouette_distance <= 8.0)
+        alpha[purple_silhouette_edge] = np.minimum(
+            alpha[purple_silhouette_edge],
+            tightened_edge_alpha[purple_silhouette_edge],
         )
     alpha[alpha < ALPHA_FLOOR] = 0
 
@@ -230,13 +265,16 @@ def main() -> None:
     parser.add_argument("--approved-root", type=Path, default=SOURCE_ROOT)
     parser.add_argument("--output-root", type=Path, default=SOURCE_ROOT)
     parser.add_argument("--qa-dir", type=Path)
+    parser.add_argument("--actions", nargs="+", choices=sorted(CAPTURE_SOURCES))
     args = parser.parse_args()
 
     manifest = parse_manifest(SOURCE_ROOT / "frame_manifest.txt")
     comparisons: dict[str, list[tuple[int, Image.Image, Image.Image]]] = {}
     total_frames = 0
     total_removed_pixels = 0
-    for action, capture in CAPTURE_SOURCES.items():
+    selected_actions = args.actions or list(CAPTURE_SOURCES)
+    for action in selected_actions:
+        capture = CAPTURE_SOURCES[action]
         output_dir = args.output_root / action
         output_dir.mkdir(parents=True, exist_ok=True)
         qa_frames = select_qa_frames(manifest[action])
@@ -258,6 +296,7 @@ def main() -> None:
                 capture.remove_watermark,
                 frame_number,
                 capture.capture_count,
+                capture.tighten_magenta_edge,
             )
             after.save(output_dir / approved_path.name, compress_level=6)
             if frame_number in qa_frames:
@@ -268,7 +307,7 @@ def main() -> None:
     if args.qa_dir:
         save_qa_montages(args.qa_dir, comparisons)
     print(
-        f"CLEANED {total_frames} frames across {len(CAPTURE_SOURCES)} actions; "
+        f"CLEANED {total_frames} frames across {len(selected_actions)} actions; "
         f"removed {total_removed_pixels} watermark pixels"
     )
 

@@ -33,9 +33,16 @@ public sealed class SGC_Annihilation : ShinGetterCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this)
-            .TargetingAllOpponents(CombatState)
-            .WithAttackerAnim("Cast", 0.35f)
+        bool isShinDragonCyclone = GetActionAnimationTrigger() == "Cyclone";
+        await WaitForShinDragonSpecialEffect(1.2f);
+        var attack = DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this)
+            .TargetingAllOpponents(CombatState);
+        if (isShinDragonCyclone)
+            attack.WithNoAttackerAnim();
+        else
+            attack.WithAttackerAnim("Cast", 0.35f);
+
+        await attack
             .BeforeDamage(() => ShinGetterCombatVfx.PlayAnnihilation(Owner.Creature, CombatState.GetOpponentsOf(Owner.Creature)))
             .Execute(choiceContext);
     }

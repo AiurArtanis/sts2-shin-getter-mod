@@ -197,12 +197,15 @@ public static class NShinGetterStaticVisuals
         float secondHalfSpeedScale,
         Func<Task> onSecondHalf,
         float fallbackFirstHalfDuration = 0.56f,
-        float? firstHalfDurationOverride = null)
+        float? firstHalfDurationOverride = null,
+        Func<Task>? waitBeforeSecondHalf = null)
     {
         var creatureNode = NCombatRoom.Instance?.GetCreatureNode(creature);
         if (creatureNode == null || !TryGetVisibleFormAnimation(creatureNode, out FormAnimation formAnimation))
         {
             await Cmd.CustomScaledWait(fallbackFirstHalfDuration, fallbackFirstHalfDuration);
+            if (waitBeforeSecondHalf != null)
+                await waitBeforeSecondHalf();
             await onSecondHalf();
             return;
         }
@@ -212,6 +215,8 @@ public static class NShinGetterStaticVisuals
         if (!TryPlayVisibleActionAnimation(sprite, trigger, formAnimation.EnsureLoaded))
         {
             await Cmd.CustomScaledWait(fallbackFirstHalfDuration, fallbackFirstHalfDuration);
+            if (waitBeforeSecondHalf != null)
+                await waitBeforeSecondHalf();
             await onSecondHalf();
             return;
         }
@@ -232,7 +237,24 @@ public static class NShinGetterStaticVisuals
             && frameCount > 1)
         {
             sprite.Frame = Math.Max(sprite.Frame, Math.Min(secondHalfFrame, frameCount - 1));
-            sprite.SpeedScale = Math.Max(0.05f, secondHalfSpeedScale);
+            if (waitBeforeSecondHalf != null)
+                sprite.SpeedScale = 0f;
+        }
+
+        try
+        {
+            if (waitBeforeSecondHalf != null)
+                await waitBeforeSecondHalf();
+        }
+        finally
+        {
+            if (GodotObject.IsInstanceValid(sprite)
+                && sprite.Animation == animation
+                && frameCount > 1)
+            {
+                sprite.Frame = Math.Max(sprite.Frame, Math.Min(secondHalfFrame, frameCount - 1));
+                sprite.SpeedScale = Math.Max(0.05f, secondHalfSpeedScale);
+            }
         }
 
         await onSecondHalf();
