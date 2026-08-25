@@ -6,6 +6,8 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 
+import cv2
+import numpy as np
 from PIL import Image
 
 
@@ -16,30 +18,31 @@ OUTPUT_ROOT = PROJECT / "images/characters/shin_getter/forms"
 FRAME_SIZE = 720
 
 EXPECTED_SOURCE_DIGESTS = {
-    "getter_one_attack": "e8759aefa0c872273ab7fe159cc5c59080ef3810cb3ac577c7036006d4cdcfbd",
-    "getter_one_block": "43750ca6928b44cfff565c6bdbf28c572a73273b5a57ffce3b3dc12605e5ccb5",
-    "getter_one_cast": "2607616150d7133011703f688d40293f3f871e83e14a3e4634ce5ab145ad40fb",
-    "getter_one_dash": "d2a30050ededbb4247eef0d88948088e51f57fe4fece0bbc42cd58dd42ed34d0",
+    "getter_one_idle": "525f6b672edce8b76ff417498b81b07c577a687c85c51a29f9b1856f9f5a2477",
+    "getter_one_attack": "6d146286a92698bcca492d1c2dfe8a2d0ababf43ce90498ca2c95dcf637a5713",
+    "getter_one_block": "171245bf6405ecbb3b86e1c752bd01bca3c1a4e0a40c234c99fec45816fb1d51",
+    "getter_one_cast": "6826b1bc6538bfad597dd0e099be1aa8a9204ee13f25a8891d78a641e44c726a",
+    "getter_one_dash": "7449560fae8a3519df1347d438a253f0d45dea6fe56b51bf6bb6f53240b3ba23",
     "getter_one_death": "a05f17270502067bb85ce953384bee1edcbe9e8c016f1e54fc77d5fcf612e22b",
     "getter_one_fusion": "2f7fe0bc985a4d209468e575c9f933a17d0919b9150cb8e13fb8c9f8ad7af138",
-    "getter_two_idle": "74a3f4ae29cfa91eb75b98caf2a4b13dfbfc657459a2e4abaab7b03351d71cd2",
+    "getter_two_idle": "ed88c3ddf56918ad78f780287425136bc425a758bd8b2dbf6911817c43aef4ce",
     "getter_two_attack": "4b34f35016b32713dc458655db9615a0d86179c493c2ecd0e53c13b15ad4ae98",
     "getter_two_block": "d9b576fd4e5958c15a82fac41053e2262b7f91cd7216174b38c5ffef979cb4f7",
-    "getter_two_cast": "a340c1a79b4ab6441a0b77f95fec60b553636982821616eafc917a8202c0eee0",
-    "getter_two_dash": "468b7cf7b7e9ea31803c78320e763f896d91dae9545e30ea3540991980bcabfb",
-    "getter_two_death": "94b9b534635789851a6de3459bd5ca189dbab35971c724e083d56c9ec7e43262",
+    "getter_two_cast": "c8296f80ff69ef585c75f52cefab8bfacf0a77d0186a2eec29ac74701bcaa057",
+    "getter_two_dash": "f51745748dd115bb3c9566dfbd02436b8a6414d15c3f1ed30ff68733777b61f3",
+    "getter_two_death": "776d6499743c392ffd238b48dd93d0620696e9849e96b354a7a0097089456f82",
     "getter_two_fusion": "bba8a9c1008b5bd67f117579f2ff6665800d2e7aa032468e1d1c0671bdc30f44",
-    "getter_three_idle": "1ab39c63b930c357f2eb6ddd82e9a7d47481267465735f152f4b71e9ab6349d1",
-    "getter_three_attack": "fd511dc5e1421b705754173bebcce4be6ee0ad7bf0fd8cb9a6a37baf20ad4b92",
+    "getter_three_idle": "5f89bb59f5181b5f2c9f9e4265f90ca6f26c784a4431399da1e14a3330ba181e",
+    "getter_three_attack": "edbd2a9ac5a519bfe99c1234edb3bc4af0e4555e47df6078adc7d79d2be84494",
     "getter_three_block": "e6cbc01151cf1d1b6fb9289a0360bbe9b19c92bec51ea88563503b5c29daf6a3",
-    "getter_three_cast": "9384cb0bbccbd6f925e122ae4a3297efc67e7f4db54e70f436c9e69b1a447371",
-    "getter_three_dash": "2da095d5e5bdba0813108b2b9f27f0df096a36a123fc58ea103ba8b833f3835a",
+    "getter_three_cast": "385cf66d10affa6658a13d842e9e68180d331f9063fb409e9ca3aabb9e4a723d",
+    "getter_three_dash": "6755c5c0032f390cc70f0020809eb1a7e96e9a26d9a63670d4370e0ee434e6ae",
     "getter_three_death": "605676f27ce83226f3e9e9506887b3b70505685b190d913d41d78e2d6b918f0f",
     "getter_three_fusion": "cbd9d0e8f6fd819e23fb1a554805cda2129e7ab46cff53da4290ecd0057b295b",
-    "shin_getter_dragon_idle": "d1e264805e0abdc9f8f03c2c0235164e0cd0ca6c7ff71b1dd65496889b1a2f1f",
-    "shin_getter_dragon_attack": "e052fef344f58791f2c0d5f10667279ee31c37cd4199d6c05a858a924196ab5c",
+    "shin_getter_dragon_idle": "00956d92f9106f3bed76d76cc4f0a32f34b2cc59be71c26b88b762a17f43d8fb",
+    "shin_getter_dragon_attack": "20193be677f805953822e5987d5cf05546db7bac37c6cdbd1327213e272ededd",
     "shin_getter_dragon_block": "afcb546cf449d79638697728fbae095b9c07b30182b1948c79cb95c027705002",
-    "shin_getter_dragon_cast": "d115291a58cc02f9b94770d49acf6bb139d20f76281aaf10701b0989ca2f7885",
+    "shin_getter_dragon_cast": "8d1bf7518cb48a283e8090a1aa167aaad54b7e5e26627cda6f9c22d994d1ad14",
     "shin_getter_dragon_dash": "27f81876b12d4d2e879d55d992f317d79daba5600503ec4efbe41cdb9bf2fab3",
     "shin_getter_dragon_death": "686a50ba8e08b27e51ad9503a181674392bfdf437d327d4a3915512127af3084",
     "shin_getter_dragon_cyclone": "b98b6603cabc197962228ace4c1999aca6e436f509cda4f4bf5cde8e6d88ba33",
@@ -47,7 +50,27 @@ EXPECTED_SOURCE_DIGESTS = {
     "shin_getter_dragon_drill_attack": "be97edf3f43d5e197173b72f7ae6e70fe014149d47c5dd6102eef64140e1d46a",
 }
 
+EXPECTED_APPROVED_RGB_DIGESTS = {
+    "getter_one_attack": "9351566d5282f20a89ce54ef45c9b4d3488bb34feac86becb1899d0f1b3e09b9",
+    "getter_one_block": "1c8f6d98114a21864a632a02a320fb0d4b5e1ff34365934e686cfc185f99fe65",
+    "getter_one_cast": "74bbee1dccf2431bc67a93cce31624f4befe5e8faececeb091e1b44d68f5d6c4",
+    "getter_one_dash": "d489bc3c2e0d1b84f5a08423774d66aa8152a5aa59f4885c47a94a275ffed748",
+    "getter_one_idle": "69b2bc5bf35d7a975ca427dd15f7b4e38570382e07af77dcc18adb81d7f6886b",
+    "getter_three_attack": "a67a200a78bc7cd41cd821e00baeb160e51c5ab179cdee33a54e757cd8f3728f",
+    "getter_three_cast": "469d1737c4c3402df2667cbfc58512aa8f9023b4ac922aef86325a9a22e157f8",
+    "getter_three_dash": "c1caf734bddc229cdca60dee5223cbc4545652dc5892b607a729774621fff71c",
+    "getter_three_idle": "76ae08d7c26b4134c65335bad0bf56c3c8b07fefa0d2ffaee67eeef50d20356c",
+    "getter_two_cast": "c5f44918e3e91da7638f020f9d21600e32d13272af56abe554cec4d90db4a01a",
+    "getter_two_dash": "f266cfbe053c002916d74ce09921cdf2f5ea6d867b1baf27f466f55b1cb5109a",
+    "getter_two_death": "7e0e0c95d78286ec368868811f6b6bdb080955f610455b32151761476e94ab12",
+    "getter_two_idle": "78c13b875213ada62b6d31fd5f70cb51c39016badec736fcdcb9ab4e796af455",
+    "shin_getter_dragon_attack": "7d8f0ca9af75ae810e2ded7d61bfde5b5f9d93e1d8f2313349a51f0d5dc7a20a",
+    "shin_getter_dragon_cast": "c5ef0f7da34483c69e15be09c28a41cc772fd31aa170ec5e961da495d9a1f90e",
+    "shin_getter_dragon_idle": "2756463fa033ae4d316bc8a69fba988204d6f075075f1c52901f93d5eecaeac0",
+}
+
 EXPECTED_FRAME_COUNTS = {
+    "getter_one_idle": 24,
     "getter_one_attack": 40,
     "getter_one_block": 24,
     "getter_one_cast": 32,
@@ -94,6 +117,42 @@ SPECIAL_CARD_GROUPS = {
     ),
 }
 
+SPECIAL_TIMING_EXEMPT_CARDS = {
+    "SGC_Annihilation",
+    "SGC_Avalanche",
+    "SGC_GetterFlash",
+    "SGC_GetterMissile",
+    "SGC_GetterRush",
+    "SGC_HurricaneStrike",
+    "SGC_PoseidonThunder",
+    "SGC_StarSlash",
+}
+
+WATERMARK_ACTIONS = {
+    "getter_one_attack": 121,
+    "getter_one_block": 121,
+    "getter_one_cast": 121,
+    "getter_one_dash": 121,
+    "getter_two_idle": 241,
+    "getter_three_idle": 241,
+    "shin_getter_dragon_attack": 121,
+    "shin_getter_dragon_idle": 241,
+}
+
+CHROMA_CLEAN_ACTIONS = {
+    "getter_one_idle",
+    "getter_one_block",
+    "getter_one_cast",
+    "getter_two_cast",
+    "getter_two_dash",
+    "getter_two_death",
+    "getter_three_attack",
+    "getter_three_cast",
+    "getter_three_dash",
+    "shin_getter_dragon_attack",
+    "shin_getter_dragon_cast",
+}
+
 
 def require(condition: bool, message: str) -> None:
     if not condition:
@@ -111,20 +170,121 @@ def aggregate_digest(frames: list[Path]) -> str:
     return digest.hexdigest()
 
 
+def aggregate_rgb_digest(frames: list[Path]) -> str:
+    digest = hashlib.sha256()
+    for frame in frames:
+        with Image.open(frame) as image:
+            digest.update(np.asarray(image.convert("RGB"), dtype=np.uint8).tobytes())
+    return digest.hexdigest()
+
+
+def visible_rgb_is_unchanged(approved: np.ndarray, cleaned: np.ndarray) -> bool:
+    visible = cleaned[:, :, 3] > 0
+    return np.array_equal(approved[:, :, :3][visible], cleaned[:, :, :3][visible])
+
+
+def frame_number(path: Path) -> int:
+    return int(path.stem.rsplit("_", 1)[1])
+
+
+def has_detached_corner_component(image: Image.Image, number: int, capture_count: int) -> bool:
+    alpha = np.asarray(image.getchannel("A"), dtype=np.uint8)
+    height, width = alpha.shape
+    switch_frame = int(capture_count * 0.8)
+    if number <= switch_frame:
+        corner = (570, 660, width, height)
+    else:
+        corner = (0, 0, 160, 80)
+    count, _, stats, _ = cv2.connectedComponentsWithStats(
+        (alpha >= 4).astype(np.uint8),
+        connectivity=8,
+    )
+    for label in range(1, count):
+        x, y, component_width, component_height, area = stats[label]
+        fully_inside = (
+            x >= corner[0]
+            and y >= corner[1]
+            and x + component_width <= corner[2]
+            and y + component_height <= corner[3]
+        )
+        if fully_inside and area <= 9000:
+            return True
+    return False
+
+
+def count_visible_strong_magenta(image: Image.Image) -> int:
+    rgba = np.asarray(image, dtype=np.int16)
+    red, green, blue, alpha = (rgba[:, :, index] for index in range(4))
+    visible_magenta = (
+        (alpha >= 64)
+        & (red >= 160)
+        & (blue >= 160)
+        & (green * 2 < np.minimum(red, blue))
+    )
+    return int(visible_magenta.sum())
+
+
 def check_authoritative_sources() -> None:
     for action, expected_hash in EXPECTED_SOURCE_DIGESTS.items():
         frames = sorted((SOURCE_ROOT / action).glob("sprite_*.png"))
         expected_count = EXPECTED_FRAME_COUNTS[action]
         require(len(frames) == expected_count, f"{action}: expected {expected_count} source frames")
         require(aggregate_digest(frames) == expected_hash, f"{action}: source frames differ from the approved cleanup")
+        if action in EXPECTED_APPROVED_RGB_DIGESTS:
+            require(
+                aggregate_rgb_digest(frames) == EXPECTED_APPROVED_RGB_DIGESTS[action],
+                f"{action}: cleanup must preserve every RGB pixel from the approved matte",
+            )
         for frame in frames:
             with Image.open(frame) as image:
                 require(image.size == (FRAME_SIZE, FRAME_SIZE), f"{frame}: expected 720x720")
                 require(image.mode == "RGBA", f"{frame}: background-cleaned source must retain RGBA")
 
 
+def check_rgb_invariant_guard() -> None:
+    approved = np.array(
+        [[[20, 40, 60, 255], [80, 100, 120, 128]]],
+        dtype=np.uint8,
+    )
+    alpha_only = approved.copy()
+    alpha_only[0, 1, 3] = 64
+    require(
+        visible_rgb_is_unchanged(approved, alpha_only),
+        "alpha-only cleanup must satisfy the visible RGB invariant",
+    )
+    rgb_changed = alpha_only.copy()
+    rgb_changed[0, 1, 0] = 81
+    require(
+        not visible_rgb_is_unchanged(approved, rgb_changed),
+        "visible RGB invariant guard must reject foreground color propagation",
+    )
+
+
+def check_black_background_cleanup() -> None:
+    for action, capture_count in WATERMARK_ACTIONS.items():
+        for frame in sorted((SOURCE_ROOT / action).glob("sprite_*.png")):
+            with Image.open(frame) as image:
+                require(
+                    not has_detached_corner_component(
+                        image.convert("RGBA"),
+                        frame_number(frame),
+                        capture_count,
+                    ),
+                    f"{frame}: detached dynamic watermark remains in the known corner",
+                )
+
+    for action in CHROMA_CLEAN_ACTIONS:
+        for frame in sorted((SOURCE_ROOT / action).glob("sprite_*.png")):
+            with Image.open(frame) as image:
+                require(
+                    count_visible_strong_magenta(image.convert("RGBA")) == 0,
+                    f"{frame}: strong magenta pixels remain visible on black",
+                )
+
+
 def check_builder_and_sheets() -> None:
     builder = read(PROJECT / "tools/build_character_sprite_sheets.py")
+    cleaner = read(PROJECT / "tools/clean_character_animation_frames.py")
     manifest = read(SOURCE_ROOT / "frame_manifest.txt")
     resource_validator = read(PROJECT / "tools/validate-mod-resources.gd")
     require("sequence contiguous_60=" in manifest,
@@ -149,6 +309,19 @@ def check_builder_and_sheets() -> None:
 
     require("EXPECTED_CHARACTER_SOURCE_FRAME_COUNT := 1370" in resource_validator,
             "PCK source-frame exclusion count must include the three new 60-frame actions")
+    for fragment in (
+        '"getter_one_attack": CaptureSource("一号机", "攻击", 121, False, True)',
+        '"getter_one_dash": CaptureSource("一号机", "突进", 121, False, True)',
+        '"getter_two_idle": CaptureSource("二号机", "待机", 241, False, True)',
+        '"getter_three_idle": CaptureSource("三号机", "待机", 241, False, True)',
+        '"shin_getter_dragon_idle": CaptureSource("真盖塔龙", "待机", 241, False, True)',
+    ):
+        require(fragment in cleaner,
+                f"watermark-only cleanup must not re-key an already-approved matte: {fragment}")
+    require("propagate_solid_edge_rgb" not in cleaner,
+            "cleanup must not propagate neighboring foreground RGB")
+    require("np.dstack((approved_rgba[:, :, :3], alpha))" in cleaner,
+            "cleanup must combine approved RGB with adjusted alpha only")
 
 
 def check_runtime_wiring() -> None:
@@ -167,7 +340,7 @@ def check_runtime_wiring() -> None:
         'DashV2AnimationName = "dash_v2"',
         'DrillAttackAnimationName = "drill_attack"',
         "ShinDragonSpecialMaxFrames = 60",
-        "ShinDragonSpecialFramesPerSecond = 24d",
+        "ShinDragonSpecialFramesPerSecond = 30d",
     ):
         require(fragment in sequence, f"sprite sequence is missing: {fragment}")
 
@@ -203,6 +376,32 @@ def check_runtime_wiring() -> None:
             require(f'["{card}"] = "{trigger}"' in card_base,
                     f"{card}: missing Shin Getter Dragon {trigger} mapping")
 
+    require("ShinDragonSpecialEffectDelaySeconds = 1.4f" in card_base,
+            "Shin Getter Dragon special effects must begin at 1.4 seconds")
+    timing_set = card_base.split(
+        "private static readonly IReadOnlySet<string> ShinDragonSpecialTimingHandledByCard", 1
+    )[1].split("private static readonly IReadOnlySet<string> MovementVfxTimingCards", 1)[0]
+    for cards in SPECIAL_CARD_GROUPS.values():
+        for card in cards:
+            if card in SPECIAL_TIMING_EXEMPT_CARDS:
+                require(f'"{card}"' in timing_set,
+                        f"{card}: independent effect timing must remain exempt")
+            else:
+                require(f'"{card}"' not in timing_set,
+                        f"{card}: must use the shared 1.4-second effect timing")
+    before_card_played = card_base.split("public override async Task BeforeCardPlayed", 1)[1].split(
+        "private void PlayCardVoiceAndAnimation", 1
+    )[0]
+    require("IsShinDragonSpecialAnimationTrigger(animationTrigger)" in before_card_played
+            and "ShinDragonSpecialTimingHandledByCard.Contains(cardTypeName)" in before_card_played
+            and "await Cmd.CustomScaledWait(" in before_card_played,
+            "shared special timing must wait before card effects begin")
+    dash_charge = card_base.split("protected Task WaitForDashCharge()", 1)[1].split(
+        "protected Func<Task> AccelerateFollowupAnimations", 1
+    )[0]
+    require('"DashV2" => ShinDragonSpecialEffectDelaySeconds' in dash_charge,
+            "Getter Rush DashV2 must preserve its movement-VFX delay without restarting the animation")
+
     require('GetActionAnimationTrigger() ?? "Attack"' in star_slash,
             "Star Slash manual timing must request DashV2 in Shin Getter Dragon")
     require('GetActionAnimationTrigger() ?? "Attack"' in getter_flash,
@@ -211,6 +410,8 @@ def check_runtime_wiring() -> None:
 
 def main() -> None:
     check_authoritative_sources()
+    check_rgb_invariant_guard()
+    check_black_background_cleanup()
     check_builder_and_sheets()
     check_runtime_wiring()
     print("issue#159 validation passed")

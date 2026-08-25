@@ -33,6 +33,7 @@ public abstract class ShinGetterCardBase : CardModel
 {
     private const float OrdinaryAttackEffectDelaySeconds = 0.5f;
     private const float DashChargeDelaySeconds = 0.8f;
+    private const float ShinDragonSpecialEffectDelaySeconds = 1.4f;
     private const float AcceleratedFollowupSpeedScale = 2f;
 
     private static readonly IReadOnlyDictionary<string, Func<CardModel, IHoverTip>> TermTips =
@@ -223,6 +224,19 @@ public abstract class ShinGetterCardBase : CardModel
             "SGC_StarSlash",
         };
 
+    private static readonly IReadOnlySet<string> ShinDragonSpecialTimingHandledByCard =
+        new HashSet<string>(StringComparer.Ordinal)
+        {
+            "SGC_Annihilation",
+            "SGC_Avalanche",
+            "SGC_GetterFlash",
+            "SGC_GetterMissile",
+            "SGC_GetterRush",
+            "SGC_HurricaneStrike",
+            "SGC_PoseidonThunder",
+            "SGC_StarSlash",
+        };
+
     private static readonly IReadOnlySet<string> MovementVfxTimingCards =
         new HashSet<string>(StringComparer.Ordinal)
         {
@@ -326,8 +340,14 @@ public abstract class ShinGetterCardBase : CardModel
 
     protected Task WaitForDashCharge()
     {
-        return GetActionAnimationTrigger() == "Dash"
-            ? Cmd.CustomScaledWait(DashChargeDelaySeconds, DashChargeDelaySeconds)
+        float delaySeconds = GetActionAnimationTrigger() switch
+        {
+            "Dash" => DashChargeDelaySeconds,
+            "DashV2" => ShinDragonSpecialEffectDelaySeconds,
+            _ => 0f,
+        };
+        return delaySeconds > 0f
+            ? Cmd.CustomScaledWait(delaySeconds, delaySeconds)
             : Task.CompletedTask;
     }
 
@@ -379,11 +399,24 @@ public abstract class ShinGetterCardBase : CardModel
             return;
         }
 
-        if (!MovementVfxTimingCards.Contains(GetType().Name))
+        string cardTypeName = GetType().Name;
+        if (!MovementVfxTimingCards.Contains(cardTypeName))
             PlayCardVoiceAndAnimation();
 
-        if (GetActionAnimationTrigger() != "Attack"
-            || AttackTimingHandledByVfxCards.Contains(GetType().Name))
+        string? animationTrigger = GetActionAnimationTrigger();
+        if (IsShinDragonSpecialAnimationTrigger(animationTrigger))
+        {
+            if (!ShinDragonSpecialTimingHandledByCard.Contains(cardTypeName))
+            {
+                await Cmd.CustomScaledWait(
+                    ShinDragonSpecialEffectDelaySeconds,
+                    ShinDragonSpecialEffectDelaySeconds);
+            }
+            return;
+        }
+
+        if (animationTrigger != "Attack"
+            || AttackTimingHandledByVfxCards.Contains(cardTypeName))
         {
             return;
         }
@@ -442,6 +475,9 @@ public abstract class ShinGetterCardBase : CardModel
 
         return null;
     }
+
+    private static bool IsShinDragonSpecialAnimationTrigger(string? trigger) =>
+        trigger is "Cyclone" or "DashV2" or "DrillAttack";
 
     private static IHoverTip CustomTip(string key) => new HoverTip(
         new LocString("static_hover_tips", key + ".title"),
