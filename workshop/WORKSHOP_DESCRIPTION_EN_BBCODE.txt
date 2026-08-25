@@ -6,38 +6,37 @@ Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter
 
 [hr][/hr]
 
-[h2]🆕 v1.1.0 release notes[/h2]
+[h2]🆕 v1.2.0 release notes[/h2]
 
-[b]Current version: v1.1.0[/b]
+[b]Current version: v1.2.0[/b]
 
-[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.1.0]Download v1.1.0 (shin-getter-mod-v1.1.0.zip)[/url]
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0]Download v1.2.0 (shin-getter-mod-v1.2.0.zip)[/url]
 
 [h3]Features[/h3]
 
 [list]
-[*]Added the Event Invasion mechanic: multiple base-game events now include Shin Getter-exclusive options, locked conditions, story branches, and trilingual text, along with the new [i]Triple Wood Carving[/i] relic.
-[*]Expanded Donu's Bird Nest, Judgment, and other events with exclusive combats, rewards, and return flows.
-[*]Added eight Shin Getter tracks for Elite and Boss combats in the Overgrowth, Underdocks, Hive, and Glory; other characters and the Ancient Ones continue to use the original music.
+[*]Added complete fighter separation and fusion sequences for the three standard forms. Shin Getter Dragon gains three 30 fps signature actions (Cyclone, Dash, and Drill Attack), while Shin Getter 1 and Dragon use dedicated 90-frame Stoner Sunshine sequences.
+[*]Added the Ancient card [i]Getter Landing[/i], Open Get, and Shade presentation. Stoner Sunshine can now be acquired under special combat conditions and has its own preview, voices, music, and finishing reward.
+[*]Added Shin Getter routes to eighteen base-game events, plus four event cards, two event relics, and three event potions. Event rewards stay out of normal random pools.
+[*]Expanded Chunibyo Config with selectable, random, and previewable Execution, normal, event, Elite, and Boss music, alongside more combat responses, low-HP lines, and better subtitle timing.
+[*]Updated twelve card portraits, added the animated rainbow [b]NEW[/b] update badge, and refined card-frame types, hover tips, and config interactions.
 [/list]
 
 [h3]Bug Fixes[/h3]
 
 [list]
-[*]Fixed issues after transformations, card resolution, and combat end so leftover animations, voice lines, statuses, or music do not affect later combats.
-[*]Fixed Getter Missile and Spiral Drill consuming Vigor / Valor, plus duplicate Infinite Evolution tracking, shared accumulation, and reward-weight issues.
-[*]Fixed event rewards, autoplay, and page return flows. Donu's Egg now hatches at the correct time, and Byrdpip's Pounce is only granted when claiming the Byrdpip Hatchling.
-[*]Fixed Judgment autoplay timing and the soft lock caused when no cards can be selected.
-[*]Fixed exclusive encounter-music timing, Execution Theme takeover, post-combat restoration, and multiplayer scope.
+[*]Fixed Radiated card damage, pet-owner damage normalization, Morale damage reduction, and its random-pool and upgrade-candidate exclusions.
+[*]Fixed dynamic Spirit Command retention, Airborne Vulnerable duration, duplicate Shin Getter 2 Maul animation, and Skill or Power cards receiving the Attack frame.
+[*]Fixed event rewards and return flow, event-card Exhaust handling, Getter Claw recovery, random BGM preview, and multiplayer scope.
+[*]Refined multi-hit attacks, Open Get, Shade, low-HP responses, and form-specific voice resolution and exclusivity.
 [/list]
 
 [h3]QoL / Balance[/h3]
 
 [list]
-[*]Improved the values and form rewards of cards such as Transformation Attack, Seize the Future, and Three Bodies, One Heart.
-[*]Reworked Evolution into a persistent resource-conversion mechanic and corrected consecutive triggers, Evolution Engine energy resolution, and stack-consumption rules.
-[*]Spirit Command cards no longer depend on Retain; they are now governed consistently by Spirit thresholds and cost-reduction rules.
-[*]Improved transition smoothness, package size, and memory use for 24 actions and 920 animation frames.
-[*]Updated Ryoma's art, ground shadows, and campfire lighting in shops and campfires.
+[*]Reworked Final Getter Beam and refined Stoner Sunshine damage, Wane, special acquisition, and finishing logic.
+[*]Adjusted Evolution Engine, Bold Plan, Getter Will, Chosen One, Spirit Commands, and related mechanics.
+[*]Rebuilt and cleaned character animation assets for consistent transparent edges and watermark removal. Shin Getter Dragon's three signature actions now play at 30 fps in about two seconds.
 [/list]
 
 [hr][/hr]
@@ -62,8 +61,8 @@ Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter
 [h2]📦 What's included[/h2]
 
 [list]
-[*]72 cards
-[*]11 relics, 3 potions, and 2 enchantments
+[*]77 cards
+[*]13 relics, 6 potions, and 2 enchantments
 [*]Multiple event invasions, 1 exclusive event, and dedicated Ancient dialogue
 [*]Simplified Chinese, English, and Japanese localization
 [/list]
@@ -93,7 +92,7 @@ On your first run, follow the highlighted form-specific cards to establish a rhy
 
 [h2]Current status[/h2]
 
-[b]Current version: v1.1.0[/b]
+[b]Current version: v1.2.0[/b]
 
 The mod will continue to be maintained. Future game updates may affect compatibility. Please report issues on GitHub with the game version, mod version, reproduction steps, and relevant logs.
 
