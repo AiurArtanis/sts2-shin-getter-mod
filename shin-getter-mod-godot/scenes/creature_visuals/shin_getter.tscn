@@ -17,8 +17,7 @@ unique_name_in_owner = true
 position = Vector2(38, -237.93)
 scale = Vector2(0.800415, 0.800415)
 sprite_frames = ExtResource("6_idle_frames")
-animation = &"idle"
-autoplay = "idle"
+animation = &"fusion"
 metadata/frame_directory = "res://images/characters/shin_getter/forms/getter_one_idle"
 metadata/max_frames = 24
 
