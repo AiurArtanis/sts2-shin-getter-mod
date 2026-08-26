@@ -517,6 +517,23 @@ def inventory_mod_binary() -> dict[str, object]:
     try:
         inventory = json.loads(output_lines[-1])
         inventory["assembly"] = MOD_ASSEMBLY.relative_to(REPO_ROOT).as_posix()
+        # Godot/.NET rebuilds can produce a different PE hash without changing
+        # any referenced game contract. Release evidence records the concrete
+        # DLL hash; this reproducible audit fingerprints only semantic metadata.
+        inventory.pop("assembly_sha256", None)
+        semantic_payload = {
+            "game_type_references": inventory["game_type_references"],
+            "game_member_references": inventory["game_member_references"],
+            "game_overrides": inventory["game_overrides"],
+        }
+        inventory["semantic_reference_sha256"] = hashlib.sha256(
+            json.dumps(
+                semantic_payload,
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest().upper()
         return inventory
     except (IndexError, json.JSONDecodeError) as error:
         raise RuntimeError(

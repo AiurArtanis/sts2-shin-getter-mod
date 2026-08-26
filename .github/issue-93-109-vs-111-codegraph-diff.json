@@ -3459,7 +3459,6 @@
   },
   "mod_binary_reference_inventory": {
     "assembly": "shin-getter-mod-godot/build/ShinGetterMod.dll",
-    "assembly_sha256": "4C34A67BD05A9F9C4BAC7B047FC0137CF58B04FE201AC915C67A3D560B90D2B5",
     "direct_game_member_reference_count": 698,
     "game_member_reference_count": 731,
     "game_member_references": [
@@ -15338,7 +15337,8 @@
       "MegaCrit.Sts2.addons.mega_text.MegaRichTextLabel+PropertyName",
       "MegaCrit.Sts2.addons.mega_text.MegaRichTextLabel+SignalName"
     ],
-    "generic_game_member_reference_count": 33
+    "generic_game_member_reference_count": 33,
+    "semantic_reference_sha256": "94E1781B451936C6925C4606EFB456573DFC080B64132E07F6079AB38DFBFFF1"
   },
   "mod_source_inventory": {
     "dynamic_target_call_count": 119,
