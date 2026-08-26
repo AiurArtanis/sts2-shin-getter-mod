@@ -11,7 +11,7 @@ This audit compares the released `mod-v1.2.0` source against the current formal-
 - Beta `sts2.dll`: 10,657,280 bytes, SHA-256 `6896BBA91CEDDC661B3F789749E9F0AAC338F5DDBBB92C598FC344DEC822DC19`.
 - Both use `0Harmony` 2.4.2.0, SHA-256 `EF1898322C9F5C86DC1B0758B272A9C440823B4A41CA9A0B82A3AA6B3D206387`.
 - Both projects use Godot.NET.Sdk 4.5.1 and .NET 9. The Beta adds `CheckForOverflowUnderflow=false`, upgrades Sentry, and adds `Sentry.Godot`/explicit `SharpGen.Runtime`; none of those are directly referenced by the mod.
-- CodeGraph was used first for Beta definitions and call paths. Targeted source reads then verified signatures and private targets. The released mod assembly inventory contained 377 game type references, 663 game member references, and 111 Harmony/`AccessTools` targets.
+- CodeGraph was used first for Beta definitions and call paths. Targeted source reads then verified signatures and private targets. The rebuilt Beta assembly inventory contains 377 game type references, 698 direct game member signatures, 33 members on constructed generic game types, and 1,015 override edges back into `sts2`.
 
 ## Compatibility checklist
 
@@ -37,17 +37,31 @@ This audit compares the released `mod-v1.2.0` source against the current formal-
 | Mod discovery / initializer | `[ModInitializer("Init")]`, same-name DLL/PCK next to manifest | Same attribute and `CallModInitializer` behavior | Compatible. `Entry.Init`, explicit Harmony registration, and the 77-card success log remain intact. |
 | Resource loading | `ProjectSettings.LoadResourcePack(<id>.pck)` and `res://` lookup | Same DLL/PCK naming and load order | Compatible. Critical character-select, transition, config, localization, atlas and animation paths remain in the mod PCK namespace. |
 | Private reflection fields | `_internalData`, Vigor `commandToModify` / `amountWhenAttackStarted`, UI container fields | Same names and assignable shapes | Compatible; guarded by `validate_issue_93.py`. |
-| Other Harmony/`AccessTools` targets | 111 targets in the released mod | All unchanged targets remain present except the three rows called out above | Compatible; gate covers changed targets plus the critical private-reflection surface. |
+| Other Harmony/`AccessTools` targets | 119 explicit patch/reflection calls plus two bare `TargetMethods` patch classes | All unchanged targets remain present except the three rows called out above | Compatible; the mechanical audit records every call, owner/name candidate and source location, while the runtime probe covers changed and critical private targets. |
 
 ## Version and package mapping
 
 | Game channel | Mod manifest | Minimum game | Release tag | ZIP |
 | --- | --- | --- | --- | --- |
 | Current formal game | `v1.2.0` | `0.107.0` | `mod-v1.2.0` | `shin-getter-mod-v1.2.0.zip` |
-| Slay the Spire 2 0.111 Beta | `v1.2.0-beta.111` | `0.111.0` | `mod-v1.2.0-beta.111` | `shin-getter-mod-v1.2.0-beta.111.zip` |
+| Slay the Spire 2 0.111 Beta | `v1.2.0-beta.111` | `0.111.0` | `mod-v1.2.0-beta.111` | `shin-getter-mod-v1.2.0(111-beta).zip` |
 
 The Beta package is a complete v1.2.0 feature build, not a reduced compatibility build. Its distinct semantic version keeps the manifest, tag and archive name aligned with `AGENTS.md` and prevents users from confusing it with the formal-game package.
 
 ## RED baseline
 
 Building the untouched `mod-v1.2.0` source against the audited Beta assemblies produced 0 warnings and 10 errors: one `GenerateAnimator` override, eight damage-hook overrides, and the removed `LobbyPlayer` type. The remaining call/Harmony differences were identified by the pre-edit CodeGraph, member-reference and private-target audit rather than waiting for compiler failures.
+
+## Full 0.109 → 0.111 CodeGraph re-audit
+
+The follow-up audit requested before release is reproducible with:
+
+```text
+python shin-getter-mod-godot/tools/audit_issue_93_codegraph.py --check
+```
+
+- Both `.codegraph/codegraph.db` files are opened with SQLite `mode=ro&immutable=1`.
+- The complete file and symbol/declaration diff is committed as `.github/issue-93-109-vs-111-codegraph-diff.json`; the bounded review table is `.github/issue-93-109-vs-111-codegraph-diff.md`.
+- The audit traverses every production and compatibility-probe C# file, records each file SHA-256/line count, then cross-references CodeGraph changes against compiled TypeRef/MemberRef metadata, runtime-resolved override bases, and Harmony/`AccessTools` calls.
+- Exactly 26 changed symbol groups intersect the mod. Each has an explicit `adapted` or `compatible` conclusion; the gate fails if a future changed-symbol candidate lacks a review conclusion or if a recorded conclusion becomes stale.
+- Removed `LobbyPlayer`/`CreateRandomPotion` and their `StartRunLobbyPlayer`/`CreateRandomPotions` replacements are explicitly covered even though the removed symbols are no longer present in the rebuilt Beta assembly.

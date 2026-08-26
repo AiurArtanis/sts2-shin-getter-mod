@@ -4,11 +4,6 @@ using System.Runtime.Loader;
 string sourceRoot = Environment.GetEnvironmentVariable("SHIN_GETTER_STS2_111_SOURCE")
     ?? @"E:\Work\SlaytheSpare2-111-beta";
 string betaBin = Path.GetFullPath(Path.Combine(sourceRoot, ".godot", "mono", "temp", "bin", "Debug"));
-string gamePath = Path.Combine(betaBin, "sts2.dll");
-
-if (!File.Exists(gamePath))
-    throw new InvalidOperationException($"0.111 Beta sts2.dll was not found: {gamePath}");
-
 AssemblyLoadContext.Default.Resolving += (_, name) =>
 {
     string dependency = Path.Combine(betaBin, $"{name.Name}.dll");
@@ -16,6 +11,17 @@ AssemblyLoadContext.Default.Resolving += (_, name) =>
         ? AssemblyLoadContext.Default.LoadFromAssemblyPath(dependency)
         : null;
 };
+
+if (args.Length == 2 && args[0] == "--inventory")
+{
+    ReferenceInventory.Write(args[1]);
+    return;
+}
+
+string gamePath = Path.Combine(betaBin, "sts2.dll");
+
+if (!File.Exists(gamePath))
+    throw new InvalidOperationException($"0.111 Beta sts2.dll was not found: {gamePath}");
 
 Assembly game = AssemblyLoadContext.Default.LoadFromAssemblyPath(gamePath);
 

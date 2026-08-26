@@ -12,7 +12,7 @@ Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter
 
 [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0]Download formal v1.2.0[/url]
 
-[b]Slay the Spire 2 0.111 Beta:[/b] use v1.2.0-beta.111 (shin-getter-mod-v1.2.0-beta.111.zip, tag mod-v1.2.0-beta.111).
+[b]Slay the Spire 2 0.111 Beta:[/b] use v1.2.0-beta.111 (shin-getter-mod-v1.2.0(111-beta).zip, tag mod-v1.2.0-beta.111).
 
 [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0-beta.111]Download the 0.111 Beta build v1.2.0-beta.111[/url]
 

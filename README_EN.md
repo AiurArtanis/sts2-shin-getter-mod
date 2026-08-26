@@ -15,7 +15,7 @@ Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter
 ## 🧪 0.111 Beta support
 
 - **Current formal game:** use `v1.2.0` (`shin-getter-mod-v1.2.0.zip`, tag `mod-v1.2.0`).
-- **Slay the Spire 2 0.111 Beta:** use `v1.2.0-beta.111` (`shin-getter-mod-v1.2.0-beta.111.zip`, tag `mod-v1.2.0-beta.111`).
+- **Slay the Spire 2 0.111 Beta:** use `v1.2.0-beta.111` (`shin-getter-mod-v1.2.0(111-beta).zip`, tag `mod-v1.2.0-beta.111`).
 - The Beta package retains all 77 cards, four forms, events, voices, animations, and Chunibyo Config features from formal v1.2.0; it is not a reduced build.
 - Do not mix the two packages. After switching game branches, replace all four files with the matching ZIP and restart the game.
 
@@ -73,7 +73,7 @@ The content currently registered in `v1.2.0` includes:
 ### Install the 0.111 Beta build
 
 1. Confirm that the game is on **Slay the Spire 2 0.111 Beta**.
-2. Download `shin-getter-mod-v1.2.0-beta.111.zip` from the [v1.2.0-beta.111 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0-beta.111).
+2. Download `shin-getter-mod-v1.2.0(111-beta).zip` from the [v1.2.0-beta.111 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0-beta.111).
 3. Replace all four files in the same `ShinGetterMod` directory. Do not combine a formal v1.2.0 DLL with a Beta PCK, or vice versa.
 4. Fully quit and relaunch the game, enable the mod, and start a new run.
 

@@ -12,7 +12,7 @@
 
 [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0]正式版v1.2.0をダウンロード[/url]
 
-[b]Slay the Spire 2 0.111 Beta：[/b]v1.2.0-beta.111（shin-getter-mod-v1.2.0-beta.111.zip、Tag mod-v1.2.0-beta.111）を使用してください。
+[b]Slay the Spire 2 0.111 Beta：[/b]v1.2.0-beta.111（shin-getter-mod-v1.2.0(111-beta).zip、Tag mod-v1.2.0-beta.111）を使用してください。
 
 [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0-beta.111]0.111 Beta専用版v1.2.0-beta.111をダウンロード[/url]
 

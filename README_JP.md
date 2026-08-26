@@ -15,7 +15,7 @@
 ## 🧪 0.111 Beta対応
 
 - **現在の正式版ゲーム：**`v1.2.0`（`shin-getter-mod-v1.2.0.zip`、Tag `mod-v1.2.0`）を使用してください。
-- **Slay the Spire 2 0.111 Beta：**`v1.2.0-beta.111`（`shin-getter-mod-v1.2.0-beta.111.zip`、Tag `mod-v1.2.0-beta.111`）を使用してください。
+- **Slay the Spire 2 0.111 Beta：**`v1.2.0-beta.111`（`shin-getter-mod-v1.2.0(111-beta).zip`、Tag `mod-v1.2.0-beta.111`）を使用してください。
 - Betaパッケージも正式版v1.2.0のカード77枚、4形態、イベント、ボイス、アニメーション、中二設定をすべて収録しており、機能削減版ではありません。
 - 2つのパッケージを混在させないでください。ゲームブランチを切り替えたら、対応ZIPの4ファイルをすべて上書きしてゲームを再起動してください。
 
@@ -73,7 +73,7 @@
 ### 0.111 Beta専用版のインストール
 
 1. ゲームが **Slay the Spire 2 0.111 Beta** になっていることを確認します。
-2. [v1.2.0-beta.111 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0-beta.111) から `shin-getter-mod-v1.2.0-beta.111.zip` をダウンロードします。
+2. [v1.2.0-beta.111 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0-beta.111) から `shin-getter-mod-v1.2.0(111-beta).zip` をダウンロードします。
 3. ZIP内の4ファイルを同じ `ShinGetterMod` ディレクトリへすべて上書きします。正式版v1.2.0のDLLとBeta版PCKなどを混在させないでください。
 4. ゲームを完全に終了して再起動し、MODを有効化して新しいランを開始します。
 

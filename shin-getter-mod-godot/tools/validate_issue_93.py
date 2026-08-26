@@ -8,6 +8,7 @@ import json
 import os
 import re
 import subprocess
+import sys
 from pathlib import Path
 
 
@@ -25,7 +26,7 @@ FORMAL_URL = (
 )
 BETA_VERSION = "v1.2.0-beta.111"
 BETA_TAG = "mod-v1.2.0-beta.111"
-BETA_ARCHIVE = "shin-getter-mod-v1.2.0-beta.111.zip"
+BETA_ARCHIVE = "shin-getter-mod-v1.2.0(111-beta).zip"
 BETA_URL = (
     "https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/"
     "mod-v1.2.0-beta.111"
@@ -326,12 +327,33 @@ def validate_resources_and_audit() -> None:
         audit,
         audit_path,
         "377 game type references",
-        "663 game member references",
-        "111 Harmony/`AccessTools` targets",
+        "698 direct game member signatures",
+        "33 members on constructed generic game types",
+        "Exactly 26 changed symbol groups intersect the mod",
         "0 warnings and 10 errors",
         BETA_VERSION,
         BETA_TAG,
         BETA_ARCHIVE,
+    )
+
+
+def validate_codegraph_mechanical_audit() -> None:
+    script = PROJECT_ROOT / "tools/audit_issue_93_codegraph.py"
+    result = subprocess.run(
+        [sys.executable, str(script), "--check"],
+        cwd=REPO_ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        details = "\n".join((result.stdout + "\n" + result.stderr).splitlines()[-30:])
+        raise AssertionError(f"0.109 -> 0.111 CodeGraph audit gate failed:\n{details}")
+    require(
+        result.stdout,
+        script,
+        "issue#93 CodeGraph audit check passed",
+        "26 changed-symbol candidates",
     )
 
 
@@ -362,6 +384,7 @@ def main() -> None:
     validate_mod_api_adaptation()
     validate_beta_source_contract()
     validate_resources_and_audit()
+    validate_codegraph_mechanical_audit()
     validate_runtime_targets()
     print("issue#93 0.111 Beta compatibility validation passed")
 
