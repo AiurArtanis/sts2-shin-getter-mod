@@ -10,7 +10,7 @@
 
 > 正式版 `v1.2.0`（ゲーム `0.107.0+`）· 0.111 Beta専用版 `v1.2.0-beta.111` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
-[正式版v1.2.0をダウンロード](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0) · [0.111 Beta専用版をダウンロード](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0-beta.111) · [不具合を報告](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+[v1.2.0の正式版と0.111 Beta専用版をダウンロード](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0) · [不具合を報告](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
 ## 🧪 0.111 Beta対応
 
@@ -18,6 +18,8 @@
 - **Slay the Spire 2 0.111 Beta：**`v1.2.0-beta.111`（`shin-getter-mod-v1.2.0(111-beta).zip`、Tag `mod-v1.2.0-beta.111`）を使用してください。
 - Betaパッケージも正式版v1.2.0のカード77枚、4形態、イベント、ボイス、アニメーション、中二設定をすべて収録しており、機能削減版ではありません。
 - 2つのパッケージを混在させないでください。ゲームブランチを切り替えたら、対応ZIPの4ファイルをすべて上書きしてゲームを再起動してください。
+- 2つのZIPは [v1.2.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0) からダウンロードできます。
+- 既知の外部互換性問題：旧版 `BaseLib 3.3.7` は0.111 Betaで `CardPileCmd.Add` のtranspilerに失敗し、カード使用時に停止する場合があります。BaseLibを更新するか、Beta環境ではBaseLibとその依存Modを無効にしてください。
 
 ## ⚡ 戦闘の核
 
@@ -73,7 +75,7 @@
 ### 0.111 Beta専用版のインストール
 
 1. ゲームが **Slay the Spire 2 0.111 Beta** になっていることを確認します。
-2. [v1.2.0-beta.111 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0-beta.111) から `shin-getter-mod-v1.2.0(111-beta).zip` をダウンロードします。
+2. [v1.2.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0) から `shin-getter-mod-v1.2.0(111-beta).zip` をダウンロードします。
 3. ZIP内の4ファイルを同じ `ShinGetterMod` ディレクトリへすべて上書きします。正式版v1.2.0のDLLとBeta版PCKなどを混在させないでください。
 4. ゲームを完全に終了して再起動し、MODを有効化して新しいランを開始します。
 

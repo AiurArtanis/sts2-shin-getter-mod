@@ -10,7 +10,7 @@
 
 > 正式版 `v1.2.0`（游戏 `0.107.0+`）· 0.111 Beta 专用版 `v1.2.0-beta.111` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
-[下载正式版 v1.2.0](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0) · [下载 0.111 Beta 专用版](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0-beta.111) · [提交问题](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+[下载正式版 v1.2.0 与 0.111 Beta 专用版](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0) · [提交问题](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
 ## 🧪 0.111 Beta 适配
 
@@ -18,6 +18,8 @@
 - **Slay the Spire 2 0.111 Beta：**使用 `v1.2.0-beta.111`（`shin-getter-mod-v1.2.0(111-beta).zip`，Tag `mod-v1.2.0-beta.111`）。
 - Beta 包完整保留正式版 v1.2.0 的 77 张卡牌、四种形态、事件、语音、动画与中二配置；它不是删减版。
 - 两个包不能混用。切换游戏分支后，请用对应 ZIP 的四个同名文件完整覆盖原目录，再重启游戏。
+- 两个压缩包统一放在 [v1.2.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0) 中。
+- 已知外部兼容问题：旧版 `BaseLib 3.3.7` 在 0.111 Beta 中会因 `CardPileCmd.Add` transpiler 失败导致出牌卡住。请更新 BaseLib，或在 Beta 环境中禁用 BaseLib 及依赖它的模组。
 
 ## ⚡ 战斗核心
 
@@ -73,7 +75,7 @@
 ### 安装 0.111 Beta 专用版
 
 1. 确认游戏已切换到 **Slay the Spire 2 0.111 Beta**。
-2. 从 [v1.2.0-beta.111 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0-beta.111) 下载 `shin-getter-mod-v1.2.0(111-beta).zip`。
+2. 从 [v1.2.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0) 下载 `shin-getter-mod-v1.2.0(111-beta).zip`。
 3. 将 ZIP 内四个文件完整覆盖到同一个 `ShinGetterMod` 目录；不要与正式版 v1.2.0 的 DLL／PCK 混搭。
 4. 完全退出并重新启动游戏，再启用模组并新开一局。
 

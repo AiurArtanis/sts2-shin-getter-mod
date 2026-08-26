@@ -14,9 +14,11 @@
 
 [b]Slay the Spire 2 0.111 Beta：[/b]v1.2.0-beta.111（shin-getter-mod-v1.2.0(111-beta).zip、Tag mod-v1.2.0-beta.111）を使用してください。
 
-[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0-beta.111]0.111 Beta専用版v1.2.0-beta.111をダウンロード[/url]
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0]v1.2.0 Releaseから0.111 Beta専用版をダウンロード[/url]
 
 Betaパッケージも正式版v1.2.0のカード77枚、4形態、イベント、ボイス、アニメーション、中二設定をすべて収録しています。2つのパッケージを混在させず、ゲームブランチ切替後はDLL、PCK、JSON、mod_imageをまとめて上書きして再起動してください。
+
+[b]既知の外部互換性問題：[/b]旧版BaseLib 3.3.7は0.111 BetaでCardPileCmd.Addのtranspilerに失敗し、カード使用時に停止する場合があります。BaseLibを更新するか、Beta環境ではBaseLibとその依存Modを無効にしてください。
 
 [h2]🆕 v1.2.0 リリースノート[/h2]
 

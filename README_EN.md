@@ -10,7 +10,7 @@ Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter
 
 > Formal build `v1.2.0` (game `0.107.0+`) · 0.111 Beta build `v1.2.0-beta.111` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
-[Download formal v1.2.0](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0) · [Download the 0.111 Beta build](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0-beta.111) · [Report an issue](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+[Download the stable and 0.111 Beta builds from v1.2.0](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0) · [Report an issue](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
 ## 🧪 0.111 Beta support
 
@@ -18,6 +18,8 @@ Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter
 - **Slay the Spire 2 0.111 Beta:** use `v1.2.0-beta.111` (`shin-getter-mod-v1.2.0(111-beta).zip`, tag `mod-v1.2.0-beta.111`).
 - The Beta package retains all 77 cards, four forms, events, voices, animations, and Chunibyo Config features from formal v1.2.0; it is not a reduced build.
 - Do not mix the two packages. After switching game branches, replace all four files with the matching ZIP and restart the game.
+- Both archives are available from the [v1.2.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0).
+- Known external compatibility issue: old `BaseLib 3.3.7` fails its `CardPileCmd.Add` transpiler on 0.111 Beta and can freeze manual card play. Update BaseLib, or disable BaseLib and dependent mods in the Beta environment.
 
 ## ⚡ Combat at a glance
 
@@ -73,7 +75,7 @@ The content currently registered in `v1.2.0` includes:
 ### Install the 0.111 Beta build
 
 1. Confirm that the game is on **Slay the Spire 2 0.111 Beta**.
-2. Download `shin-getter-mod-v1.2.0(111-beta).zip` from the [v1.2.0-beta.111 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0-beta.111).
+2. Download `shin-getter-mod-v1.2.0(111-beta).zip` from the [v1.2.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0).
 3. Replace all four files in the same `ShinGetterMod` directory. Do not combine a formal v1.2.0 DLL with a Beta PCK, or vice versa.
 4. Fully quit and relaunch the game, enable the mod, and start a new run.
 

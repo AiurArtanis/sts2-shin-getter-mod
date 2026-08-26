@@ -27,7 +27,8 @@ FORMAL_URL = (
 BETA_VERSION = "v1.2.0-beta.111"
 BETA_TAG = "mod-v1.2.0-beta.111"
 BETA_ARCHIVE = "shin-getter-mod-v1.2.0(111-beta).zip"
-BETA_URL = (
+BETA_DOWNLOAD_URL = FORMAL_URL
+LEGACY_BETA_RELEASE_URL = (
     "https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/"
     "mod-v1.2.0-beta.111"
 )
@@ -122,10 +123,16 @@ def validate_version_mapping() -> None:
             BETA_VERSION,
             BETA_TAG,
             BETA_ARCHIVE,
-            BETA_URL,
+            BETA_DOWNLOAD_URL,
             "0.111",
         )
-        reject(text, path, "0.110 Beta", "support-110-beta")
+        reject(
+            text,
+            path,
+            "0.110 Beta",
+            "support-110-beta",
+            LEGACY_BETA_RELEASE_URL,
+        )
 
 
 def validate_mod_api_adaptation() -> None:
