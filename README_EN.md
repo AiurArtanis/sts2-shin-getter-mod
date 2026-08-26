@@ -8,9 +8,17 @@
 
 Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter 1's explosive offense, Shin Getter 2's high-speed tactics, and Shin Getter 3's iron defense; then awaken Shin Getter Dragon and let the Getter Rays consume the tower. This is a gameplay character mod built around transformations, deckbuilding, and presentation, not a simple reskin.
 
-> Current version `v1.2.0` · Minimum game version `0.107.0` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> Stable build `v1.2.0` (game `0.107.0+`) · dedicated 0.111 Beta build `v1.2.0-beta.111` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
-[Download latest release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest) · [Report an issue](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+[Download the stable and 0.111 Beta builds from v1.2.0](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0) · [Report an issue](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+
+## 🧪 0.111 Beta support
+
+- **Current stable game:** use `shin-getter-mod-v1.2.0.zip`.
+- **Slay the Spire 2 0.111 Beta:** use `shin-getter-mod-v1.2.0(111-beta).zip`.
+- Both archives are available from the [v1.2.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0). The Beta package retains all 77 cards, four forms, events, voices, animations, and Chunibyo Config features; it is not a reduced build.
+- Do not mix the stable and Beta four-file packages. After switching game branches, replace the DLL, PCK, JSON, and `mod_image.png` together, then restart the game.
+- Known external compatibility issue: old `BaseLib 3.3.7` fails its `CardPileCmd.Add` transpiler on 0.111 Beta and can freeze manual card play. Update BaseLib, or disable BaseLib and dependent mods in the Beta environment.
 
 ## ⚡ Combat at a glance
 
@@ -63,6 +71,13 @@ The content currently registered in `v1.2.0` includes:
 3. Launch the game, open **Settings → Mod Settings**, and enable “真盖塔模组” (Shin Getter Mod) under **Installed Mods**.
 4. Accept the load prompt, fully quit, and relaunch the game. Start a new run and select **Shin Getter**.
 
+### Install the 0.111 Beta build
+
+1. Confirm that the game is on **Slay the Spire 2 0.111 Beta**.
+2. Download `shin-getter-mod-v1.2.0(111-beta).zip` from the [v1.2.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0).
+3. Replace all four files in the same `ShinGetterMod` directory. Do not combine a stable v1.2.0 DLL with a Beta PCK, or vice versa.
+4. Fully quit and relaunch the game, enable the mod, and start a new run.
+
 On a first run, follow the highlighted form-specific cards to establish a rhythm, then branch into one of the routes above.
 
 ### Steam Workshop
@@ -90,7 +105,7 @@ Once the Workshop edition is available, enable it as follows:
 
 ### Requirements
 
-- *Slay the Spire 2* `0.107.0` or later
+- The current stable *Slay the Spire 2* `0.107.0+`, or the `0.111.0` Beta
 - Godot `4.5.1 Mono`
 - .NET SDK `9`
 - A local game project directory that Godot can load for validation

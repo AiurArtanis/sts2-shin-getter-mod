@@ -6,6 +6,17 @@
 
 [hr][/hr]
 
+[h2]🧪 0.111 Beta 适配[/h2]
+
+[b]正式版：[/b]使用 shin-getter-mod-v1.2.0.zip。
+[b]0.111 Beta：[/b]使用 shin-getter-mod-v1.2.0(111-beta).zip。
+
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0]在 v1.2.0 Release 下载两个版本[/url]
+
+Beta包完整保留77张卡牌、四种形态、事件、语音、动画与中二配置。正式版与Beta版四件套不能混用；切换游戏分支后请完整覆盖DLL、PCK、JSON与mod_image并重启游戏。
+
+[b]已知外部兼容问题：[/b]旧版BaseLib 3.3.7在0.111 Beta中会因CardPileCmd.Add transpiler失败导致出牌卡住。请更新BaseLib，或在Beta环境中禁用BaseLib及依赖它的模组。
+
 [h2]🆕 v1.2.0 更新说明[/h2]
 
 [b]当前版本：v1.2.0[/b]
