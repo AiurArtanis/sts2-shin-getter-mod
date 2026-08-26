@@ -8,9 +8,17 @@
 
 時空を越えた真ゲッターが塔へ挑みます。ゲッター1の爆発力、ゲッター2の高速戦術、ゲッター3の鉄壁の防御を切り替え、最後には真ゲッタードラゴンを目覚めさせてゲッターレイで塔を飲み込みましょう。単なる見た目変更ではなく、変形、デッキ構築、演出が一体となったプレイアブルキャラクターMODです。
 
-> 現在のバージョン `v1.2.0` · 最低ゲームバージョン `0.107.0` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> 正式版 `v1.2.0`（ゲーム `0.107.0+`）· 0.111 Beta専用版 `v1.2.0-beta.111` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
-[最新版をダウンロード](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest) · [不具合を報告](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+[v1.2.0の正式版と0.111 Beta専用版をダウンロード](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0) · [不具合を報告](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+
+## 🧪 0.111 Beta対応
+
+- **現在の正式版ゲーム：**`shin-getter-mod-v1.2.0.zip` を使用してください。
+- **Slay the Spire 2 0.111 Beta：**`shin-getter-mod-v1.2.0(111-beta).zip` を使用してください。
+- 2つのZIPは [v1.2.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0) からダウンロードできます。Beta版にもカード77枚、4形態、イベント、ボイス、アニメーション、中二設定をすべて収録しており、機能削減版ではありません。
+- 正式版とBeta版の4ファイルを混在させないでください。ゲームブランチ切替後はDLL、PCK、JSON、`mod_image.png`をまとめて上書きし、ゲームを再起動してください。
+- 既知の外部互換性問題：旧版 `BaseLib 3.3.7` は0.111 Betaで `CardPileCmd.Add` のtranspilerに失敗し、カード使用時に停止する場合があります。BaseLibを更新するか、Beta環境ではBaseLibとその依存Modを無効にしてください。
 
 ## ⚡ 戦闘の核
 
@@ -63,6 +71,13 @@
 3. ゲームを起動し、**設定 → MOD設定**を開いて、**インストール済みのMOD**から「真盖塔模组」（真ゲッターMOD）を有効にします。
 4. 読み込み確認を承認した後、ゲームを完全に終了して再起動します。新しいランで**真ゲッター**を選択してください。
 
+### 0.111 Beta専用版のインストール
+
+1. ゲームが **Slay the Spire 2 0.111 Beta** になっていることを確認します。
+2. [v1.2.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0) から `shin-getter-mod-v1.2.0(111-beta).zip` をダウンロードします。
+3. ZIP内の4ファイルを同じ `ShinGetterMod` ディレクトリへすべて上書きします。正式版v1.2.0のDLLとBeta版PCKなどを混在させないでください。
+4. ゲームを完全に終了して再起動し、Modを有効化して新しいランを開始します。
+
 最初のプレイでは、強調表示された形態専用カードを手掛かりにリズムを作り、慣れたら上記のビルドへ進むのがおすすめです。
 
 ### Steam Workshop
@@ -90,7 +105,7 @@ Workshop版の公開後は、次の手順でも有効化できます。
 
 ### 必要な環境
 
-- 『Slay the Spire 2』`0.107.0` 以降
+- 現在の正式版『Slay the Spire 2』`0.107.0+`、または `0.111.0` Beta
 - Godot `4.5.1 Mono`
 - .NET SDK `9`
 - Godotが検証用に読み込めるローカルのゲームプロジェクトディレクトリ

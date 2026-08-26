@@ -6,6 +6,17 @@ Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter
 
 [hr][/hr]
 
+[h2]🧪 0.111 Beta support[/h2]
+
+[b]Stable game:[/b] use shin-getter-mod-v1.2.0.zip.
+[b]0.111 Beta:[/b] use shin-getter-mod-v1.2.0(111-beta).zip.
+
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0]Download both builds from the v1.2.0 Release[/url]
+
+The Beta package retains all 77 cards, four forms, events, voices, animations, and Chunibyo Config features. Do not mix the stable and Beta four-file packages; after switching game branches, replace the DLL, PCK, JSON, and mod_image together, then restart the game.
+
+[b]Known external compatibility issue:[/b] old BaseLib 3.3.7 fails its CardPileCmd.Add transpiler on 0.111 Beta and can freeze manual card play. Update BaseLib, or disable BaseLib and dependent mods in the Beta environment.
+
 [h2]🆕 v1.2.0 release notes[/h2]
 
 [b]Current version: v1.2.0[/b]

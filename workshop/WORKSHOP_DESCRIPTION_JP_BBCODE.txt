@@ -6,6 +6,17 @@
 
 [hr][/hr]
 
+[h2]🧪 0.111 Beta対応[/h2]
+
+[b]正式版：[/b]shin-getter-mod-v1.2.0.zipを使用してください。
+[b]0.111 Beta：[/b]shin-getter-mod-v1.2.0(111-beta).zipを使用してください。
+
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0]v1.2.0 Releaseから両方のビルドをダウンロード[/url]
+
+Beta版にもカード77枚、4形態、イベント、ボイス、アニメーション、中二設定をすべて収録しています。正式版とBeta版の4ファイルを混在させず、ゲームブランチ切替後はDLL、PCK、JSON、mod_imageをまとめて上書きして再起動してください。
+
+[b]既知の外部互換性問題：[/b]旧版BaseLib 3.3.7は0.111 BetaでCardPileCmd.Addのtranspilerに失敗し、カード使用時に停止する場合があります。BaseLibを更新するか、Beta環境ではBaseLibとその依存Modを無効にしてください。
+
 [h2]🆕 v1.2.0 リリースノート[/h2]
 
 [b]現在のバージョン：v1.2.0[/b]
