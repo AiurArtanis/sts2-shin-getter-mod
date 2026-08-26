@@ -93,6 +93,9 @@ def check_code_wiring() -> None:
     execution_music = read(PROJECT / "src/Audio/ShinGetterExecutionMusicService.cs")
     desperation = read(PROJECT / "src/Models/Cards/SGC_Desperation.cs")
     console_patch = read(PROJECT / "src/Patches/ShinGetterConsoleCommandPatch.cs")
+    scene = read(PROJECT / "scenes/creature_visuals/shin_getter.tscn")
+    opening_frames = read(PROJECT / "scenes/creature_visuals/shin_getter_one_idle_frames.tres")
+    builder = read(PROJECT / "tools/build_character_sprite_sheets.py")
     rate_command_path = PROJECT / "src/Diagnostics/ShinGetterStonerSunshineRateConsoleCmd.cs"
     require(rate_command_path.is_file(), "stoner_sunshine_rate console command is missing")
     rate_command = read(rate_command_path)
@@ -252,6 +255,25 @@ def check_code_wiring() -> None:
             "Tactical Retreat fusion must run at 0.75 speed in every atomic form")
     require("PrepareOpeningGetterOneFusion" in getter_one,
             "combat-start form setup must hide the idle form before opening fusion")
+    getter_one_scene = scene[
+        scene.index('[node name="GetterOne"'):
+        scene.index('[node name="GetterTwo"')
+    ]
+    require('path="res://scenes/creature_visuals/shin_getter_one_idle_frames.tres" id="6_idle_frames"' in scene
+            and 'sprite_frames = ExtResource("6_idle_frames")' in getter_one_scene
+            and 'animation = &"fusion"' in getter_one_scene
+            and 'autoplay = "idle"' not in getter_one_scene,
+            "the scene must render prepared A/fusion frame one before combat hooks run")
+    require('path="res://images/characters/shin_getter/forms/getter_one_fusion/sprite_sheet.png"' in opening_frames
+            and '[sub_resource type="AtlasTexture" id="FusionOpeningFrame"]' in opening_frames
+            and 'atlas = ExtResource("2_fusion_sheet")' in opening_frames
+            and "region = Rect2(0, 0, 720, 720)" in opening_frames
+            and '"texture": SubResource("FusionOpeningFrame")' in opening_frames
+            and '"name": &"fusion"' in opening_frames,
+            "Getter One default SpriteFrames must expose the exact first A/fusion cell")
+    require('include_opening_fusion = action == "getter_one_idle"' in builder
+            and "verify_idle_resource" in builder,
+            "the generated opening-frame resource must be reproducible and checked")
     prepare_start = visuals.index("public static void PrepareOpeningGetterOneFusion(Creature creature)")
     prepare_end = visuals.index("    public static Task ShowShinDragon", prepare_start)
     opening_prepare = visuals[prepare_start:prepare_end]

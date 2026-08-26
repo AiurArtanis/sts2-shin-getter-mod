@@ -162,15 +162,24 @@ def verify_sheet(action: str, source_dir: Path, output_dir: Path, frame_count: i
     print(f"VERIFIED {output_dir.name}: {frame_count} frames")
 
 
-def write_idle_resource(project_root: Path, action: str, frame_count: int) -> None:
+def idle_resource_text(action: str, frame_count: int) -> str:
     columns, _ = sheet_geometry(action, frame_count)
     sheet_path = f"res://images/characters/shin_getter/forms/{action}/{SHEET_NAME}"
+    include_opening_fusion = action == "getter_one_idle"
+    load_steps = frame_count + (4 if include_opening_fusion else 2)
     lines = [
-        f'[gd_resource type="SpriteFrames" load_steps={frame_count + 2} format=3]',
+        f'[gd_resource type="SpriteFrames" load_steps={load_steps} format=3]',
         "",
         f'[ext_resource type="Texture2D" path="{sheet_path}" id="1_sheet"]',
         "",
     ]
+    if include_opening_fusion:
+        lines.extend(
+            [
+                '[ext_resource type="Texture2D" path="res://images/characters/shin_getter/forms/getter_one_fusion/sprite_sheet.png" id="2_fusion_sheet"]',
+                "",
+            ]
+        )
     for index in range(frame_count):
         x = (index % columns) * FRAME_SIZE
         y = (index // columns) * FRAME_SIZE
@@ -179,6 +188,17 @@ def write_idle_resource(project_root: Path, action: str, frame_count: int) -> No
                 f'[sub_resource type="AtlasTexture" id="AtlasTexture_{index + 1:03d}"]',
                 'atlas = ExtResource("1_sheet")',
                 f"region = Rect2({x}, {y}, {FRAME_SIZE}, {FRAME_SIZE})",
+                "filter_clip = true",
+                "",
+            ]
+        )
+
+    if include_opening_fusion:
+        lines.extend(
+            [
+                '[sub_resource type="AtlasTexture" id="FusionOpeningFrame"]',
+                'atlas = ExtResource("2_fusion_sheet")',
+                f"region = Rect2(0, 0, {FRAME_SIZE}, {FRAME_SIZE})",
                 "filter_clip = true",
                 "",
             ]
@@ -196,10 +216,37 @@ def write_idle_resource(project_root: Path, action: str, frame_count: int) -> No
                 f"}}{suffix}",
             ]
         )
-    lines.extend(["],", '"loop": true,', '"name": &"idle",', '"speed": 24.0', "}]", ""])
+    lines.extend(["],", '"loop": true,', '"name": &"idle",', '"speed": 24.0'])
+    if include_opening_fusion:
+        lines.extend(
+            [
+                "}, {",
+                '"frames": [{',
+                '"duration": 1.0,',
+                '"texture": SubResource("FusionOpeningFrame")',
+                "}],",
+                '"loop": false,',
+                '"name": &"fusion",',
+                '"speed": 60.0',
+            ]
+        )
+    lines.extend(["}]", ""])
+    return "\n".join(lines)
+
+
+def write_idle_resource(project_root: Path, action: str, frame_count: int) -> None:
     target = project_root / "scenes" / "creature_visuals" / IDLE_RESOURCES[action]
-    target.write_text("\n".join(lines), encoding="utf-8", newline="\n")
+    target.write_text(idle_resource_text(action, frame_count), encoding="utf-8", newline="\n")
     print(f"WROTE {target.relative_to(project_root)}")
+
+
+def verify_idle_resource(project_root: Path, action: str, frame_count: int) -> None:
+    target = project_root / "scenes" / "creature_visuals" / IDLE_RESOURCES[action]
+    actual = target.read_text(encoding="utf-8")
+    expected = idle_resource_text(action, frame_count)
+    if actual != expected:
+        raise ValueError(f"{target}: generated SpriteFrames resource is stale")
+    print(f"VERIFIED {target.relative_to(project_root)}")
 
 
 def main() -> None:
@@ -221,8 +268,10 @@ def main() -> None:
         else:
             build_sheet(action, source_dir, output_dir, frame_count, frame_manifest[action])
 
-    if not args.check:
-        for action in IDLE_RESOURCES:
+    for action in IDLE_RESOURCES:
+        if args.check:
+            verify_idle_resource(project_root, action, FRAME_COUNTS[action])
+        else:
             write_idle_resource(project_root, action, FRAME_COUNTS[action])
 
 

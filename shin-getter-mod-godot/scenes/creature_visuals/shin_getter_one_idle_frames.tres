@@ -1,6 +1,8 @@
-[gd_resource type="SpriteFrames" load_steps=26 format=3]
+[gd_resource type="SpriteFrames" load_steps=28 format=3]
 
 [ext_resource type="Texture2D" path="res://images/characters/shin_getter/forms/getter_one_idle/sprite_sheet.png" id="1_sheet"]
+
+[ext_resource type="Texture2D" path="res://images/characters/shin_getter/forms/getter_one_fusion/sprite_sheet.png" id="2_fusion_sheet"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_001"]
 atlas = ExtResource("1_sheet")
@@ -120,6 +122,11 @@ filter_clip = true
 [sub_resource type="AtlasTexture" id="AtlasTexture_024"]
 atlas = ExtResource("1_sheet")
 region = Rect2(3600, 2160, 720, 720)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="FusionOpeningFrame"]
+atlas = ExtResource("2_fusion_sheet")
+region = Rect2(0, 0, 720, 720)
 filter_clip = true
 
 [resource]
@@ -321,4 +328,12 @@ animations = [{
 "loop": true,
 "name": &"idle",
 "speed": 24.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("FusionOpeningFrame")
+}],
+"loop": false,
+"name": &"fusion",
+"speed": 60.0
 }]
