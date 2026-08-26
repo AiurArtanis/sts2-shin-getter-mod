@@ -35,7 +35,7 @@ public sealed class SGC_Annihilation : ShinGetterCardBase
     {
         bool isShinDragonCyclone = GetActionAnimationTrigger() == "Cyclone";
         await WaitForShinDragonSpecialEffect(1.2f);
-        var attack = DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this)
+        var attack = DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this, cardPlay)
             .TargetingAllOpponents(CombatState);
         if (isShinDragonCyclone)
             attack.WithNoAttackerAnim();

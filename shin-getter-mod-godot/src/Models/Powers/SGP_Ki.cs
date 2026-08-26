@@ -54,7 +54,8 @@ public sealed class SGP_Ki : PowerModel
         decimal amount,
         ValueProp props,
         Creature? dealer,
-        CardModel? cardSource)
+        CardModel? cardSource,
+        CardPlay? cardPlay)
     {
         if (!ShouldReduceDamage(props, cardSource))
             return 0m;

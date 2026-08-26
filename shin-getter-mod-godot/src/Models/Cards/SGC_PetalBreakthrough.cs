@@ -39,7 +39,8 @@ public sealed class SGC_PetalBreakthrough : ShinGetterCardBase
             cardPlay.Target!,
             DynamicVars.Damage,
             Owner.Creature,
-            this);
+            this,
+            cardPlay);
         await ConsumeCapturedVigor(choiceContext, vigorToConsume);
         if (Owner.Creature.GetPower<SGP_HotBlood>() is { } hotBlood)
             await hotBlood.ConsumeForCardDamage(choiceContext, this, ValueProp.Move);

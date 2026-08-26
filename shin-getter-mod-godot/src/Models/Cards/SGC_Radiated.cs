@@ -65,7 +65,8 @@ public sealed class SGC_Radiated : ShinGetterCardBase
                 DynamicVars.Damage.BaseValue,
                 DynamicVars.Damage.Props,
                 self,
-                this);
+                this,
+                cardPlay);
         }
 
         if (self.IsAlive)
@@ -76,7 +77,8 @@ public sealed class SGC_Radiated : ShinGetterCardBase
                 DynamicVars.Damage.BaseValue,
                 DynamicVars.Damage.Props,
                 null,
-                this);
+                this,
+                cardPlay);
         }
 
         foreach (var creature in creatures.Where(creature => creature.IsAlive))

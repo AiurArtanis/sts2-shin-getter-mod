@@ -33,6 +33,7 @@ public sealed class SGP_FightingSpirit : PowerModel
                 Amount,
                 ValueProp.Move | ValueProp.SkipHurtAnim,
                 Owner,
+                null,
                 null);
         }
     }

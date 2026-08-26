@@ -10,6 +10,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 REPO_ROOT = PROJECT_ROOT.parent
 VERSION = "v1.2.0"
+BETA_VERSION = "v1.2.0-beta.111"
 TAG = "mod-v1.2.0"
 ARCHIVE = "shin-getter-mod-v1.2.0.zip"
 UPDATE_KEY = "SHIN_GETTER_CHUNIBYO.UPDATE.v1_2_0"
@@ -60,16 +61,27 @@ def require(text: str, path: Path, *needles: str) -> None:
 def validate_manifest_and_history() -> None:
     manifest_path = PROJECT_ROOT / "ShinGetterMod.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    if manifest.get("version") != VERSION:
-        raise AssertionError(f"Manifest version must be {VERSION}: {manifest}")
+    current_version = manifest.get("version")
+    if current_version not in (VERSION, BETA_VERSION):
+        raise AssertionError(
+            f"Manifest version must be {VERSION} or its audited 0.111 Beta variant: {manifest}"
+        )
 
     history_path = PROJECT_ROOT / "ShinGetterMod/update_history.json"
     history = json.loads(history_path.read_text(encoding="utf-8"))
-    expected_latest = {
-        "version": VERSION,
-        "date": "2026-08-25",
-        "localization_key": UPDATE_KEY,
-    }
+    expected_latest = (
+        {
+            "version": BETA_VERSION,
+            "date": "2026-08-26",
+            "localization_key": "SHIN_GETTER_CHUNIBYO.UPDATE.v1_2_0_beta_111",
+        }
+        if current_version == BETA_VERSION
+        else {
+            "version": VERSION,
+            "date": "2026-08-25",
+            "localization_key": UPDATE_KEY,
+        }
+    )
     if not history or history[0] != expected_latest:
         raise AssertionError(f"Latest update history entry is incorrect: {history[:1]}")
     if sum(entry.get("version") == VERSION for entry in history) != 1:

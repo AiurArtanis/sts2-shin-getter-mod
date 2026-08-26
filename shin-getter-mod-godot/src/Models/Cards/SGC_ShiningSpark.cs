@@ -37,14 +37,14 @@ public sealed class SGC_ShiningSpark : ShinGetterCardBase
 		ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
 		await PowerCmd.Apply<VulnerablePower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
 		await PowerCmd.Apply<FrailPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
-		await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
+		await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this, cardPlay).Targeting(cardPlay.Target)
 			.WithNoAttackerAnim()
 			.BeforeDamage(() => PlayShiningSparkSequence(cardPlay.Target))
 			.WithHitFx("vfx/vfx_starry_impact").Execute(choiceContext);
 		int ki = Owner.Creature.GetPower<SGP_Ki>()?.Amount ?? 0;
 		if (ki > 0)
 		{
-			await DamageCmd.Attack(DynamicVars["KiDamage"].BaseValue).WithHitCount(ki).FromCard(this)
+			await DamageCmd.Attack(DynamicVars["KiDamage"].BaseValue).WithHitCount(ki).FromCard(this, cardPlay)
 				.TargetingRandomOpponents(CombatState)
 				.AfterAttackerAnim(AccelerateFollowupAnimations(ki))
 				.WithHitFx("vfx/vfx_attack_lightning").Execute(choiceContext);

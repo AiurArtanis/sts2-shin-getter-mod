@@ -1,5 +1,10 @@
 [
   {
+    "version": "v1.2.0-beta.111",
+    "date": "2026-08-26",
+    "localization_key": "SHIN_GETTER_CHUNIBYO.UPDATE.v1_2_0_beta_111"
+  },
+  {
     "version": "v1.2.0",
     "date": "2026-08-25",
     "localization_key": "SHIN_GETTER_CHUNIBYO.UPDATE.v1_2_0"

@@ -6,9 +6,21 @@ Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter
 
 [hr][/hr]
 
+[h2]🧪 0.111 Beta support[/h2]
+
+[b]Current formal game:[/b] use v1.2.0 (shin-getter-mod-v1.2.0.zip, tag mod-v1.2.0).
+
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0]Download formal v1.2.0[/url]
+
+[b]Slay the Spire 2 0.111 Beta:[/b] use v1.2.0-beta.111 (shin-getter-mod-v1.2.0-beta.111.zip, tag mod-v1.2.0-beta.111).
+
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0-beta.111]Download the 0.111 Beta build v1.2.0-beta.111[/url]
+
+The Beta package keeps all 77 cards, four forms, events, voices, animations, and Chunibyo Config features from formal v1.2.0. Do not mix the two packages; after switching game branches, replace the DLL, PCK, JSON, and mod_image together, then restart the game.
+
 [h2]🆕 v1.2.0 release notes[/h2]
 
-[b]Current version: v1.2.0[/b]
+[b]Formal build: v1.2.0; 0.111 Beta build: v1.2.0-beta.111[/b]
 
 [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0]Download v1.2.0 (shin-getter-mod-v1.2.0.zip)[/url]
 

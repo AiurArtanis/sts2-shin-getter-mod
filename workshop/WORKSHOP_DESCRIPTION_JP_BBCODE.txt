@@ -6,9 +6,21 @@
 
 [hr][/hr]
 
+[h2]🧪 0.111 Beta対応[/h2]
+
+[b]現在の正式版ゲーム：[/b]v1.2.0（shin-getter-mod-v1.2.0.zip、Tag mod-v1.2.0）を使用してください。
+
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0]正式版v1.2.0をダウンロード[/url]
+
+[b]Slay the Spire 2 0.111 Beta：[/b]v1.2.0-beta.111（shin-getter-mod-v1.2.0-beta.111.zip、Tag mod-v1.2.0-beta.111）を使用してください。
+
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0-beta.111]0.111 Beta専用版v1.2.0-beta.111をダウンロード[/url]
+
+Betaパッケージも正式版v1.2.0のカード77枚、4形態、イベント、ボイス、アニメーション、中二設定をすべて収録しています。2つのパッケージを混在させず、ゲームブランチ切替後はDLL、PCK、JSON、mod_imageをまとめて上書きして再起動してください。
+
 [h2]🆕 v1.2.0 リリースノート[/h2]
 
-[b]現在のバージョン：v1.2.0[/b]
+[b]正式版：v1.2.0；0.111 Beta専用版：v1.2.0-beta.111[/b]
 
 [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0]v1.2.0をダウンロード（shin-getter-mod-v1.2.0.zip）[/url]
 

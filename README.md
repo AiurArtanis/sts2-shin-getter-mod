@@ -8,9 +8,16 @@
 
 让真盖塔穿越时空登上高塔。切换一号机的爆发、二号机的高速战术与三号机的钢铁防线，最终唤醒真盖塔龙，用盖塔射线吞没高塔。这里不是换一张角色皮肤，而是一套围绕变形、卡组与演出共同运转的玩法型角色 Mod。
 
-> 当前版本 `v1.2.0` · 最低游戏版本 `0.107.0` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> 正式版 `v1.2.0`（游戏 `0.107.0+`）· 0.111 Beta 专用版 `v1.2.0-beta.111` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
-[下载最新版](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest) · [提交问题](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+[下载正式版 v1.2.0](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0) · [下载 0.111 Beta 专用版](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0-beta.111) · [提交问题](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+
+## 🧪 0.111 Beta 适配
+
+- **当前正式版游戏：**使用 `v1.2.0`（`shin-getter-mod-v1.2.0.zip`，Tag `mod-v1.2.0`）。
+- **Slay the Spire 2 0.111 Beta：**使用 `v1.2.0-beta.111`（`shin-getter-mod-v1.2.0-beta.111.zip`，Tag `mod-v1.2.0-beta.111`）。
+- Beta 包完整保留正式版 v1.2.0 的 77 张卡牌、四种形态、事件、语音、动画与中二配置；它不是删减版。
+- 两个包不能混用。切换游戏分支后，请用对应 ZIP 的四个同名文件完整覆盖原目录，再重启游戏。
 
 ## ⚡ 战斗核心
 
@@ -63,6 +70,13 @@
 3. 启动游戏，从主菜单进入**设置 → 模组设置**，在**已下载的模组**中启用“真盖塔模组”。
 4. 确认加载提示后完全退出并重新启动游戏。新开一局，选择**真盖塔**即可开始。
 
+### 安装 0.111 Beta 专用版
+
+1. 确认游戏已切换到 **Slay the Spire 2 0.111 Beta**。
+2. 从 [v1.2.0-beta.111 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0-beta.111) 下载 `shin-getter-mod-v1.2.0-beta.111.zip`。
+3. 将 ZIP 内四个文件完整覆盖到同一个 `ShinGetterMod` 目录；不要与正式版 v1.2.0 的 DLL／PCK 混搭。
+4. 完全退出并重新启动游戏，再启用模组并新开一局。
+
 首次游玩时，优先观察形态专属卡的高亮提示，围绕当前形态建立节奏，再逐步尝试上面的构筑路线。
 
 ### 创意工坊
@@ -90,7 +104,7 @@
 
 ### 环境要求
 
-- 《杀戮尖塔 2》`0.107.0` 或更高版本
+- 《杀戮尖塔 2》当前正式版 `0.107.0+`，或与本支线对应的 `0.111.0` Beta
 - Godot `4.5.1 Mono`
 - .NET SDK `9`
 - 本机可供 Godot 加载验证的游戏工程目录

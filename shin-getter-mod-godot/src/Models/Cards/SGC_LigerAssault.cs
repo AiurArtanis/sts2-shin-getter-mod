@@ -40,7 +40,7 @@ public sealed class SGC_LigerAssault : ShinGetterCardBase
             await PowerCmd.Apply<SGP_Shade>(choiceContext, Owner.Creature, DynamicVars["SGP_Shade"].BaseValue, Owner.Creature, this);
             await PowerCmd.Apply<BufferPower>(choiceContext, Owner.Creature, DynamicVars["BufferPower"].BaseValue, Owner.Creature, this);
         }
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).WithHitCount(x).FromCard(this)
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).WithHitCount(x).FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
             .AfterAttackerAnim(AccelerateFollowupAnimations(x))
             .WithHitFx("vfx/vfx_scratch").Execute(choiceContext);
