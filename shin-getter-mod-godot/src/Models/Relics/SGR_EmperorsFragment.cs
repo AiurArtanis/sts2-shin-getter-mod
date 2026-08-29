@@ -159,8 +159,7 @@ public sealed class SGR_EmperorsFragment : ShinGetterRelicBase, IInfiniteEvoluti
     {
         ShinGetterStonerSunshineService.ResetCombat(Owner);
         Flash();
-        await PowerCmd.Apply<SGP_ShinGetterOne>(
-            new ThrowingPlayerChoiceContext(), Owner.Creature, 1m, Owner.Creature, null);
+        await SGP_ShinGetterOne.ApplyOpening(Owner.Creature);
         await PowerCmd.Apply<SGP_Ki>(
             new ThrowingPlayerChoiceContext(), Owner.Creature,
             DynamicVars["SGP_Ki"].BaseValue, Owner.Creature, null);
