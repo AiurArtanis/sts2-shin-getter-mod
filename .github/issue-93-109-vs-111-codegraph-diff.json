@@ -17882,9 +17882,9 @@
         "sha256": "547FAC6C9EA5AA603ED73F7155EA8D6374C3E72C4DBC0977108CE453555821D5"
       },
       {
-        "line_count": 52,
+        "line_count": 97,
         "path": "shin-getter-mod-godot/src/Models/Powers/SGP_ShinGetterOne.cs",
-        "sha256": "4D63C93DCF89E56D24E7571EF44EA2EEAFFE748C33AD02FC1286AC8F97994F1F"
+        "sha256": "4F2E1646A2912788CBF220380DA12BB30D7782F9EA80D467F3A7B8526EB21C9B"
       },
       {
         "line_count": 71,
@@ -17942,14 +17942,14 @@
         "sha256": "E4166977FB718704CA4CBBE4011B954CA7CA95E124D56D1142607C4669E418D0"
       },
       {
-        "line_count": 232,
+        "line_count": 231,
         "path": "shin-getter-mod-godot/src/Models/Relics/SGR_EmperorsFragment.cs",
-        "sha256": "8FFB635C0147B0F0D4326D0B66C6ED571CF84AC5D3187E53761222539D1E318A"
+        "sha256": "B1673049D4D6F381296818637863C2798695CC027F2D5D6FFEEA4441AB0D1767"
       },
       {
-        "line_count": 220,
+        "line_count": 219,
         "path": "shin-getter-mod-godot/src/Models/Relics/SGR_GetterFurnace.cs",
-        "sha256": "32231D78D2B87CB04CFC85C8D775184BAB597BABEC164599AE7B1508B8384F9E"
+        "sha256": "6B1C6634EBC606B446DB71B7794FED66B7332C7E52DBFC59113BF393C22D73C3"
       },
       {
         "line_count": 49,
@@ -18357,8 +18357,8 @@
         "sha256": "A4BBEC159BB8BCFCF59AFDBB5EB634EA1C2414550205029A1E5B0D8BD1D9B5CF"
       }
     ],
-    "identifier_count": 5839,
-    "line_count": 28208,
+    "identifier_count": 5848,
+    "line_count": 28251,
     "override_names": [
       "AfterApplied",
       "AfterAttack",
