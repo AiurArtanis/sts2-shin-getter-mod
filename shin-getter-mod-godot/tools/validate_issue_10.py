@@ -493,9 +493,9 @@ def check_code_wiring() -> None:
         require("RecordFinalKill(" not in relic and "AddVictoryReward(Owner, room)" in relic,
                 f"{relic_name} must not record final kills from the pre-AfterDeath damage hook")
         reset = relic.index("ShinGetterStonerSunshineService.ResetCombat(Owner)")
-        initial_form = relic.index("await PowerCmd.Apply<SGP_ShinGetterOne>")
+        initial_form = relic.index("await SGP_ShinGetterOne.ApplyOpening(Owner.Creature);")
         require(reset < initial_form,
-                f"{relic_name} must reset progress before initial Getter One setup without counting it as a transform")
+                f"{relic_name} must reset progress before explicitly marked initial Getter One setup")
 
 
 def check_open_get_final_damage_contract() -> None:
