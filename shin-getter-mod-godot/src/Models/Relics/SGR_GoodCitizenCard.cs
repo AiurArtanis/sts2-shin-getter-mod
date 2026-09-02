@@ -32,11 +32,13 @@ public sealed class SGR_GoodCitizenCard : ShinGetterRelicBase
         }
     }
 
+    public List<int> FreePurchaseActIndices => _freePurchaseActIndices;
+
     [SavedProperty]
-    public List<int> FreePurchaseActIndices
+    private int[] SavedFreePurchaseActIndices
     {
-        get => _freePurchaseActIndices;
-        private set
+        get => _freePurchaseActIndices.ToArray();
+        set
         {
             AssertMutable();
             _freePurchaseActIndices.Clear();
