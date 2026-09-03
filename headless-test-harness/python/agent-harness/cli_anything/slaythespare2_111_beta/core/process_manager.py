@@ -342,6 +342,109 @@ class ExactProcessManager:
                 handle.close()
 
 
+class ProcessJob:
+    """Own child processes in a Windows kill-on-close Job Object.
+
+    On non-Windows platforms this is a no-op owner; the companion watchdog is
+    then the required orphan-prevention mechanism.
+    """
+
+    JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x00002000
+    JOB_OBJECT_EXTENDED_LIMIT_INFORMATION = 9
+
+    def __init__(self) -> None:
+        self._handle: int | None = None
+        if os.name == "nt":
+            self._handle = self._create_windows_job()
+
+    @property
+    def supported(self) -> bool:
+        return self._handle is not None
+
+    @staticmethod
+    def _create_windows_job() -> int:
+        from ctypes import wintypes
+
+        class IO_COUNTERS(ctypes.Structure):
+            _fields_ = [
+                ("ReadOperationCount", ctypes.c_ulonglong),
+                ("WriteOperationCount", ctypes.c_ulonglong),
+                ("OtherOperationCount", ctypes.c_ulonglong),
+                ("ReadTransferCount", ctypes.c_ulonglong),
+                ("WriteTransferCount", ctypes.c_ulonglong),
+                ("OtherTransferCount", ctypes.c_ulonglong),
+            ]
+
+        class JOBOBJECT_BASIC_LIMIT_INFORMATION(ctypes.Structure):
+            _fields_ = [
+                ("PerProcessUserTimeLimit", ctypes.c_longlong),
+                ("PerJobUserTimeLimit", ctypes.c_longlong),
+                ("LimitFlags", wintypes.DWORD),
+                ("MinimumWorkingSetSize", ctypes.c_size_t),
+                ("MaximumWorkingSetSize", ctypes.c_size_t),
+                ("ActiveProcessLimit", wintypes.DWORD),
+                ("Affinity", ctypes.c_size_t),
+                ("PriorityClass", wintypes.DWORD),
+                ("SchedulingClass", wintypes.DWORD),
+            ]
+
+        class JOBOBJECT_EXTENDED_LIMIT_INFORMATION(ctypes.Structure):
+            _fields_ = [
+                ("BasicLimitInformation", JOBOBJECT_BASIC_LIMIT_INFORMATION),
+                ("IoInfo", IO_COUNTERS),
+                ("ProcessMemoryLimit", ctypes.c_size_t),
+                ("JobMemoryLimit", ctypes.c_size_t),
+                ("PeakProcessMemoryUsed", ctypes.c_size_t),
+                ("PeakJobMemoryUsed", ctypes.c_size_t),
+            ]
+
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel32.CreateJobObjectW.restype = wintypes.HANDLE
+        kernel32.CreateJobObjectW.argtypes = [ctypes.c_void_p, wintypes.LPCWSTR]
+        kernel32.SetInformationJobObject.restype = wintypes.BOOL
+        kernel32.SetInformationJobObject.argtypes = [wintypes.HANDLE, ctypes.c_int, ctypes.c_void_p, wintypes.DWORD]
+        handle = kernel32.CreateJobObjectW(None, None)
+        if not handle:
+            raise OSError(ctypes.get_last_error(), "CreateJobObjectW failed")
+        info = JOBOBJECT_EXTENDED_LIMIT_INFORMATION()
+        info.BasicLimitInformation.LimitFlags = ProcessJob.JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
+        if not kernel32.SetInformationJobObject(
+            handle,
+            ProcessJob.JOB_OBJECT_EXTENDED_LIMIT_INFORMATION,
+            ctypes.byref(info),
+            ctypes.sizeof(info),
+        ):
+            error = ctypes.get_last_error()
+            kernel32.CloseHandle(handle)
+            raise OSError(error, "SetInformationJobObject failed")
+        return int(handle)
+
+    def assign(self, process: subprocess.Popen[Any]) -> None:
+        if self._handle is None:
+            return
+        from ctypes import wintypes
+
+        process_handle = getattr(process, "_handle", None)
+        if process_handle is None:
+            raise ProtocolFailure(ErrorCode.CAPABILITY_UNAVAILABLE, "child process handle is unavailable")
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel32.AssignProcessToJobObject.restype = wintypes.BOOL
+        kernel32.AssignProcessToJobObject.argtypes = [wintypes.HANDLE, wintypes.HANDLE]
+        if not kernel32.AssignProcessToJobObject(self._handle, process_handle):
+            raise OSError(ctypes.get_last_error(), "AssignProcessToJobObject failed")
+
+    def close(self) -> None:
+        handle, self._handle = self._handle, None
+        if handle is not None:
+            ctypes.WinDLL("kernel32", use_last_error=True).CloseHandle(handle)
+
+    def __enter__(self) -> "ProcessJob":
+        return self
+
+    def __exit__(self, exc_type: Any, exc: Any, traceback: Any) -> None:
+        self.close()
+
+
 class WriteSentinel:
     def __init__(self, protected_roots: Sequence[Path], *, allowed_roots: Sequence[Path] = ()) -> None:
         self.protected_roots = tuple(root.resolve() for root in protected_roots)

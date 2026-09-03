@@ -68,6 +68,15 @@ def test_evidence_manifest_records_hash_and_size(tmp_path: Path) -> None:
     assert len(request["sha256"]) == 64
 
 
+def test_evidence_excludes_raw_user_data_and_sentry_identity(tmp_path: Path) -> None:
+    session = _session(tmp_path)
+    sentry = session.paths.instances / "solo" / "user-data" / "sentry" / "installation_id"
+    sentry.parent.mkdir(parents=True)
+    sentry.write_text("private-installation-id", encoding="utf-8")
+    manifest = EvidenceBundle(session.paths.root).finalize(_metadata())
+    assert all("/user-data/" not in f"/{item['path']}/" for item in manifest["artifacts"])
+
+
 def test_evidence_verify_accepts_unchanged_bundle(tmp_path: Path) -> None:
     session = _session(tmp_path)
     bundle = EvidenceBundle(session.paths.root)

@@ -18,6 +18,7 @@ public partial class BridgeRootNode : Node
     private ProtocolServer? _server;
     private CancellationTokenSource? _serverCancellation;
     private int _mainThreadId;
+    private bool _mainThreadProbe;
 
     public override void _Ready()
     {
@@ -28,6 +29,7 @@ public partial class BridgeRootNode : Node
             return;
         }
         _mainThreadId = System.Environment.CurrentManagedThreadId;
+        _mainThreadProbe = true;
         _dispatcher = new MainThreadDispatcher();
         var registry = new CommandRegistry();
         _execution = new RequestExecution(registry, this, _mainThreadId);
@@ -94,8 +96,8 @@ public partial class BridgeRootNode : Node
             negotiated_protocol = context.NegotiatedProtocol,
             game = new
             {
-                version = SafeCall(() => ProjectSettings.GetSetting("application/config/version").AsString(), "unknown"),
-                commit = (string?)null,
+                version = ReleaseInfo("version", "unknown"),
+                commit = ReleaseInfo("commit", null),
                 assembly_sha256 = AssemblySha256(gameAssembly),
                 assembly_mvid = gameAssembly.ManifestModule.ModuleVersionId.ToString("D"),
             },
@@ -107,7 +109,10 @@ public partial class BridgeRootNode : Node
             runtime = new
             {
                 main_thread_id = _mainThreadId,
-                main_thread_probe = System.Environment.CurrentManagedThreadId == _mainThreadId,
+                // The acknowledgement is serialized by the pipe thread. This
+                // flag records that the bridge node and dispatcher themselves
+                // were initialized from Godot's main-thread _Ready callback.
+                main_thread_probe = _mainThreadProbe,
                 display_driver = display,
                 audio_driver = audio,
                 user_data_path = OS.GetUserDataDir(),
@@ -130,6 +135,27 @@ public partial class BridgeRootNode : Node
         try
         {
             return callback();
+        }
+        catch
+        {
+            return fallback;
+        }
+    }
+
+    private static string? ReleaseInfo(string property, string? fallback)
+    {
+        try
+        {
+            string executable = OS.GetExecutablePath();
+            string? directory = Path.GetDirectoryName(executable);
+            if (directory is null)
+                return fallback;
+            string path = Path.Combine(directory, "release_info.json");
+            using JsonDocument document = JsonDocument.Parse(File.ReadAllText(path));
+            return document.RootElement.TryGetProperty(property, out JsonElement value)
+                && value.ValueKind == JsonValueKind.String
+                ? value.GetString() ?? fallback
+                : fallback;
         }
         catch
         {

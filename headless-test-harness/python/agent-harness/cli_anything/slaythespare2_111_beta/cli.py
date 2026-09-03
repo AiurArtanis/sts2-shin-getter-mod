@@ -27,6 +27,7 @@ from .core import (
     run_process,
     search_source,
 )
+from .core.runtime_session import default_runtime_root, validate_identifier
 
 
 CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"], "max_content_width": 110}
@@ -59,18 +60,51 @@ def _configured_godot(context: click.Context, explicit: str | None) -> str:
 @click.group(invoke_without_command=True, context_settings=CONTEXT_SETTINGS)
 @click.option("--project-root", type=click.Path(path_type=Path, file_okay=False), help="111-beta project root.")
 @click.option("--state-dir", type=click.Path(path_type=Path, file_okay=False), help="Harness session directory.")
+@click.option(
+    "--runtime-root",
+    type=click.Path(path_type=Path, file_okay=False),
+    envvar="STS2_HEADLESS_RUNTIME_ROOT",
+    help="External root for live control sessions (never inside a repository or game tree).",
+)
+@click.option(
+    "--control-session",
+    envvar="STS2_HEADLESS_CONTROL_SESSION",
+    help="Live control-session identifier used by process/runtime/evidence commands.",
+)
 @click.option("--json", "json_mode", is_flag=True, help="Emit one machine-readable JSON value.")
 @click.version_option(__version__)
 @click.pass_context
-def cli(context: click.Context, project_root: Path | None, state_dir: Path | None, json_mode: bool) -> None:
+def cli(
+    context: click.Context,
+    project_root: Path | None,
+    state_dir: Path | None,
+    runtime_root: Path | None,
+    control_session: str | None,
+    json_mode: bool,
+) -> None:
     """Inspect, build, import, and launch the real Slay the Spire 2 111-beta project."""
     try:
         root = find_project_root(project_root)
     except HarnessError as exc:
         raise click.ClickException(str(exc)) from exc
     state_path = (state_dir or root / "agent-harness" / ".state").resolve()
+    if control_session is not None:
+        try:
+            control_session = validate_identifier(control_session)
+        except Exception as exc:
+            raise click.ClickException(str(exc)) from exc
     context.ensure_object(dict)
-    context.obj.update({"root": root, "json": json_mode, "store": SessionStore(state_path), "state_dir": state_path})
+    context.obj.update(
+        {
+            "root": root,
+            "json": json_mode,
+            "store": SessionStore(state_path),
+            "state_dir": state_path,
+            "runtime_root": (runtime_root or default_runtime_root()).expanduser().resolve(),
+            "control_session": control_session,
+            "emit": _emit,
+        }
+    )
     if context.invoked_subcommand is None:
         if sys.stdin.isatty():
             from .repl import run_repl
@@ -429,6 +463,14 @@ def session_undo(context: click.Context, dry_run: bool) -> None:
 @click.pass_context
 def session_redo(context: click.Context, dry_run: bool) -> None:
     _emit(context, context.obj["store"].redo(dry_run=dry_run))
+
+
+# Keep the imported 0.1 command definitions above source-compatible while the
+# v0.2 live-runtime groups remain isolated in focused registration modules.
+from .commands import register_live_runtime_commands  # noqa: E402
+
+
+register_live_runtime_commands(cli)
 
 
 def main() -> None:
