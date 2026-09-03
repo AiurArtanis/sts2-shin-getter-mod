@@ -27,7 +27,10 @@ def fail(context: click.Context, failure: ProtocolFailure) -> None:
 
 def request(context: click.Context, operation: str, arguments: Mapping[str, Any]) -> dict[str, Any]:
     try:
-        return broker(context).request(operation, arguments)
+        local = float(arguments.get("local_timeout_seconds", 30.0))
+        if operation in {"runtime.exec", "runtime.dispatch"}:
+            local = max(local, float(arguments.get("timeout_ms", 10_000)) / 1000.0 + 2.0)
+        return broker(context).request(operation, arguments, timeout_seconds=local + 2.0)
     except ProtocolFailure as exc:
         fail(context, exc)
         raise AssertionError("unreachable")
@@ -35,6 +38,15 @@ def request(context: click.Context, operation: str, arguments: Mapping[str, Any]
 
 def repository_root() -> Path:
     return default_harness_root().parent.resolve()
+
+
+def protected_roots(context: click.Context) -> tuple[Path, ...]:
+    roots = [repository_root(), Path(context.obj["root"]).resolve(), *context.obj.get("protected_roots", ())]
+    unique: dict[str, Path] = {}
+    for root in roots:
+        resolved = Path(root).expanduser().resolve()
+        unique.setdefault(str(resolved).casefold(), resolved)
+    return tuple(unique.values())
 
 
 def control_session_id(context: click.Context, *, create: bool = False) -> str:
@@ -52,7 +64,11 @@ def open_session(context: click.Context) -> ControlSession:
     identifier = control_session_id(context)
     root = Path(context.obj["runtime_root"]) / identifier
     try:
-        return ControlSession.open(root, repository_root=repository_root())
+        return ControlSession.open(
+            root,
+            repository_root=repository_root(),
+            protected_roots=protected_roots(context),
+        )
     except ProtocolFailure as exc:
         fail(context, exc)
         raise AssertionError("unreachable")
@@ -62,12 +78,16 @@ def create_or_open_session(context: click.Context) -> ControlSession:
     identifier = control_session_id(context, create=True)
     root = Path(context.obj["runtime_root"]) / identifier
     if root.exists() and any(root.iterdir()):
-        return ControlSession.open(root, repository_root=repository_root())
+        return ControlSession.open(
+            root,
+            repository_root=repository_root(),
+            protected_roots=protected_roots(context),
+        )
     return ControlSession.create(
         Path(context.obj["runtime_root"]),
         identifier,
         repository_root=repository_root(),
-        protected_roots=[Path(context.obj["root"])],
+        protected_roots=protected_roots(context),
     )
 
 
@@ -76,7 +96,11 @@ def broker(context: click.Context) -> BrokerClient:
 
 
 def bootstrap_broker(context: click.Context, session: ControlSession) -> BrokerClient:
-    return BrokerClient.bootstrap(session, repository_root=repository_root())
+    return BrokerClient.bootstrap(
+        session,
+        repository_root=repository_root(),
+        protected_roots=protected_roots(context),
+    )
 
 
 def provenance() -> dict[str, Any]:

@@ -32,6 +32,7 @@ from cli_anything.slaythespare2_111_beta.core.runtime_session import (
     append_jsonl,
     atomic_write_json,
     default_runtime_root,
+    default_state_root,
     validate_identifier,
 )
 
@@ -44,6 +45,14 @@ def test_default_runtime_root_uses_local_app_data(tmp_path: Path) -> None:
 def test_default_runtime_root_falls_back_to_temp(tmp_path: Path) -> None:
     result = default_runtime_root({"TEMP": str(tmp_path)})
     assert result == tmp_path / "cli-anything" / "slaythespare2-111-beta" / "sessions"
+
+
+def test_default_state_root_never_uses_project_tree(tmp_path: Path) -> None:
+    project = tmp_path / "reverse-source"
+    project.mkdir()
+    result = default_state_root({"LOCALAPPDATA": str(tmp_path / "local")})
+    assert result == tmp_path / "local" / "cli-anything" / "slaythespare2-111-beta" / "state"
+    assert project not in result.parents
 
 
 @pytest.mark.parametrize("value", ["session-1", "host", "client-1000", "a.b_c"])
@@ -128,6 +137,59 @@ def test_control_session_index_contains_no_secret(tmp_path: Path) -> None:
     text = session.paths.session_json.read_text(encoding="utf-8")
     assert "token" not in text.lower()
     assert "proof" not in text.lower()
+
+
+def test_control_session_persists_and_revalidates_protected_roots(tmp_path: Path) -> None:
+    repository = tmp_path / "repo"
+    protected = tmp_path / "steam"
+    repository.mkdir()
+    protected.mkdir()
+    session = ControlSession.create(
+        tmp_path / "runtime",
+        "session-1",
+        repository_root=repository,
+        protected_roots=[protected],
+    )
+    index = session.load_index()
+    assert index["repository_root"] == str(repository.resolve())
+    assert index["protected_roots"] == [str(repository.resolve()), str(protected.resolve())]
+
+    reopened = ControlSession.open(
+        session.paths.root,
+        repository_root=repository,
+        protected_roots=[protected],
+    )
+    assert reopened.paths.root == session.paths.root
+
+
+def test_control_session_open_rejects_preexisting_session_under_new_protected_root(tmp_path: Path) -> None:
+    repository = tmp_path / "repo"
+    runtime = tmp_path / "runtime"
+    repository.mkdir()
+    session = ControlSession.create(runtime, "session-1", repository_root=repository)
+    with pytest.raises(ProtocolFailure) as failure:
+        ControlSession.open(
+            session.paths.root,
+            repository_root=repository,
+            protected_roots=[runtime],
+        )
+    assert failure.value.code == ErrorCode.ISOLATION_BREACH
+
+
+def test_control_session_rejects_process_cwd_in_any_protected_tree(tmp_path: Path) -> None:
+    repository = tmp_path / "repo"
+    protected = tmp_path / "daily-deploy"
+    repository.mkdir()
+    protected.mkdir()
+    session = ControlSession.create(
+        tmp_path / "runtime",
+        "session-1",
+        repository_root=repository,
+        protected_roots=[protected],
+    )
+    with pytest.raises(ProtocolFailure) as failure:
+        session.validate_process_cwd(protected)
+    assert failure.value.code == ErrorCode.ISOLATION_BREACH
 
 
 def test_broker_record_rejects_secret_fields(tmp_path: Path) -> None:
@@ -361,3 +423,28 @@ def test_spawn_records_argument_vector_without_shell(tmp_path: Path) -> None:
     manager.status(owned.identity)
     assert marker.read_text(encoding="utf-8") == "ok"
     assert owned.argv[-1] == str(marker)
+
+
+def test_spawn_real_child_receives_only_system_allowlist_and_explicit_environment(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("STS2_PARENT_SECRET_SHOULD_NOT_LEAK", "parent-secret")
+    output = tmp_path / "child-environment.json"
+    script = (
+        "import json,os,pathlib,sys;"
+        "pathlib.Path(sys.argv[1]).write_text(json.dumps(dict(os.environ)), encoding='utf-8')"
+    )
+    manager = ExactProcessManager()
+    owned = manager.spawn(
+        [sys.executable, "-c", script, str(output)],
+        cwd=tmp_path,
+        environment={"STS2_EXPLICIT_TEST_VALUE": "present"},
+        stdout_path=tmp_path / "stdout.log",
+        stderr_path=tmp_path / "stderr.log",
+    )
+    owned.process.wait(timeout=10)
+    manager.status(owned.identity)
+    child = json.loads(output.read_text(encoding="utf-8"))
+    assert child["STS2_EXPLICIT_TEST_VALUE"] == "present"
+    assert "STS2_PARENT_SECRET_SHOULD_NOT_LEAK" not in child

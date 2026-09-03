@@ -15,6 +15,10 @@ The implementation proves three real-runtime milestones:
 3. PoC 1b: keep a parent card request in flight across a real card selection,
    reject stale/busy continuations, accept the exact server-issued selection,
    and settle the parent action.
+4. Runtime release gate: disconnect and reconnect during that in-flight choice,
+   prove duplicate/conflict/terminal-replay behavior in the production C#
+   companion, classify shutdown diagnostics, seal evidence, and require exact
+   game exit code 0 with no broker leak.
 
 The branch does not implement D7-D11: save/load/replay, multiplayer automation,
 issue #191 RED/GREEN, animation/resource stepping, H1 pixel output, release
@@ -112,6 +116,10 @@ broker cannot adopt an old game process or recreate the old in-memory token.
 Each instance has independent `APPDATA`, `LOCALAPPDATA`, logs, snapshots, and
 bridge events. Writable-root guards reject repository, reverse-engineered game,
 Steam, Workshop, production mod, symlink, and reparse-point boundaries.
+Existing sessions revalidate all persisted protected roots whenever they are
+opened. The game child is constructed from a minimal operating-system
+environment allowlist plus explicit TEST and isolated-user-data variables; it
+does not inherit the broker's ambient environment wholesale.
 
 ## Transport, reconnect, and idempotency
 
@@ -119,11 +127,26 @@ The broker maintains the long-lived companion connection so separate CLI
 invocations can participate in one in-flight request. It multiplexes requests
 and events by request ID and sequence number.
 
-The same request ID plus the same canonical request digest replays the one
-cached terminal result. The same ID plus different content returns
-`E_IDEMPOTENCY_CONFLICT`. Reconnect is allowed only to the same live broker,
-process epoch, and retained event window. Monotonic deadlines continue across
-choice and reconnect; they never restart from a fresh timeout budget.
+The same request ID plus the same canonical request digest attaches to the
+original in-flight execution or replays its first cached terminal result. The
+digest covers the complete request, including `command`, `args`, `wait_for`,
+and `timeout_ms`, while excluding volatile transport metadata such as sequence,
+clock, connection, and broker epoch. The same ID plus different content returns
+`E_IDEMPOTENCY_CONFLICT`; that conflict terminal cannot replace the original
+request's ledger entry.
+
+Each authenticated connection has its own bounded live critical outbound queue
+and writer pump. Replay is a separate rolling store, so normal retention
+eviction does not invalidate a case. Reconnect is allowed only to the same live
+broker and process epoch. A cursor older than the current replay floor returns
+`E_RESUME_WINDOW_EXPIRED`; otherwise retained events are replayed in sequence.
+Malformed or oversized frames terminate only the offending connection, while
+the server remains available for a fresh authenticated connection. On Windows,
+the Python reader pump probes the Named Pipe before reading so a blocking read
+on a duplex handle cannot starve writes.
+
+Monotonic deadlines continue across choice and reconnect; they never restart
+from a fresh timeout budget.
 
 Unexpected process exit synthesizes `E_PROCESS_EXIT` for all in-flight
 requests. Broker exit is `E_BROKER_EXIT`. Unsafe cancellation is rejected as
@@ -142,10 +165,13 @@ Commands declare one of three concurrency classes:
 - `choice-continuation`: may pass only when it matches the parent that owns the
   lane.
 
-Critical event publication uses non-blocking `TryWrite`. Critical overflow
-latches the case invalid, freezes mutation, and preserves the terminal
-`E_OBSERVER_OVERFLOW` result out of band. Telemetry overflow is counted
-separately and cannot hide critical loss.
+Critical event publication uses non-blocking `TryWrite`. Only failure to publish
+to the active connection's bounded live queue latches the case invalid, freezes
+mutation, and emits the terminal `E_OBSERVER_OVERFLOW` through a separate
+unbounded out-of-band lane. Rolling replay eviction is not overflow. The writer
+pump stops request intake when it exits, and serialized pipe writes are guarded
+by one semaphore. Telemetry overflow is counted separately and cannot hide
+critical loss.
 
 ## Implemented companion commands
 
@@ -244,7 +270,8 @@ late continuation cannot revive a terminal request.
 Evidence finalization validates the manifest schema, relative path confinement,
 file hashes, redaction, and required provenance before atomic publication.
 Verification recomputes every covered hash; one changed byte returns
-`E_EVIDENCE_TAMPERED`.
+`E_EVIDENCE_TAMPERED`. Explicit snapshots are included, while the isolated
+user-data tree and account-bearing save data are excluded.
 
 Starting with D2, production inputs and artifacts are reverse-scanned for bridge
 assembly names, TEST environment variables, protocol IDs, overflow errors, and
@@ -271,27 +298,49 @@ $env:CLI_ANYTHING_FORCE_INSTALLED = '1'
 python -m pytest <absolute-path-to-agent-harness-tests> -q -rs --tb=no
 ```
 
-The 2026-09-03 release gate produced 222 passed and one privilege-dependent
-Windows symlink skip, with both C# builds at zero warnings/errors and the
-cross-language contract verifier passing.
+The real-runtime release gate is separate and opt-in:
+
+```powershell
+$env:CLI_ANYTHING_FORCE_INSTALLED = '1'
+$env:STS2_HEADLESS_RUNTIME_RELEASE_GATE = '1'
+$env:STS2_HEADLESS_RUNTIME_PROFILE = '<absolute-external-profile.json>'
+python -m pytest <absolute-path-to-agent-harness-tests>\test_runtime_release.py -v -s --tb=no
+```
+
+The 2026-09-03 final source suite produced 239 passed and two explicit skips:
+the privilege-dependent Windows symlink fixture and the opt-in real-runtime
+test. Release mode without a profile failed as required. The configured real
+gate then passed, both C# builds completed with zero warnings/errors, and the
+cross-language contract verifier passed.
 
 ## Real-runtime proof
 
-The final PoC ran `v0.111.0@41cef1ea` in `headless / Dummy` using an external
-disposable staging tree. The companion SHA-256 was
-`daf017c16537c4708544c365abd63a92bf4d7bf1c5c9ef2b85285371b35fe6f4`.
+The final release gate ran `v0.111.0@41cef1ea` in `headless / Dummy` using an
+external disposable staging tree. It rebuilt and staged companion SHA-256
+`72eca575c20fdf3568f395a8a54ebfd45cdd46e30b7091691d1c0f031e4babc2`.
 
 PoC 1 proved exact no-choice completion: energy `3 -> 2`, block `0 -> 5`, empty
 queue, idle executor, no pending choice, and unchanged RNG fingerprint.
 
-PoC 1b played real `ARMAMENTS`, observed five real candidates, rejected one
-stale generation and one unrelated mutation, accepted the matching selection,
-upgraded the selected ShinGetter Defend from `0 -> 1`, and settled the parent.
-The event sequence was enqueued `12`, choice required `14`, action finished
-`26`, and terminal `27`. Pre/post snapshots are `solo-7.json` and
-`solo-8.json` in the external session.
+PoC 1b played real `ARMAMENTS`, observed five real candidates, disconnected at
+the choice boundary, and reconnected to the same process epoch with a new
+connection ID and replay status `ok`. An exact in-flight duplicate did not
+execute again; changed content returned `E_IDEMPOTENCY_CONFLICT` without
+poisoning the parent. The run then rejected one stale generation and one
+unrelated mutation, accepted the matching selection, upgraded the selected
+ShinGetter Defend from `0 -> 1`, and settled the parent. The event sequence was
+enqueued `24`, choice required `26`, action finished `40`, and terminal `41`;
+an exact post-terminal duplicate returned the same result with `replayed=true`
+at sequence `42`. Pre/post snapshots are `solo-11.json` and `solo-12.json`.
 
-The instance was stopped by exact broker ownership and the session was closed.
+The finalized session is
+`E:\Work\StS2 Mods\_headless-runtime\release-gates\runtime-release-20260903-6a81e756`.
+Its verified evidence manifest contains 22 artifacts with aggregate SHA-256
+`342eeaf84e921fe7732c199fe9c74ce960d17a35818c90f8834ee827e6b74bdc`.
+
+The instance stopped gracefully with exact exit code 0, known Godot shutdown
+diagnostics were classified, the broker accepted `session close`, and no game,
+broker, pytest, or ComponentHost process remained.
 No reverse-engineered source, Steam installation, normal Godot deployment, or
 production package was modified.
 

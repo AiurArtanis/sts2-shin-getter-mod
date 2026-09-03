@@ -4,7 +4,9 @@ This top-level tool is versioned on a ShinGetterMod feature branch while
 remaining logically isolated from the production mod dependency graph. The
 implemented v0.2 scope is D0-D6: authenticated process control, canonical state
 capture, exact single-player card completion, and explicit card-choice
-continuation against the real 0.111 runtime.
+continuation against the real 0.111 runtime. The release gate also proves
+in-flight reconnect, production idempotency, evidence sealing, and graceful
+process cleanup against that runtime.
 
 It contains:
 
@@ -25,6 +27,14 @@ The companion is a separate test-only mod. It is never referenced by
 four-file package, and requires both `STS2_TEST_ENABLE=1` and an authenticated
 per-instance broker handshake before accepting commands.
 
+The active connection owns a bounded non-blocking critical queue; replay uses a
+separate rolling store. Reconnect inside the retained window resumes the same
+process epoch, while an older cursor fails with `E_RESUME_WINDOW_EXPIRED`.
+Request IDs are keyed by the complete canonical request payload (apart from
+volatile transport metadata): an in-flight duplicate does not execute twice, a
+finished duplicate replays its first terminal, and different content returns
+`E_IDEMPOTENCY_CONFLICT` without replacing the original ledger entry.
+
 The live command path is:
 
 ```text
@@ -38,6 +48,13 @@ v0.2 supports broker-owned process start/status/stop, canonical snapshots,
 `choice.select`. Card completion is correlated to the exact `PlayCardAction`
 reference and may be awaited through `queue_settled`; no fixed sleep or nearest
 action heuristic is used.
+
+The real-runtime pytest gate is intentionally opt-in. It requires
+`STS2_HEADLESS_RUNTIME_RELEASE_GATE=1`, an absolute external profile through
+`STS2_HEADLESS_RUNTIME_PROFILE`, and `CLI_ANYTHING_FORCE_INSTALLED=1`. The gate
+builds and stages a fresh TEST-ONLY companion, runs PoC 0/1/1b, verifies the
+immutable evidence manifest, and treats a missing profile or cleanup failure as
+a hard failure. Ordinary unit-test runs skip it explicitly.
 
 Save/load/replay, multiplayer control, issue #191 automation, animation or
 pixel output, virtual time, H1 rendering, and the 0.109 adapter are explicitly

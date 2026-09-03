@@ -7,7 +7,7 @@ import secrets
 import shutil
 import threading
 from dataclasses import dataclass, replace
-from multiprocessing.connection import Listener
+from multiprocessing.connection import Client, Listener
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -21,6 +21,7 @@ from .process_manager import (
     OwnedProcess,
     ProcessJob,
     ProcessRecord,
+    WriteSentinel,
     build_game_environment,
     capture_process_identity,
     redact_environment,
@@ -30,7 +31,15 @@ from .runtime_session import ControlSession, InstanceState, append_jsonl, atomic
 
 
 _CONTROL_LIMIT = 1024 * 1024
+_CONTROL_READ_TIMEOUT_SECONDS = 5.0
 _SENSITIVE_PARTS = ("token", "proof", "secret", "credential", "password", "settings_template")
+_SERIALIZED_OPERATIONS = {
+    "process.start",
+    "process.stop",
+    "runtime.connect",
+    "evidence.finalize",
+    "session.close",
+}
 
 
 def _redact(value: Any) -> Any:
@@ -51,6 +60,7 @@ class BrokerInstance:
     record: ProcessRecord
     companion: CompanionClient
     token: bytearray
+    protected_snapshot: dict[str, dict[str, tuple[int, int]]]
 
     def destroy_secret(self) -> None:
         for index in range(len(self.token)):
@@ -67,6 +77,7 @@ class SessionBroker:
         self.stop_requested = False
         self.finalized = False
         self._gate = threading.RLock()
+        self._sentinel = WriteSentinel(self.session.protected_roots, allowed_roots=[self.session.paths.root])
 
     def handle(self, operation: str, arguments: Mapping[str, Any]) -> dict[str, Any]:
         journal = not self.finalized and not operation.startswith("evidence.")
@@ -76,7 +87,10 @@ class SessionBroker:
                 {"kind": "broker_request", "operation": operation, "arguments": _redact(arguments)},
             )
         try:
-            with self._gate:
+            if operation in _SERIALIZED_OPERATIONS:
+                with self._gate:
+                    result = self._dispatch(operation, arguments)
+            else:
                 result = self._dispatch(operation, arguments)
         except ProtocolFailure:
             raise
@@ -122,33 +136,44 @@ class SessionBroker:
             return {"handshake": body, "resume_from_seq": instance.companion.last_seq}
         if operation == "runtime.exec":
             instance = self._instance(arguments)
+            timeout_ms = int(arguments.get("timeout_ms", 10_000))
             terminal = instance.companion.request(
                 str(arguments.get("command", "")),
                 self._object(arguments.get("args", {}), "args"),
                 wait_for=str(arguments.get("wait_for", "immediate")),
-                timeout_ms=int(arguments.get("timeout_ms", 10_000)),
+                timeout_ms=timeout_ms,
                 request_id=str(arguments["request_id"]) if arguments.get("request_id") else None,
+                local_timeout_seconds=float(arguments.get("local_timeout_seconds", timeout_ms / 1000.0 + 2.0)),
             )
             self._bridge_event(str(arguments.get("instance_id")), terminal)
             return terminal
         if operation == "runtime.dispatch":
             instance = self._instance(arguments)
+            timeout_ms = int(arguments.get("timeout_ms", 10_000))
             request_id = instance.companion.dispatch(
                 str(arguments.get("command", "")),
                 self._object(arguments.get("args", {}), "args"),
                 wait_for=str(arguments.get("wait_for", "immediate")),
-                timeout_ms=int(arguments.get("timeout_ms", 10_000)),
+                timeout_ms=timeout_ms,
                 request_id=str(arguments["request_id"]) if arguments.get("request_id") else None,
+                local_timeout_seconds=float(arguments.get("local_timeout_seconds", timeout_ms / 1000.0 + 2.0)),
             )
             return {"request_id": request_id, "terminal": False}
         if operation == "runtime.wait_event":
             instance = self._instance(arguments)
-            event = instance.companion.wait_event(str(arguments.get("request_id", "")), str(arguments.get("name", "")))
+            event = instance.companion.wait_event(
+                str(arguments.get("request_id", "")),
+                str(arguments.get("name", "")),
+                timeout_seconds=float(arguments.get("local_timeout_seconds", 30.0)),
+            )
             self._bridge_event(str(arguments.get("instance_id")), event)
             return event
         if operation == "runtime.wait_terminal":
             instance = self._instance(arguments)
-            terminal = instance.companion.wait_terminal(str(arguments.get("request_id", "")))
+            terminal = instance.companion.wait_terminal(
+                str(arguments.get("request_id", "")),
+                timeout_seconds=float(arguments.get("local_timeout_seconds", 30.0)),
+            )
             self._bridge_event(str(arguments.get("instance_id")), terminal)
             return terminal
         if operation == "runtime.request_status":
@@ -157,7 +182,22 @@ class SessionBroker:
         if operation == "evidence.finalize":
             if self.finalized:
                 raise ProtocolFailure(ErrorCode.EVIDENCE_TAMPERED, "session evidence is already finalized")
-            manifest = EvidenceBundle(self.session.paths.root).finalize(self._object(arguments.get("metadata"), "metadata"))
+            for instance in self.instances.values():
+                try:
+                    self._sentinel.assert_unchanged(instance.protected_snapshot)
+                except ProtocolFailure as exc:
+                    self.session.mark_case_invalid(exc.code, str(exc), details=exc.details)
+                    raise
+            metadata = self._object(arguments.get("metadata"), "metadata")
+            index = self.session.load_index()
+            case = metadata.get("case")
+            if index.get("case_invalid") and isinstance(case, Mapping) and case.get("result") == "passed":
+                raise ProtocolFailure(
+                    ErrorCode.OBSERVER_OVERFLOW,
+                    "invalid control session cannot be finalized as passed",
+                    details={"case_invalid_reason": index.get("case_invalid_reason")},
+                )
+            manifest = EvidenceBundle(self.session.paths.root).finalize(metadata)
             self.finalized = True
             return manifest
         if operation == "evidence.verify":
@@ -178,10 +218,11 @@ class SessionBroker:
 
     def _instance(self, arguments: Mapping[str, Any]) -> BrokerInstance:
         identifier = str(arguments.get("instance_id", ""))
-        try:
-            return self.instances[identifier]
-        except KeyError as exc:
-            raise ProtocolFailure(ErrorCode.NOT_FOUND, f"unknown broker instance: {identifier}") from exc
+        with self._gate:
+            try:
+                return self.instances[identifier]
+            except KeyError as exc:
+                raise ProtocolFailure(ErrorCode.NOT_FOUND, f"unknown broker instance: {identifier}") from exc
 
     def _start(self, arguments: Mapping[str, Any]) -> dict[str, Any]:
         if self.finalized:
@@ -194,12 +235,11 @@ class SessionBroker:
         if not isinstance(raw_argv, list) or not raw_argv:
             raise ProtocolFailure(ErrorCode.INVALID_ARGUMENT, "process.start argv must be a non-empty array")
         argv = [str(item) for item in raw_argv]
-        cwd = Path(str(arguments.get("cwd", ""))).expanduser()
-        if not cwd.is_absolute() or not cwd.is_dir():
-            raise ProtocolFailure(ErrorCode.INVALID_ARGUMENT, "process.start cwd must be an existing absolute directory")
+        cwd = self.session.validate_process_cwd(Path(str(arguments.get("cwd", ""))).expanduser())
         adapter_expected = str(arguments.get("adapter_expected", "sts2-0.111"))
         timeout_seconds = float(arguments.get("timeout_seconds", 30.0))
 
+        protected_snapshot = self._sentinel.capture()
         public = self.session.define_instance(identifier, role=role)
         root = Path(public["root"])
         app_data = root / "user-data" / "appdata"
@@ -235,7 +275,7 @@ class SessionBroker:
         try:
             owned = self.processes.spawn(
                 argv,
-                cwd=cwd.resolve(),
+                cwd=cwd,
                 environment=environment,
                 stdout_path=root / "stdout.log",
                 stderr_path=root / "stderr.log",
@@ -285,7 +325,7 @@ class SessionBroker:
             record = replace(record, state=InstanceState.READY.value)
             atomic_write_json(root / "process.json", record.to_dict())
             atomic_write_json(root / "runtime.json", _redact(handshake))
-            instance = BrokerInstance(owned, record, companion, token)
+            instance = BrokerInstance(owned, record, companion, token, protected_snapshot)
             self.instances[identifier] = instance
             return {"process": record.to_dict(), "handshake": handshake}
         except Exception:
@@ -305,6 +345,15 @@ class SessionBroker:
                     self.session.transition_instance(identifier, InstanceState.FAILED)
             except Exception:
                 pass
+            try:
+                self._sentinel.assert_unchanged(protected_snapshot)
+            except ProtocolFailure as sentinel_failure:
+                self.session.mark_case_invalid(
+                    sentinel_failure.code,
+                    str(sentinel_failure),
+                    details=sentinel_failure.details,
+                )
+                raise sentinel_failure
             raise
 
     def _status(self, identifier: str) -> dict[str, Any]:
@@ -345,6 +394,12 @@ class SessionBroker:
         finally:
             instance.companion.close()
             instance.destroy_secret()
+        sentinel_failure: ProtocolFailure | None = None
+        try:
+            self._sentinel.assert_unchanged(instance.protected_snapshot)
+        except ProtocolFailure as exc:
+            sentinel_failure = exc
+            self.session.mark_case_invalid(exc.code, str(exc), details=exc.details)
         instance.record = replace(
             instance.record,
             state=InstanceState.EXITED.value,
@@ -356,10 +411,21 @@ class SessionBroker:
         except ProtocolFailure as exc:
             if exc.code != ErrorCode.INVALID_PHASE:
                 raise
+        if sentinel_failure is not None:
+            raise sentinel_failure
         return result
 
     def _bridge_event(self, identifier: str, message: Mapping[str, Any]) -> None:
         append_jsonl(self.session.paths.instances / identifier / "bridge-events.jsonl", _redact(message))
+        error = message.get("error")
+        if isinstance(error, Mapping):
+            raw_code = str(error.get("code", ""))
+            try:
+                code = ErrorCode(raw_code)
+            except ValueError:
+                return
+            if code in {ErrorCode.OBSERVER_OVERFLOW, ErrorCode.PROCESS_EXIT}:
+                self.session.mark_case_invalid(code, str(error.get("message", raw_code)), details=error.get("details", {}))
 
     def close(self) -> None:
         for instance in self.instances.values():
@@ -383,7 +449,53 @@ def serve(session_root: Path, repository_root: Path) -> int:
     lease = FileLock(session.paths.session_lock, timeout=0.1)
     lease.__enter__()
     listener: Listener | None = None
+    workers: set[threading.Thread] = set()
+    workers_gate = threading.Lock()
     broker = SessionBroker(session, broker_epoch)
+
+    def handle_connection(connection: Any) -> None:
+        try:
+            with connection:
+                try:
+                    if not connection.poll(_CONTROL_READ_TIMEOUT_SECONDS):
+                        raise ProtocolFailure(
+                            ErrorCode.TIMEOUT_ACTION,
+                            "broker control request exceeded the monotonic read deadline",
+                        )
+                    raw = connection.recv_bytes(_CONTROL_LIMIT)
+                    request = json.loads(raw)
+                    if not isinstance(request, dict) or not isinstance(request.get("operation"), str):
+                        raise ProtocolFailure(ErrorCode.INVALID_ARGUMENT, "invalid broker request envelope")
+                    arguments = request.get("arguments", {})
+                    if not isinstance(arguments, dict):
+                        raise ProtocolFailure(ErrorCode.INVALID_ARGUMENT, "broker arguments must be an object")
+                    payload = _response(broker.handle(request["operation"], arguments))
+                except ProtocolFailure as exc:
+                    payload = _error_response(exc)
+                except (UnicodeDecodeError, json.JSONDecodeError, EOFError, OSError) as exc:
+                    payload = _error_response(ProtocolFailure(ErrorCode.INVALID_ARGUMENT, f"invalid broker request: {exc}"))
+                try:
+                    connection.send_bytes(payload)
+                except (EOFError, OSError):
+                    pass
+        finally:
+            with workers_gate:
+                workers.discard(threading.current_thread())
+            if broker.stop_requested and listener is not None:
+                # multiprocessing.connection.Listener.accept() cannot be
+                # reliably interrupted on Windows by closing the listener from
+                # another thread. Connect one exact local wake client so the
+                # accept loop observes stop_requested and exits.
+                try:
+                    wake = Client(address, family="AF_PIPE" if os.name == "nt" else "AF_UNIX", authkey=None)
+                    wake.close()
+                except (EOFError, OSError):
+                    pass
+                try:
+                    listener.close()
+                except OSError:
+                    pass
+
     try:
         identity = capture_process_identity(os.getpid())
         session.record_broker(
@@ -399,27 +511,25 @@ def serve(session_root: Path, repository_root: Path) -> int:
         address = control_address(pipe_name, session.paths.root)
         listener = Listener(address, family="AF_PIPE" if os.name == "nt" else "AF_UNIX", authkey=None)
         while not broker.stop_requested:
-            connection = listener.accept()
-            with connection:
-                try:
-                    raw = connection.recv_bytes(_CONTROL_LIMIT)
-                    request = json.loads(raw)
-                    if not isinstance(request, dict) or not isinstance(request.get("operation"), str):
-                        raise ProtocolFailure(ErrorCode.INVALID_ARGUMENT, "invalid broker request envelope")
-                    arguments = request.get("arguments", {})
-                    if not isinstance(arguments, dict):
-                        raise ProtocolFailure(ErrorCode.INVALID_ARGUMENT, "broker arguments must be an object")
-                    payload = _response(broker.handle(request["operation"], arguments))
-                except ProtocolFailure as exc:
-                    payload = _error_response(exc)
-                except (UnicodeDecodeError, json.JSONDecodeError, EOFError, OSError) as exc:
-                    payload = _error_response(ProtocolFailure(ErrorCode.INVALID_ARGUMENT, f"invalid broker request: {exc}"))
-                connection.send_bytes(payload)
+            try:
+                connection = listener.accept()
+            except (EOFError, OSError):
+                if broker.stop_requested:
+                    break
+                raise
+            worker = threading.Thread(target=handle_connection, args=(connection,), daemon=True)
+            with workers_gate:
+                workers.add(worker)
+            worker.start()
         return 0
     finally:
         if listener is not None:
             listener.close()
         broker.close()
+        with workers_gate:
+            remaining = list(workers)
+        for worker in remaining:
+            worker.join(timeout=0.25)
         lease.__exit__(None, None, None)
         if os.name != "nt":
             socket_path = Path(control_address(pipe_name, session.paths.root))

@@ -7,7 +7,7 @@ import sys
 import time
 from multiprocessing.connection import Client
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Mapping, Sequence
 
 from .errors import ErrorCode, ProtocolFailure
 from .legacy import FileLock
@@ -54,8 +54,17 @@ class BrokerClient:
         session: ControlSession,
         *,
         repository_root: Path,
+        protected_roots: Sequence[Path] = (),
         timeout_seconds: float = 15.0,
     ) -> "BrokerClient":
+        session.revalidate()
+        for root in protected_roots:
+            if root.expanduser().resolve() not in session.protected_roots:
+                raise ProtocolFailure(
+                    ErrorCode.ISOLATION_BREACH,
+                    "broker bootstrap protection differs from the persisted session policy",
+                    details={"missing_protected_root": str(root.expanduser().resolve())},
+                )
         bootstrap_lock = session.paths.root / "broker.bootstrap.lock"
         with FileLock(bootstrap_lock, timeout=timeout_seconds):
             if session.paths.broker_json.exists():
@@ -129,6 +138,8 @@ class BrokerClient:
         *,
         timeout_seconds: float = 30.0,
     ) -> dict[str, Any]:
+        if timeout_seconds <= 0:
+            raise ProtocolFailure(ErrorCode.INVALID_ARGUMENT, "broker timeout must be positive")
         assert_broker_alive(self.broker_identity)
         address = control_address(self.pipe_name, self.session.paths.root)
         deadline = time.monotonic() + timeout_seconds
@@ -158,8 +169,20 @@ class BrokerClient:
             ).encode("utf-8")
             if len(payload) > _CONTROL_LIMIT:
                 raise ProtocolFailure(ErrorCode.INVALID_ARGUMENT, "broker control request exceeds 1 MiB")
-            connection.send_bytes(payload)
-            raw = connection.recv_bytes(_CONTROL_LIMIT)
+            try:
+                connection.send_bytes(payload)
+                remaining = deadline - time.monotonic()
+                if remaining <= 0 or not connection.poll(remaining):
+                    raise ProtocolFailure(
+                        ErrorCode.TIMEOUT_ACTION,
+                        "broker response exceeded the monotonic local deadline",
+                        details={"operation": operation, "timeout_seconds": timeout_seconds},
+                    )
+                raw = connection.recv_bytes(_CONTROL_LIMIT)
+            except ProtocolFailure:
+                raise
+            except (EOFError, OSError) as exc:
+                raise ProtocolFailure(ErrorCode.BROKER_EXIT, f"broker control pipe failed: {exc}") from exc
         try:
             response = json.loads(raw)
         except (UnicodeDecodeError, json.JSONDecodeError) as exc:
@@ -170,6 +193,8 @@ class BrokerClient:
             result = response.get("result", {})
             if not isinstance(result, dict):
                 raise ProtocolFailure(ErrorCode.BROKER_EXIT, "broker result must be an object")
+            if operation == "session.close":
+                self._wait_for_broker_exit(deadline)
             return result
         error = response.get("error") or {}
         try:
@@ -181,4 +206,19 @@ class BrokerClient:
             str(error.get("message", "broker request failed")),
             retryable=bool(error.get("retryable", False)),
             details=dict(error.get("details") or {}),
+        )
+
+    def _wait_for_broker_exit(self, deadline: float) -> None:
+        while time.monotonic() < deadline:
+            try:
+                assert_broker_alive(self.broker_identity)
+            except ProtocolFailure as exc:
+                if exc.code == ErrorCode.BROKER_EXIT:
+                    return
+                raise
+            time.sleep(min(0.025, max(0.0, deadline - time.monotonic())))
+        raise ProtocolFailure(
+            ErrorCode.TIMEOUT_ACTION,
+            "session.close response arrived but the broker did not exit before the monotonic deadline",
+            details={"pid": self.broker_identity.pid},
         )

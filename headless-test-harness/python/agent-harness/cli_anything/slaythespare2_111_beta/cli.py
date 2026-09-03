@@ -27,7 +27,7 @@ from .core import (
     run_process,
     search_source,
 )
-from .core.runtime_session import default_runtime_root, validate_identifier
+from .core.runtime_session import default_runtime_root, default_state_root, validate_identifier
 
 
 CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"], "max_content_width": 110}
@@ -67,6 +67,14 @@ def _configured_godot(context: click.Context, explicit: str | None) -> str:
     help="External root for live control sessions (never inside a repository or game tree).",
 )
 @click.option(
+    "--protected-root",
+    "protected_roots",
+    type=click.Path(path_type=Path),
+    multiple=True,
+    envvar="STS2_HEADLESS_PROTECTED_ROOTS",
+    help="Protected source/game/deployment root; repeat for every tree that must remain read-only.",
+)
+@click.option(
     "--control-session",
     envvar="STS2_HEADLESS_CONTROL_SESSION",
     help="Live control-session identifier used by process/runtime/evidence commands.",
@@ -79,6 +87,7 @@ def cli(
     project_root: Path | None,
     state_dir: Path | None,
     runtime_root: Path | None,
+    protected_roots: tuple[Path, ...],
     control_session: str | None,
     json_mode: bool,
 ) -> None:
@@ -87,7 +96,7 @@ def cli(
         root = find_project_root(project_root)
     except HarnessError as exc:
         raise click.ClickException(str(exc)) from exc
-    state_path = (state_dir or root / "agent-harness" / ".state").resolve()
+    state_path = (state_dir or default_state_root()).expanduser().resolve()
     if control_session is not None:
         try:
             control_session = validate_identifier(control_session)
@@ -101,6 +110,7 @@ def cli(
             "store": SessionStore(state_path),
             "state_dir": state_path,
             "runtime_root": (runtime_root or default_runtime_root()).expanduser().resolve(),
+            "protected_roots": tuple(path.expanduser().resolve() for path in protected_roots),
             "control_session": control_session,
             "emit": _emit,
         }

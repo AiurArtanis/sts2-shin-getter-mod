@@ -16,12 +16,42 @@ public sealed class RequestExecution(
     CommandRegistry registry,
     ActionObserver actions,
     ChoiceBroker choices,
-    Node owner,
+    RequestIdempotencyGate idempotency,
+    Func<ProtocolCaseFailure?> transportFailure,
+    SceneTree sceneTree,
     int mainThreadId)
 {
     private readonly Dictionary<string, ActiveRequest> _active = new(StringComparer.Ordinal);
     private string? _mutationOwner;
     private string? _mutationFrozenReason;
+    private string? _mutationFrozenCode;
+
+    public void ApplyTransportFailure(ProtocolCaseFailure failure)
+    {
+        if (_mutationFrozenCode is not null)
+            return;
+        _mutationFrozenCode = failure.Code;
+        _mutationFrozenReason = failure.Message;
+        foreach (ActiveRequest request in _active.Values.ToArray())
+        {
+            if (request.TerminalSent)
+                continue;
+            if (request.IsMutation)
+                choices.InvalidateParent(request.RequestId, failure.Message);
+            if (IsAlreadyPublishedOverflow(request.RequestId, failure))
+            {
+                idempotency.Complete(
+                    request.RequestId,
+                    "failed",
+                    TransportFailureFields(failure));
+                request.TerminalSent = true;
+            }
+            else
+            {
+                Fail(request, failure.Code, failure.Message, freezeMutation: request.IsMutation);
+            }
+        }
+    }
 
     public void Execute(PendingRequest pending, int dispatcherDepth)
     {
@@ -44,30 +74,46 @@ public sealed class RequestExecution(
 
         if (System.Environment.CurrentManagedThreadId != mainThreadId)
         {
-            _ = pending.Connection.SendAsync(
-                "failed",
+            SendImmediateFailure(
+                pending.Connection,
                 requestId,
-                new Dictionary<string, object?>
-                {
-                    ["error"] = ProtocolServer.Error(
-                        ErrorCodes.MainThreadViolation,
-                        "command did not execute on the recorded Godot main thread"),
-                });
+                ErrorCodes.MainThreadViolation,
+                "command did not execute on the recorded Godot main thread");
             return;
         }
 
-        Task sendChain = pending.Connection.SendAsync(
+        Task<JsonElement> startedSend = pending.Connection.SendAsync(
             "started",
             requestId,
             new Dictionary<string, object?> { ["engine_frame"] = Engine.GetProcessFrames() });
+        Task sendChain = startedSend;
+        JsonElement startedEnvelope = startedSend.GetAwaiter().GetResult();
+        if (IsObserverOverflowTerminal(startedEnvelope))
+        {
+            idempotency.Complete(requestId, startedEnvelope);
+            ProtocolCaseFailure failure = transportFailure()
+                ?? new ProtocolCaseFailure(
+                    ErrorCodes.ObserverOverflow,
+                    "live critical outbound queue overflowed",
+                    new Dictionary<string, object?>());
+            _mutationFrozenCode ??= failure.Code;
+            _mutationFrozenReason ??= failure.Message;
+            return;
+        }
         BridgeCommandDescriptor? descriptor = null;
         bool acquiredMutation = false;
         try
         {
             descriptor = registry.GetDescriptor(pending.Request);
             bool gameplayMutation = descriptor.ConcurrencyClass == "gameplay-mutation";
+            if (gameplayMutation && _mutationFrozenCode is not null)
+            {
+                throw new BridgeStateException(
+                    _mutationFrozenCode,
+                    $"mutation lane is frozen: {_mutationFrozenReason}");
+            }
             if (descriptor.ConcurrencyClass == "choice-continuation"
-                && (_mutationOwner is null || _mutationFrozenReason is not null))
+                && (_mutationOwner is null || _mutationFrozenCode is not null))
             {
                 throw new BridgeStateException(
                     ErrorCodes.StaleHandle,
@@ -121,33 +167,25 @@ public sealed class RequestExecution(
             if (acquiredMutation && !StringComparer.Ordinal.Equals(_mutationFrozenReason, exception.Message))
             {
                 if (exception.Code == ErrorCodes.ActionCorrelationFailed)
+                {
+                    _mutationFrozenCode = exception.Code;
                     _mutationFrozenReason = exception.Message;
+                }
                 else
                     _mutationOwner = null;
             }
-            _ = SendAfterAsync(
-                sendChain,
-                () => pending.Connection.SendAsync(
-                    "failed",
-                    requestId,
-                    new Dictionary<string, object?>
-                    {
-                        ["error"] = ProtocolServer.Error(exception.Code, exception.Message),
-                    }));
+            SendImmediateFailure(pending.Connection, requestId, exception.Code, exception.Message, sendChain);
         }
         catch (Exception exception)
         {
             if (acquiredMutation)
                 _mutationOwner = null;
-            _ = SendAfterAsync(
-                sendChain,
-                () => pending.Connection.SendAsync(
-                    "failed",
-                    requestId,
-                    new Dictionary<string, object?>
-                    {
-                        ["error"] = ProtocolServer.Error(ErrorCodes.InvalidArgument, exception.Message),
-                    }));
+            SendImmediateFailure(
+                pending.Connection,
+                requestId,
+                ErrorCodes.InvalidArgument,
+                exception.Message,
+                sendChain);
         }
     }
 
@@ -193,6 +231,12 @@ public sealed class RequestExecution(
             }
         }
 
+        if (transportFailure() is ProtocolCaseFailure failure)
+        {
+            ApplyTransportFailure(failure);
+            return;
+        }
+
         foreach (ActiveRequest request in _active.Values.ToArray())
             PollOne(request);
     }
@@ -201,7 +245,7 @@ public sealed class RequestExecution(
     {
         if (request.TerminalSent)
         {
-            if (CanReleaseMutation(request))
+            if (request.SendChain.IsCompletedSuccessfully && CanReleaseMutation(request))
                 Remove(request);
             return;
         }
@@ -305,17 +349,17 @@ public sealed class RequestExecution(
                 }
             }
 
-            request.SendChain = SendAfterAsync(
+            var fields = new Dictionary<string, object?> { ["result"] = result };
+            request.SendChain = SendTerminalAfterAsync(
                 request.SendChain,
-                () => request.Connection.SendAsync(
-                    "completed",
-                    request.RequestId,
-                    new Dictionary<string, object?> { ["result"] = result }));
+                request.Connection,
+                request.RequestId,
+                "completed",
+                fields,
+                waitForFlush: request.Operation.Shutdown);
             request.TerminalSent = true;
             if (request.Operation.Shutdown)
                 _ = ShutdownAfterAsync(request.SendChain);
-            if (CanReleaseMutation(request))
-                Remove(request);
         }
         catch (BridgeStateException exception)
         {
@@ -333,22 +377,24 @@ public sealed class RequestExecution(
         string message,
         bool freezeMutation)
     {
-        request.SendChain = SendAfterAsync(
+        var fields = new Dictionary<string, object?>
+        {
+            ["error"] = ProtocolServer.Error(code, message),
+        };
+        request.SendChain = SendTerminalAfterAsync(
             request.SendChain,
-            () => request.Connection.SendAsync(
-                "failed",
-                request.RequestId,
-                new Dictionary<string, object?>
-                {
-                    ["error"] = ProtocolServer.Error(code, message),
-                }));
+            request.Connection,
+            request.RequestId,
+            "failed",
+            fields);
         request.TerminalSent = true;
         if (request.IsMutation)
             choices.InvalidateParent(request.RequestId, message);
         if (freezeMutation && request.IsMutation)
+        {
+            _mutationFrozenCode ??= code;
             _mutationFrozenReason = message;
-        if (!request.IsMutation || CanReleaseMutation(request))
-            Remove(request);
+        }
     }
 
     private bool CanReleaseMutation(ActiveRequest request)
@@ -374,11 +420,80 @@ public sealed class RequestExecution(
         try
         {
             await sendChain.ConfigureAwait(false);
+            sceneTree.CallDeferred(SceneTree.MethodName.Quit, 0);
         }
-        finally
+        catch (Exception exception)
         {
-            owner.CallDeferred(Node.MethodName.QueueFree);
+            GD.PushError($"Sts2HeadlessTestBridge shutdown terminal was not flushed: {exception.GetBaseException().Message}");
         }
+    }
+
+    private void SendImmediateFailure(
+        ProtocolConnection connection,
+        string requestId,
+        string code,
+        string message,
+        Task? previous = null)
+    {
+        var fields = new Dictionary<string, object?>
+        {
+            ["error"] = ProtocolServer.Error(code, message),
+        };
+        _ = SendTerminalAfterAsync(
+            previous ?? Task.CompletedTask,
+            connection,
+            requestId,
+            "failed",
+            fields);
+    }
+
+    private async Task SendTerminalAfterAsync(
+        Task previous,
+        ProtocolConnection connection,
+        string requestId,
+        string type,
+        IReadOnlyDictionary<string, object?> fields,
+        bool waitForFlush = false)
+    {
+        try
+        {
+            await previous.ConfigureAwait(false);
+        }
+        catch
+        {
+            // A prior delivery failure does not remove the terminal from the
+            // server replay journal or change deterministic game execution.
+        }
+        JsonElement terminal = await connection.SendAsync(
+            type,
+            requestId,
+            fields,
+            waitForFlush: waitForFlush).ConfigureAwait(false);
+        idempotency.Complete(requestId, terminal);
+    }
+
+    private static bool IsAlreadyPublishedOverflow(string requestId, ProtocolCaseFailure failure)
+    {
+        return failure.Code == ErrorCodes.ObserverOverflow
+            && failure.Details.TryGetValue("first_lost_request_id", out object? lost)
+            && StringComparer.Ordinal.Equals(lost as string, requestId);
+    }
+
+    private static Dictionary<string, object?> TransportFailureFields(ProtocolCaseFailure failure) =>
+        new(StringComparer.Ordinal)
+        {
+            ["out_of_band"] = true,
+            ["case_invalid"] = true,
+            ["error"] = ProtocolServer.Error(failure.Code, failure.Message, details: failure.Details),
+        };
+
+    private static bool IsObserverOverflowTerminal(JsonElement envelope)
+    {
+        return envelope.TryGetProperty("type", out JsonElement type)
+            && type.GetString() == "failed"
+            && envelope.TryGetProperty("error", out JsonElement error)
+            && error.TryGetProperty("code", out JsonElement code)
+            && code.GetString() == ErrorCodes.ObserverOverflow;
     }
 
     private static async Task SendAfterAsync(Task previous, Func<Task> send)

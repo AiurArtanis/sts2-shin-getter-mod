@@ -35,6 +35,14 @@ def default_runtime_root(environment: Mapping[str, str] | None = None) -> Path:
     return Path(base).expanduser().resolve() / "cli-anything" / "slaythespare2-111-beta" / "sessions"
 
 
+def default_state_root(environment: Mapping[str, str] | None = None) -> Path:
+    """Return the writable legacy CLI state root outside all source trees."""
+
+    env = dict(os.environ if environment is None else environment)
+    base = env.get("LOCALAPPDATA") or env.get("TEMP") or tempfile.gettempdir()
+    return Path(base).expanduser().resolve() / "cli-anything" / "slaythespare2-111-beta" / "state"
+
+
 def is_reparse_point(path: Path) -> bool:
     if not path.exists() and not path.is_symlink():
         return False
@@ -60,19 +68,19 @@ class RuntimePathGuard:
             dict.fromkeys([self.repository_root, *(root.expanduser().resolve() for root in protected_roots)])
         )
 
-    def validate(self, candidate: Path, *, create: bool = False) -> Path:
+    def validate(self, candidate: Path, *, create: bool = False, purpose: str = "runtime root") -> Path:
         expanded = candidate.expanduser()
         if not expanded.is_absolute():
-            raise ProtocolFailure(ErrorCode.ISOLATION_BREACH, "runtime root must be absolute")
+            raise ProtocolFailure(ErrorCode.ISOLATION_BREACH, f"{purpose} must be absolute")
         resolved = expanded.resolve()
         if resolved == Path(resolved.anchor):
-            raise ProtocolFailure(ErrorCode.ISOLATION_BREACH, "filesystem root cannot be a runtime root")
+            raise ProtocolFailure(ErrorCode.ISOLATION_BREACH, f"filesystem root cannot be a {purpose}")
         for protected in self.protected_roots:
             if _same_or_descendant(resolved, protected) or _same_or_descendant(protected, resolved):
                 raise ProtocolFailure(
                     ErrorCode.ISOLATION_BREACH,
-                    "runtime root overlaps a protected tree",
-                    details={"runtime_root": str(resolved), "protected_root": str(protected)},
+                    f"{purpose} overlaps a protected tree",
+                    details={"candidate": str(resolved), "protected_root": str(protected), "purpose": purpose},
                 )
         probe = resolved
         while True:
@@ -87,6 +95,12 @@ class RuntimePathGuard:
             probe = probe.parent
         if create:
             resolved.mkdir(parents=True, exist_ok=True)
+        return resolved
+
+    def validate_existing_directory(self, candidate: Path, *, purpose: str) -> Path:
+        resolved = self.validate(candidate, purpose=purpose)
+        if not resolved.is_dir():
+            raise ProtocolFailure(ErrorCode.INVALID_ARGUMENT, f"{purpose} must be an existing directory")
         return resolved
 
 
@@ -188,9 +202,21 @@ class SessionPaths:
 
 
 class ControlSession:
-    def __init__(self, paths: SessionPaths, repository_root: Path) -> None:
+    def __init__(self, paths: SessionPaths, repository_root: Path, protected_roots: Sequence[Path]) -> None:
         self.paths = paths
         self.repository_root = repository_root.resolve()
+        self.guard = RuntimePathGuard(self.repository_root, protected_roots)
+
+    @property
+    def protected_roots(self) -> tuple[Path, ...]:
+        return self.guard.protected_roots
+
+    def revalidate(self) -> Path:
+        return self.guard.validate(self.paths.root, purpose="control session root")
+
+    def validate_process_cwd(self, cwd: Path) -> Path:
+        self.revalidate()
+        return self.guard.validate_existing_directory(cwd, purpose="process cwd")
 
     @classmethod
     def create(
@@ -210,7 +236,7 @@ class ControlSession:
         paths.evidence.mkdir(parents=True, exist_ok=True)
         for stream in (paths.requests_jsonl, paths.broker_events_jsonl):
             stream.touch(exist_ok=True)
-        session = cls(paths, repository_root)
+        session = cls(paths, repository_root, protected_roots)
         session._save_index(
             {
                 "schema": "sts2-control-session/v1",
@@ -219,30 +245,80 @@ class ControlSession:
                 "updated_at": utc_now(),
                 "state": "defined",
                 "case_invalid": False,
+                "repository_root": str(session.repository_root),
+                "protected_roots": [str(root) for root in session.protected_roots],
                 "instances": {},
             }
         )
         return session
 
     @classmethod
-    def open(cls, session_root: Path, *, repository_root: Path) -> "ControlSession":
-        paths = SessionPaths(session_root.resolve(strict=True))
+    def open(
+        cls,
+        session_root: Path,
+        *,
+        repository_root: Path,
+        protected_roots: Sequence[Path] = (),
+    ) -> "ControlSession":
+        resolved_repository = repository_root.expanduser().resolve(strict=True)
+        requested_guard = RuntimePathGuard(resolved_repository, protected_roots)
+        resolved_session = requested_guard.validate(session_root, purpose="control session root").resolve(strict=True)
+        paths = SessionPaths(resolved_session)
         if not paths.session_json.is_file():
             raise ProtocolFailure(ErrorCode.NOT_FOUND, "session.json does not exist")
-        return cls(paths, repository_root)
+        index = cls._read_index_file(paths.session_json)
+        persisted_repository = index.get("repository_root")
+        persisted_roots = index.get("protected_roots")
+        if not isinstance(persisted_repository, str) or not isinstance(persisted_roots, list) or not all(
+            isinstance(item, str) and Path(item).is_absolute() for item in persisted_roots
+        ):
+            raise ProtocolFailure(
+                ErrorCode.ISOLATION_BREACH,
+                "control session is missing persisted path-protection policy",
+            )
+        if os.path.normcase(os.path.realpath(persisted_repository)) != os.path.normcase(os.path.realpath(resolved_repository)):
+            raise ProtocolFailure(
+                ErrorCode.ISOLATION_BREACH,
+                "control session repository identity does not match the caller",
+            )
+        combined = [*(Path(item) for item in persisted_roots), *protected_roots]
+        session = cls(paths, resolved_repository, combined)
+        session.revalidate()
+        return session
 
-    def load_index(self) -> dict[str, Any]:
+    @staticmethod
+    def _read_index_file(path: Path) -> dict[str, Any]:
         try:
-            value = json.loads(self.paths.session_json.read_text(encoding="utf-8"))
+            value = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError) as exc:
             raise ProtocolFailure(ErrorCode.INVALID_ARGUMENT, f"invalid control session index: {exc}") from exc
         if not isinstance(value, dict):
             raise ProtocolFailure(ErrorCode.INVALID_ARGUMENT, "control session index must be an object")
         return value
 
+    def load_index(self) -> dict[str, Any]:
+        self.revalidate()
+        return self._read_index_file(self.paths.session_json)
+
     def _save_index(self, value: dict[str, Any]) -> None:
         value["updated_at"] = utc_now()
         atomic_write_json(self.paths.session_json, value)
+
+    def mark_case_invalid(
+        self,
+        code: ErrorCode,
+        message: str,
+        *,
+        details: Mapping[str, Any] | None = None,
+    ) -> None:
+        index = self.load_index()
+        index["case_invalid"] = True
+        index["case_invalid_reason"] = {
+            "code": code.value,
+            "message": message,
+            "details": dict(details or {}),
+        }
+        self._save_index(index)
 
     def record_broker(self, public_identity: Mapping[str, Any]) -> None:
         for key in public_identity:

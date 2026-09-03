@@ -16,6 +16,32 @@ from typing import Any, Callable, Mapping, Sequence
 from .errors import ErrorCode, ProtocolFailure
 
 
+SYSTEM_CHILD_ENV_ALLOWLIST = (
+    "SystemRoot",
+    "WINDIR",
+    "ComSpec",
+    "PATH",
+    "PATHEXT",
+    "TEMP",
+    "TMP",
+    "NUMBER_OF_PROCESSORS",
+    "PROCESSOR_ARCHITECTURE",
+)
+
+
+def minimal_child_environment(
+    explicit: Mapping[str, str],
+    *,
+    inherited: Mapping[str, str] | None = None,
+) -> dict[str, str]:
+    """Build a child block from a small OS allowlist plus explicit values."""
+
+    source = os.environ if inherited is None else inherited
+    result = {name: str(source[name]) for name in SYSTEM_CHILD_ENV_ALLOWLIST if source.get(name)}
+    result.update({str(name): str(value) for name, value in explicit.items()})
+    return result
+
+
 def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as handle:
@@ -261,8 +287,7 @@ class ExactProcessManager:
         stderr_path.parent.mkdir(parents=True, exist_ok=True)
         stdout_handle = stdout_path.open("ab", buffering=0)
         stderr_handle = stderr_path.open("ab", buffering=0)
-        child_environment = os.environ.copy()
-        child_environment.update(environment)
+        child_environment = minimal_child_environment(environment)
         creationflags = 0
         if os.name == "nt":
             creationflags = subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.CREATE_NO_WINDOW
@@ -282,6 +307,8 @@ class ExactProcessManager:
             stdout_handle.close()
             stderr_handle.close()
             raise
+        finally:
+            child_environment.clear()
         owned = OwnedProcess(process, identity, [str(item) for item in argv], stdout_handle, stderr_handle)
         self._owned[process.pid] = owned
         return owned

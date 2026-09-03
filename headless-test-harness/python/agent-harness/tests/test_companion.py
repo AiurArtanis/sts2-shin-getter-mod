@@ -83,6 +83,93 @@ def component_host(component_host_dll: Path, tmp_path: Path):
         process.stderr.close()
 
 
+@pytest.fixture
+def constrained_component_host(component_host_dll: Path, tmp_path: Path):
+    token = secrets.token_bytes(32)
+    pipe_name = f"sts2-test-component-constrained-{secrets.token_hex(8)}"
+    environment = os.environ.copy()
+    environment.update(
+        {
+            "STS2_TEST_TOKEN": base64.urlsafe_b64encode(token).decode("ascii").rstrip("="),
+            "STS2_TEST_SESSION_ID": "component-session",
+            "STS2_TEST_INSTANCE_ID": "solo",
+            "STS2_TEST_PIPE": pipe_name,
+            "STS2_TEST_OUTPUT_ROOT": str(tmp_path),
+            "STS2_TEST_COMPONENT_MAX_LINE_BYTES": "4096",
+            "STS2_TEST_COMPONENT_REPLAY_CAPACITY": "8",
+        }
+    )
+    process = subprocess.Popen(
+        ["dotnet", str(component_host_dll)],
+        cwd=tmp_path,
+        env=environment,
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0,
+    )
+    yield {"process": process, "token": token, "pipe_name": pipe_name, "root": tmp_path}
+    if process.poll() is None:
+        process.terminate()
+        try:
+            process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.wait(timeout=5)
+    if process.stdout:
+        process.stdout.close()
+    if process.stderr:
+        process.stderr.close()
+
+
+@pytest.fixture
+def blocked_writer_component_host(component_host_dll: Path, tmp_path: Path):
+    token = secrets.token_bytes(32)
+    pipe_name = f"sts2-test-component-overflow-{secrets.token_hex(8)}"
+    release_file = tmp_path / "release-writer"
+    environment = os.environ.copy()
+    environment.update(
+        {
+            "STS2_TEST_TOKEN": base64.urlsafe_b64encode(token).decode("ascii").rstrip("="),
+            "STS2_TEST_SESSION_ID": "component-session",
+            "STS2_TEST_INSTANCE_ID": "solo",
+            "STS2_TEST_PIPE": pipe_name,
+            "STS2_TEST_OUTPUT_ROOT": str(tmp_path),
+            "STS2_TEST_COMPONENT_REPLAY_CAPACITY": "64",
+            "STS2_TEST_COMPONENT_OUTBOUND_CAPACITY": "1",
+            "STS2_TEST_COMPONENT_WRITER_RELEASE_FILE": str(release_file),
+        }
+    )
+    process = subprocess.Popen(
+        ["dotnet", str(component_host_dll)],
+        cwd=tmp_path,
+        env=environment,
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0,
+    )
+    yield {
+        "process": process,
+        "token": token,
+        "pipe_name": pipe_name,
+        "root": tmp_path,
+        "release_file": release_file,
+    }
+    release_file.touch(exist_ok=True)
+    if process.poll() is None:
+        process.terminate()
+        try:
+            process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.wait(timeout=5)
+    if process.stdout:
+        process.stdout.close()
+    if process.stderr:
+        process.stderr.close()
+
+
 def _client(component_host: dict, *, token: bytes | None = None) -> CompanionClient:
     client = CompanionClient(
         pipe_name=component_host["pipe_name"],
@@ -231,6 +318,18 @@ def test_game_bridge_action_completion_has_no_sleep_or_nearest_action_fallback(h
     assert "recent action" not in combined.lower()
 
 
+def test_game_bridge_and_component_host_share_production_idempotency_gate(harness_root: Path) -> None:
+    bridge = harness_root / "bridge" / "Sts2HeadlessTestBridge"
+    gate = bridge / "src" / "Dispatch" / "RequestIdempotencyGate.cs"
+    execution = (bridge / "src" / "Dispatch" / "RequestExecution.cs").read_text(encoding="utf-8")
+    component = (bridge / "tests" / "ComponentHost" / "Program.cs").read_text(encoding="utf-8")
+    project = (bridge / "tests" / "ComponentHost" / "ComponentHost.csproj").read_text(encoding="utf-8")
+    assert gate.is_file()
+    assert "RequestIdempotencyGate" in execution
+    assert "RequestIdempotencyGate" in component
+    assert "src/Dispatch/RequestIdempotencyGate.cs" in project.replace("\\", "/")
+
+
 def test_component_host_rejects_stale_choice(component_host: dict) -> None:
     with _client(component_host) as client:
         parent = client.dispatch("test.choice_parent", {}, wait_for="queue_settled")
@@ -319,6 +418,33 @@ def test_component_host_reconnect_replays_unread_critical_events(component_host:
     assert terminal["request_id"] == request_id
 
 
+def test_component_host_reconnect_routes_future_inflight_terminal_to_new_pipe(component_host: dict) -> None:
+    client = _client(component_host)
+    request_id = client.dispatch("test.delayed", {"delay_ms": 500}, wait_for="immediate")
+    resume_from = client.last_seq
+    client.connect(timeout_seconds=10, resume_from_seq=resume_from)
+    terminal = client.wait_terminal(request_id, timeout_seconds=5)
+    client.close()
+    assert terminal["type"] == "completed"
+    assert terminal["request_id"] == request_id
+    assert terminal["result"]["delayed"] is True
+
+
+def test_component_host_same_payload_duplicate_stays_single_inflight_execution(component_host: dict) -> None:
+    with _client(component_host) as client:
+        request_id = client.dispatch("test.delayed", {"delay_ms": 400}, request_id="duplicate-inflight")
+        duplicate = client.dispatch(
+            "test.delayed",
+            {"delay_ms": 400},
+            request_id=request_id,
+            timeout_ms=10_000,
+        )
+        terminal = client.wait_terminal(request_id, timeout_seconds=5)
+    assert duplicate == request_id
+    assert terminal["type"] == "completed"
+    assert terminal["result"]["execution_count"] == 1
+
+
 def test_component_host_replayed_request_is_idempotent(component_host: dict) -> None:
     with _client(component_host) as client:
         request_id = client.new_request_id()
@@ -336,6 +462,66 @@ def test_component_host_same_id_different_payload_conflicts(component_host: dict
         conflict = client.request("runtime.ping", {"value": 2}, request_id=request_id)
     assert conflict["type"] == "failed"
     assert conflict["error"]["code"] == ErrorCode.IDEMPOTENCY_CONFLICT.value
+
+
+def test_wait_event_fails_when_request_is_already_terminal(component_host: dict) -> None:
+    with _client(component_host) as client:
+        request_id = client.new_request_id()
+        client.request("runtime.ping", {}, request_id=request_id)
+        with pytest.raises(ProtocolFailure) as failure:
+            client.wait_event(request_id, "event_that_cannot_arrive", timeout_seconds=0.5)
+    assert failure.value.code == ErrorCode.INVALID_PHASE
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        b'{not-json}\n',
+        b'{"oversized":"' + (b"x" * 8192) + b'"}\n',
+    ],
+)
+def test_component_host_bad_frame_isolated_and_next_authenticated_ping_succeeds(
+    constrained_component_host: dict,
+    payload: bytes,
+) -> None:
+    client = _client(constrained_component_host)
+    stream = client._stream
+    assert stream is not None
+    stream.write(payload)
+    stream.flush()
+    time.sleep(0.15)
+    client.close()
+
+    with _client(constrained_component_host) as recovered:
+        terminal = recovered.request("runtime.ping", {}, wait_for="immediate")
+    assert terminal["type"] == "completed"
+
+
+def test_component_host_rejects_expired_resume_window(constrained_component_host: dict) -> None:
+    client = _client(constrained_component_host)
+    for _ in range(4):
+        terminal = client.request("runtime.ping", {})
+        assert terminal["type"] == "completed"
+    client.close()
+
+    with pytest.raises(ProtocolFailure) as failure:
+        client.connect(timeout_seconds=10, resume_from_seq=0)
+    assert failure.value.code == ErrorCode.RESUME_WINDOW_EXPIRED
+
+
+def test_component_host_blocked_live_writer_latches_critical_overflow_and_freezes_mutation(
+    blocked_writer_component_host: dict,
+) -> None:
+    with _client(blocked_writer_component_host) as client:
+        request_id = client.send_only("runtime.ping", {})
+        time.sleep(0.2)
+        blocked_writer_component_host["release_file"].touch()
+        terminal = client.wait_terminal(request_id, timeout_seconds=5)
+        frozen = client.request("test.mutation", {}, timeout_ms=2_000)
+    assert terminal["type"] == "failed"
+    assert terminal["error"]["code"] == ErrorCode.OBSERVER_OVERFLOW.value
+    assert frozen["type"] == "failed"
+    assert frozen["error"]["code"] == ErrorCode.OBSERVER_OVERFLOW.value
 
 
 def test_component_host_shutdown_is_explicit(component_host: dict) -> None:

@@ -5,18 +5,21 @@ import os
 import shutil
 import signal
 import subprocess
+import threading
 import time
+from multiprocessing.connection import Client
 from pathlib import Path
 
 import pytest
 
-from cli_anything.slaythespare2_111_beta.core.broker_client import BrokerClient
+from cli_anything.slaythespare2_111_beta.core.broker_client import BrokerClient, control_address
 from cli_anything.slaythespare2_111_beta.core.errors import ErrorCode, ProtocolFailure
 from cli_anything.slaythespare2_111_beta.core.evidence import evidence_metadata_template
 from cli_anything.slaythespare2_111_beta.core.legacy import FileLock, HarnessError
 from cli_anything.slaythespare2_111_beta.core.process_manager import (
     ExactProcessManager,
     ProcessRecord,
+    assert_broker_alive,
     capture_process_identity,
 )
 from cli_anything.slaythespare2_111_beta.core.runtime_session import ControlSession
@@ -66,9 +69,23 @@ def broker_fixture(tmp_path: Path, broker_component_host_dll: Path):
     }
     yield fixture
     try:
-        client.request("session.close", {})
-    except ProtocolFailure:
-        pass
+        client.request("session.close", {}, timeout_seconds=5.0)
+    except ProtocolFailure as exc:
+        if exc.code != ErrorCode.BROKER_EXIT:
+            raise
+    deadline = time.monotonic() + 5.0
+    while time.monotonic() < deadline:
+        try:
+            assert_broker_alive(client.broker_identity)
+        except ProtocolFailure as exc:
+            if exc.code == ErrorCode.BROKER_EXIT:
+                break
+            raise
+        time.sleep(0.025)
+    else:
+        identity = assert_broker_alive(client.broker_identity)
+        ExactProcessManager().stop(identity, grace_seconds=0.1, force=True)
+        pytest.fail(f"broker fixture leaked exact PID {identity.pid}")
 
 
 def _start_component(fixture: dict) -> dict:
@@ -97,6 +114,27 @@ def test_broker_holds_exclusive_session_lease(broker_fixture: dict) -> None:
     with pytest.raises(HarnessError):
         with FileLock(broker_fixture["session"].paths.session_lock, timeout=0.1):
             pass
+
+
+def test_session_close_waits_until_exact_broker_exits(tmp_path: Path) -> None:
+    repository = tmp_path / "close-repository"
+    repository.mkdir()
+    session = ControlSession.create(tmp_path / "close-runtime", "close-test", repository_root=repository)
+    client = BrokerClient.bootstrap(session, repository_root=repository, timeout_seconds=15)
+    identity = client.broker_identity
+    try:
+        result = client.request("session.close", {}, timeout_seconds=5.0)
+        assert result["closed"] is True
+        with pytest.raises(ProtocolFailure) as failure:
+            assert_broker_alive(identity)
+        assert failure.value.code == ErrorCode.BROKER_EXIT
+    finally:
+        try:
+            live = assert_broker_alive(identity)
+        except ProtocolFailure:
+            pass
+        else:
+            ExactProcessManager().stop(live, grace_seconds=0.1, force=True)
 
 
 def test_broker_component_start_authenticates_and_records_runtime(broker_fixture: dict) -> None:
@@ -219,3 +257,76 @@ def test_broker_rejects_second_process_for_same_instance(broker_fixture: dict) -
     with pytest.raises(ProtocolFailure) as failure:
         _start_component(broker_fixture)
     assert failure.value.code == ErrorCode.INVALID_ARGUMENT
+
+
+def test_idle_control_client_cannot_block_other_cli_requests(broker_fixture: dict) -> None:
+    address = control_address(
+        broker_fixture["client"].pipe_name,
+        broker_fixture["session"].paths.root,
+    )
+    slow = Client(address, family="AF_PIPE" if os.name == "nt" else "AF_UNIX", authkey=None)
+    result: dict[str, object] = {}
+
+    def invoke_status() -> None:
+        try:
+            result["value"] = broker_fixture["client"].request(
+                "broker.status",
+                {},
+                timeout_seconds=1.0,
+            )
+        except Exception as exc:  # pragma: no cover - asserted below
+            result["error"] = exc
+
+    worker = threading.Thread(target=invoke_status)
+    worker.start()
+    worker.join(timeout=0.75)
+    blocked = worker.is_alive()
+    slow.close()
+    worker.join(timeout=5)
+    assert blocked is False
+    assert "error" not in result
+    assert result["value"]["broker_epoch"] == broker_fixture["client"].broker_record["broker_epoch"]
+
+
+def test_broker_response_read_has_monotonic_deadline(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from cli_anything.slaythespare2_111_beta.core import broker_client as broker_client_module
+
+    repository = tmp_path / "repo"
+    repository.mkdir()
+    session = ControlSession.create(tmp_path / "runtime", "deadline", repository_root=repository)
+    identity = capture_process_identity(os.getpid())
+    record = {
+        "pid": identity.pid,
+        "process_start_time_utc": identity.process_start_time_utc,
+        "executable_path": identity.executable_path,
+        "executable_sha256": identity.executable_sha256,
+        "control_pipe": "unused",
+        "broker_epoch": "deadline-test",
+    }
+
+    class StalledConnection:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return None
+
+        def send_bytes(self, _payload: bytes) -> None:
+            return None
+
+        def poll(self, timeout: float) -> bool:
+            time.sleep(min(timeout, 0.05))
+            return False
+
+        def recv_bytes(self, _limit: int) -> bytes:
+            raise AssertionError("recv_bytes must not run before poll reports readiness")
+
+    monkeypatch.setattr(broker_client_module, "Client", lambda *_args, **_kwargs: StalledConnection())
+    started = time.monotonic()
+    with pytest.raises(ProtocolFailure) as failure:
+        BrokerClient(session, record).request("broker.status", {}, timeout_seconds=0.1)
+    assert time.monotonic() - started < 0.75
+    assert failure.value.code == ErrorCode.TIMEOUT_ACTION

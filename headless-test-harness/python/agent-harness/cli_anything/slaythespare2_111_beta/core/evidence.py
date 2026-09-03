@@ -183,7 +183,7 @@ class EvidenceBundle:
         # Sentry installation data. Evidence includes only explicit per-instance
         # control artifacts and blob descriptors; a future save/replay command
         # must copy an intentional, redacted artifact into evidence/ first.
-        return len(parts) == 3 or parts[2] == "blobs"
+        return len(parts) == 3 or parts[2] in {"blobs", "snapshots"}
 
     def _iter_artifact_paths(self) -> Iterable[Path]:
         for path in sorted(self.session_root.rglob("*"), key=lambda item: item.as_posix().encode("utf-8")):

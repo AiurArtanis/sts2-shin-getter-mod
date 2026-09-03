@@ -18,8 +18,11 @@ public partial class BridgeRootNode : Node
     private RequestExecution? _execution;
     private ActionObserver? _actions;
     private ChoiceBroker? _choices;
+    private RequestIdempotencyGate? _idempotency;
     private ProtocolServer? _server;
+    private Task? _serverTask;
     private CancellationTokenSource? _serverCancellation;
+    private bool _serverFaultObserved;
     private int _mainThreadId;
     private bool _mainThreadProbe;
 
@@ -44,10 +47,18 @@ public partial class BridgeRootNode : Node
             choiceSnapshot: () => _choices?.Snapshot() ?? Array.Empty<Dictionary<string, object?>>());
         _actions = new ActionObserver(snapshots.Handles);
         _choices = new ChoiceBroker(processEpoch, _actions);
+        _idempotency = new RequestIdempotencyGate();
         _actions.Synchronize();
         _choices.Synchronize();
         var registry = new CommandRegistry(snapshots, _actions, _choices);
-        _execution = new RequestExecution(registry, _actions, _choices, this, _mainThreadId);
+        _execution = new RequestExecution(
+            registry,
+            _actions,
+            _choices,
+            _idempotency,
+            () => _server?.CaseFailure,
+            GetTree(),
+            _mainThreadId);
         _server = new ProtocolServer(
             _configuration.PipeName,
             _configuration.SessionId,
@@ -57,7 +68,7 @@ public partial class BridgeRootNode : Node
             AcceptRequestAsync,
             processEpoch);
         _serverCancellation = new CancellationTokenSource();
-        _ = Task.Run(() => _server.RunAsync(_serverCancellation.Token));
+        _serverTask = Task.Run(() => _server.RunAsync(_serverCancellation.Token));
         SetProcess(true);
     }
 
@@ -65,6 +76,19 @@ public partial class BridgeRootNode : Node
     {
         if (_dispatcher is null || _execution is null)
             return;
+        if (_server?.CaseFailure is ProtocolCaseFailure transportFailure)
+            _execution.ApplyTransportFailure(transportFailure);
+        if (!_serverFaultObserved && _serverTask is { IsFaulted: true })
+        {
+            _serverFaultObserved = true;
+            string message = _serverTask.Exception?.GetBaseException().Message ?? "protocol server faulted";
+            GD.PushError($"Sts2HeadlessTestBridge protocol server faulted: {message}");
+            _execution.ApplyTransportFailure(
+                new ProtocolCaseFailure(
+                    ErrorCodes.ProcessExit,
+                    message,
+                    new Dictionary<string, object?>()));
+        }
         foreach (PendingRequest request in _dispatcher.Drain())
             _execution.Execute(request, _dispatcher.Count);
         _execution.Poll();
@@ -81,6 +105,7 @@ public partial class BridgeRootNode : Node
         _actions = null;
         _configuration?.DestroySecret();
         _configuration = null;
+        _idempotency = null;
     }
 
     private async Task AcceptRequestAsync(
@@ -89,16 +114,63 @@ public partial class BridgeRootNode : Node
         CancellationToken cancellationToken)
     {
         string requestId = ProtocolContract.RequireString(request, "request_id");
-        await connection.SendAsync("accepted", requestId, cancellationToken: cancellationToken).ConfigureAwait(false);
-        if (_dispatcher is null || !_dispatcher.TryEnqueue(new PendingRequest(request.Clone(), connection)))
+        RequestIdempotencyDecision decision = _idempotency!.Accept(request);
+        if (decision.Status == RequestIdempotencyStatus.Conflict)
         {
             await connection.SendAsync(
-                "failed", requestId,
+                "failed",
+                requestId,
                 new Dictionary<string, object?>
                 {
-                    ["error"] = ProtocolServer.Error(ErrorCodes.ObserverOverflow, "main-thread inbound request queue is full"),
+                    ["error"] = ProtocolServer.Error(
+                        ErrorCodes.IdempotencyConflict,
+                        "request_id was already used with a different payload"),
                 },
                 cancellationToken: cancellationToken).ConfigureAwait(false);
+            return;
+        }
+        if (decision.Status == RequestIdempotencyStatus.Replay)
+        {
+            CachedRequestTerminal terminal = decision.Terminal!;
+            await connection.SendAsync(
+                terminal.Type,
+                requestId,
+                RequestIdempotencyGate.ReplayFields(terminal),
+                replayed: true,
+                cancellationToken: cancellationToken).ConfigureAwait(false);
+            return;
+        }
+        if (decision.Status == RequestIdempotencyStatus.InFlight)
+        {
+            await connection.SendAsync(
+                "accepted",
+                requestId,
+                replayed: true,
+                cancellationToken: cancellationToken).ConfigureAwait(false);
+            return;
+        }
+
+        JsonElement accepted = await connection.SendAsync(
+            "accepted",
+            requestId,
+            cancellationToken: cancellationToken).ConfigureAwait(false);
+        if (accepted.TryGetProperty("type", out JsonElement acceptedType)
+            && acceptedType.GetString() == "failed")
+        {
+            _idempotency.Complete(requestId, accepted);
+            return;
+        }
+        if (_dispatcher is null || !_dispatcher.TryEnqueue(new PendingRequest(request.Clone(), connection)))
+        {
+            var fields = new Dictionary<string, object?>
+            {
+                ["error"] = ProtocolServer.Error(ErrorCodes.ObserverOverflow, "main-thread inbound request queue is full"),
+            };
+            JsonElement terminal = await connection.SendAsync(
+                "failed", requestId,
+                fields,
+                cancellationToken: cancellationToken).ConfigureAwait(false);
+            _idempotency.Complete(requestId, terminal);
         }
     }
 

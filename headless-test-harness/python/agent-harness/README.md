@@ -49,6 +49,33 @@ Use `runtime exec` for a terminal request. Use
 when a card may require a selection. Always pass server-issued handles back
 unchanged; do not construct handles or infer candidates from display text.
 
+Retries must preserve the entire canonical request, including `command`,
+`args`, `wait_for`, and `timeout_ms`, while reusing the request ID. Volatile
+transport fields such as sequence, connection ID, and wall time are excluded.
+An exact in-flight retry attaches to the original work, an exact terminal retry
+returns `replayed=true`, and any content change returns
+`E_IDEMPOTENCY_CONFLICT`.
+
+## Real-runtime release gate
+
+Keep the profile, staging tree, runtime sessions, and settings template outside
+all repositories and protected deployment roots. Then run from an unrelated
+cwd with the installed console script available:
+
+```powershell
+$env:CLI_ANYTHING_FORCE_INSTALLED = '1'
+$env:STS2_HEADLESS_RUNTIME_RELEASE_GATE = '1'
+$env:STS2_HEADLESS_RUNTIME_PROFILE = '<absolute-external-profile.json>'
+python -m pytest <absolute-tests-path>\test_runtime_release.py -v -s --tb=no
+```
+
+The profile schema is `sts2-runtime-release-profile/v1` and must explicitly set
+`stage_companion=true`. With release mode enabled, an absent or invalid profile
+is a test error rather than a skip. The gate rebuilds and stages the companion,
+checks authenticated fingerprints, real no-choice and choice actions,
+disconnect/reconnect, duplicate/conflict/replay behavior, graceful exit 0, and
+finalized evidence verification.
+
 Run the command without a subcommand for the interactive REPL. See `SOP.md` and
 `../../docs/implementation-v0.2.md` for lifecycle, safety, staging, and PoC
 details.

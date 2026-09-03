@@ -62,6 +62,31 @@ action completed, queues are empty, the executor is idle, no choice is pending,
 the command-specific ready predicate holds, and a post-snapshot was captured.
 It is not a fixed delay.
 
+Reuse a request ID only with the entire same canonical request, including
+`command`, `args`, `wait_for`, and `timeout_ms`. An exact in-flight duplicate
+must not execute twice; an exact completed duplicate returns `replayed=true`;
+changed content is `E_IDEMPOTENCY_CONFLICT`. Reconnect only within the server's
+reported rolling replay window. Treat `E_RESUME_WINDOW_EXPIRED` and
+`E_OBSERVER_OVERFLOW` as invalid-case outcomes, not as permission to guess or
+continue mutating.
+
+For a real-runtime release decision, use the installed command from a cwd
+outside the repository and opt in explicitly:
+
+```powershell
+$env:CLI_ANYTHING_FORCE_INSTALLED = '1'
+$env:STS2_HEADLESS_RUNTIME_RELEASE_GATE = '1'
+$env:STS2_HEADLESS_RUNTIME_PROFILE = '<absolute-external-profile.json>'
+python -m pytest <absolute-tests-path>\test_runtime_release.py -v -s --tb=no
+```
+
+The external profile must use schema `sts2-runtime-release-profile/v1`, set
+`stage_companion=true`, and keep all writable paths outside protected trees.
+Release mode without a valid profile is a hard failure. The gate must rebuild
+and stage the TEST-ONLY companion, verify real PoC 0/1/1b including reconnect
+and idempotency, stop the exact game process with exit 0, finalize/verify
+evidence, and leave no broker or game process behind.
+
 End every live case with exact `process stop --instance <id>` followed by
 `session close`. Finalized evidence is immutable and must pass `evidence verify`.
 

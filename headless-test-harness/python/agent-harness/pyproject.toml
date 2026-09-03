@@ -34,4 +34,5 @@ markers = [
   "component: invokes the local TEST-ONLY bridge component host",
   "e2e: invokes installed CLI and real external backends",
   "runtime: invokes a real Slay the Spire 2 process and TEST-ONLY companion",
+  "runtime_release: opt-in production-path release gate requiring an explicit external runtime profile",
 ]

@@ -1,6 +1,6 @@
-using System.Security.Cryptography;
 using System.Text.Json;
 using Sts2HeadlessTestBridge.Contract;
+using Sts2HeadlessTestBridge.Dispatch;
 using Sts2HeadlessTestBridge.Transport;
 
 string pipeName = RequireEnvironment("STS2_TEST_PIPE");
@@ -8,6 +8,10 @@ string sessionId = RequireEnvironment("STS2_TEST_SESSION_ID");
 string instanceId = RequireEnvironment("STS2_TEST_INSTANCE_ID");
 byte[] token = DecodeBase64Url(RequireEnvironment("STS2_TEST_TOKEN"));
 string outputRoot = RequireEnvironment("STS2_TEST_OUTPUT_ROOT");
+int replayCapacity = OptionalPositiveInt("STS2_TEST_COMPONENT_REPLAY_CAPACITY", 2048);
+int outboundCapacity = OptionalPositiveInt("STS2_TEST_COMPONENT_OUTBOUND_CAPACITY", 512);
+int maxLineBytes = OptionalPositiveInt("STS2_TEST_COMPONENT_MAX_LINE_BYTES", 1024 * 1024);
+string? writerReleaseFile = Environment.GetEnvironmentVariable("STS2_TEST_COMPONENT_WRITER_RELEASE_FILE");
 
 ComponentExecutor? executor = null;
 ProtocolServer? server = null;
@@ -46,7 +50,17 @@ server = new ProtocolServer(
             ["pixel_output"] = new { state = "unavailable", reason = "component host has no renderer" },
         },
     }),
-    (request, connection, cancellationToken) => executor!.HandleAsync(request, connection, cancellationToken));
+    (request, connection, cancellationToken) => executor!.HandleAsync(request, connection, cancellationToken),
+    replayCapacity: replayCapacity,
+    outboundCriticalCapacity: outboundCapacity,
+    limits: new ProtocolLimits(MaxLineBytes: maxLineBytes),
+    writerBarrier: writerReleaseFile is null
+        ? null
+        : async cancellationToken =>
+        {
+            while (!File.Exists(writerReleaseFile))
+                await Task.Delay(10, cancellationToken).ConfigureAwait(false);
+        });
 executor = new ComponentExecutor(server);
 await server.RunAsync();
 return 0;
@@ -61,14 +75,21 @@ static byte[] DecodeBase64Url(string value)
     return Convert.FromBase64String(padded);
 }
 
+static int OptionalPositiveInt(string name, int fallback)
+{
+    string? raw = Environment.GetEnvironmentVariable(name);
+    return int.TryParse(raw, out int value) && value > 0 ? value : fallback;
+}
+
 sealed class ComponentExecutor(ProtocolServer server)
 {
-    private readonly Dictionary<string, CacheEntry> _cache = new(StringComparer.Ordinal);
+    private readonly RequestIdempotencyGate _idempotency = new();
     private string? _mutationOwner;
     private long _choiceGeneration;
     private string? _choiceHandle;
     private string? _choiceCandidate;
     private string? _actionHandle;
+    private int _delayedExecutionCount;
 
     public async Task HandleAsync(
         JsonElement request,
@@ -76,37 +97,40 @@ sealed class ComponentExecutor(ProtocolServer server)
         CancellationToken cancellationToken)
     {
         string requestId = ProtocolContract.RequireString(request, "request_id");
-        string digest = RequestDigest(request);
-        if (_cache.TryGetValue(requestId, out CacheEntry? cached))
+        RequestIdempotencyDecision decision = _idempotency.Accept(request);
+        if (decision.Status == RequestIdempotencyStatus.Conflict)
         {
-            if (!StringComparer.Ordinal.Equals(cached.Digest, digest))
-            {
-                await Failed(connection, requestId, ErrorCodes.IdempotencyConflict, "request_id payload conflict", cancellationToken);
-                return;
-            }
-            if (cached.Terminal is JsonElement terminal)
-            {
-                string type = ProtocolContract.RequireString(terminal, "type");
-                var fields = new Dictionary<string, object?>();
-                foreach (JsonProperty property in terminal.EnumerateObject())
-                {
-                    if (property.Name is not ("protocol" or "schema_version" or "type" or "seq" or "request_id" or "instance_id" or "replayed"))
-                        fields[property.Name] = property.Value.Clone();
-                }
-                await connection.SendAsync(
-                    type, requestId, fields, replayed: true, cancellationToken: cancellationToken).ConfigureAwait(false);
-                return;
-            }
+            await Failed(connection, requestId, ErrorCodes.IdempotencyConflict, "request_id payload conflict", cancellationToken);
+            return;
+        }
+        if (decision.Status == RequestIdempotencyStatus.Replay)
+        {
+            CachedRequestTerminal terminal = decision.Terminal!;
+            await connection.SendAsync(
+                terminal.Type,
+                requestId,
+                RequestIdempotencyGate.ReplayFields(terminal),
+                replayed: true,
+                cancellationToken: cancellationToken).ConfigureAwait(false);
+            return;
+        }
+        if (decision.Status == RequestIdempotencyStatus.InFlight)
+        {
             await connection.SendAsync("accepted", requestId, replayed: true, cancellationToken: cancellationToken);
             return;
         }
 
-        _cache[requestId] = new CacheEntry(digest, null);
         await connection.SendAsync("accepted", requestId, cancellationToken: cancellationToken);
         await connection.SendAsync(
             "started", requestId,
             new Dictionary<string, object?> { ["engine_frame"] = Environment.TickCount64 },
             cancellationToken: cancellationToken);
+
+        if (server.CaseFailure is ProtocolCaseFailure transportFailure)
+        {
+            await Failed(connection, requestId, transportFailure.Code, transportFailure.Message, cancellationToken);
+            return;
+        }
 
         string command = ProtocolContract.RequireString(request, "command");
         JsonElement args = request.GetProperty("args");
@@ -126,6 +150,18 @@ sealed class ComponentExecutor(ProtocolServer server)
                     ["backend"] = "component_test_host",
                     ["states"] = new Dictionary<string, string> { ["typed_card_play"] = "partial" },
                 }, cancellationToken);
+                break;
+            case "test.delayed":
+                int delayMs = args.TryGetProperty("delay_ms", out JsonElement delay)
+                    ? delay.GetInt32()
+                    : 250;
+                if (delayMs is < 1 or > 60_000)
+                {
+                    await Failed(connection, requestId, ErrorCodes.InvalidArgument, "delay_ms must be in [1, 60000]", cancellationToken);
+                    break;
+                }
+                int executionCount = Interlocked.Increment(ref _delayedExecutionCount);
+                _ = CompleteDelayedAsync(connection, requestId, delayMs, executionCount, cancellationToken);
                 break;
             case "test.action_parent":
                 if (_mutationOwner is not null)
@@ -191,7 +227,7 @@ sealed class ComponentExecutor(ProtocolServer server)
                         },
                     },
                     cancellationToken: cancellationToken);
-                CacheTerminal(actionParent, actionTerminal);
+                _idempotency.Complete(actionParent, actionTerminal);
                 _mutationOwner = null;
                 _actionHandle = null;
                 break;
@@ -236,13 +272,15 @@ sealed class ComponentExecutor(ProtocolServer server)
                     "completed", parent,
                     new Dictionary<string, object?> { ["result"] = new Dictionary<string, object?> { ["completion"] = "queue_settled" } },
                     cancellationToken: cancellationToken);
-                CacheTerminal(parent, parentTerminal);
+                _idempotency.Complete(parent, parentTerminal);
                 _mutationOwner = null;
                 _choiceHandle = null;
                 _choiceCandidate = null;
                 break;
             case "test.mutation":
-                if (_mutationOwner is not null)
+                if (server.CaseFailure is ProtocolCaseFailure frozen)
+                    await Failed(connection, requestId, frozen.Code, frozen.Message, cancellationToken);
+                else if (_mutationOwner is not null)
                     await Failed(connection, requestId, ErrorCodes.MutationBusy, "mutation lane is busy", cancellationToken);
                 else
                     await Completed(connection, requestId, new Dictionary<string, object?> { ["completion"] = "immediate" }, cancellationToken);
@@ -302,7 +340,7 @@ sealed class ComponentExecutor(ProtocolServer server)
             "completed", requestId,
             new Dictionary<string, object?> { ["result"] = result },
             cancellationToken: cancellationToken);
-        CacheTerminal(requestId, terminal);
+        _idempotency.Complete(requestId, terminal);
     }
 
     private async Task Failed(
@@ -318,26 +356,37 @@ sealed class ComponentExecutor(ProtocolServer server)
             cancellationToken: cancellationToken);
         // A conflicting duplicate is not the terminal for the original request.
         if (code != ErrorCodes.IdempotencyConflict)
-            CacheTerminal(requestId, terminal);
+            _idempotency.Complete(requestId, terminal);
     }
 
-    private void CacheTerminal(string requestId, JsonElement terminal)
+    private async Task CompleteDelayedAsync(
+        ProtocolConnection connection,
+        string requestId,
+        int delayMs,
+        int executionCount,
+        CancellationToken cancellationToken)
     {
-        if (_cache.TryGetValue(requestId, out CacheEntry? cached))
-            _cache[requestId] = cached with { Terminal = terminal.Clone() };
-    }
-
-    private static string RequestDigest(JsonElement request)
-    {
-        var payload = new Dictionary<string, JsonElement>(StringComparer.Ordinal);
-        foreach (JsonProperty property in request.EnumerateObject())
+        try
         {
-            if (property.Name is not ("seq" or "wall_time" or "engine_frame" or "logical_time" or "connection_id" or "broker_epoch"))
-                payload[property.Name] = property.Value.Clone();
+            await Task.Delay(delayMs, cancellationToken).ConfigureAwait(false);
+            if (server.CaseFailure is ProtocolCaseFailure failure)
+            {
+                await Failed(connection, requestId, failure.Code, failure.Message, cancellationToken).ConfigureAwait(false);
+                return;
+            }
+            await Completed(
+                connection,
+                requestId,
+                new Dictionary<string, object?>
+                {
+                    ["delayed"] = true,
+                    ["execution_count"] = executionCount,
+                },
+                cancellationToken).ConfigureAwait(false);
         }
-        JsonElement element = JsonSerializer.SerializeToElement(payload);
-        return Convert.ToHexStringLower(SHA256.HashData(CanonicalJson.Serialize(element)));
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            // The process is shutting down; there is no future connection to notify.
+        }
     }
-
-    private sealed record CacheEntry(string Digest, JsonElement? Terminal);
 }

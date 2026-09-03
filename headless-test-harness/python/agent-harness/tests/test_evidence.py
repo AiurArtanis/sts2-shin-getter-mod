@@ -200,3 +200,19 @@ def test_evidence_schema_rejects_incomplete_metadata(tmp_path: Path) -> None:
     with pytest.raises(ProtocolFailure) as failure:
         EvidenceBundle(session.paths.root).finalize(metadata)
     assert failure.value.code == ErrorCode.INVALID_ARGUMENT
+
+
+def test_evidence_catalog_includes_explicit_snapshots_but_excludes_user_data(tmp_path: Path) -> None:
+    session = _session(tmp_path)
+    instance = session.paths.instances / "solo"
+    snapshots = instance / "snapshots"
+    user_data = instance / "user-data" / "appdata"
+    snapshots.mkdir(parents=True)
+    user_data.mkdir(parents=True)
+    (snapshots / "solo-1.json").write_text('{"schema":"sts2-state/v1"}\n', encoding="utf-8")
+    (user_data / "settings.save").write_text("private", encoding="utf-8")
+
+    manifest = EvidenceBundle(session.paths.root).finalize(_metadata())
+    paths = {artifact["path"] for artifact in manifest["artifacts"]}
+    assert "instances/solo/snapshots/solo-1.json" in paths
+    assert "instances/solo/user-data/appdata/settings.save" not in paths

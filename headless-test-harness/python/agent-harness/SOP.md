@@ -70,9 +70,11 @@ validated identifier, not a path.
 
 ## State and safety
 
-Harness state lives in `agent-harness/.state` by default. Configuration writes
-are protected by an inter-process lock, saved atomically, and recorded in a
-bounded undo/redo history. Source files are read-only from the harness.
+Legacy CLI state defaults to
+`%LOCALAPPDATA%/cli-anything/slaythespare2-111-beta/state`, outside the checkout.
+Configuration writes are protected by an inter-process lock, saved atomically,
+and recorded in a bounded undo/redo history. Source files are read-only from
+the harness.
 
 `graph sync`, `build`, and Godot import/launch can update backend-owned caches or
 build outputs. They never edit decompiled C# source. `game launch --detach` is
@@ -81,7 +83,10 @@ the only command that intentionally leaves a process running.
 The live broker uses an external `session.json`, locked JSONL journals, and one
 instance directory per process. On Windows, broker-owned game processes are
 assigned to a Job Object. A broker replacement must not adopt an old process or
-recover its in-memory token.
+recover its in-memory token. Opening an existing session revalidates every
+persisted protected root before any write. A game child receives only a small
+system environment allowlist plus explicit test and isolated-user-data values;
+the broker's ambient environment is not inherited wholesale.
 
 ## Live lifecycle
 
@@ -102,6 +107,12 @@ recover its in-memory token.
 6. Finalize and verify evidence if the case is publishable.
 7. Stop each exact instance with `process stop`; then call `session close`.
 
+Reconnect uses a rolling critical-event replay window. A cursor older than its
+reported floor must fail with `E_RESUME_WINDOW_EXPIRED`; do not silently restart
+observation. The live outbound critical queue is a distinct bounded resource:
+only a blocked active consumer that exhausts it latches
+`E_OBSERVER_OVERFLOW`, freezes mutation, and invalidates the case.
+
 ## Completion and handle rules
 
 - `enqueued` only proves the exact typed action entered the queue.
@@ -114,13 +125,18 @@ recover its in-memory token.
 - A gameplay parent retains the mutation lane while waiting for its choice.
   Only the matching `choice.select` continuation and snapshot-safe queries may
   pass; unrelated mutation fails with `E_MUTATION_BUSY`.
+- Reusing a request ID is valid only with the complete same canonical request,
+  including `wait_for` and `timeout_ms`. Exact in-flight duplicates do not
+  execute again; exact terminal duplicates replay the first terminal; different
+  content returns `E_IDEMPOTENCY_CONFLICT` and cannot overwrite that terminal.
 
 ## Evidence
 
 Evidence finalization validates every path, hash, required schema field, and
 redaction rule before atomically publishing the manifest. `evidence verify`
 must fail with `E_EVIDENCE_TAMPERED` after any covered byte changes. Do not edit
-an evidence directory after finalization.
+an evidence directory after finalization. Explicit snapshots are included;
+isolated user-data, saves, and account-bearing trees are excluded.
 
 ## Verification order
 
@@ -133,6 +149,12 @@ an evidence directory after finalization.
 5. Run all tests from a cwd outside the repository with
    `CLI_ANYTHING_FORCE_INSTALLED=1`.
 6. Run PoC 0/1/1b against a disposable 0.111 staging tree.
-7. Reverse-scan production build inputs and released DLL/PCK/ZIP artifacts for
+7. Run the opt-in `runtime_release` pytest gate from an unrelated cwd with
+   `CLI_ANYTHING_FORCE_INSTALLED=1`,
+   `STS2_HEADLESS_RUNTIME_RELEASE_GATE=1`, and an absolute external
+   `STS2_HEADLESS_RUNTIME_PROFILE`. Release mode without the profile must fail.
+8. Reverse-scan production build inputs and released DLL/PCK/ZIP artifacts for
    every bridge/protocol signature; require zero hits.
-8. Run `git diff --check` and confirm no runtime or build output is tracked.
+9. Run `git diff --check`, assert that broker/game/ComponentHost process count
+   returned to zero on both success and failure paths, and confirm no runtime or
+   build output is tracked.
