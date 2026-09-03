@@ -1,0 +1,13 @@
+{
+  "id": "Sts2HeadlessTestBridge",
+  "name": "STS2 Headless Test Bridge (TEST-ONLY)",
+  "author": "ShinGetterMod development tooling",
+  "description": "Authenticated test-only bridge. Never ship in a production mod package.",
+  "version": "v0.2.0-test-only",
+  "has_pck": false,
+  "has_dll": true,
+  "dependencies": [],
+  "affects_gameplay": true,
+  "min_game_version": "0.111.0",
+  "test_only": true
+}

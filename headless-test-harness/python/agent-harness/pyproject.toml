@@ -31,5 +31,7 @@ namespaces = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 markers = [
+  "component: invokes the local TEST-ONLY bridge component host",
   "e2e: invokes installed CLI and real external backends",
+  "runtime: invokes a real Slay the Spire 2 process and TEST-ONLY companion",
 ]

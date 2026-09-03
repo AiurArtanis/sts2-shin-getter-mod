@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import zipfile
 from pathlib import Path
 
 from click.testing import CliRunner
@@ -14,6 +15,10 @@ from cli_anything.slaythespare2_111_beta.core import (
     dotnet_build_command,
     godot_command,
     project_status,
+)
+from cli_anything.slaythespare2_111_beta.core.release_scan import (
+    DEFAULT_FORBIDDEN_SIGNATURES,
+    scan_production_targets,
 )
 
 
@@ -80,3 +85,68 @@ def test_cli_json_output(project_root: Path, tmp_path: Path) -> None:
     assert result.exit_code == 0, result.output
     payload = json.loads(result.output)
     assert payload["project_name"] == "Slay the Spire 2"
+
+
+def test_reverse_scan_accepts_clean_binary(tmp_path: Path) -> None:
+    target = tmp_path / "ShinGetterMod.dll"
+    target.write_bytes(b"production payload")
+    result = scan_production_targets([target])
+    assert result["ok"] is True
+    assert result["hits"] == []
+
+
+def test_reverse_scan_finds_bridge_name(tmp_path: Path) -> None:
+    target = tmp_path / "ShinGetterMod.dll"
+    target.write_bytes(b"prefix Sts2HeadlessTestBridge suffix")
+    result = scan_production_targets([target])
+    assert result["ok"] is False
+    assert result["hits"][0]["signature"] == "Sts2HeadlessTestBridge"
+
+
+def test_reverse_scan_finds_signature_across_chunk_boundary(tmp_path: Path) -> None:
+    target = tmp_path / "ShinGetterMod.pck"
+    signature = DEFAULT_FORBIDDEN_SIGNATURES[0].encode("utf-8")
+    target.write_bytes(b"x" * 31 + signature + b"y")
+    result = scan_production_targets([target], chunk_size=32)
+    assert result["ok"] is False
+
+
+def test_reverse_scan_checks_zip_entry_names(tmp_path: Path) -> None:
+    target = tmp_path / "release.zip"
+    with zipfile.ZipFile(target, "w") as archive:
+        archive.writestr("Sts2HeadlessTestBridge.dll", b"clean")
+    result = scan_production_targets([target])
+    assert any(hit["location"] == "entry_name" for hit in result["hits"])
+
+
+def test_reverse_scan_checks_zip_entry_content(tmp_path: Path) -> None:
+    target = tmp_path / "release.zip"
+    with zipfile.ZipFile(target, "w") as archive:
+        archive.writestr("ShinGetterMod.json", b'{"debug":"STS2_TEST_ENABLE"}')
+    result = scan_production_targets([target])
+    assert any(hit["location"] == "entry_content" for hit in result["hits"])
+
+
+def test_reverse_scan_excludes_headless_harness_directory(tmp_path: Path) -> None:
+    production = tmp_path / "production"
+    (production / "headless-test-harness").mkdir(parents=True)
+    (production / "headless-test-harness" / "bridge.txt").write_text(
+        "Sts2HeadlessTestBridge", encoding="utf-8"
+    )
+    (production / "ShinGetterMod.json").write_text("{}", encoding="utf-8")
+    result = scan_production_targets([production])
+    assert result["ok"] is True
+
+
+def test_reverse_scan_records_target_hash_and_size(tmp_path: Path) -> None:
+    target = tmp_path / "clean.dll"
+    target.write_bytes(b"abc")
+    result = scan_production_targets([target])
+    assert result["targets"][0]["bytes"] == 3
+    assert result["targets"][0]["sha256"] == "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+
+
+def test_reverse_scan_rejects_missing_target(tmp_path: Path) -> None:
+    result = scan_production_targets([tmp_path / "missing.zip"])
+    assert result["ok"] is False
+    assert result["errors"][0]["code"] == "E_NOT_FOUND"

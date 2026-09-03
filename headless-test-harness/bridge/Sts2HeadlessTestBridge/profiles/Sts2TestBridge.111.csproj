@@ -1,0 +1,31 @@
+<Project Sdk="Godot.NET.Sdk/4.5.1">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <AssemblyName>Sts2HeadlessTestBridge</AssemblyName>
+    <RootNamespace>Sts2HeadlessTestBridge</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <Sts2AssemblyPath Condition="'$(Sts2AssemblyPath)' == ''">E:\Work\SlaytheSpare2-111-beta\.godot\mono\temp\bin\Debug\sts2.dll</Sts2AssemblyPath>
+    <OutputPath>..\package-out\111\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\src\**\*.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="sts2">
+      <HintPath>$(Sts2AssemblyPath)</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+  <Target Name="ValidateTestOnlyInputs" BeforeTargets="BeforeBuild">
+    <Error Condition="!Exists('$(Sts2AssemblyPath)')" Text="0.111 sts2.dll not found: $(Sts2AssemblyPath)" />
+  </Target>
+  <Target Name="CopyTestOnlyManifest" AfterTargets="Build">
+    <Copy SourceFiles="..\package\Sts2HeadlessTestBridge.json" DestinationFolder="$(OutputPath)" />
+  </Target>
+</Project>
