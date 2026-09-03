@@ -149,7 +149,7 @@
   "S_G_C_INFINITE_EVOLUTION.title": "无限进化",
   "S_G_C_INFINITE_EVOLUTION.description": "战斗胜利后，随机获得1点永久[gold]力量[/gold]、[gold]敏捷[/gold]或最大生命。",
   "S_G_C_HOLY_DRAGON_ROAR.title": "圣龙咆哮",
-  "S_G_C_HOLY_DRAGON_ROAR.description": "消耗手牌中所有[gold]盖塔卡牌[/gold]。对所有敌人造成{Damage:diff()}点基础伤害，每张消耗的牌叠加{BurnDamage:diff()}点伤害。\n[gold]击晕[/gold]所有敌人。",
+  "S_G_C_HOLY_DRAGON_ROAR.description": "消耗所有[gold]盖塔卡牌[/gold]。对所有敌人造成{Damage:diff()}点基础伤害，每张消耗的牌叠加{BurnDamage:diff()}点伤害。\n[gold]击晕[/gold]所有敌人。",
   "S_G_C_PETAL_BREAKTHROUGH.title": "破瓣突进",
   "S_G_C_PETAL_BREAKTHROUGH.description": "造成{Damage:diff()}点伤害。给抽牌堆中随机1张尚无[gold]重放[/gold]的攻击牌添加{Times:diff()}层[gold]重放[/gold]。",
   "S_G_C_RESCHEDULE_TICKET.title": "改签券",
