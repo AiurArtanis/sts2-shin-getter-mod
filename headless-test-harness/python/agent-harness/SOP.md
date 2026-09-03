@@ -3,7 +3,24 @@
 ## Purpose
 
 This harness gives agents a deterministic command-line surface over the real
-111-beta source tree. It does not reimplement game behavior in Python.
+111-beta source tree and real TEST-ONLY game runtime. It does not reimplement
+game behavior in Python.
+
+## Non-negotiable boundaries
+
+- Treat all reverse-engineered game trees as read-only inputs.
+- Put runtime sessions, user data, logs, saves, screenshots, staging packages,
+  and evidence outside every repository, Steam, Workshop, and production mod
+  directory.
+- Never add the companion to `ShinGetterMod.csproj` or a production manifest,
+  PCK, ZIP, or four-file deployment.
+- Start and stop live processes through the broker. Process identity is PID +
+  process start time + executable path/hash; never kill by process name.
+- Do not expose the companion token in argv, environment reports, logs, JSON
+  output, or evidence. The broker keeps it in memory.
+- v0.2 live mutation is single-player only. Multiplayer, save/load/replay,
+  animation/pixel gates, virtual time, H1, and the 0.109 adapter are out of
+  scope.
 
 ## Real backends
 
@@ -13,6 +30,11 @@ This harness gives agents a deterministic command-line surface over the real
 - Import and launch commands call a Godot 4.5 Mono executable.
 - DevConsole commands are indexed from their C# definitions. They are not
   executed outside the live game because their runtime state is unavailable.
+- Live mutations are executed by the companion on the Godot main thread and
+  call real `RunManager`, DevConsole, `ActionQueueSynchronizer`,
+  `PlayCardAction`, and `CardSelectCmd` APIs.
+- Snapshots combine the game's `NetFullCombatState` checksum with a canonical
+  semantic projection and a reflection-only ShinGetter extension.
 
 ## Command surface
 
@@ -21,10 +43,30 @@ This harness gives agents a deterministic command-line surface over the real
 - `build status|restore|run`
 - `game doctor|import|launch|smoke`
 - `console list|search|show`
-- `session status|configure|undo|redo`
+- `session status|configure|undo|redo|close`
+- `process start|list|status|stop`
+- `runtime handshake|connect|exec|dispatch|wait-event|wait-terminal|request-status`
+- `evidence finalize|verify`
 
 Every command accepts the root-level `--json` option. Mutating operations expose
 `--dry-run` and report the exact backend command or state change before writing.
+
+## Session addressing
+
+For live commands, set all four roots explicitly:
+
+```powershell
+$common = @(
+  '--project-root', '<read-only-111-source>',
+  '--state-dir', '<external-cli-state>',
+  '--runtime-root', '<external-session-parent>',
+  '--control-session', 'case-001',
+  '--json'
+)
+```
+
+`--runtime-root` is the session directory's direct parent. A session ID is a
+validated identifier, not a path.
 
 ## State and safety
 
@@ -36,12 +78,61 @@ bounded undo/redo history. Source files are read-only from the harness.
 build outputs. They never edit decompiled C# source. `game launch --detach` is
 the only command that intentionally leaves a process running.
 
+The live broker uses an external `session.json`, locked JSONL journals, and one
+instance directory per process. On Windows, broker-owned game processes are
+assigned to a Job Object. A broker replacement must not adopt an old process or
+recover its in-memory token.
+
+## Live lifecycle
+
+1. Build the 0.111 companion in Release and stage it only in a disposable game
+   copy outside the repositories and normal deployment locations.
+2. Start the process with `process start`; pass the executable and Godot/game
+   arguments after the command's options. The broker injects only its allowlisted
+   TEST variables and isolated `APPDATA`/`LOCALAPPDATA`.
+3. Confirm `process status`, `runtime handshake`, adapter/game fingerprints,
+   `display_driver=headless`, `audio_driver=Dummy`, and the reported user-data
+   path before creating a run.
+4. Use `runtime exec` for queries and non-branching mutations. Request
+   `wait_for=queue_settled` for gameplay completion.
+5. For a selection-producing card, use `runtime dispatch`, wait for the exact
+   `choice_required` event, submit `choice.select` with its parent request ID,
+   owner, generation, choice handle, and candidate handles, then wait for the
+   parent terminal result.
+6. Finalize and verify evidence if the case is publishable.
+7. Stop each exact instance with `process stop`; then call `session close`.
+
+## Completion and handle rules
+
+- `enqueued` only proves the exact typed action entered the queue.
+- `action_finished` proves that exact action's `CompletionTask` completed.
+- `queue_settled` additionally requires empty queue sets, idle executor, no
+  pending choice, a satisfied command-specific ready predicate, and successful
+  post-snapshot capture.
+- Stable handles survive unrelated state revisions but expire at their declared
+  process/run/room/combat or per-owner choice generation.
+- A gameplay parent retains the mutation lane while waiting for its choice.
+  Only the matching `choice.select` continuation and snapshot-safe queries may
+  pass; unrelated mutation fails with `E_MUTATION_BUSY`.
+
+## Evidence
+
+Evidence finalization validates every path, hash, required schema field, and
+redaction rule before atomically publishing the manifest. `evidence verify`
+must fail with `E_EVIDENCE_TAMPERED` after any covered byte changes. Do not edit
+an evidence directory after finalization.
+
 ## Verification order
 
 1. Unit-test parsing, command construction, state locking, dry-run, undo/redo,
    and JSON output.
 2. Install the package in editable mode.
 3. Resolve the installed console script, not an in-process shortcut.
-4. Run a real CodeGraph status and explore query.
-5. Run a real `dotnet build` of `sts2.csproj`.
-6. Confirm Godot discovery and static DevConsole indexing.
+4. Build the TEST-ONLY companion, ContractVerifier, and ComponentHost in
+   Release with warnings as errors.
+5. Run all tests from a cwd outside the repository with
+   `CLI_ANYTHING_FORCE_INSTALLED=1`.
+6. Run PoC 0/1/1b against a disposable 0.111 staging tree.
+7. Reverse-scan production build inputs and released DLL/PCK/ZIP artifacts for
+   every bridge/protocol signature; require zero hits.
+8. Run `git diff --check` and confirm no runtime or build output is tracked.

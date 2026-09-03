@@ -33,41 +33,41 @@ the 0.109 adapter must not be pulled into D0-D6 merely to increase test counts.
 
 ## Required RED/GREEN cases
 
-- [ ] Unknown command, unknown enum, protocol-major mismatch, malformed JSONL,
+- [x] Unknown command, unknown enum, protocol-major mismatch, malformed JSONL,
   BOM/NUL, line/depth/string/array limit breaches fail deterministically.
-- [ ] Client proof, server proof, acknowledgement hash, nonce replay, identity,
+- [x] Client proof, server proof, acknowledgement hash, nonce replay, identity,
   and transcript tampering fail without exposing token material.
-- [ ] Same request ID and same canonical payload replays one terminal result;
+- [x] Same request ID and same canonical payload replays one terminal result;
   same ID and different payload returns `E_IDEMPOTENCY_CONFLICT`.
-- [ ] A parent gameplay mutation retains its lane while a matching
+- [x] A parent gameplay mutation retains its lane while a matching
   `choice.select` continuation and snapshot-safe query pass through; unrelated
   mutations return `E_MUTATION_BUSY`.
-- [ ] Critical-channel overflow never blocks the main-thread producer, freezes
+- [x] Critical-channel overflow never blocks the main-thread producer, freezes
   mutation, preserves `E_OBSERVER_OVERFLOW`, and permanently invalidates the case.
-- [ ] Telemetry overflow is counted separately and never masks critical loss.
-- [ ] Timeout budgeting uses monotonic time and does not reset after choice or
+- [x] Telemetry overflow is counted separately and never masks critical loss.
+- [x] Timeout budgeting uses monotonic time and does not reset after choice or
   reconnect; unsafe cancellation returns `E_CANCEL_UNSAFE`.
-- [ ] Exact process identity uses PID, start time, and executable path; mismatch
+- [x] Exact process identity uses PID, start time, and executable path; mismatch
   returns `E_PROCESS_IDENTITY_MISMATCH` and never kills by process name.
-- [ ] A dead broker returns `E_BROKER_EXIT`; a replacement broker cannot adopt
+- [x] A dead broker returns `E_BROKER_EXIT`; a replacement broker cannot adopt
   an existing game process or recover the in-memory companion token.
-- [ ] Runtime and output paths reject the repository, game source, Steam,
+- [x] Runtime and output paths reject the repository, game source, Steam,
   Workshop, production-mod, symlink, and reparse-point boundaries.
-- [ ] State snapshots are canonical, redact secrets and account paths, preserve
+- [x] State snapshots are canonical, redact secrets and account paths, preserve
   semantic array order, sort set-like arrays, and do not consume gameplay RNG.
-- [ ] Handles survive unrelated state revisions but expire at their declared
+- [x] Handles survive unrelated state revisions but expire at their declared
   process/run/room/combat or per-player choice epoch.
-- [ ] No-choice card completion binds the adapter-issued action reference and
+- [x] No-choice card completion binds the adapter-issued action reference and
   reaches the full `queue_settled` predicate without fixed sleep or
   nearest-action fallback.
-- [ ] Choice flow is `dispatch -> choice_required -> choice.select -> parent
+- [x] Choice flow is `dispatch -> choice_required -> choice.select -> parent
   terminal`; stale owner/generation/handle/candidate fixtures are RED and the
   server-issued-handle path is GREEN.
-- [ ] Unexpected process exit synthesizes `E_PROCESS_EXIT` for every in-flight
+- [x] Unexpected process exit synthesizes `E_PROCESS_EXIT` for every in-flight
   request.
-- [ ] Evidence finalization validates schema/path/hash/redaction, publishes
+- [x] Evidence finalization validates schema/path/hash/redaction, publishes
   atomically, and a one-byte artifact mutation returns `E_EVIDENCE_TAMPERED`.
-- [ ] Starting at D2, the production ShinGetterMod DLL/PCK/ZIP and build inputs
+- [x] Starting at D2, the production ShinGetterMod DLL/PCK/ZIP and build inputs
   are reverse-scanned for bridge/protocol/test-only signatures with zero hits.
 
 ## Real-runtime policy
@@ -100,7 +100,47 @@ Verified on 2026-08-23 with Python 3.14.5:
 
 ## v0.2 execution log
 
-Populate this section after each slice with exact commands, pass counts,
-production reverse-scan evidence, and any explicitly unavailable real-runtime
-capability. A unit/component substitute must never be reported as a real game
-PoC.
+Verified on 2026-09-03 from branch
+`feat/headless-test-harness-v0.2-20260903`, based on
+`origin/main@90662124625d57fe042514b6f5a71b868fbbfcb2`.
+
+- D0-D6 implementation commits before documentation:
+  `37ecb75b`, `82adb54f`, `219f87f0`, `bb52fb24`, `8739b103`,
+  `9263223b`, `c2527ed1`, and `919e6252`.
+- Installed-CLI test from external cwd:
+  `CLI_ANYTHING_FORCE_INSTALLED=1 python -m pytest <absolute-tests-path> -q -rs --tb=no`.
+  Result: **222 passed, 1 skipped in 20.60s**. The one skip is the Windows
+  unprivileged symlink-creation branch (`WinError 1314`); the rejection logic is
+  covered by the remaining path-boundary tests.
+- TEST-ONLY 0.111 companion Release build: **0 warnings, 0 errors**.
+- ContractVerifier: `ok=true`, protocol `sts2-test/v1`, four golden protocol
+  files, cross-language client proof matched.
+- ComponentHost Release build: **0 warnings, 0 errors**; broker/component tests
+  are included in the 222 passing tests.
+- Final production reverse scan:
+  `C:\Users\win\AppData\Local\cli-anything\slaythespare2-111-beta\gates\20260903-final-production-scan.json`.
+  Result: `ok=true`, `hits=[]`; it covers the production input tree plus the
+  existing production DLL, PCK, and release ZIP.
+
+Real PoC 1 (no choice) used game `v0.111.0@41cef1ea` with
+`display_driver=headless` and `audio_driver=Dummy`. A ShinGetter run entered
+`CULTISTS_NORMAL`, added `DEFEND_IRONCLAD`, and completed the exact typed card
+action at `queue_settled`: energy `3 -> 2`, block `0 -> 5`, queue empty,
+executor idle, no pending choice, RNG fingerprint unchanged. Session evidence:
+`E:\Work\StS2 Mods\_headless-runtime\sessions\poc1-real-d5-final-20260903`.
+
+Real PoC 1b used the same game runtime and companion SHA-256
+`daf017c16537c4708544c365abd63a92bf4d7bf1c5c9ef2b85285371b35fe6f4`.
+Playing `ARMAMENTS` produced five real candidates. A stale generation failed
+with `E_STALE_HANDLE`, an unrelated mutation failed with `E_MUTATION_BUSY`, and
+the matching continuation returned `selector_accepted=true`. The parent ended
+at `queue_settled`; the selected `CARD.S_G_C_DEFEND` changed upgrade level
+`0 -> 1`, energy changed `3 -> 2`, queues were empty, the executor was idle,
+there was no pending choice, and the RNG fingerprint was unchanged. Event
+sequence: action enqueued `12`, choice required `14`, action finished `26`,
+parent terminal `27`. Session evidence:
+`E:\Work\StS2 Mods\_headless-runtime\sessions\poc1b-real-d6-verified-20260903`.
+
+The PoC 1b instance was stopped by exact broker-owned identity and the session
+was closed after snapshot verification. Runtime staging and all evidence remain
+outside the repository; no Steam or normal Godot deployment was modified.
