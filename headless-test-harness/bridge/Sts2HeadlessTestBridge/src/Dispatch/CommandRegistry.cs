@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Godot;
 using Sts2HeadlessTestBridge.Contract;
+using Sts2HeadlessTestBridge.State;
 
 namespace Sts2HeadlessTestBridge.Dispatch;
 
@@ -19,7 +20,7 @@ public sealed record BridgeCommandDescriptor(
     string DefaultWaitFor,
     string[] RequiredCapabilities);
 
-public sealed class CommandRegistry
+public sealed class CommandRegistry(SnapshotBuilder snapshots)
 {
     private readonly Dictionary<string, BridgeCommandDescriptor> _descriptors = new(StringComparer.Ordinal)
     {
@@ -27,6 +28,7 @@ public sealed class CommandRegistry
         ["runtime.capabilities"] = new("runtime.capabilities", "query", "snapshot-safe-query", "immediate_query", "immediate", []),
         ["runtime.commands"] = new("runtime.commands", "query", "snapshot-safe-query", "immediate_query", "immediate", []),
         ["runtime.shutdown"] = new("runtime.shutdown", "lifecycle", "control", "immediate_query", "immediate", []),
+        ["state.dump"] = new("state.dump", "query", "snapshot-safe-query", "immediate_query", "immediate", ["state_dump"]),
     };
 
     public IReadOnlyDictionary<string, BridgeCommandDescriptor> Descriptors => _descriptors;
@@ -56,9 +58,32 @@ public sealed class CommandRegistry
             {
                 ["commands"] = _descriptors.Values.OrderBy(item => item.Name).ToArray(),
             }),
+            "state.dump" => StateDump(request),
             "runtime.shutdown" => new(true, new Dictionary<string, object?> { ["flushed"] = true }, Shutdown: true),
             _ => new(false, ErrorCode: ErrorCodes.InvalidArgument, ErrorMessage: $"unhandled command: {command}"),
         };
+    }
+
+    private BridgeCommandResult StateDump(JsonElement request)
+    {
+        JsonElement args = request.GetProperty("args");
+        string purpose = args.TryGetProperty("purpose", out JsonElement requestedPurpose)
+            && requestedPurpose.ValueKind == JsonValueKind.String
+            ? requestedPurpose.GetString() ?? "state.dump"
+            : "state.dump";
+        SnapshotCapture capture = snapshots.Capture(purpose);
+        object? completeness = capture.Snapshot["completeness"];
+        object? identity = capture.Snapshot["identity"];
+        object? location = capture.Snapshot["location"];
+        return new(true, new Dictionary<string, object?>(StringComparer.Ordinal)
+        {
+            ["snapshot_id"] = capture.SnapshotId,
+            ["canonical_sha256"] = capture.CanonicalSha256,
+            ["path"] = capture.Path,
+            ["completeness"] = completeness,
+            ["identity"] = identity,
+            ["location"] = location,
+        });
     }
 }
 
@@ -69,7 +94,7 @@ public static class BridgeCapabilities
         ["named_pipe_duplex"] = State("available"),
         ["bidirectional_hmac"] = State("available"),
         ["main_thread_dispatch"] = State("available"),
-        ["state_dump"] = State("unavailable", "D4 adapter not registered"),
+        ["state_dump"] = State("available"),
         ["typed_card_play"] = State("unavailable", "D5 adapter not registered"),
         ["card_select_local_selector"] = State("unavailable", "D6 adapter not registered"),
         ["pixel_output"] = State("unknown", "H0 capability probe only"),

@@ -2,6 +2,7 @@ using System.Text.Json;
 using Godot;
 using Sts2HeadlessTestBridge.Contract;
 using Sts2HeadlessTestBridge.Transport;
+using Sts2HeadlessTestBridge.State;
 
 namespace Sts2HeadlessTestBridge.Dispatch;
 
@@ -27,6 +28,13 @@ public sealed class RequestExecution(CommandRegistry registry, Node owner, int m
         try
         {
             result = registry.Execute(pending.Request, dispatcherDepth);
+        }
+        catch (BridgeStateException exception)
+        {
+            result = new BridgeCommandResult(
+                false,
+                ErrorCode: exception.Code,
+                ErrorMessage: exception.Message);
         }
         catch (Exception exception)
         {

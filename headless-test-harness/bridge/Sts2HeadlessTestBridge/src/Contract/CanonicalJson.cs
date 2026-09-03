@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 
 namespace Sts2HeadlessTestBridge.Contract;
@@ -8,7 +9,13 @@ public static class CanonicalJson
     public static byte[] Serialize(JsonElement element)
     {
         var buffer = new ArrayBufferWriter<byte>();
-        using var writer = new Utf8JsonWriter(buffer, new JsonWriterOptions { Indented = false });
+        using var writer = new Utf8JsonWriter(
+            buffer,
+            new JsonWriterOptions
+            {
+                Indented = false,
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            });
         WriteElement(writer, element);
         writer.Flush();
         return buffer.WrittenSpan.ToArray();

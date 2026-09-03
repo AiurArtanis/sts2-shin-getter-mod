@@ -7,6 +7,7 @@ using Sts2HeadlessTestBridge.Contract;
 using Sts2HeadlessTestBridge.Dispatch;
 using Sts2HeadlessTestBridge.Security;
 using Sts2HeadlessTestBridge.Transport;
+using Sts2HeadlessTestBridge.State;
 
 namespace Sts2HeadlessTestBridge.Bootstrap;
 
@@ -31,7 +32,13 @@ public partial class BridgeRootNode : Node
         _mainThreadId = System.Environment.CurrentManagedThreadId;
         _mainThreadProbe = true;
         _dispatcher = new MainThreadDispatcher();
-        var registry = new CommandRegistry();
+        string processEpoch = Guid.NewGuid().ToString("D");
+        var snapshots = new SnapshotBuilder(
+            _configuration,
+            processEpoch,
+            () => ReleaseInfo("version", "unknown") ?? "unknown",
+            () => ReleaseInfo("commit", null));
+        var registry = new CommandRegistry(snapshots);
         _execution = new RequestExecution(registry, this, _mainThreadId);
         _server = new ProtocolServer(
             _configuration.PipeName,
@@ -39,7 +46,8 @@ public partial class BridgeRootNode : Node
             _configuration.InstanceId,
             _configuration.Token,
             CreateAcknowledgementBody,
-            AcceptRequestAsync);
+            AcceptRequestAsync,
+            processEpoch);
         _serverCancellation = new CancellationTokenSource();
         _ = Task.Run(() => _server.RunAsync(_serverCancellation.Token));
         SetProcess(true);
