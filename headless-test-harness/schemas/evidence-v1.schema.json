@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://shingetter.invalid/schemas/evidence-v1.schema.json",
+  "title": "STS2 immutable evidence manifest v1",
+  "type": "object",
+  "required": ["schema", "case", "software", "game", "mods", "adapter", "instances", "determinism", "artifacts", "assertions", "redaction", "aggregate_sha256"],
+  "properties": {
+    "schema": {"const": "sts2-evidence/v1"},
+    "case": {
+      "type": "object",
+      "required": ["id", "scenario_sha256", "started_at", "ended_at", "result"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "scenario_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "started_at": {"type": "string", "format": "date-time"},
+        "ended_at": {"type": "string", "format": "date-time"},
+        "result": {"enum": ["passed", "failed", "invalid"]}
+      },
+      "additionalProperties": true
+    },
+    "software": {
+      "type": "object",
+      "required": ["harness_version", "harness_commit", "python", "os"],
+      "additionalProperties": true
+    },
+    "game": {
+      "type": "object",
+      "required": ["version", "executable_sha256", "assembly_sha256"],
+      "additionalProperties": true
+    },
+    "mods": {"type": "array", "items": {"type": "object", "required": ["id", "version", "dll_sha256"], "additionalProperties": true}},
+    "adapter": {"type": "object", "required": ["id", "assembly_sha256", "capabilities"], "additionalProperties": true},
+    "instances": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["id", "role", "pid", "process_start_time_utc", "driver", "user_data_root"], "additionalProperties": true}},
+    "determinism": {"type": "object", "required": ["seed", "rng_fingerprints", "fault_injection"], "additionalProperties": true},
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "kind", "bytes", "sha256", "producer"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "kind": {"type": "string"},
+          "bytes": {"type": "integer", "minimum": 0},
+          "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+          "producer": {"type": "string"}
+        },
+        "additionalProperties": true
+      }
+    },
+    "assertions": {"type": "array", "items": {"type": "object", "required": ["id", "passed", "oracle"], "additionalProperties": true}},
+    "redaction": {"type": "object", "required": ["rules_version", "removed_fields"], "additionalProperties": true},
+    "aggregate_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  },
+  "additionalProperties": true
+}

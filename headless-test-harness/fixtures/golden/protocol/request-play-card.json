@@ -1,0 +1,16 @@
+{
+  "protocol": "sts2-test/v1",
+  "schema_version": 1,
+  "type": "request",
+  "seq": 17,
+  "request_id": "7c68e9bb-6b2f-4890-a363-3571f0d87e88",
+  "instance_id": "solo",
+  "command": "combat.play_card",
+  "args": {
+    "card": "combat-card:process-golden:run-golden:combat-golden:42",
+    "target": "creature:process-golden:run-golden:combat-golden:7"
+  },
+  "wait_for": "queue_settled",
+  "timeout_ms": 10000,
+  "trace": {"case_id": "poc-1b", "step_id": "play-card"}
+}

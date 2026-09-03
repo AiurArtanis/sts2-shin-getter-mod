@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cli-anything-slaythespare2-111-beta"
+version = "0.2.0"
+description = "Authenticated headless-test harness for the real Slay the Spire 2 111-beta runtime"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "click>=8.1",
+  "jsonschema>=4.23",
+  "prompt-toolkit>=3.0",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[project.scripts]
+cli-anything-slaythespare2-111-beta = "cli_anything.slaythespare2_111_beta.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["cli_anything*"]
+namespaces = true
+
+[tool.setuptools.package-data]
+"cli_anything.slaythespare2_111_beta" = ["skills/SKILL.md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+  "e2e: invokes installed CLI and real external backends",
+]

@@ -1,0 +1,14 @@
+{
+  "protocol": "sts2-test/v1",
+  "schema_version": 1,
+  "type": "hello",
+  "session_id": "session-golden",
+  "instance_id": "solo",
+  "process_epoch": "process-golden",
+  "connection_id": "connection-golden",
+  "negotiated_protocol": "sts2-test/v1",
+  "resume_from_seq": 0,
+  "server_nonce": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "client_nonce": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE",
+  "client_proof": "ae7eb1c3baa22cfecc0e84405ba827a907c56cb60b52caf242c91bce45d61db2"
+}

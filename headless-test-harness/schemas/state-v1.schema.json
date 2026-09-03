@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://shingetter.invalid/schemas/state-v1.schema.json",
+  "title": "STS2 state snapshot v1",
+  "type": "object",
+  "required": ["schema", "snapshot_id", "identity", "clock", "location", "authoritative_combat", "authoritative_run", "local_semantic", "presentation", "completeness", "provenance", "hashes"],
+  "properties": {
+    "schema": {"const": "sts2-state/v1"},
+    "snapshot_id": {"type": "string", "minLength": 1},
+    "state_revision": {"type": "integer", "minimum": 0},
+    "identity": {
+      "type": "object",
+      "required": ["game_version", "adapter_id", "instance_id", "process_epoch", "run_epoch", "room_epoch", "combat_epoch"],
+      "properties": {
+        "game_version": {"type": "string"},
+        "game_commit": {"type": ["string", "null"]},
+        "adapter_id": {"type": "string"},
+        "instance_id": {"type": "string"},
+        "process_epoch": {"type": "string"},
+        "run_epoch": {"type": ["string", "null"]},
+        "room_epoch": {"type": ["string", "null"]},
+        "combat_epoch": {"type": ["string", "null"]}
+      },
+      "additionalProperties": true
+    },
+    "clock": {
+      "type": "object",
+      "required": ["wall_time", "engine_frame"],
+      "properties": {
+        "wall_time": {"type": "string", "format": "date-time"},
+        "engine_frame": {"type": "integer", "minimum": 0},
+        "logical_time": {"type": ["number", "null"]}
+      },
+      "additionalProperties": true
+    },
+    "location": {
+      "type": "object",
+      "required": ["in_run", "in_combat"],
+      "properties": {
+        "in_run": {"type": "boolean"},
+        "act": {"type": ["integer", "null"]},
+        "floor": {"type": ["integer", "null"]},
+        "room": {"type": ["string", "null"]},
+        "in_combat": {"type": "boolean"},
+        "turn": {"type": ["integer", "null"]},
+        "phase": {"type": ["string", "null"]}
+      },
+      "additionalProperties": true
+    },
+    "authoritative_combat": {"type": ["object", "null"]},
+    "authoritative_run": {"type": ["object", "null"]},
+    "local_semantic": {
+      "type": "object",
+      "properties": {
+        "players": {"type": "array", "items": {"type": "object"}},
+        "enemies": {"type": "array", "items": {"type": "object"}},
+        "actions": {"$ref": "#/$defs/actions"},
+        "choices": {"type": "array", "items": {"type": "object"}},
+        "shin_getter": {"type": ["object", "null"]}
+      },
+      "additionalProperties": true
+    },
+    "presentation": {"type": "object"},
+    "completeness": {
+      "type": "object",
+      "required": ["authoritative_combat", "authoritative_run", "local_semantic", "presentation"],
+      "additionalProperties": {"enum": ["complete", "partial", "unavailable"]}
+    },
+    "provenance": {"type": "object"},
+    "hashes": {
+      "type": "object",
+      "required": ["canonical_sha256", "rng_before", "rng_after"],
+      "properties": {
+        "canonical_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "game_checksum": {"type": ["string", "null"]},
+        "rng_before": {"type": ["string", "null"]},
+        "rng_after": {"type": ["string", "null"]}
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "actions": {
+      "type": "object",
+      "required": ["running", "pending", "queue_empty", "details_complete"],
+      "properties": {
+        "running": {"type": ["object", "null"]},
+        "pending": {"type": "array", "items": {"type": "object"}},
+        "queue_empty": {"type": "boolean"},
+        "details_complete": {"type": "boolean"},
+        "incomplete_reason": {"type": ["string", "null"]}
+      },
+      "additionalProperties": true
+    }
+  }
+}

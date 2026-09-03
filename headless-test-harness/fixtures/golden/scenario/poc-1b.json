@@ -1,0 +1,18 @@
+{
+  "schema": "sts2-scenario/v1",
+  "case_id": "poc-1b-card-choice",
+  "requires": {"game_version": "0.111.0", "capabilities": ["typed_card_play", "card_select_local_selector"]},
+  "instances": [{"id": "solo", "role": "single", "client_id": 1, "mode": "H0"}],
+  "seed": 424242,
+  "steps": [
+    {"id": "start", "command": "run.new", "args": {"character": "SHIN_GETTER"}},
+    {"id": "fight", "command": "console.exec", "args": {"input": "fight CULTIST"}},
+    {"id": "card", "command": "combat.add_card", "args": {"model_id": "CARD.TEST_CHOICE"}, "capture": {"card": "/result/card_handle"}},
+    {"id": "play", "dispatch": {"command": "combat.play_card", "args": {"card": "$card"}, "wait_for": "queue_settled"}, "capture": {"play_request": "/request_id"}},
+    {"id": "await-choice", "wait_event": {"request_id": "$play_request", "name": "choice_required"}, "capture": {"choice": "/data/choice_handle", "generation": "/data/choice_generation", "owner": "/data/owner_id", "candidate": "/data/candidates/0/handle"}},
+    {"id": "choose", "command": "choice.select", "args": {"blocked_request_id": "$play_request", "owner_id": "$owner", "choice_handle": "$choice", "choice_generation": "$generation", "candidates": ["$candidate"]}},
+    {"id": "play-terminal", "wait_terminal": {"request_id": "$play_request"}, "expect": {"type": "completed", "path": "/result/completion", "equals": "queue_settled"}},
+    {"id": "assert", "assert": {"path": "/actions/queue_empty", "equals": true}},
+    {"id": "final", "command": "state.dump", "capture": "post"}
+  ]
+}

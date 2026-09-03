@@ -1,0 +1,30 @@
+{
+  "schema": "sts2-state/v1",
+  "snapshot_id": "solo:20",
+  "state_revision": 20,
+  "identity": {
+    "game_version": "0.111.0",
+    "game_commit": null,
+    "adapter_id": "sts2-0.111",
+    "instance_id": "solo",
+    "process_epoch": "process-golden",
+    "run_epoch": "run-golden",
+    "room_epoch": "room-golden",
+    "combat_epoch": "combat-golden"
+  },
+  "clock": {"wall_time": "2026-09-03T00:00:00Z", "engine_frame": 9021, "logical_time": null},
+  "location": {"in_run": true, "act": 1, "floor": 1, "room": "combat", "in_combat": true, "turn": 1, "phase": "PlayerTurnPhase.Play"},
+  "authoritative_combat": {"game_oracle": {"checksum_id": 12}},
+  "authoritative_run": {"seed": 424242},
+  "local_semantic": {
+    "players": [{"handle": "player:process-golden:run-golden:1", "hp": 80, "block": 0}],
+    "enemies": [{"handle": "creature:process-golden:run-golden:combat-golden:7", "hp": 48, "block": 0}],
+    "actions": {"running": null, "pending": [], "queue_empty": true, "details_complete": true, "incomplete_reason": null},
+    "choices": [],
+    "shin_getter": {"form": "GETTER_ONE", "spirit": 0, "vigor": 0}
+  },
+  "presentation": {},
+  "completeness": {"authoritative_combat": "complete", "authoritative_run": "complete", "local_semantic": "complete", "presentation": "unavailable"},
+  "provenance": {"authoritative_combat": "NetFullCombatState", "local_semantic": "sts2-0.111"},
+  "hashes": {"canonical_sha256": "0000000000000000000000000000000000000000000000000000000000000000", "game_checksum": "12", "rng_before": "rng-golden", "rng_after": "rng-golden"}
+}

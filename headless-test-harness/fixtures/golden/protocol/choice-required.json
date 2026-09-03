@@ -1,0 +1,21 @@
+{
+  "protocol": "sts2-test/v1",
+  "schema_version": 1,
+  "type": "event",
+  "seq": 80,
+  "request_id": "7c68e9bb-6b2f-4890-a363-3571f0d87e88",
+  "instance_id": "solo",
+  "name": "choice_required",
+  "data": {
+    "choice_handle": "choice:process-golden:run-golden:combat-golden:player-1:g7",
+    "owner_id": 1,
+    "choice_generation": 7,
+    "kind": "card",
+    "min": 1,
+    "max": 1,
+    "candidates": [
+      {"handle": "choice-item:process-golden:run-golden:combat-golden:player-1:g7:0", "model_id": "CARD.X"}
+    ],
+    "blocked_action_id": 91
+  }
+}

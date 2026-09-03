@@ -1,0 +1,238 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://shingetter.invalid/schemas/protocol-v1.schema.json",
+  "title": "STS2 test bridge protocol v1",
+  "oneOf": [
+    {"$ref": "#/$defs/challenge"},
+    {"$ref": "#/$defs/hello"},
+    {"$ref": "#/$defs/hello_ack"},
+    {"$ref": "#/$defs/request"},
+    {"$ref": "#/$defs/accepted"},
+    {"$ref": "#/$defs/started"},
+    {"$ref": "#/$defs/event"},
+    {"$ref": "#/$defs/completed"},
+    {"$ref": "#/$defs/failed"}
+  ],
+  "$defs": {
+    "protocol": {"const": "sts2-test/v1"},
+    "schema_version": {"const": 1},
+    "seq": {"type": "integer", "minimum": 0},
+    "request_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "instance_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"},
+    "base": {
+      "type": "object",
+      "required": ["protocol", "schema_version", "type"],
+      "properties": {
+        "protocol": {"$ref": "#/$defs/protocol"},
+        "schema_version": {"$ref": "#/$defs/schema_version"},
+        "type": {"type": "string"},
+        "seq": {"$ref": "#/$defs/seq"},
+        "wall_time": {"type": "string", "format": "date-time"},
+        "engine_frame": {"type": ["integer", "null"], "minimum": 0},
+        "logical_time": {"type": ["number", "null"]},
+        "game_version": {"type": ["string", "null"]},
+        "game_commit": {"type": ["string", "null"]},
+        "adapter_id": {"type": ["string", "null"]},
+        "broker_epoch": {"type": ["string", "null"]},
+        "process_epoch": {"type": ["string", "null"]},
+        "connection_id": {"type": ["string", "null"]}
+      }
+    },
+    "challenge": {
+      "allOf": [
+        {"$ref": "#/$defs/base"},
+        {
+          "type": "object",
+          "required": ["type", "session_id", "instance_id", "process_epoch", "connection_id", "protocol_min", "protocol_max", "server_nonce"],
+          "properties": {
+            "type": {"const": "challenge"},
+            "session_id": {"type": "string", "minLength": 1, "maxLength": 128},
+            "instance_id": {"$ref": "#/$defs/instance_id"},
+            "process_epoch": {"type": "string", "minLength": 1},
+            "connection_id": {"type": "string", "minLength": 1},
+            "protocol_min": {"$ref": "#/$defs/protocol"},
+            "protocol_max": {"$ref": "#/$defs/protocol"},
+            "server_nonce": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"}
+          }
+        }
+      ]
+    },
+    "hello": {
+      "allOf": [
+        {"$ref": "#/$defs/base"},
+        {
+          "type": "object",
+          "required": ["type", "session_id", "instance_id", "process_epoch", "connection_id", "negotiated_protocol", "resume_from_seq", "server_nonce", "client_nonce", "client_proof"],
+          "properties": {
+            "type": {"const": "hello"},
+            "session_id": {"type": "string", "minLength": 1},
+            "instance_id": {"$ref": "#/$defs/instance_id"},
+            "process_epoch": {"type": "string", "minLength": 1},
+            "connection_id": {"type": "string", "minLength": 1},
+            "negotiated_protocol": {"$ref": "#/$defs/protocol"},
+            "resume_from_seq": {"type": "integer", "minimum": 0},
+            "server_nonce": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"},
+            "client_nonce": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"},
+            "client_proof": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+          }
+        }
+      ]
+    },
+    "hello_ack": {
+      "allOf": [
+        {"$ref": "#/$defs/base"},
+        {
+          "type": "object",
+          "required": ["type", "body", "body_sha256", "server_proof"],
+          "properties": {
+            "type": {"const": "hello_ack"},
+            "body": {"$ref": "#/$defs/hello_ack_body"},
+            "body_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+            "server_proof": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+          }
+        }
+      ]
+    },
+    "hello_ack_body": {
+      "type": "object",
+      "required": ["session_id", "instance_id", "process_epoch", "connection_id", "negotiated_protocol", "game", "adapter", "runtime", "capabilities"],
+      "properties": {
+        "session_id": {"type": "string"},
+        "instance_id": {"$ref": "#/$defs/instance_id"},
+        "process_epoch": {"type": "string"},
+        "connection_id": {"type": "string"},
+        "negotiated_protocol": {"$ref": "#/$defs/protocol"},
+        "game": {
+          "type": "object",
+          "required": ["version", "assembly_sha256"],
+          "properties": {
+            "version": {"type": "string"},
+            "commit": {"type": ["string", "null"]},
+            "assembly_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+            "assembly_mvid": {"type": ["string", "null"]}
+          },
+          "additionalProperties": true
+        },
+        "adapter": {
+          "type": "object",
+          "required": ["id", "assembly_sha256"],
+          "properties": {
+            "id": {"type": "string"},
+            "assembly_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+          },
+          "additionalProperties": true
+        },
+        "runtime": {
+          "type": "object",
+          "required": ["main_thread_id", "main_thread_probe", "display_driver", "audio_driver", "user_data_path"],
+          "properties": {
+            "main_thread_id": {"type": "integer"},
+            "main_thread_probe": {"const": true},
+            "display_driver": {"type": "string"},
+            "audio_driver": {"type": "string"},
+            "user_data_path": {"type": "string"}
+          },
+          "additionalProperties": true
+        },
+        "capabilities": {
+          "type": "object",
+          "additionalProperties": {"$ref": "#/$defs/capability"}
+        }
+      },
+      "additionalProperties": true
+    },
+    "capability": {
+      "type": "object",
+      "required": ["state"],
+      "properties": {
+        "state": {"enum": ["available", "unavailable", "unknown", "partial"]},
+        "reason": {"type": ["string", "null"]}
+      },
+      "additionalProperties": true
+    },
+    "trace": {
+      "type": "object",
+      "properties": {
+        "case_id": {"type": "string", "maxLength": 128},
+        "step_id": {"type": "string", "maxLength": 128}
+      },
+      "additionalProperties": true
+    },
+    "request": {
+      "allOf": [
+        {"$ref": "#/$defs/base"},
+        {
+          "type": "object",
+          "required": ["type", "seq", "request_id", "instance_id", "command", "args", "wait_for", "timeout_ms"],
+          "properties": {
+            "type": {"const": "request"},
+            "seq": {"$ref": "#/$defs/seq"},
+            "request_id": {"$ref": "#/$defs/request_id"},
+            "instance_id": {"$ref": "#/$defs/instance_id"},
+            "command": {"type": "string", "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+$"},
+            "args": {"type": "object"},
+            "wait_for": {"enum": ["immediate", "enqueued", "action_finished", "queue_settled", "peer_observed", "network_barrier", "presentation_finished"]},
+            "timeout_ms": {"type": "integer", "minimum": 1, "maximum": 60000},
+            "trace": {"$ref": "#/$defs/trace"}
+          }
+        }
+      ]
+    },
+    "lifecycle": {
+      "allOf": [
+        {"$ref": "#/$defs/base"},
+        {
+          "type": "object",
+          "required": ["seq", "request_id", "instance_id"],
+          "properties": {
+            "seq": {"$ref": "#/$defs/seq"},
+            "request_id": {"$ref": "#/$defs/request_id"},
+            "instance_id": {"$ref": "#/$defs/instance_id"},
+            "replayed": {"type": "boolean"}
+          }
+        }
+      ]
+    },
+    "accepted": {
+      "allOf": [
+        {"$ref": "#/$defs/lifecycle"},
+        {"type": "object", "required": ["type"], "properties": {"type": {"const": "accepted"}}}
+      ]
+    },
+    "started": {
+      "allOf": [
+        {"$ref": "#/$defs/lifecycle"},
+        {"type": "object", "required": ["type", "engine_frame"], "properties": {"type": {"const": "started"}, "engine_frame": {"type": "integer", "minimum": 0}}}
+      ]
+    },
+    "event": {
+      "allOf": [
+        {"$ref": "#/$defs/lifecycle"},
+        {"type": "object", "required": ["type", "name", "data"], "properties": {"type": {"const": "event"}, "name": {"type": "string", "minLength": 1}, "data": {"type": "object"}}}
+      ]
+    },
+    "completed": {
+      "allOf": [
+        {"$ref": "#/$defs/lifecycle"},
+        {"type": "object", "required": ["type", "result"], "properties": {"type": {"const": "completed"}, "result": {"type": "object"}}}
+      ]
+    },
+    "failed": {
+      "allOf": [
+        {"$ref": "#/$defs/lifecycle"},
+        {"type": "object", "required": ["type", "error"], "properties": {"type": {"const": "failed"}, "error": {"$ref": "#/$defs/error"}}}
+      ]
+    },
+    "error": {
+      "type": "object",
+      "required": ["code", "message", "retryable", "details"],
+      "properties": {
+        "code": {"type": "string", "pattern": "^E_[A-Z0-9_]+$"},
+        "message": {"type": "string"},
+        "retryable": {"type": "boolean"},
+        "details": {"type": "object"}
+      },
+      "additionalProperties": false
+    }
+  }
+}

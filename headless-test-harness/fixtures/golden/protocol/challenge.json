@@ -1,0 +1,12 @@
+{
+  "protocol": "sts2-test/v1",
+  "schema_version": 1,
+  "type": "challenge",
+  "session_id": "session-golden",
+  "instance_id": "solo",
+  "process_epoch": "process-golden",
+  "connection_id": "connection-golden",
+  "protocol_min": "sts2-test/v1",
+  "protocol_max": "sts2-test/v1",
+  "server_nonce": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+}

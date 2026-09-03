@@ -15,6 +15,8 @@ obj/
 tmp/
 __pycache__/
 *.py[cod]
+.pytest_cache/
+.venv/
 
 # Mod build/export output
 /shin-getter-mod-godot/build/
@@ -33,3 +35,10 @@ export_credentials.cfg
 # Local development checks and planning notes
 *.ps1
 /docs/
+
+# Headless-test harness runtime and local package artifacts stay outside Git.
+/headless-test-harness/.runtime/
+/headless-test-harness/**/.state/
+/headless-test-harness/**/dist/
+/headless-test-harness/**/*.egg-info/
+/headless-test-harness/bridge/**/package-out/

@@ -1,0 +1,14 @@
+{
+  "schema": "sts2-evidence/v1",
+  "case": {"id": "poc-0-handshake", "scenario_sha256": "0000000000000000000000000000000000000000000000000000000000000000", "started_at": "2026-09-03T00:00:00Z", "ended_at": "2026-09-03T00:00:01Z", "result": "passed"},
+  "software": {"harness_version": "0.2.0", "harness_commit": "0000000000000000000000000000000000000000", "python": "3.14.5", "os": "Windows"},
+  "game": {"version": "0.111.0", "commit": null, "executable_sha256": "1111111111111111111111111111111111111111111111111111111111111111", "assembly_sha256": "2222222222222222222222222222222222222222222222222222222222222222"},
+  "mods": [{"id": "ShinGetterMod", "version": "v1.2.0", "dll_sha256": "3333333333333333333333333333333333333333333333333333333333333333"}],
+  "adapter": {"id": "sts2-0.111", "assembly_sha256": "4444444444444444444444444444444444444444444444444444444444444444", "capabilities": {}},
+  "instances": [{"id": "solo", "role": "single", "pid": 42, "process_start_time_utc": "2026-09-03T00:00:00Z", "driver": "headless", "user_data_root": "<redacted>/solo"}],
+  "determinism": {"seed": 424242, "rng_fingerprints": [], "fault_injection": false},
+  "artifacts": [],
+  "assertions": [{"id": "handshake", "passed": true, "oracle": "authenticated hello_ack"}],
+  "redaction": {"rules_version": 1, "removed_fields": 0},
+  "aggregate_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+}

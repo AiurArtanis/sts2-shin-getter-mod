@@ -1,0 +1,44 @@
+{
+  "schema": "sts2-harness-import-baseline/v1",
+  "source": "E:/Work/SlaytheSpare2-111-beta/agent-harness",
+  "destination": "headless-test-harness/python/agent-harness",
+  "source_policy": "read-only",
+  "imported_at_utc": "2026-09-03T03:22:57.9367944Z",
+  "implementation_task": "01a062c8-5224-70c3-a5e1-f49bea27c4c9",
+  "branch": "feat/headless-test-harness-v0.2-20260903",
+  "exclusions": [
+    "**/__pycache__/**",
+    "**/.pytest_cache/**",
+    "**/*.egg-info/**",
+    "**/.state/**",
+    "**/*.pyc"
+  ],
+  "canonicalization": {
+    "version": 1,
+    "path": "relative POSIX path preserving case, without ./",
+    "ordering": "ascending UTF-8 path bytes",
+    "file_hash": "lowercase SHA-256 over original file bytes",
+    "record": "UTF8(path) || 0x00 || UTF8(lowercase_file_sha256) || 0x0A",
+    "aggregate": "SHA-256 over concatenated records, including final LF",
+    "encoding": "UTF-8 without BOM",
+    "links": "symlink and reparse-point inputs are rejected"
+  },
+  "file_count": 14,
+  "files": [
+    {"path": "cli_anything/slaythespare2_111_beta/__init__.py", "sha256": "cb1c0ef28fbe98d4b37eec6ffa467971d1bbfcace5cf55855d44d0adab558a0c"},
+    {"path": "cli_anything/slaythespare2_111_beta/cli.py", "sha256": "38845ca2d24a3b0292b391dcfbea2703d7868ce2975091ef3004526a21033755"},
+    {"path": "cli_anything/slaythespare2_111_beta/core.py", "sha256": "4ebdab0777e63e047546348279816da78e5c220553dca4f13316e9849c1595fd"},
+    {"path": "cli_anything/slaythespare2_111_beta/repl.py", "sha256": "1c675eabfff2e12d2b990bfaa922295ff6d531a89633e7ed1b9c1cf69956cc6a"},
+    {"path": "cli_anything/slaythespare2_111_beta/skills/SKILL.md", "sha256": "351ee3157b49902937fbcdce58b920ef2250329a57a9376aefad93872c9be47f"},
+    {"path": "cli_anything/slaythespare2_111_beta/utils/__init__.py", "sha256": "41c31cb304e96c68963c0b022681c054420b3b74eefca84379641f4433ddc189"},
+    {"path": "cli_anything/slaythespare2_111_beta/utils/repl_skin.py", "sha256": "efbbae140830bace95d11b3c4861d1f8a001477c18b7bc68f519066eb9c01b11"},
+    {"path": "pyproject.toml", "sha256": "28cbb708e489bddd6bd55469c524434655c5a607a2cb2ecc96934857360c5d4f"},
+    {"path": "README.md", "sha256": "f0e9aee08d64ca851857887e660b58d9799be7c598c4554295adc795913d10df"},
+    {"path": "SOP.md", "sha256": "6e4b3f381849b050280abcb1a2bf71277d891d00134c3ae56de4a44aef6ec971"},
+    {"path": "tests/conftest.py", "sha256": "c243061f759407f9221a61d467ec5004d8058e6dcdaea87e0aa7e202de5eacb5"},
+    {"path": "tests/test_core.py", "sha256": "a516d6557ca641025f2fda16ca88b2c0ea40e2de2e6cf0cff625c5a159dff465"},
+    {"path": "tests/test_full_e2e.py", "sha256": "fd5aba370b0e654c7c75b182dd6d6ee12e859c6c3193713524a533f0bc6d6f59"},
+    {"path": "tests/TEST.md", "sha256": "573502bdb8cfd4db97eca9d581fd0e93f7421a7bef52debde2f8d4908b82f4f6"}
+  ],
+  "aggregate_sha256": "e6452ab14b7978719a039c2e340188628431fb7ea20c0ac7e61c4fb91b64b91d"
+}
