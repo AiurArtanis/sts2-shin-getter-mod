@@ -168,7 +168,8 @@ internal static partial class ShinGetterEventInvasionService
 
         PendingBattleSetups.Remove(owner);
         var combatState = owner.Creature.CombatState;
-        if (combatState == null || !ReferenceEquals(combatState.Encounter, pending.Encounter))
+        if (combatState == null
+            || !ReferenceEquals(combatState.Encounter?.CanonicalInstance, pending.Encounter))
             return;
 
         if (combatState.Encounter is not ByrdonisElite)
@@ -194,7 +195,7 @@ internal static partial class ShinGetterEventInvasionService
         var combatState = owner.Creature.CombatState;
         PlayerCombatState? playerCombatState = owner.PlayerCombatState;
         if (combatState == null
-            || !ReferenceEquals(combatState.Encounter, pending.Encounter)
+            || !ReferenceEquals(combatState.Encounter?.CanonicalInstance, pending.Encounter)
             || combatState.Encounter is not KnightsElite
             || playerCombatState == null
             || playerCombatState.TurnNumber != 1)
@@ -655,7 +656,7 @@ internal static partial class ShinGetterEventInvasionService
             eventModel,
             "BYRDONIS_NEST",
             "RYOMA",
-            ModelDb.Encounter<ByrdonisElite>().ToMutable(),
+            ModelDb.Encounter<ByrdonisElite>(),
             Array.Empty<Reward>(),
             PendingBattleSetup.ByrdonisNest,
             shouldResumeAfterCombat: true);
@@ -721,7 +722,7 @@ internal static partial class ShinGetterEventInvasionService
             eventModel,
             "TRIAL",
             "RYOMA",
-            ModelDb.Encounter<KnightsElite>().ToMutable(),
+            ModelDb.Encounter<KnightsElite>(),
             Array.Empty<Reward>(),
             PendingBattleSetup.Trial);
         return Task.CompletedTask;
