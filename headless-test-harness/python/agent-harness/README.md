@@ -26,11 +26,11 @@ $common = @(
   '--state-dir', '<external-cli-state>',
   '--runtime-root', '<external-session-parent>',
   '--control-session', 'case-001',
-  '--protected-root', '<read-only-111-source>',
-  '--protected-root', '<read-only-production-source>',
-  '--protected-root', '<steam-game-root>',
-  '--protected-root', '<workshop-root>',
-  '--protected-root', '<production-mod-root>',
+  '--protect-production-source', '<read-only-production-source>',
+  '--protect-steam-game', '<steam-game-root>',
+  '--protect-workshop', '<workshop-root>',
+  '--protect-production-mod', '<deployed-production-mod-root>',
+  '--protect-production-deployment', '<normal-deployment-or-user-data-root>',
   '--json'
 )
 
@@ -39,10 +39,15 @@ cli-anything-slaythespare2-111-beta @common process list
 
 `--runtime-root` is the direct parent of the session directory; the example
 above resolves the session at `<external-session-parent>\case-001`.
-Every `--protected-root` must be an existing absolute directory. Live commands
-fail with `E_ISOLATION_BREACH` when no explicit protection set is supplied;
-repeat the option until every source/deployment tree in the environment is
-covered.
+The four named protection options are all mandatory existing absolute
+directories. Their category/path mapping must be unique and is persisted in
+`session.json`; reopening the session or starting its broker must present the
+same policy identity. The selected 111 `--project-root` and harness repository
+are additional implicit roots. Missing, duplicate, redundant, or changed policy
+entries fail with `E_ISOLATION_BREACH`.
+`--protect-production-deployment` is optional; when present, it protects a
+distinct normal deployment or user-data tree and becomes part of the same
+persisted policy identity.
 
 ## v0.2 command groups
 
@@ -66,7 +71,9 @@ returns `replayed=true` while its terminal payload is among the 256 most recent,
 and any content change returns `E_IDEMPOTENCY_CONFLICT`. The request ID/digest
 tombstone lives for the whole companion process epoch. If its terminal payload
 has aged out, the exact retry returns `E_IDEMPOTENCY_WINDOW_EXPIRED` and is not
-executed again.
+executed again. The Python client keeps the same process-epoch digest ledger and
+rejects a different payload before a second pipe write, so a late terminal from
+the original in-flight request cannot be mistaken for success of the conflict.
 
 `--dry-run` is implemented only by `graph sync`, `build restore`, `build run`,
 `game import`, `game smoke`, `game launch`, `session configure`, `session undo`,
@@ -86,9 +93,13 @@ $env:STS2_HEADLESS_RUNTIME_PROFILE = '<absolute-external-profile.json>'
 python -m pytest <absolute-tests-path>\test_runtime_release.py -v -s --tb=no
 ```
 
-The profile schema is `sts2-runtime-release-profile/v1` and must explicitly set
-`stage_companion=true`. With release mode enabled, an absent or invalid profile
-is a test error rather than a skip. The gate rebuilds and stages the companion,
+The profile schema is `sts2-runtime-release-profile/v1`, must explicitly set
+`stage_companion=true`, and must contain the same four-category
+`protection_policy` mapping used by the live CLI. It may additionally include
+`production_deployment`, which is passed through the optional fifth CLI option.
+With release mode enabled, an
+absent or invalid profile is a test error rather than a skip. The gate rebuilds
+and stages the companion,
 checks authenticated fingerprints, real no-choice and choice actions,
 disconnect/reconnect, duplicate/conflict/replay behavior, graceful exit 0, and
 finalized evidence verification.

@@ -22,11 +22,17 @@ evidence are created under an external runtime root (by default under
 Git repository, either game source tree, Steam, Workshop, and the production mod
 directory are rejected as writable runtime roots.
 
-Live control is fail-closed unless the caller repeats `--protected-root` for
-every source, Steam, Workshop, and production deployment tree that must remain
-read-only. Every declared root must already exist and be an absolute directory.
-The guard rejects symlink and Windows junction ancestors both before and after
-path resolution, including newly created runtime paths.
+Live control is fail-closed unless the caller supplies all four named roots:
+`--protect-production-source`, `--protect-steam-game`,
+`--protect-workshop`, and `--protect-production-mod`. The selected 111
+`--project-root` and this repository are protected implicitly. Every named root
+must be an existing absolute directory, categories may not resolve to the same
+or an implicit tree, and the category/path mapping is persisted and digest-bound
+to broker startup. The guard rejects symlink and Windows junction ancestors
+before and after path resolution, including newly created runtime paths.
+`--protect-production-deployment` is an optional fifth category for a normal
+deployment or user-data root; when supplied, it is subject to the same identity,
+overlap, persistence, and broker-digest checks.
 
 The companion is a separate test-only mod. It is never referenced by
 `shin-getter-mod-godot/ShinGetterMod.csproj`, never included in the production
@@ -43,6 +49,8 @@ finished duplicate replays its first terminal while that payload remains in the
 replacing the original ledger entry. Request-ID/digest tombstones remain for the
 whole companion process epoch. Once a terminal payload leaves the LRU, an exact
 retry fails with `E_IDEMPOTENCY_WINDOW_EXPIRED`; it is never executed again.
+The Python client mirrors the same canonical digest ledger for the whole process
+epoch and rejects a conflicting payload before writing it to the pipe.
 
 The live command path is:
 

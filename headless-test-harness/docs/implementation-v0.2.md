@@ -117,13 +117,22 @@ Each instance has independent `APPDATA`, `LOCALAPPDATA`, logs, snapshots, and
 bridge events. Writable-root guards reject repository, reverse-engineered game,
 Steam, Workshop, production mod, symlink, and reparse-point boundaries.
 Existing sessions revalidate all persisted protected roots whenever they are
-opened. The game child is constructed from a minimal operating-system
-environment allowlist plus explicit TEST and isolated-user-data variables; it
-does not inherit the broker's ambient environment wholesale.
+opened. Their named category/path mapping is persisted and canonical-hashed; the
+same mapping is required from the CLI, and the broker receives that expected
+digest at bootstrap. The game child is constructed from a minimal
+operating-system environment allowlist plus explicit TEST and isolated-user-data
+variables; it does not inherit the broker's ambient environment wholesale.
 
-Every live CLI invocation must explicitly repeat `--protected-root` for all
-source, Steam, Workshop, and production deployment roots. Omission fails closed
-with `E_ISOLATION_BREACH`; each value must be an existing absolute directory.
+Every live CLI invocation must explicitly provide
+`--protect-production-source`, `--protect-steam-game`,
+`--protect-workshop`, and `--protect-production-mod`. The selected 111 project
+and harness repository are protected implicitly. Missing categories, duplicate
+or redundant identities, nonexistent/relative paths, and policy changes on open
+fail closed with `E_ISOLATION_BREACH`.
+An optional fifth category, `--protect-production-deployment`, covers a distinct
+normal deployment or user-data tree. When present it participates in the same
+canonical policy document, persisted identity, overlap validation, and broker
+bootstrap digest.
 On Windows the guard checks the unresolved lexical ancestor chain before
 `Path.resolve()`, checks the resolved chain, and checks again after directory
 creation, so a junction cannot disappear from inspection by being resolved to
@@ -147,10 +156,13 @@ connection, and broker epoch. The same ID plus different content always returns
 `E_IDEMPOTENCY_CONFLICT`, including after terminal-payload eviction; neither
 failure replaces the original tombstone.
 
-Each client send records an attempt sequence floor and accepts only an
-`accepted` or terminal envelope newer than that floor. Replayed terminals
-already buffered from an earlier attempt therefore cannot satisfy a later
-request that reuses the same request ID.
+The broker-owned Python client mirrors the same request-ID/canonical-digest
+ledger for its entire authenticated process epoch. A different payload is
+rejected before a second pipe write, closing the race where a late terminal from
+the original in-flight request could arrive after a new attempt's sequence
+floor. Allowed exact retries still record a sequence floor and accept only an
+`accepted` or terminal envelope newer than it, so terminals already buffered
+before that retry cannot satisfy it.
 
 Each authenticated connection has its own bounded live critical outbound queue
 and writer pump. Replay is a separate rolling store, so normal retention
@@ -319,7 +331,7 @@ outside both repository and package source:
 
 ```powershell
 $env:CLI_ANYTHING_FORCE_INSTALLED = '1'
-python -m pytest <absolute-path-to-agent-harness-tests> -v -rs --tb=no
+python -m pytest <absolute-path-to-agent-harness-tests> -v -s -rs --tb=no
 ```
 
 The real-runtime release gate is separate and opt-in:
@@ -331,19 +343,22 @@ $env:STS2_HEADLESS_RUNTIME_PROFILE = '<absolute-external-profile.json>'
 python -m pytest <absolute-path-to-agent-harness-tests>\test_runtime_release.py -v -s --tb=no
 ```
 
-The 2026-09-03 second-review source suite collected 251 nodes and produced
-249 passed plus two explicit skips in 50.62 seconds: the privilege-dependent
+The 2026-09-03 third-review remediation suite collected 267 nodes and produced
+265 passed plus two explicit skips in 50.50 seconds: the privilege-dependent
 Windows symlink fixture and the opt-in real-runtime test. Release mode without
-a profile failed as required. The configured real gate then passed in 57.56
+a profile failed as required. The configured real gate then passed in 58.16
 seconds, both C# builds completed with zero
 warnings/errors, and the cross-language contract verifier passed. A separate
 forced-installed subprocess check printed the resolved console script path.
+The code and regression checkpoint is
+`5526ff6d33b0675315c94aee57c273cc1c500266`; final runtime evidence was
+captured only after that commit existed.
 
 ## Real-runtime proof
 
 The final release gate ran `v0.111.0@41cef1ea` in `headless / Dummy` using an
 external disposable staging tree. It rebuilt and staged companion SHA-256
-`b8cc79cc070ef979a61e398a69c9c20d697049a37416dd5fedf382c7bb403bbf`.
+`337fc7cab7152112735fd35b9eefe978b6b7a6cbd618cab0ce78e6120ad9c7a8`.
 
 PoC 1 proved exact no-choice completion: energy `3 -> 2`, block `0 -> 5`, empty
 queue, idle executor, no pending choice, and unchanged RNG fingerprint.
@@ -355,18 +370,18 @@ execute again; changed content returned `E_IDEMPOTENCY_CONFLICT` without
 poisoning the parent. The run then rejected one stale generation and one
 unrelated mutation, accepted the matching selection, upgraded the selected
 ShinGetter Defend from `0 -> 1`, and settled the parent. The event sequence was
-enqueued `24`, choice required `26`, action finished `40`, and terminal `41`;
+enqueued `24`, choice required `26`, action finished `39`, and terminal `40`;
 an exact post-terminal duplicate returned the same result with `replayed=true`
-at sequence `42`. Pre/post snapshots are `solo-11.json` and `solo-12.json`.
+at sequence `41`. Pre/post snapshots are `solo-11.json` and `solo-12.json`.
 
 The finalized session is
-`E:\Work\StS2 Mods\_headless-runtime\release-gates\runtime-release-20260903-77811dd3`.
+`E:\Work\StS2 Mods\_headless-runtime\release-gates\runtime-release-20260903-fe1d7c46`.
 Its verified evidence manifest contains 22 artifacts with aggregate SHA-256
-`9cb40b38ec5a219052bccf57ef964bf383728866bbec1900052678e20b3cfb92`.
+`fcd46b7d191848d3cb8b5b6073b31b11df01d9abd9b94ff3c6f2af8231345644`.
 
 The final production reverse scan also covers
 `E_IDEMPOTENCY_WINDOW_EXPIRED` as a forbidden TEST-ONLY signature. Its report is
-`C:\Users\win\AppData\Local\cli-anything\slaythespare2-111-beta\gates\20260903-v02-second-review-production-scan-v2.json`;
+`C:\Users\win\AppData\Local\cli-anything\slaythespare2-111-beta\gates\20260903-third-review-remediation-production-scan.json`;
 all seven signatures returned `hits=[]` across the production input tree, DLL,
 PCK, and release ZIP.
 

@@ -11,11 +11,16 @@ writable state, runtime, staging, and evidence path must be outside repositories
 Steam, Workshop, and production mod/deployment directories.
 
 For live work, always pass `--project-root`, external `--state-dir`, external
-`--runtime-root`, `--control-session`, and repeated `--protected-root` values for
-every source, Steam, Workshop, production-mod, and production-deployment tree.
-Each protected root must be an existing absolute directory; omission fails
-closed with `E_ISOLATION_BREACH`. `--runtime-root` is the direct parent of the
-named session directory.
+`--runtime-root`, `--control-session`, and all four named protection options:
+`--protect-production-source`, `--protect-steam-game`,
+`--protect-workshop`, and `--protect-production-mod`. Each must be an existing
+absolute directory. Missing, duplicate, redundant, or changed category/path
+identity fails closed with `E_ISOLATION_BREACH`. The selected 111 project and
+harness repository are protected implicitly. `--runtime-root` is the direct
+parent of the named session directory.
+Add the optional `--protect-production-deployment` category when a distinct
+normal deployment or user-data tree also needs protection. If supplied, it is
+part of the same persisted category/path identity and broker policy digest.
 
 ## Commands
 
@@ -73,6 +78,9 @@ payloads are replayable, but request-ID/digest tombstones live for the entire
 companion process epoch. An exact retry after payload eviction returns
 `E_IDEMPOTENCY_WINDOW_EXPIRED` and must never be converted into a fresh
 mutation. Reconnect only within the server's reported rolling replay window.
+The Python client mirrors that canonical digest ledger for the complete process
+epoch and rejects changed content before writing, so a late terminal cannot
+satisfy a conflicting retry.
 Treat `E_RESUME_WINDOW_EXPIRED` and `E_OBSERVER_OVERFLOW` as invalid-case
 outcomes, not as permission to guess or continue mutating.
 
@@ -87,7 +95,9 @@ python -m pytest <absolute-tests-path>\test_runtime_release.py -v -s --tb=no
 ```
 
 The external profile must use schema `sts2-runtime-release-profile/v1`, set
-`stage_companion=true`, and keep all writable paths outside protected trees.
+`stage_companion=true`, include the same four-category `protection_policy`
+mapping used by live CLI options, and keep all writable paths outside protected
+trees. The mapping may also include optional `production_deployment`.
 Release mode without a valid profile is a hard failure. The gate must rebuild
 and stage the TEST-ONLY companion, verify real PoC 0/1/1b including reconnect
 and idempotency, stop the exact game process with exit 0, finalize/verify

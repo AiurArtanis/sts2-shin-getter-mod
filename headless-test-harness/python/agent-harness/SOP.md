@@ -12,9 +12,14 @@ game behavior in Python.
 - Put runtime sessions, user data, logs, saves, screenshots, staging packages,
   and evidence outside every repository, Steam, Workshop, and production mod
   directory.
-- For every live command, repeat `--protected-root` for all source, Steam,
-  Workshop, production-mod, and production-deployment roots. Values must be
-  existing absolute directories; omission is `E_ISOLATION_BREACH`.
+- For every live command, provide the four named categories
+  `--protect-production-source`, `--protect-steam-game`,
+  `--protect-workshop`, and `--protect-production-mod`. Values must be
+  existing absolute directories; a missing, duplicate, redundant, or changed
+  category/path mapping is `E_ISOLATION_BREACH`.
+- Add `--protect-production-deployment` when a distinct normal deployment or
+  user-data tree exists. It is optional, but once supplied it is bound to the
+  same persisted policy identity and broker digest.
 - Never add the companion to `ShinGetterMod.csproj` or a production manifest,
   PCK, ZIP, or four-file deployment.
 - Start and stop live processes through the broker. Process identity is PID +
@@ -59,7 +64,8 @@ broker/companion mutations do not expose `--dry-run`.
 
 ## Session addressing
 
-For live commands, set all four roots explicitly:
+For live commands, set the four named roots explicitly. The selected 111 source
+is already protected by `--project-root` and is not counted again:
 
 ```powershell
 $common = @(
@@ -67,18 +73,21 @@ $common = @(
   '--state-dir', '<external-cli-state>',
   '--runtime-root', '<external-session-parent>',
   '--control-session', 'case-001',
-  '--protected-root', '<read-only-111-source>',
-  '--protected-root', '<read-only-production-source>',
-  '--protected-root', '<steam-game-root>',
-  '--protected-root', '<workshop-root>',
-  '--protected-root', '<production-mod-root>',
+  '--protect-production-source', '<read-only-production-source>',
+  '--protect-steam-game', '<steam-game-root>',
+  '--protect-workshop', '<workshop-root>',
+  '--protect-production-mod', '<deployed-production-mod-root>',
+  '--protect-production-deployment', '<normal-deployment-or-user-data-root>',
   '--json'
 )
 ```
 
 `--runtime-root` is the session directory's direct parent. A session ID is a
-validated identifier, not a path. The protection list is intentionally
-explicit and repeatable; the harness cannot infer every local deployment tree.
+validated identifier, not a path. The named policy is persisted as categories
+plus resolved paths and bound by its canonical SHA-256 to broker startup.
+Opening the session requires the exact same identity. Categories may be nested
+where the real deployment is nested, but two categories cannot resolve to the
+same path and none may duplicate an implicit repository/project root.
 
 ## State and safety
 
@@ -96,7 +105,8 @@ The live broker uses an external `session.json`, locked JSONL journals, and one
 instance directory per process. On Windows, broker-owned game processes are
 assigned to a Job Object. A broker replacement must not adopt an old process or
 recover its in-memory token. Opening an existing session revalidates every
-persisted protected root before any write. A game child receives only a small
+persisted protected root and the named policy identity before any write. A game
+child receives only a small
 system environment allowlist plus explicit test and isolated-user-data values;
 the broker's ambient environment is not inherited wholesale.
 
@@ -152,6 +162,10 @@ only a blocked active consumer that exhausts it latches
   payload was evicted returns `E_IDEMPOTENCY_WINDOW_EXPIRED`, while different
   content returns `E_IDEMPOTENCY_CONFLICT`; neither path executes or overwrites
   the original tombstone.
+- The broker-owned Python client keeps the same canonical request-ID/digest
+  ledger for the entire authenticated process epoch. It rejects changed content
+  before a pipe write; sequence floors remain a second guard against already
+  buffered terminals for allowed exact retries.
 
 ## Evidence
 
