@@ -15,6 +15,7 @@ namespace Sts2HeadlessTestBridge.Dispatch;
 public sealed class RequestExecution(
     CommandRegistry registry,
     ActionObserver actions,
+    ChoiceBroker choices,
     Node owner,
     int mainThreadId)
 {
@@ -65,6 +66,13 @@ public sealed class RequestExecution(
         {
             descriptor = registry.GetDescriptor(pending.Request);
             bool gameplayMutation = descriptor.ConcurrencyClass == "gameplay-mutation";
+            if (descriptor.ConcurrencyClass == "choice-continuation"
+                && (_mutationOwner is null || _mutationFrozenReason is not null))
+            {
+                throw new BridgeStateException(
+                    ErrorCodes.StaleHandle,
+                    "choice continuation has no live gameplay-mutation parent");
+            }
             if (descriptor.Name == "runtime.shutdown" && _mutationOwner is not null)
             {
                 throw new BridgeStateException(
@@ -149,7 +157,25 @@ public sealed class RequestExecution(
             throw new InvalidOperationException("RequestExecution.Poll must run on the recorded Godot main thread");
 
         actions.Synchronize();
+        choices.Synchronize();
         foreach (ActionTransition transition in actions.DrainTransitions())
+        {
+            if (_active.TryGetValue(transition.RequestId, out ActiveRequest? request)
+                && !request.TerminalSent)
+            {
+                request.SendChain = SendAfterAsync(
+                    request.SendChain,
+                    () => request.Connection.SendAsync(
+                        "event",
+                        request.RequestId,
+                        new Dictionary<string, object?>
+                        {
+                            ["name"] = transition.Name,
+                            ["data"] = transition.Data,
+                        }));
+            }
+        }
+        foreach (ChoiceTransition transition in choices.DrainTransitions())
         {
             if (_active.TryGetValue(transition.RequestId, out ActiveRequest? request)
                 && !request.TerminalSent)
@@ -181,6 +207,15 @@ public sealed class RequestExecution(
         }
 
         Task? task = request.Operation.CompletionTask;
+        if (request.Operation.Action is { CompletionTask.IsCompleted: true, Exception: not null } action)
+        {
+            Fail(
+                request,
+                ErrorCodes.ActionCorrelationFailed,
+                action.Exception.GetBaseException().Message,
+                freezeMutation: request.IsMutation);
+            return;
+        }
         if (task is { IsFaulted: true })
         {
             string message = task.Exception?.GetBaseException().Message ?? "game operation faulted";
@@ -241,7 +276,8 @@ public sealed class RequestExecution(
                 && actions.IsEnqueued(request.Operation.Action),
             "action_finished" => request.Operation.CompletionTask?.IsCompletedSuccessfully ?? true,
             "queue_settled" => (request.Operation.CompletionTask?.IsCompletedSuccessfully ?? true)
-                && actions.IsQueueSettled(),
+                && actions.IsQueueSettled()
+                && !choices.HasActiveChoice,
             _ => false,
         };
     }
@@ -307,6 +343,8 @@ public sealed class RequestExecution(
                     ["error"] = ProtocolServer.Error(code, message),
                 }));
         request.TerminalSent = true;
+        if (request.IsMutation)
+            choices.InvalidateParent(request.RequestId, message);
         if (freezeMutation && request.IsMutation)
             _mutationFrozenReason = message;
         if (!request.IsMutation || CanReleaseMutation(request))

@@ -249,6 +249,56 @@ def test_component_host_rejects_stale_choice(component_host: dict) -> None:
     assert terminal["error"]["code"] == ErrorCode.STALE_HANDLE.value
 
 
+@pytest.mark.parametrize(
+    ("field", "replacement"),
+    [
+        ("owner_id", 999),
+        ("choice_generation", 999),
+        ("choice_handle", "choice:stale"),
+        ("candidates", ["choice-item:stale:0"]),
+    ],
+)
+def test_component_host_rejects_each_stale_choice_identity_field(
+    component_host: dict,
+    field: str,
+    replacement: object,
+) -> None:
+    with _client(component_host) as client:
+        parent = client.dispatch("test.choice_parent", {}, wait_for="queue_settled")
+        event = client.wait_event(parent, "choice_required")
+        selection = {
+            "blocked_request_id": parent,
+            "owner_id": event["data"]["owner_id"],
+            "choice_handle": event["data"]["choice_handle"],
+            "choice_generation": event["data"]["choice_generation"],
+            "candidates": [event["data"]["candidates"][0]["handle"]],
+        }
+        selection[field] = replacement
+        terminal = client.request("choice.select", selection)
+    assert terminal["type"] == "failed"
+    assert terminal["error"]["code"] == ErrorCode.STALE_HANDLE.value
+
+
+def test_game_bridge_choice_broker_uses_local_selector_and_server_handles(harness_root: Path) -> None:
+    source = (
+        harness_root
+        / "bridge"
+        / "Sts2HeadlessTestBridge"
+        / "src"
+        / "Dispatch"
+        / "ChoiceBroker.cs"
+    ).read_text(encoding="utf-8")
+    assert "ICardSelector" in source
+    assert "CardSelectCmd.UseSelector" in source
+    assert "localOnly: true" in source
+    assert "TaskCompletionSource<IEnumerable<CardModel>>" in source
+    assert "blocked_request_id" in source
+    assert "choice_generation" in source
+    assert "InvalidateParent" in source
+    assert "Task.Delay(" not in source
+    assert "Thread.Sleep(" not in source
+
+
 def test_component_host_snapshot_query_passes_mutation_lane(component_host: dict) -> None:
     with _client(component_host) as client:
         parent = client.dispatch("test.choice_parent", {}, wait_for="queue_settled")

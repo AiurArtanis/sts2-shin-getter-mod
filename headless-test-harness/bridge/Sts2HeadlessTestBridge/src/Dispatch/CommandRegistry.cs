@@ -39,7 +39,10 @@ public sealed record BridgeCommandOperation(
     Func<SnapshotCapture, Dictionary<string, object?>>? Finalize = null,
     bool Shutdown = false);
 
-public sealed class CommandRegistry(SnapshotBuilder snapshots, ActionObserver actions)
+public sealed class CommandRegistry(
+    SnapshotBuilder snapshots,
+    ActionObserver actions,
+    ChoiceBroker choices)
 {
     private MegaCrit.Sts2.Core.DevConsole.DevConsole? _devConsole;
 
@@ -56,6 +59,8 @@ public sealed class CommandRegistry(SnapshotBuilder snapshots, ActionObserver ac
         ["combat.status"] = new("combat.status", "query", "snapshot-safe-query", "immediate_query", "immediate", []),
         ["combat.add_card"] = new("combat.add_card", "mutation", "gameplay-mutation", "awaitable_cmd_result", "queue_settled", []),
         ["combat.play_card"] = new("combat.play_card", "mutation", "gameplay-mutation", "typed_action_reference", "queue_settled", ["typed_card_play"]),
+        ["choice.list"] = new("choice.list", "query", "snapshot-safe-query", "immediate_query", "immediate", ["card_select_local_selector"]),
+        ["choice.select"] = new("choice.select", "mutation", "choice-continuation", "immediate_query", "immediate", ["card_select_local_selector"]),
     };
 
     public IReadOnlyDictionary<string, BridgeCommandDescriptor> Descriptors => _descriptors;
@@ -100,6 +105,8 @@ public sealed class CommandRegistry(SnapshotBuilder snapshots, ActionObserver ac
             "combat.status" => CombatStatus(descriptor),
             "combat.add_card" => AddCard(request, descriptor),
             "combat.play_card" => PlayCard(request, descriptor, requestId),
+            "choice.list" => Immediate(descriptor, choices.List()),
+            "choice.select" => Immediate(descriptor, choices.Select(request.GetProperty("args"))),
             "runtime.shutdown" => new BridgeCommandOperation(
                 descriptor,
                 new Dictionary<string, object?> { ["flushed"] = true },
@@ -160,6 +167,7 @@ public sealed class CommandRegistry(SnapshotBuilder snapshots, ActionObserver ac
         // SetUpNewSingleplayer creates the queue synchronously before the first
         // asynchronous load boundary; attach now so the mirror starts at ID 0.
         actions.Synchronize();
+        choices.Synchronize();
         return new BridgeCommandOperation(
             descriptor,
             new Dictionary<string, object?>(StringComparer.Ordinal)
@@ -489,7 +497,7 @@ public static class BridgeCapabilities
         ["main_thread_dispatch"] = State("available"),
         ["state_dump"] = State("available"),
         ["typed_card_play"] = State("available"),
-        ["card_select_local_selector"] = State("unavailable", "D6 adapter not registered"),
+        ["card_select_local_selector"] = State("available", "singleplayer LocalSelector only"),
         ["pixel_output"] = State("unknown", "H0 capability probe only"),
         ["virtual_clock"] = State("unavailable", "not supported by v0.2"),
     };

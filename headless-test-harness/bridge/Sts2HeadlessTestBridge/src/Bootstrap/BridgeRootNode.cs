@@ -17,6 +17,7 @@ public partial class BridgeRootNode : Node
     private MainThreadDispatcher? _dispatcher;
     private RequestExecution? _execution;
     private ActionObserver? _actions;
+    private ChoiceBroker? _choices;
     private ProtocolServer? _server;
     private CancellationTokenSource? _serverCancellation;
     private int _mainThreadId;
@@ -39,11 +40,14 @@ public partial class BridgeRootNode : Node
             processEpoch,
             () => ReleaseInfo("version", "unknown") ?? "unknown",
             () => ReleaseInfo("commit", null),
-            actionSnapshot: () => _actions?.Snapshot() ?? new Dictionary<string, object?>());
+            actionSnapshot: () => _actions?.Snapshot() ?? new Dictionary<string, object?>(),
+            choiceSnapshot: () => _choices?.Snapshot() ?? Array.Empty<Dictionary<string, object?>>());
         _actions = new ActionObserver(snapshots.Handles);
+        _choices = new ChoiceBroker(processEpoch, _actions);
         _actions.Synchronize();
-        var registry = new CommandRegistry(snapshots, _actions);
-        _execution = new RequestExecution(registry, _actions, this, _mainThreadId);
+        _choices.Synchronize();
+        var registry = new CommandRegistry(snapshots, _actions, _choices);
+        _execution = new RequestExecution(registry, _actions, _choices, this, _mainThreadId);
         _server = new ProtocolServer(
             _configuration.PipeName,
             _configuration.SessionId,
@@ -71,6 +75,8 @@ public partial class BridgeRootNode : Node
         _server?.RequestStop();
         _serverCancellation?.Cancel();
         _serverCancellation?.Dispose();
+        _choices?.Dispose();
+        _choices = null;
         _actions?.Dispose();
         _actions = null;
         _configuration?.DestroySecret();
