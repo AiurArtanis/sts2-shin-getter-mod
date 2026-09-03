@@ -18,6 +18,7 @@ public static class ErrorCodes
     public const string Cancelled = "E_CANCELLED";
     public const string CancelUnsafe = "E_CANCEL_UNSAFE";
     public const string IdempotencyConflict = "E_IDEMPOTENCY_CONFLICT";
+    public const string IdempotencyWindowExpired = "E_IDEMPOTENCY_WINDOW_EXPIRED";
     public const string AuthFailed = "E_AUTH_FAILED";
     public const string ServerAuthFailed = "E_SERVER_AUTH_FAILED";
     public const string BrokerExit = "E_BROKER_EXIT";

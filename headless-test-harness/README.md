@@ -22,6 +22,12 @@ evidence are created under an external runtime root (by default under
 Git repository, either game source tree, Steam, Workshop, and the production mod
 directory are rejected as writable runtime roots.
 
+Live control is fail-closed unless the caller repeats `--protected-root` for
+every source, Steam, Workshop, and production deployment tree that must remain
+read-only. Every declared root must already exist and be an absolute directory.
+The guard rejects symlink and Windows junction ancestors both before and after
+path resolution, including newly created runtime paths.
+
 The companion is a separate test-only mod. It is never referenced by
 `shin-getter-mod-godot/ShinGetterMod.csproj`, never included in the production
 four-file package, and requires both `STS2_TEST_ENABLE=1` and an authenticated
@@ -32,8 +38,11 @@ separate rolling store. Reconnect inside the retained window resumes the same
 process epoch, while an older cursor fails with `E_RESUME_WINDOW_EXPIRED`.
 Request IDs are keyed by the complete canonical request payload (apart from
 volatile transport metadata): an in-flight duplicate does not execute twice, a
-finished duplicate replays its first terminal, and different content returns
-`E_IDEMPOTENCY_CONFLICT` without replacing the original ledger entry.
+finished duplicate replays its first terminal while that payload remains in the
+256-entry LRU, and different content returns `E_IDEMPOTENCY_CONFLICT` without
+replacing the original ledger entry. Request-ID/digest tombstones remain for the
+whole companion process epoch. Once a terminal payload leaves the LRU, an exact
+retry fails with `E_IDEMPOTENCY_WINDOW_EXPIRED`; it is never executed again.
 
 The live command path is:
 

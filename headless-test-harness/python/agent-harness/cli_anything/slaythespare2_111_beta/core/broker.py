@@ -203,11 +203,16 @@ class SessionBroker:
         if operation == "evidence.verify":
             return EvidenceBundle(self.session.paths.root).verify()
         if operation == "session.close":
+            stop_results: dict[str, dict[str, Any]] = {}
             for identifier in list(self.instances):
                 if self.instances[identifier].process.process.poll() is None:
-                    self._stop(identifier, grace_seconds=1.0, force=True)
+                    stop_results[identifier] = self._stop(identifier, grace_seconds=1.0, force=True)
             self.stop_requested = True
-            return {"closed": True, "instance_count": len(self.instances)}
+            return {
+                "closed": True,
+                "instance_count": len(self.instances),
+                "instances": stop_results,
+            }
         raise ProtocolFailure(ErrorCode.INVALID_ARGUMENT, f"unknown broker operation: {operation}")
 
     @staticmethod
@@ -383,6 +388,24 @@ class SessionBroker:
             if instance.companion.connected:
                 terminal = instance.companion.request("runtime.shutdown", {}, wait_for="immediate", timeout_ms=5_000)
                 self._bridge_event(identifier, terminal)
+                if terminal.get("type") != "completed":
+                    error = terminal.get("error")
+                    if isinstance(error, Mapping):
+                        try:
+                            code = ErrorCode(str(error.get("code")))
+                        except (TypeError, ValueError):
+                            code = ErrorCode.INVALID_PHASE
+                        raise ProtocolFailure(
+                            code,
+                            str(error.get("message", "runtime shutdown request failed")),
+                            retryable=bool(error.get("retryable", False)),
+                            details={"terminal": dict(terminal), **dict(error.get("details") or {})},
+                        )
+                    raise ProtocolFailure(
+                        ErrorCode.INVALID_PHASE,
+                        "runtime shutdown request returned a non-success terminal",
+                        details={"terminal": dict(terminal)},
+                    )
 
         try:
             result = self.processes.stop(

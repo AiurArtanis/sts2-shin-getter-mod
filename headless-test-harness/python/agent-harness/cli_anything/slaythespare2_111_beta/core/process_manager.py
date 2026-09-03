@@ -336,8 +336,17 @@ class ExactProcessManager:
             self._close_streams(owned)
             return {"pid": identity.pid, "state": "exited", "exit_code": owned.process.returncode, "method": "already_exited"}
         require_process_identity(identity)
+        shutdown_error: dict[str, str] | None = None
         if request_shutdown is not None:
-            request_shutdown()
+            try:
+                request_shutdown()
+            except Exception as exc:
+                # Graceful RPC is advisory. Exact process ownership remains the
+                # authority, so an RPC/pipe failure must never skip reaping.
+                shutdown_error = {
+                    "type": type(exc).__name__,
+                    "message": str(exc),
+                }
         if owned is not None:
             try:
                 owned.process.wait(timeout=max(0.0, grace_seconds))
@@ -351,16 +360,35 @@ class ExactProcessManager:
                 try:
                     owned.process.wait(timeout=5)
                 except subprocess.TimeoutExpired as exc:
-                    raise ProtocolFailure(ErrorCode.TIMEOUT_ACTION, "process did not exit after exact termination") from exc
+                    owned.process.kill()
+                    method = "forced_after_terminate_timeout"
+                    try:
+                        owned.process.wait(timeout=5)
+                    except subprocess.TimeoutExpired as final_exc:
+                        raise ProtocolFailure(
+                            ErrorCode.TIMEOUT_ACTION,
+                            "process did not exit after exact termination",
+                        ) from final_exc
             else:
                 method = "graceful"
             self._close_streams(owned)
-            return {"pid": identity.pid, "state": "exited", "exit_code": owned.process.returncode, "method": method}
+            result: dict[str, Any] = {
+                "pid": identity.pid,
+                "state": "exited",
+                "exit_code": owned.process.returncode,
+                "method": method,
+            }
+            if shutdown_error is not None:
+                result["shutdown_error"] = shutdown_error
+            return result
         if os.name == "nt":
             os.kill(identity.pid, signal.SIGTERM)
         else:
             os.kill(identity.pid, signal.SIGTERM)
-        return {"pid": identity.pid, "state": "stopping", "exit_code": None, "method": "exact_pid_signal"}
+        result = {"pid": identity.pid, "state": "stopping", "exit_code": None, "method": "exact_pid_signal"}
+        if shutdown_error is not None:
+            result["shutdown_error"] = shutdown_error
+        return result
 
     @staticmethod
     def _close_streams(owned: OwnedProcess) -> None:

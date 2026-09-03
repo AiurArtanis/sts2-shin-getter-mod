@@ -12,6 +12,9 @@ game behavior in Python.
 - Put runtime sessions, user data, logs, saves, screenshots, staging packages,
   and evidence outside every repository, Steam, Workshop, and production mod
   directory.
+- For every live command, repeat `--protected-root` for all source, Steam,
+  Workshop, production-mod, and production-deployment roots. Values must be
+  existing absolute directories; omission is `E_ISOLATION_BREACH`.
 - Never add the companion to `ShinGetterMod.csproj` or a production manifest,
   PCK, ZIP, or four-file deployment.
 - Start and stop live processes through the broker. Process identity is PID +
@@ -48,8 +51,11 @@ game behavior in Python.
 - `runtime handshake|connect|exec|dispatch|wait-event|wait-terminal|request-status`
 - `evidence finalize|verify`
 
-Every command accepts the root-level `--json` option. Mutating operations expose
-`--dry-run` and report the exact backend command or state change before writing.
+Every command accepts the root-level `--json` option. `--dry-run` is available
+only for `graph sync`, `build restore`, `build run`, `game import`, `game smoke`,
+`game launch`, `session configure`, `session undo`, and `session redo`; those
+commands report the proposed backend command or state change. Live
+broker/companion mutations do not expose `--dry-run`.
 
 ## Session addressing
 
@@ -61,12 +67,18 @@ $common = @(
   '--state-dir', '<external-cli-state>',
   '--runtime-root', '<external-session-parent>',
   '--control-session', 'case-001',
+  '--protected-root', '<read-only-111-source>',
+  '--protected-root', '<read-only-production-source>',
+  '--protected-root', '<steam-game-root>',
+  '--protected-root', '<workshop-root>',
+  '--protected-root', '<production-mod-root>',
   '--json'
 )
 ```
 
 `--runtime-root` is the session directory's direct parent. A session ID is a
-validated identifier, not a path.
+validated identifier, not a path. The protection list is intentionally
+explicit and repeatable; the harness cannot infer every local deployment tree.
 
 ## State and safety
 
@@ -88,6 +100,10 @@ persisted protected root before any write. A game child receives only a small
 system environment allowlist plus explicit test and isolated-user-data values;
 the broker's ambient environment is not inherited wholesale.
 
+Runtime-path validation checks unresolved ancestors, resolved ancestors, and
+the post-create path. Symlinks and Windows junctions are rejected even when
+resolution would otherwise erase the reparse node from the candidate path.
+
 ## Live lifecycle
 
 1. Build the 0.111 companion in Release and stage it only in a disposable game
@@ -106,6 +122,10 @@ the broker's ambient environment is not inherited wholesale.
    parent terminal result.
 6. Finalize and verify evidence if the case is publishable.
 7. Stop each exact instance with `process stop`; then call `session close`.
+
+A graceful-shutdown RPC failure does not cancel exact cleanup. The stop result
+records a structured `shutdown_error`, then continues through wait,
+terminate, and kill fallbacks against the verified process identity.
 
 Reconnect uses a rolling critical-event replay window. A cursor older than its
 reported floor must fail with `E_RESUME_WINDOW_EXPIRED`; do not silently restart
@@ -127,8 +147,11 @@ only a blocked active consumer that exhausts it latches
   pass; unrelated mutation fails with `E_MUTATION_BUSY`.
 - Reusing a request ID is valid only with the complete same canonical request,
   including `wait_for` and `timeout_ms`. Exact in-flight duplicates do not
-  execute again; exact terminal duplicates replay the first terminal; different
-  content returns `E_IDEMPOTENCY_CONFLICT` and cannot overwrite that terminal.
+  execute again. The 256 newest terminal payloads can be replayed; their request
+  ID/digest tombstones remain for the whole process epoch. An exact retry whose
+  payload was evicted returns `E_IDEMPOTENCY_WINDOW_EXPIRED`, while different
+  content returns `E_IDEMPOTENCY_CONFLICT`; neither path executes or overwrites
+  the original tombstone.
 
 ## Evidence
 

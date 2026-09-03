@@ -13,6 +13,7 @@ DEFAULT_FORBIDDEN_SIGNATURES = (
     "STS2_TEST_TOKEN",
     "sts2-test/v1",
     "E_OBSERVER_OVERFLOW",
+    "E_IDEMPOTENCY_WINDOW_EXPIRED",
     "component_test_host",
 )
 

@@ -26,6 +26,11 @@ $common = @(
   '--state-dir', '<external-cli-state>',
   '--runtime-root', '<external-session-parent>',
   '--control-session', 'case-001',
+  '--protected-root', '<read-only-111-source>',
+  '--protected-root', '<read-only-production-source>',
+  '--protected-root', '<steam-game-root>',
+  '--protected-root', '<workshop-root>',
+  '--protected-root', '<production-mod-root>',
   '--json'
 )
 
@@ -34,6 +39,10 @@ cli-anything-slaythespare2-111-beta @common process list
 
 `--runtime-root` is the direct parent of the session directory; the example
 above resolves the session at `<external-session-parent>\case-001`.
+Every `--protected-root` must be an existing absolute directory. Live commands
+fail with `E_ISOLATION_BREACH` when no explicit protection set is supplied;
+repeat the option until every source/deployment tree in the environment is
+covered.
 
 ## v0.2 command groups
 
@@ -53,8 +62,16 @@ Retries must preserve the entire canonical request, including `command`,
 `args`, `wait_for`, and `timeout_ms`, while reusing the request ID. Volatile
 transport fields such as sequence, connection ID, and wall time are excluded.
 An exact in-flight retry attaches to the original work, an exact terminal retry
-returns `replayed=true`, and any content change returns
-`E_IDEMPOTENCY_CONFLICT`.
+returns `replayed=true` while its terminal payload is among the 256 most recent,
+and any content change returns `E_IDEMPOTENCY_CONFLICT`. The request ID/digest
+tombstone lives for the whole companion process epoch. If its terminal payload
+has aged out, the exact retry returns `E_IDEMPOTENCY_WINDOW_EXPIRED` and is not
+executed again.
+
+`--dry-run` is implemented only by `graph sync`, `build restore`, `build run`,
+`game import`, `game smoke`, `game launch`, `session configure`, `session undo`,
+and `session redo`. Broker/companion live mutations do not advertise a dry run;
+inspect with status/query commands and use disposable staging instead.
 
 ## Real-runtime release gate
 

@@ -121,6 +121,14 @@ opened. The game child is constructed from a minimal operating-system
 environment allowlist plus explicit TEST and isolated-user-data variables; it
 does not inherit the broker's ambient environment wholesale.
 
+Every live CLI invocation must explicitly repeat `--protected-root` for all
+source, Steam, Workshop, and production deployment roots. Omission fails closed
+with `E_ISOLATION_BREACH`; each value must be an existing absolute directory.
+On Windows the guard checks the unresolved lexical ancestor chain before
+`Path.resolve()`, checks the resolved chain, and checks again after directory
+creation, so a junction cannot disappear from inspection by being resolved to
+its target.
+
 ## Transport, reconnect, and idempotency
 
 The broker maintains the long-lived companion connection so separate CLI
@@ -128,12 +136,21 @@ invocations can participate in one in-flight request. It multiplexes requests
 and events by request ID and sequence number.
 
 The same request ID plus the same canonical request digest attaches to the
-original in-flight execution or replays its first cached terminal result. The
-digest covers the complete request, including `command`, `args`, `wait_for`,
-and `timeout_ms`, while excluding volatile transport metadata such as sequence,
-clock, connection, and broker epoch. The same ID plus different content returns
-`E_IDEMPOTENCY_CONFLICT`; that conflict terminal cannot replace the original
-request's ledger entry.
+original in-flight execution. Completed request IDs and their digests remain as
+tombstones for the entire companion process epoch, while only the 256 most
+recent terminal payloads are retained in an LRU. Inside that payload window an
+exact retry replays the first terminal. Outside it, an exact retry returns
+`E_IDEMPOTENCY_WINDOW_EXPIRED` and never executes again. The digest covers the
+complete request, including `command`, `args`, `wait_for`, and `timeout_ms`,
+while excluding volatile transport metadata such as sequence, clock,
+connection, and broker epoch. The same ID plus different content always returns
+`E_IDEMPOTENCY_CONFLICT`, including after terminal-payload eviction; neither
+failure replaces the original tombstone.
+
+Each client send records an attempt sequence floor and accepts only an
+`accepted` or terminal envelope newer than that floor. Replayed terminals
+already buffered from an earlier attempt therefore cannot satisfy a later
+request that reuses the same request ID.
 
 Each authenticated connection has its own bounded live critical outbound queue
 and writer pump. Replay is a separate rolling store, so normal retention
@@ -151,6 +168,12 @@ from a fresh timeout budget.
 Unexpected process exit synthesizes `E_PROCESS_EXIT` for all in-flight
 requests. Broker exit is `E_BROKER_EXIT`. Unsafe cancellation is rejected as
 `E_CANCEL_UNSAFE`.
+
+Graceful `runtime.shutdown` is advisory to exact process ownership. A failed or
+synthetic-failed shutdown terminal is raised as `ProtocolFailure`, captured in
+the per-instance `shutdown_error`, and the manager still waits, terminates, then
+kills the exact owned process if required. `session.close` returns every
+per-instance stop result so cleanup failures remain inspectable.
 
 ## Main-thread execution and concurrency
 
@@ -274,9 +297,10 @@ Verification recomputes every covered hash; one changed byte returns
 user-data tree and account-bearing save data are excluded.
 
 Starting with D2, production inputs and artifacts are reverse-scanned for bridge
-assembly names, TEST environment variables, protocol IDs, overflow errors, and
-component-host markers. The gate must cover the production source/build-input
-tree and representative DLL/PCK/ZIP outputs, and must return `hits=[]`.
+assembly names, TEST environment variables, protocol IDs, overflow/idempotency
+errors, and component-host markers. The gate must cover the production
+source/build-input tree and representative DLL/PCK/ZIP outputs, and must return
+`hits=[]`.
 
 ## Build and verification
 
@@ -295,7 +319,7 @@ outside both repository and package source:
 
 ```powershell
 $env:CLI_ANYTHING_FORCE_INSTALLED = '1'
-python -m pytest <absolute-path-to-agent-harness-tests> -q -rs --tb=no
+python -m pytest <absolute-path-to-agent-harness-tests> -v -rs --tb=no
 ```
 
 The real-runtime release gate is separate and opt-in:
@@ -307,17 +331,19 @@ $env:STS2_HEADLESS_RUNTIME_PROFILE = '<absolute-external-profile.json>'
 python -m pytest <absolute-path-to-agent-harness-tests>\test_runtime_release.py -v -s --tb=no
 ```
 
-The 2026-09-03 final source suite produced 239 passed and two explicit skips:
-the privilege-dependent Windows symlink fixture and the opt-in real-runtime
-test. Release mode without a profile failed as required. The configured real
-gate then passed, both C# builds completed with zero warnings/errors, and the
-cross-language contract verifier passed.
+The 2026-09-03 second-review source suite collected 251 nodes and produced
+249 passed plus two explicit skips in 50.62 seconds: the privilege-dependent
+Windows symlink fixture and the opt-in real-runtime test. Release mode without
+a profile failed as required. The configured real gate then passed in 57.56
+seconds, both C# builds completed with zero
+warnings/errors, and the cross-language contract verifier passed. A separate
+forced-installed subprocess check printed the resolved console script path.
 
 ## Real-runtime proof
 
 The final release gate ran `v0.111.0@41cef1ea` in `headless / Dummy` using an
 external disposable staging tree. It rebuilt and staged companion SHA-256
-`72eca575c20fdf3568f395a8a54ebfd45cdd46e30b7091691d1c0f031e4babc2`.
+`b8cc79cc070ef979a61e398a69c9c20d697049a37416dd5fedf382c7bb403bbf`.
 
 PoC 1 proved exact no-choice completion: energy `3 -> 2`, block `0 -> 5`, empty
 queue, idle executor, no pending choice, and unchanged RNG fingerprint.
@@ -334,9 +360,15 @@ an exact post-terminal duplicate returned the same result with `replayed=true`
 at sequence `42`. Pre/post snapshots are `solo-11.json` and `solo-12.json`.
 
 The finalized session is
-`E:\Work\StS2 Mods\_headless-runtime\release-gates\runtime-release-20260903-6a81e756`.
+`E:\Work\StS2 Mods\_headless-runtime\release-gates\runtime-release-20260903-77811dd3`.
 Its verified evidence manifest contains 22 artifacts with aggregate SHA-256
-`342eeaf84e921fe7732c199fe9c74ce960d17a35818c90f8834ee827e6b74bdc`.
+`9cb40b38ec5a219052bccf57ef964bf383728866bbec1900052678e20b3cfb92`.
+
+The final production reverse scan also covers
+`E_IDEMPOTENCY_WINDOW_EXPIRED` as a forbidden TEST-ONLY signature. Its report is
+`C:\Users\win\AppData\Local\cli-anything\slaythespare2-111-beta\gates\20260903-v02-second-review-production-scan-v2.json`;
+all seven signatures returned `hits=[]` across the production input tree, DLL,
+PCK, and release ZIP.
 
 The instance stopped gracefully with exact exit code 0, known Godot shutdown
 diagnostics were classified, the broker accepted `session close`, and no game,

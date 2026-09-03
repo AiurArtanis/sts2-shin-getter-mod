@@ -115,6 +115,47 @@ def test_runtime_path_guard_rejects_reparse_ancestor(tmp_path: Path, monkeypatch
         RuntimePathGuard(repository, []).validate(runtime / "child")
 
 
+@pytest.mark.skipif(os.name != "nt", reason="Windows junction semantics")
+def test_runtime_path_guard_rejects_real_windows_junction_ancestor(tmp_path: Path) -> None:
+    repository = tmp_path / "repository"
+    target = tmp_path / "junction-target"
+    junction = tmp_path / "runtime-junction"
+    repository.mkdir()
+    target.mkdir()
+    created = subprocess.run(
+        ["cmd.exe", "/d", "/c", "mklink", "/J", str(junction), str(target)],
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        check=False,
+    )
+    assert created.returncode == 0, created.stdout
+    try:
+        with pytest.raises(ProtocolFailure) as failure:
+            RuntimePathGuard(repository, []).validate(junction / "child")
+        assert failure.value.code == ErrorCode.ISOLATION_BREACH
+    finally:
+        if junction.exists():
+            junction.rmdir()
+
+
+@pytest.mark.parametrize("kind", ["steam", "workshop", "production-mod"])
+def test_runtime_path_guard_rejects_each_declared_protected_root(
+    tmp_path: Path,
+    kind: str,
+) -> None:
+    repository = tmp_path / "repository"
+    protected = tmp_path / kind
+    repository.mkdir()
+    protected.mkdir()
+    guard = RuntimePathGuard(repository, [protected])
+    with pytest.raises(ProtocolFailure) as failure:
+        guard.validate(protected / "must-not-be-runtime")
+    assert failure.value.code == ErrorCode.ISOLATION_BREACH
+
+
 def test_control_session_creates_frozen_layout(tmp_path: Path) -> None:
     repository = tmp_path / "repo"
     runtime = tmp_path / "runtime"
@@ -351,6 +392,55 @@ def test_exact_stop_terminates_owned_child(tmp_path: Path) -> None:
     result = manager.stop(owned.identity, grace_seconds=0.1, force=True)
     assert result["pid"] == owned.identity.pid
     assert result["state"] == "exited"
+    assert owned.process.poll() is not None
+
+
+def test_exact_stop_uses_successful_graceful_shutdown_callback(tmp_path: Path) -> None:
+    manager = ExactProcessManager()
+    owned = manager.spawn(
+        [sys.executable, "-c", "import time; time.sleep(60)"], cwd=tmp_path,
+        environment={}, stdout_path=tmp_path / "stdout.log", stderr_path=tmp_path / "stderr.log",
+    )
+    calls = 0
+
+    def shutdown() -> None:
+        nonlocal calls
+        calls += 1
+        owned.process.terminate()
+
+    result = manager.stop(
+        owned.identity,
+        grace_seconds=2.0,
+        force=True,
+        request_shutdown=shutdown,
+    )
+    assert calls == 1
+    assert result["method"] == "graceful"
+    assert "shutdown_error" not in result
+    assert owned.process.poll() is not None
+
+
+def test_exact_stop_reaps_owned_child_after_shutdown_callback_error(tmp_path: Path) -> None:
+    manager = ExactProcessManager()
+    owned = manager.spawn(
+        [sys.executable, "-c", "import time; time.sleep(60)"], cwd=tmp_path,
+        environment={}, stdout_path=tmp_path / "stdout.log", stderr_path=tmp_path / "stderr.log",
+    )
+
+    def shutdown() -> None:
+        raise RuntimeError("injected graceful shutdown RPC failure")
+
+    result = manager.stop(
+        owned.identity,
+        grace_seconds=0.1,
+        force=True,
+        request_shutdown=shutdown,
+    )
+    assert result["state"] == "exited"
+    assert result["shutdown_error"] == {
+        "type": "RuntimeError",
+        "message": "injected graceful shutdown RPC failure",
+    }
     assert owned.process.poll() is not None
 
 

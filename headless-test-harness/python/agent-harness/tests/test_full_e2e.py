@@ -16,6 +16,7 @@ def _resolve_cli() -> str:
     installed = shutil.which(CLI_NAME)
     if os.environ.get("CLI_ANYTHING_FORCE_INSTALLED") == "1":
         assert installed, f"Installed command not found on PATH: {CLI_NAME}"
+        print(f"[_resolve_cli] Using installed command: {installed}")
         return installed
     resolved = installed or CLI_NAME
     print(f"[_resolve_cli] Using installed command: {resolved}")
@@ -53,6 +54,8 @@ def _run_control_cli(
         str(runtime_root),
         "--control-session",
         session_id,
+        "--protected-root",
+        str(project_root),
         "--json",
         *args,
     ]
@@ -68,6 +71,39 @@ def _run_control_cli(
     )
     assert completed.returncode == 0, f"{command}\nSTDOUT:\n{completed.stdout}\nSTDERR:\n{completed.stderr}"
     return json.loads(completed.stdout)
+
+
+@pytest.mark.e2e
+def test_live_cli_fails_closed_without_explicit_protected_root(
+    project_root: Path,
+    tmp_path: Path,
+) -> None:
+    command = [
+        _resolve_cli(),
+        "--project-root",
+        str(project_root),
+        "--runtime-root",
+        str(tmp_path / "runtime"),
+        "--control-session",
+        "missing-protection",
+        "--json",
+        "process",
+        "list",
+    ]
+    completed = subprocess.run(
+        command,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        timeout=30,
+        check=False,
+    )
+    assert completed.returncode == 1
+    payload = json.loads(completed.stdout)
+    assert payload["error"]["code"] == "E_ISOLATION_BREACH"
+    assert "--protected-root" in payload["error"]["message"]
 
 
 @pytest.mark.e2e

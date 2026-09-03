@@ -10,6 +10,7 @@ public enum RequestIdempotencyStatus
     InFlight,
     Replay,
     Conflict,
+    Expired,
 }
 
 public sealed record CachedRequestTerminal(string Type, JsonElement Fields);
@@ -32,7 +33,8 @@ public sealed class RequestIdempotencyGate(int capacity = 256)
         : throw new ArgumentOutOfRangeException(nameof(capacity));
     private readonly object _gate = new();
     private readonly Dictionary<string, Entry> _entries = new(StringComparer.Ordinal);
-    private readonly LinkedList<string> _lru = new();
+    private readonly LinkedList<string> _terminalLru = new();
+    private int _retainedTerminalCount;
 
     public RequestIdempotencyDecision Accept(JsonElement request)
     {
@@ -42,16 +44,17 @@ public sealed class RequestIdempotencyGate(int capacity = 256)
         {
             if (!_entries.TryGetValue(requestId, out Entry? entry))
             {
-                var node = _lru.AddLast(requestId);
-                _entries.Add(requestId, new Entry(digest, node));
+                _entries.Add(requestId, new Entry(digest));
                 return new RequestIdempotencyDecision(RequestIdempotencyStatus.New);
             }
-            Touch(entry);
             if (!StringComparer.Ordinal.Equals(entry.Digest, digest))
                 return new RequestIdempotencyDecision(RequestIdempotencyStatus.Conflict);
-            return entry.Terminal is null
-                ? new RequestIdempotencyDecision(RequestIdempotencyStatus.InFlight)
-                : new RequestIdempotencyDecision(RequestIdempotencyStatus.Replay, entry.Terminal);
+            if (!entry.Completed)
+                return new RequestIdempotencyDecision(RequestIdempotencyStatus.InFlight);
+            if (entry.Terminal is null)
+                return new RequestIdempotencyDecision(RequestIdempotencyStatus.Expired);
+            TouchTerminal(entry);
+            return new RequestIdempotencyDecision(RequestIdempotencyStatus.Replay, entry.Terminal);
         }
     }
 
@@ -67,9 +70,13 @@ public sealed class RequestIdempotencyGate(int capacity = 256)
         {
             if (!_entries.TryGetValue(requestId, out Entry? entry))
                 throw new InvalidOperationException($"request_id is not registered: {requestId}");
-            entry.Terminal ??= new CachedRequestTerminal(type, serializedFields);
-            Touch(entry);
-            TrimCompleted();
+            if (entry.Completed)
+                return;
+            entry.Completed = true;
+            entry.Terminal = new CachedRequestTerminal(type, serializedFields);
+            entry.TerminalNode = _terminalLru.AddLast(requestId);
+            _retainedTerminalCount++;
+            TrimTerminalPayloads();
         }
     }
 
@@ -112,30 +119,33 @@ public sealed class RequestIdempotencyGate(int capacity = 256)
         return Convert.ToHexStringLower(SHA256.HashData(CanonicalJson.Serialize(canonical)));
     }
 
-    private void Touch(Entry entry)
+    private void TouchTerminal(Entry entry)
     {
-        _lru.Remove(entry.Node);
-        _lru.AddLast(entry.Node);
+        if (entry.TerminalNode is null)
+            return;
+        _terminalLru.Remove(entry.TerminalNode);
+        _terminalLru.AddLast(entry.TerminalNode);
     }
 
-    private void TrimCompleted()
+    private void TrimTerminalPayloads()
     {
-        while (_entries.Count > _capacity)
+        while (_retainedTerminalCount > _capacity)
         {
-            LinkedListNode<string>? candidate = _lru.First;
-            while (candidate is not null && _entries[candidate.Value].Terminal is null)
-                candidate = candidate.Next;
-            if (candidate is null)
-                return;
-            _entries.Remove(candidate.Value);
-            _lru.Remove(candidate);
+            LinkedListNode<string> candidate = _terminalLru.First
+                ?? throw new InvalidOperationException("retained terminal count is inconsistent");
+            Entry entry = _entries[candidate.Value];
+            _terminalLru.Remove(candidate);
+            entry.Terminal = null;
+            entry.TerminalNode = null;
+            _retainedTerminalCount--;
         }
     }
 
-    private sealed class Entry(string digest, LinkedListNode<string> node)
+    private sealed class Entry(string digest)
     {
         public string Digest { get; } = digest;
-        public LinkedListNode<string> Node { get; } = node;
+        public bool Completed { get; set; }
         public CachedRequestTerminal? Terminal { get; set; }
+        public LinkedListNode<string>? TerminalNode { get; set; }
     }
 }

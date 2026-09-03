@@ -44,12 +44,11 @@ def default_state_root(environment: Mapping[str, str] | None = None) -> Path:
 
 
 def is_reparse_point(path: Path) -> bool:
-    if not path.exists() and not path.is_symlink():
-        return False
     try:
-        attributes = getattr(path.lstat(), "st_file_attributes", 0)
+        stat_result = path.lstat()
     except OSError:
         return False
+    attributes = getattr(stat_result, "st_file_attributes", 0)
     return path.is_symlink() or bool(attributes & 0x400)
 
 
@@ -72,6 +71,9 @@ class RuntimePathGuard:
         expanded = candidate.expanduser()
         if not expanded.is_absolute():
             raise ProtocolFailure(ErrorCode.ISOLATION_BREACH, f"{purpose} must be absolute")
+        # Check the lexical path before resolve(). On Windows, resolve() follows
+        # a junction and erases the reparse node that must make this path RED.
+        self._reject_reparse_ancestors(expanded, purpose=purpose)
         resolved = expanded.resolve()
         if resolved == Path(resolved.anchor):
             raise ProtocolFailure(ErrorCode.ISOLATION_BREACH, f"filesystem root cannot be a {purpose}")
@@ -82,20 +84,30 @@ class RuntimePathGuard:
                     f"{purpose} overlaps a protected tree",
                     details={"candidate": str(resolved), "protected_root": str(protected), "purpose": purpose},
                 )
-        probe = resolved
+        self._reject_reparse_ancestors(resolved, purpose=purpose)
+        if create:
+            resolved.mkdir(parents=True, exist_ok=True)
+            self._reject_reparse_ancestors(expanded, purpose=purpose)
+            if expanded.resolve() != resolved:
+                raise ProtocolFailure(
+                    ErrorCode.ISOLATION_BREACH,
+                    f"{purpose} changed target while being created",
+                )
+        return resolved
+
+    @staticmethod
+    def _reject_reparse_ancestors(candidate: Path, *, purpose: str) -> None:
+        probe = candidate
         while True:
             if is_reparse_point(probe):
                 raise ProtocolFailure(
                     ErrorCode.ISOLATION_BREACH,
-                    "runtime path traverses a symlink or reparse point",
+                    f"{purpose} traverses a symlink or reparse point",
                     details={"path": str(probe)},
                 )
             if probe.parent == probe:
                 break
             probe = probe.parent
-        if create:
-            resolved.mkdir(parents=True, exist_ok=True)
-        return resolved
 
     def validate_existing_directory(self, candidate: Path, *, purpose: str) -> Path:
         resolved = self.validate(candidate, purpose=purpose)

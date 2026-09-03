@@ -93,6 +93,7 @@ def test_reverse_scan_accepts_clean_binary(tmp_path: Path) -> None:
     result = scan_production_targets([target])
     assert result["ok"] is True
     assert result["hits"] == []
+    assert "E_IDEMPOTENCY_WINDOW_EXPIRED" in result["signatures"]
 
 
 def test_reverse_scan_finds_bridge_name(tmp_path: Path) -> None:

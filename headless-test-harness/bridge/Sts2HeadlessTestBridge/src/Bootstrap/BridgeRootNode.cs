@@ -129,6 +129,20 @@ public partial class BridgeRootNode : Node
                 cancellationToken: cancellationToken).ConfigureAwait(false);
             return;
         }
+        if (decision.Status == RequestIdempotencyStatus.Expired)
+        {
+            await connection.SendAsync(
+                "failed",
+                requestId,
+                new Dictionary<string, object?>
+                {
+                    ["error"] = ProtocolServer.Error(
+                        ErrorCodes.IdempotencyWindowExpired,
+                        "request_id is known but its terminal payload is outside the retained idempotency window"),
+                },
+                cancellationToken: cancellationToken).ConfigureAwait(false);
+            return;
+        }
         if (decision.Status == RequestIdempotencyStatus.Replay)
         {
             CachedRequestTerminal terminal = decision.Terminal!;

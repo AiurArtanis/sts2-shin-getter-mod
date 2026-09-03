@@ -235,11 +235,32 @@ class CompanionClient:
         request_id: str | None = None,
         trace: Mapping[str, Any] | None = None,
     ) -> str:
+        identifier, _ = self._send_attempt(
+            command,
+            args,
+            wait_for=wait_for,
+            timeout_ms=timeout_ms,
+            request_id=request_id,
+            trace=trace,
+        )
+        return identifier
+
+    def _send_attempt(
+        self,
+        command: str,
+        args: Mapping[str, Any],
+        *,
+        wait_for: str = "immediate",
+        timeout_ms: int = 10_000,
+        request_id: str | None = None,
+        trace: Mapping[str, Any] | None = None,
+    ) -> tuple[str, int]:
         identifier = request_id or self.new_request_id()
         with self._write_lock:
             with self._condition:
                 if self._stream is None or self._reader_failure is not None:
                     raise self._reader_failure or ProtocolFailure(ErrorCode.BROKER_EXIT, "companion connection is not active")
+                attempt_floor = self.last_seq
                 self._client_seq += 1
                 request: dict[str, Any] = {
                     "protocol": PROTOCOL,
@@ -259,14 +280,16 @@ class CompanionClient:
                 self._status[identifier] = {"phase": "sent", "terminal": None}
                 stream = self._stream
             self._write_to_stream(stream, request)
-        return identifier
+        return identifier, attempt_floor
 
     def dispatch(self, command: str, args: Mapping[str, Any], **kwargs: Any) -> str:
         options = dict(kwargs)
         local_timeout = float(options.pop("local_timeout_seconds", self._default_local_timeout(options)))
-        request_id = self.send_only(command, args, **options)
+        request_id, attempt_floor = self._send_attempt(command, args, **options)
         self._wait_for(
-            lambda item: item.get("request_id") == request_id and item.get("type") == "accepted",
+            lambda item: item.get("request_id") == request_id
+            and item.get("type") == "accepted"
+            and self._after_sequence(item, attempt_floor),
             timeout_seconds=local_timeout,
             request_id=request_id,
             terminal_before_match=True,
@@ -277,8 +300,12 @@ class CompanionClient:
     def request(self, command: str, args: Mapping[str, Any], **kwargs: Any) -> dict[str, Any]:
         options = dict(kwargs)
         local_timeout = float(options.pop("local_timeout_seconds", self._default_local_timeout(options)))
-        request_id = self.send_only(command, args, **options)
-        return self.wait_terminal(request_id, timeout_seconds=local_timeout)
+        request_id, attempt_floor = self._send_attempt(command, args, **options)
+        return self.wait_terminal(
+            request_id,
+            timeout_seconds=local_timeout,
+            after_seq=attempt_floor,
+        )
 
     def wait_event(self, request_id: str, name: str, *, timeout_seconds: float = 30.0) -> dict[str, Any]:
         return self._wait_for(
@@ -291,13 +318,26 @@ class CompanionClient:
             timeout_message=f"event {name!r} exceeded the monotonic local deadline",
         )
 
-    def wait_terminal(self, request_id: str, *, timeout_seconds: float = 30.0) -> dict[str, Any]:
+    def wait_terminal(
+        self,
+        request_id: str,
+        *,
+        timeout_seconds: float = 30.0,
+        after_seq: int | None = None,
+    ) -> dict[str, Any]:
         return self._wait_for(
-            lambda item: item.get("request_id") == request_id and item.get("type") in {"completed", "failed"},
+            lambda item: item.get("request_id") == request_id
+            and item.get("type") in {"completed", "failed"}
+            and (after_seq is None or self._after_sequence(item, after_seq)),
             timeout_seconds=timeout_seconds,
             request_id=request_id,
             timeout_message="request terminal exceeded the monotonic local deadline",
         )
+
+    @staticmethod
+    def _after_sequence(message: Mapping[str, Any], floor: int) -> bool:
+        sequence = message.get("seq")
+        return isinstance(sequence, int) and not isinstance(sequence, bool) and sequence > floor
 
     def request_status(self, request_id: str) -> dict[str, Any]:
         with self._condition:

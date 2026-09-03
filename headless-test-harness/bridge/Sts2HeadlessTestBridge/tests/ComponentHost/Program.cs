@@ -61,7 +61,9 @@ server = new ProtocolServer(
             while (!File.Exists(writerReleaseFile))
                 await Task.Delay(10, cancellationToken).ConfigureAwait(false);
         });
-executor = new ComponentExecutor(server);
+executor = new ComponentExecutor(
+    server,
+    args.Contains("--shutdown-rpc-io-failure", StringComparer.Ordinal));
 await server.RunAsync();
 return 0;
 
@@ -81,7 +83,7 @@ static int OptionalPositiveInt(string name, int fallback)
     return int.TryParse(raw, out int value) && value > 0 ? value : fallback;
 }
 
-sealed class ComponentExecutor(ProtocolServer server)
+sealed class ComponentExecutor(ProtocolServer server, bool shutdownRpcIoFailure)
 {
     private readonly RequestIdempotencyGate _idempotency = new();
     private string? _mutationOwner;
@@ -101,6 +103,16 @@ sealed class ComponentExecutor(ProtocolServer server)
         if (decision.Status == RequestIdempotencyStatus.Conflict)
         {
             await Failed(connection, requestId, ErrorCodes.IdempotencyConflict, "request_id payload conflict", cancellationToken);
+            return;
+        }
+        if (decision.Status == RequestIdempotencyStatus.Expired)
+        {
+            await Failed(
+                connection,
+                requestId,
+                ErrorCodes.IdempotencyWindowExpired,
+                "request_id terminal payload expired",
+                cancellationToken);
             return;
         }
         if (decision.Status == RequestIdempotencyStatus.Replay)
@@ -286,6 +298,8 @@ sealed class ComponentExecutor(ProtocolServer server)
                     await Completed(connection, requestId, new Dictionary<string, object?> { ["completion"] = "immediate" }, cancellationToken);
                 break;
             case "runtime.shutdown":
+                if (shutdownRpcIoFailure)
+                    throw new IOException("injected shutdown RPC transport failure");
                 if (_mutationOwner is not null)
                 {
                     await Failed(connection, requestId, ErrorCodes.CancelUnsafe, "active mutation prevents shutdown", cancellationToken);
@@ -355,7 +369,7 @@ sealed class ComponentExecutor(ProtocolServer server)
             new Dictionary<string, object?> { ["error"] = ProtocolServer.Error(code, message) },
             cancellationToken: cancellationToken);
         // A conflicting duplicate is not the terminal for the original request.
-        if (code != ErrorCodes.IdempotencyConflict)
+        if (code is not (ErrorCodes.IdempotencyConflict or ErrorCodes.IdempotencyWindowExpired))
             _idempotency.Complete(requestId, terminal);
     }
 

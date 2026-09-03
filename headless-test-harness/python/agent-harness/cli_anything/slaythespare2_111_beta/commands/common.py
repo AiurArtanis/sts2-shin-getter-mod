@@ -9,7 +9,7 @@ import click
 
 from .. import __version__
 from ..core.broker_client import BrokerClient
-from ..core.errors import ProtocolFailure
+from ..core.errors import ErrorCode, ProtocolFailure
 from ..core.runtime_session import ControlSession, validate_identifier
 from ..core.schema import default_harness_root
 
@@ -41,7 +41,20 @@ def repository_root() -> Path:
 
 
 def protected_roots(context: click.Context) -> tuple[Path, ...]:
-    roots = [repository_root(), Path(context.obj["root"]).resolve(), *context.obj.get("protected_roots", ())]
+    explicit = tuple(Path(root).expanduser() for root in context.obj.get("protected_roots", ()))
+    if not explicit:
+        raise ProtocolFailure(
+            ErrorCode.ISOLATION_BREACH,
+            "live control requires explicit --protected-root values for every source, Steam, Workshop, and production deployment tree",
+        )
+    invalid = [str(root) for root in explicit if not root.is_absolute() or not root.is_dir()]
+    if invalid:
+        raise ProtocolFailure(
+            ErrorCode.ISOLATION_BREACH,
+            "every --protected-root must be an existing absolute directory",
+            details={"invalid_roots": invalid},
+        )
+    roots = [repository_root(), Path(context.obj["root"]).resolve(), *explicit]
     unique: dict[str, Path] = {}
     for root in roots:
         resolved = Path(root).expanduser().resolve()
@@ -75,20 +88,25 @@ def open_session(context: click.Context) -> ControlSession:
 
 
 def create_or_open_session(context: click.Context) -> ControlSession:
-    identifier = control_session_id(context, create=True)
-    root = Path(context.obj["runtime_root"]) / identifier
-    if root.exists() and any(root.iterdir()):
-        return ControlSession.open(
-            root,
+    try:
+        identifier = control_session_id(context, create=True)
+        roots = protected_roots(context)
+        root = Path(context.obj["runtime_root"]) / identifier
+        if root.exists() and any(root.iterdir()):
+            return ControlSession.open(
+                root,
+                repository_root=repository_root(),
+                protected_roots=roots,
+            )
+        return ControlSession.create(
+            Path(context.obj["runtime_root"]),
+            identifier,
             repository_root=repository_root(),
-            protected_roots=protected_roots(context),
+            protected_roots=roots,
         )
-    return ControlSession.create(
-        Path(context.obj["runtime_root"]),
-        identifier,
-        repository_root=repository_root(),
-        protected_roots=protected_roots(context),
-    )
+    except ProtocolFailure as exc:
+        fail(context, exc)
+        raise AssertionError("unreachable")
 
 
 def broker(context: click.Context) -> BrokerClient:

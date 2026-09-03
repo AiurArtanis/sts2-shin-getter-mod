@@ -88,13 +88,17 @@ def broker_fixture(tmp_path: Path, broker_component_host_dll: Path):
         pytest.fail(f"broker fixture leaked exact PID {identity.pid}")
 
 
-def _start_component(fixture: dict) -> dict:
+def _start_component(fixture: dict, *component_args: str) -> dict:
     return fixture["client"].request(
         "process.start",
         {
             "instance_id": "solo",
             "role": "single",
-            "argv": [shutil.which("dotnet") or "dotnet", str(fixture["component_dll"])],
+            "argv": [
+                shutil.which("dotnet") or "dotnet",
+                str(fixture["component_dll"]),
+                *component_args,
+            ],
             "cwd": str(fixture["session"].paths.root),
             "adapter_expected": "component-test-host",
             "timeout_seconds": 15,
@@ -168,6 +172,45 @@ def test_broker_runtime_ping_uses_owned_long_connection(broker_fixture: dict) ->
     assert result["result"]["backend"] == "component_test_host"
 
 
+def test_broker_client_different_payload_cannot_consume_replayed_old_terminal(
+    broker_fixture: dict,
+) -> None:
+    _start_component(broker_fixture)
+    request_id = "broker-attempt-floor-conflict"
+    first = broker_fixture["client"].request(
+        "runtime.exec",
+        {
+            "instance_id": "solo",
+            "command": "runtime.ping",
+            "args": {"value": 1},
+            "wait_for": "immediate",
+            "timeout_ms": 10_000,
+            "request_id": request_id,
+        },
+    )
+    assert first["type"] == "completed"
+    broker_fixture["client"].request(
+        "runtime.connect",
+        {"instance_id": "solo", "resume_from_seq": 0, "timeout_seconds": 10.0},
+        timeout_seconds=12.0,
+    )
+    time.sleep(0.1)
+
+    conflict = broker_fixture["client"].request(
+        "runtime.exec",
+        {
+            "instance_id": "solo",
+            "command": "runtime.ping",
+            "args": {"value": 2},
+            "wait_for": "immediate",
+            "timeout_ms": 10_000,
+            "request_id": request_id,
+        },
+    )
+    assert conflict["type"] == "failed"
+    assert conflict["error"]["code"] == ErrorCode.IDEMPOTENCY_CONFLICT.value
+
+
 def test_broker_process_status_and_stop_are_exact(broker_fixture: dict) -> None:
     started = _start_component(broker_fixture)
     status = broker_fixture["client"].request("process.status", {"instance_id": "solo"})
@@ -177,6 +220,19 @@ def test_broker_process_status_and_stop_are_exact(broker_fixture: dict) -> None:
         "process.stop", {"instance_id": "solo", "grace_seconds": 2.0, "force": True}
     )
     assert stopped["state"] == "exited"
+
+
+def test_session_close_reaps_child_when_graceful_shutdown_rpc_breaks(
+    broker_fixture: dict,
+) -> None:
+    started = _start_component(broker_fixture, "--shutdown-rpc-io-failure")
+    result = broker_fixture["client"].request("session.close", {}, timeout_seconds=10.0)
+    stop_result = result["instances"]["solo"]
+    assert result["closed"] is True
+    assert stop_result["state"] == "exited"
+    assert stop_result["shutdown_error"]["type"] == "ProtocolFailure"
+    with pytest.raises(ProcessLookupError):
+        capture_process_identity(started["process"]["pid"])
 
 
 def test_broker_lists_only_its_session_instances(broker_fixture: dict) -> None:

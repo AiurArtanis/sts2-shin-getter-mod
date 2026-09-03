@@ -11,8 +11,11 @@ writable state, runtime, staging, and evidence path must be outside repositories
 Steam, Workshop, and production mod/deployment directories.
 
 For live work, always pass `--project-root`, external `--state-dir`, external
-`--runtime-root`, and `--control-session`. `--runtime-root` is the direct parent
-of the named session directory.
+`--runtime-root`, `--control-session`, and repeated `--protected-root` values for
+every source, Steam, Workshop, production-mod, and production-deployment tree.
+Each protected root must be an existing absolute directory; omission fails
+closed with `E_ISOLATION_BREACH`. `--runtime-root` is the direct parent of the
+named session directory.
 
 ## Commands
 
@@ -65,10 +68,13 @@ It is not a fixed delay.
 Reuse a request ID only with the entire same canonical request, including
 `command`, `args`, `wait_for`, and `timeout_ms`. An exact in-flight duplicate
 must not execute twice; an exact completed duplicate returns `replayed=true`;
-changed content is `E_IDEMPOTENCY_CONFLICT`. Reconnect only within the server's
-reported rolling replay window. Treat `E_RESUME_WINDOW_EXPIRED` and
-`E_OBSERVER_OVERFLOW` as invalid-case outcomes, not as permission to guess or
-continue mutating.
+changed content is `E_IDEMPOTENCY_CONFLICT`. Only the 256 newest terminal
+payloads are replayable, but request-ID/digest tombstones live for the entire
+companion process epoch. An exact retry after payload eviction returns
+`E_IDEMPOTENCY_WINDOW_EXPIRED` and must never be converted into a fresh
+mutation. Reconnect only within the server's reported rolling replay window.
+Treat `E_RESUME_WINDOW_EXPIRED` and `E_OBSERVER_OVERFLOW` as invalid-case
+outcomes, not as permission to guess or continue mutating.
 
 For a real-runtime release decision, use the installed command from a cwd
 outside the repository and opt in explicitly:
@@ -93,4 +99,7 @@ End every live case with exact `process stop --instance <id>` followed by
 The harness wraps real `codegraph`, `rg`, `dotnet`, and Godot executables. It
 does not edit decompiled C# source or fake DevConsole runtime execution. Session
 configuration is locked, atomically auto-saved, and supports undo/redo. Preview
-mutating operations with `--dry-run` where available.
+`graph sync`, `build restore/run`, `game import/smoke/launch`, and
+`session configure/undo/redo` with `--dry-run` when needed. Live
+broker/companion mutations have no dry-run mode; query first and use disposable
+staging.

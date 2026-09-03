@@ -464,6 +464,44 @@ def test_component_host_same_id_different_payload_conflicts(component_host: dict
     assert conflict["error"]["code"] == ErrorCode.IDEMPOTENCY_CONFLICT.value
 
 
+def test_component_host_completed_id_never_reexecutes_after_terminal_cache_capacity(
+    component_host: dict,
+) -> None:
+    with _client(component_host) as client:
+        request_id = "completed-before-idempotency-window"
+        first = client.request(
+            "test.delayed",
+            {"delay_ms": 1},
+            request_id=request_id,
+            timeout_ms=10_000,
+        )
+        for index in range(256):
+            terminal = client.request(
+                "runtime.ping",
+                {"fill": index},
+                request_id=f"idempotency-fill-{index}",
+            )
+            assert terminal["type"] == "completed"
+        repeated = client.request(
+            "test.delayed",
+            {"delay_ms": 1},
+            request_id=request_id,
+            timeout_ms=10_000,
+        )
+        conflict = client.request(
+            "test.delayed",
+            {"delay_ms": 2},
+            request_id=request_id,
+            timeout_ms=10_000,
+        )
+
+    assert first["result"]["execution_count"] == 1
+    assert repeated["type"] == "failed"
+    assert repeated["error"]["code"] == "E_IDEMPOTENCY_WINDOW_EXPIRED"
+    assert conflict["type"] == "failed"
+    assert conflict["error"]["code"] == ErrorCode.IDEMPOTENCY_CONFLICT.value
+
+
 def test_wait_event_fails_when_request_is_already_terminal(component_host: dict) -> None:
     with _client(component_host) as client:
         request_id = client.new_request_id()
