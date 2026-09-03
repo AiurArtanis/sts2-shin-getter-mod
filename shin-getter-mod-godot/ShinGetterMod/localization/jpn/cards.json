@@ -149,7 +149,7 @@
   "S_G_C_INFINITE_EVOLUTION.title": "無限進化",
   "S_G_C_INFINITE_EVOLUTION.description": "戦闘勝利後、[gold]筋力[/gold]、[gold]敏捷[/gold]、最大HPのいずれかをランダムに1永久に得る。",
   "S_G_C_HOLY_DRAGON_ROAR.title": "聖龍咆哮",
-  "S_G_C_HOLY_DRAGON_ROAR.description": "手札の[gold]ゲッターカード[/gold]をすべて廃棄する。すべての敵に{Damage:diff()}の基本ダメージを与え、廃棄したカード1枚につき{BurnDamage:diff()}ダメージを加算する。\nすべての敵を[gold]スタン[/gold]させる。",
+  "S_G_C_HOLY_DRAGON_ROAR.description": "すべての[gold]ゲッターカード[/gold]を廃棄する。すべての敵に{Damage:diff()}の基本ダメージを与え、廃棄したカード1枚につき{BurnDamage:diff()}ダメージを加算する。\nすべての敵を[gold]スタン[/gold]させる。",
   "S_G_C_PETAL_BREAKTHROUGH.title": "花弁突破",
   "S_G_C_PETAL_BREAKTHROUGH.description": "{Damage:diff()}ダメージを与える。山札にある[gold]リプレイ[/gold]を持たないランダムなアタック1枚に、[gold]リプレイ[/gold]を{Times:diff()}付与する。",
   "S_G_C_RESCHEDULE_TICKET.title": "振替券",
