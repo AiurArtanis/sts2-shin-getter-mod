@@ -6,8 +6,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        感谢你的反馈。请勿在 Issue 中粘贴私人信息、存档或本地路径。
-        Thanks for reporting a bug. Please do not post private information, save files, or local paths in this Issue.
+        感谢你的反馈。公开 Issue 可附经过脱敏的最小日志片段；请勿上传凭据、私人存档、完整本地路径或个人信息。安全漏洞请使用私密报告入口。
+        Thanks for reporting a bug. You may include a minimal redacted log excerpt; do not upload credentials, private saves, complete local paths, or personal information. Use private reporting for security vulnerabilities.
   - type: textarea
     id: description
     attributes:

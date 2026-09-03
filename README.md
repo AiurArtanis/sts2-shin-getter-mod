@@ -156,6 +156,8 @@ Godot 资源改动还应在本地游戏工程中运行 `tools/validate-mod-resou
 
 请勿提交本地游戏依赖、`addons/`、`build/` 产物或个人测试脚本。
 
+提交代码前请阅读 [贡献指南](CONTRIBUTING.md)；参与交流即表示同意遵守 [行为准则](CODE_OF_CONDUCT.md)。安全漏洞请按 [安全政策](SECURITY.md) 私密报告，不要创建公开 Issue。
+
 ## 许可与素材说明
 
 本项目是非官方同人 Mod，与《杀戮尖塔 2》及“真盖塔”相关的名称、角色和原作素材归各自权利人所有。
