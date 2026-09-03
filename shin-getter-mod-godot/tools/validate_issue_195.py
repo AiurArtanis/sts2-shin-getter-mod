@@ -19,6 +19,7 @@ merchant = MERCHANT.read_text(encoding="utf-8")
 
 require(
     patch,
+    "using MegaCrit.Sts2.Core.Helpers;",
     '[HarmonyPatch(typeof(NFakeMerchant), "StartCharacterAnimation")]',
     "TryShowRyoma(visuals)",
     'GetNodeOrNull<AnimatedSprite2D>("GetterOne")',
