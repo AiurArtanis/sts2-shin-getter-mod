@@ -132,7 +132,7 @@ def validate_service() -> None:
         ".OrderBy(card => card.IsUpgraded)",
         "PendingBattleSetup.ByrdonisNest",
         "PendingBattleSetup.Trial",
-        "ReferenceEquals(combatState.Encounter.CanonicalInstance, pending.Encounter)",
+        "ReferenceEquals(combatState.Encounter?.CanonicalInstance, pending.Encounter)",
         "PendingBattleSetups[owner] = (setup, encounter)",
         "bool shouldResumeAfterCombat = false",
         "shouldResumeAfterCombat: true",
@@ -327,7 +327,7 @@ def validate_service() -> None:
         "combatState.Encounter is not KnightsElite",
         "playerCombatState == null",
         "playerCombatState.TurnNumber != 1",
-        "ReferenceEquals(combatState.Encounter.CanonicalInstance, pending.Encounter)",
+        "ReferenceEquals(combatState.Encounter?.CanonicalInstance, pending.Encounter)",
         "await CardCmd.AutoPlay(\n                choiceContext,",
     )
     if "ThrowingPlayerChoiceContext" in trial_after_draw:

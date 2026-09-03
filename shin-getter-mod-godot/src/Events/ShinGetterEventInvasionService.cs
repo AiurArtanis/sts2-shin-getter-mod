@@ -169,7 +169,7 @@ internal static partial class ShinGetterEventInvasionService
         PendingBattleSetups.Remove(owner);
         var combatState = owner.Creature.CombatState;
         if (combatState == null
-            || !ReferenceEquals(combatState.Encounter.CanonicalInstance, pending.Encounter))
+            || !ReferenceEquals(combatState.Encounter?.CanonicalInstance, pending.Encounter))
             return;
 
         if (combatState.Encounter is not ByrdonisElite)
@@ -195,7 +195,7 @@ internal static partial class ShinGetterEventInvasionService
         var combatState = owner.Creature.CombatState;
         PlayerCombatState? playerCombatState = owner.PlayerCombatState;
         if (combatState == null
-            || !ReferenceEquals(combatState.Encounter.CanonicalInstance, pending.Encounter)
+            || !ReferenceEquals(combatState.Encounter?.CanonicalInstance, pending.Encounter)
             || combatState.Encounter is not KnightsElite
             || playerCombatState == null
             || playerCombatState.TurnNumber != 1)

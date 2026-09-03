@@ -8,7 +8,7 @@ SERVICE = (ROOT / "src/Events/ShinGetterEventInvasionService.cs").read_text(enco
 required = (
     "ModelDb.Encounter<KnightsElite>()",
     "ModelDb.Encounter<ByrdonisElite>()",
-    "combatState.Encounter.CanonicalInstance, pending.Encounter",
+    "combatState.Encounter?.CanonicalInstance, pending.Encounter",
     "EnterCombatWithoutExitingEventMethod.Invoke(",
 )
 for needle in required:
@@ -19,6 +19,7 @@ for forbidden in (
     "ModelDb.Encounter<KnightsElite>().ToMutable()",
     "ModelDb.Encounter<ByrdonisElite>().ToMutable()",
     "ReferenceEquals(combatState.Encounter, pending.Encounter)",
+    "combatState.Encounter.CanonicalInstance, pending.Encounter",
 ):
     if forbidden in SERVICE:
         raise AssertionError(f"stale 109 event-combat API usage remains in 111 Beta: {forbidden}")
