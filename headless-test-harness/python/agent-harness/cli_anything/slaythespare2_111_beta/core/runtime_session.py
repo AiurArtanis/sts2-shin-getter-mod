@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
@@ -17,6 +18,15 @@ from .protocol import canonical_json_bytes
 
 IDENTIFIER_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
 SECRET_NAME_PARTS = ("token", "proof", "secret", "credential")
+PROTECTION_POLICY_SCHEMA = "sts2-protection-policy/v1"
+REQUIRED_PROTECTION_CATEGORIES = (
+    "production_source",
+    "steam_game",
+    "workshop",
+    "production_mod",
+)
+OPTIONAL_PROTECTION_CATEGORIES = ("production_deployment",)
+PROTECTION_CATEGORIES = REQUIRED_PROTECTION_CATEGORIES + OPTIONAL_PROTECTION_CATEGORIES
 
 
 def validate_identifier(value: str) -> str:
@@ -58,6 +68,106 @@ def _same_or_descendant(path: Path, root: Path) -> bool:
         return True
     except ValueError:
         return False
+
+
+def normalize_protection_policy(
+    policy: Mapping[str, str | Path],
+    *,
+    implicit_roots: Sequence[Path] = (),
+) -> dict[str, Path]:
+    provided = {key for key in policy if isinstance(key, str)}
+    required = set(REQUIRED_PROTECTION_CATEGORIES)
+    supported = set(PROTECTION_CATEGORIES)
+    missing = sorted(required - provided)
+    unknown = sorted(str(key) for key in policy if not isinstance(key, str) or key not in supported)
+    if missing or unknown:
+        raise ProtocolFailure(
+            ErrorCode.ISOLATION_BREACH,
+            "live protection policy must name every required category exactly once",
+            details={"missing_categories": missing, "unknown_categories": unknown},
+        )
+
+    normalized: dict[str, Path] = {}
+    invalid: dict[str, str] = {}
+    for category in PROTECTION_CATEGORIES:
+        if category not in policy:
+            continue
+        raw_root = policy[category]
+        if not isinstance(raw_root, (str, os.PathLike)):
+            invalid[category] = repr(raw_root)
+            continue
+        root = Path(raw_root).expanduser()
+        if not root.is_absolute() or not root.is_dir():
+            invalid[category] = str(root)
+            continue
+        normalized[category] = root.resolve(strict=True)
+    if invalid:
+        raise ProtocolFailure(
+            ErrorCode.ISOLATION_BREACH,
+            "every named protection root must be an existing absolute directory",
+            details={"invalid_roots": invalid},
+        )
+
+    identities: dict[str, str] = {}
+    duplicates: dict[str, list[str]] = {}
+    for category, root in normalized.items():
+        identity = os.path.normcase(os.path.realpath(root))
+        if identity in identities:
+            duplicates.setdefault(identity, [identities[identity]]).append(category)
+        else:
+            identities[identity] = category
+    if duplicates:
+        raise ProtocolFailure(
+            ErrorCode.ISOLATION_BREACH,
+            "named protection categories must not resolve to the same directory",
+            details={"duplicate_categories": list(duplicates.values())},
+        )
+
+    resolved_implicit = tuple(root.expanduser().resolve(strict=True) for root in implicit_roots)
+    redundant: dict[str, str] = {}
+    for category, root in normalized.items():
+        if any(_same_or_descendant(root, implicit) or _same_or_descendant(implicit, root) for implicit in resolved_implicit):
+            redundant[category] = str(root)
+    if redundant:
+        raise ProtocolFailure(
+            ErrorCode.ISOLATION_BREACH,
+            "named protection roots must add distinct coverage beyond implicit repository and project roots",
+            details={"redundant_roots": redundant},
+        )
+    return normalized
+
+
+def protection_policy_document(policy: Mapping[str, Path]) -> dict[str, Any]:
+    return {
+        "schema": PROTECTION_POLICY_SCHEMA,
+        "roots": {
+            category: str(policy[category])
+            for category in PROTECTION_CATEGORIES
+            if category in policy
+        },
+    }
+
+
+def protection_policy_sha256(policy: Mapping[str, Path]) -> str:
+    return hashlib.sha256(canonical_json_bytes(protection_policy_document(policy))).hexdigest()
+
+
+def _persisted_protection_policy(index: Mapping[str, Any]) -> dict[str, Path] | None:
+    document = index.get("protection_policy")
+    if document is None:
+        return None
+    if not isinstance(document, Mapping) or document.get("schema") != PROTECTION_POLICY_SCHEMA:
+        raise ProtocolFailure(
+            ErrorCode.ISOLATION_BREACH,
+            "control session has an invalid named protection-policy schema",
+        )
+    roots = document.get("roots")
+    if not isinstance(roots, Mapping):
+        raise ProtocolFailure(
+            ErrorCode.ISOLATION_BREACH,
+            "control session named protection policy has no roots mapping",
+        )
+    return normalize_protection_policy(roots)
 
 
 class RuntimePathGuard:
@@ -214,14 +324,31 @@ class SessionPaths:
 
 
 class ControlSession:
-    def __init__(self, paths: SessionPaths, repository_root: Path, protected_roots: Sequence[Path]) -> None:
+    def __init__(
+        self,
+        paths: SessionPaths,
+        repository_root: Path,
+        protected_roots: Sequence[Path],
+        *,
+        protection_policy: Mapping[str, Path] | None = None,
+    ) -> None:
         self.paths = paths
         self.repository_root = repository_root.resolve()
-        self.guard = RuntimePathGuard(self.repository_root, protected_roots)
+        self.protection_policy = dict(protection_policy or {})
+        self.guard = RuntimePathGuard(
+            self.repository_root,
+            [*protected_roots, *self.protection_policy.values()],
+        )
 
     @property
     def protected_roots(self) -> tuple[Path, ...]:
         return self.guard.protected_roots
+
+    @property
+    def protection_policy_sha256(self) -> str | None:
+        if not self.protection_policy:
+            return None
+        return protection_policy_sha256(self.protection_policy)
 
     def revalidate(self) -> Path:
         return self.guard.validate(self.paths.root, purpose="control session root")
@@ -238,9 +365,18 @@ class ControlSession:
         *,
         repository_root: Path,
         protected_roots: Sequence[Path] = (),
+        protection_policy: Mapping[str, str | Path] | None = None,
     ) -> "ControlSession":
         identifier = validate_identifier(session_id or f"session-{uuid.uuid4().hex[:16]}")
-        guarded_root = RuntimePathGuard(repository_root, protected_roots).validate(runtime_root, create=True)
+        normalized_policy = (
+            normalize_protection_policy(protection_policy)
+            if protection_policy is not None
+            else {}
+        )
+        guarded_root = RuntimePathGuard(
+            repository_root,
+            [*protected_roots, *normalized_policy.values()],
+        ).validate(runtime_root, create=True)
         paths = SessionPaths(guarded_root / identifier)
         if paths.root.exists() and any(paths.root.iterdir()):
             raise ProtocolFailure(ErrorCode.INVALID_ARGUMENT, "control session already exists")
@@ -248,7 +384,12 @@ class ControlSession:
         paths.evidence.mkdir(parents=True, exist_ok=True)
         for stream in (paths.requests_jsonl, paths.broker_events_jsonl):
             stream.touch(exist_ok=True)
-        session = cls(paths, repository_root, protected_roots)
+        session = cls(
+            paths,
+            repository_root,
+            protected_roots,
+            protection_policy=normalized_policy,
+        )
         session._save_index(
             {
                 "schema": "sts2-control-session/v1",
@@ -259,6 +400,11 @@ class ControlSession:
                 "case_invalid": False,
                 "repository_root": str(session.repository_root),
                 "protected_roots": [str(root) for root in session.protected_roots],
+                "protection_policy": (
+                    protection_policy_document(session.protection_policy)
+                    if session.protection_policy
+                    else None
+                ),
                 "instances": {},
             }
         )
@@ -271,9 +417,19 @@ class ControlSession:
         *,
         repository_root: Path,
         protected_roots: Sequence[Path] = (),
+        protection_policy: Mapping[str, str | Path] | None = None,
+        expected_protection_policy_sha256: str | None = None,
     ) -> "ControlSession":
         resolved_repository = repository_root.expanduser().resolve(strict=True)
-        requested_guard = RuntimePathGuard(resolved_repository, protected_roots)
+        requested_policy = (
+            normalize_protection_policy(protection_policy)
+            if protection_policy is not None
+            else {}
+        )
+        requested_guard = RuntimePathGuard(
+            resolved_repository,
+            [*protected_roots, *requested_policy.values()],
+        )
         resolved_session = requested_guard.validate(session_root, purpose="control session root").resolve(strict=True)
         paths = SessionPaths(resolved_session)
         if not paths.session_json.is_file():
@@ -293,8 +449,52 @@ class ControlSession:
                 ErrorCode.ISOLATION_BREACH,
                 "control session repository identity does not match the caller",
             )
-        combined = [*(Path(item) for item in persisted_roots), *protected_roots]
-        session = cls(paths, resolved_repository, combined)
+        persisted_policy = _persisted_protection_policy(index)
+        if persisted_policy is None:
+            if requested_policy or expected_protection_policy_sha256 is not None:
+                raise ProtocolFailure(
+                    ErrorCode.ISOLATION_BREACH,
+                    "control session is missing its named protection policy",
+                )
+        else:
+            persisted_digest = protection_policy_sha256(persisted_policy)
+            if not requested_policy and expected_protection_policy_sha256 is None:
+                raise ProtocolFailure(
+                    ErrorCode.ISOLATION_BREACH,
+                    "opening a named-policy session requires the same policy identity",
+                )
+            if requested_policy and protection_policy_sha256(requested_policy) != persisted_digest:
+                raise ProtocolFailure(
+                    ErrorCode.ISOLATION_BREACH,
+                    "control session named protection policy differs from the caller",
+                    details={
+                        "expected_policy_sha256": persisted_digest,
+                        "actual_policy_sha256": protection_policy_sha256(requested_policy),
+                    },
+                )
+            if (
+                expected_protection_policy_sha256 is not None
+                and expected_protection_policy_sha256 != persisted_digest
+            ):
+                raise ProtocolFailure(
+                    ErrorCode.ISOLATION_BREACH,
+                    "control session named protection-policy digest differs from the broker bootstrap",
+                    details={
+                        "expected_policy_sha256": expected_protection_policy_sha256,
+                        "actual_policy_sha256": persisted_digest,
+                    },
+                )
+        combined = [
+            *(Path(item) for item in persisted_roots),
+            *protected_roots,
+            *(persisted_policy or {}).values(),
+        ]
+        session = cls(
+            paths,
+            resolved_repository,
+            combined,
+            protection_policy=persisted_policy,
+        )
         session.revalidate()
         return session
 

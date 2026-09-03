@@ -196,19 +196,19 @@ def test_broker_client_different_payload_cannot_consume_replayed_old_terminal(
     )
     time.sleep(0.1)
 
-    conflict = broker_fixture["client"].request(
-        "runtime.exec",
-        {
-            "instance_id": "solo",
-            "command": "runtime.ping",
-            "args": {"value": 2},
-            "wait_for": "immediate",
-            "timeout_ms": 10_000,
-            "request_id": request_id,
-        },
-    )
-    assert conflict["type"] == "failed"
-    assert conflict["error"]["code"] == ErrorCode.IDEMPOTENCY_CONFLICT.value
+    with pytest.raises(ProtocolFailure) as conflict:
+        broker_fixture["client"].request(
+            "runtime.exec",
+            {
+                "instance_id": "solo",
+                "command": "runtime.ping",
+                "args": {"value": 2},
+                "wait_for": "immediate",
+                "timeout_ms": 10_000,
+                "request_id": request_id,
+            },
+        )
+    assert conflict.value.code == ErrorCode.IDEMPOTENCY_CONFLICT
 
 
 def test_broker_process_status_and_stop_are_exact(broker_fixture: dict) -> None:

@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Sts2HeadlessTestBridge.Contract;
+using Sts2HeadlessTestBridge.Dispatch;
 
 if (args.Length != 1)
     throw new ArgumentException("usage: ContractVerifier <headless-test-harness-root>");
@@ -18,6 +19,10 @@ foreach (string filename in protocolFiles)
     using JsonDocument roundTrip = codec.Decode(codec.Encode(document.RootElement));
     ProtocolContract.ValidateEnvelope(roundTrip.RootElement);
 }
+
+using JsonDocument request = JsonDocument.Parse(
+    File.ReadAllBytes(Path.Combine(golden, "protocol", "request-play-card.json")));
+string requestPayloadSha256 = RequestIdempotencyGate.RequestPayloadSha256(request.RootElement);
 
 using JsonDocument hello = JsonDocument.Parse(File.ReadAllBytes(Path.Combine(golden, "protocol", "hello.json")));
 JsonElement h = hello.RootElement;
@@ -54,4 +59,5 @@ Console.WriteLine(JsonSerializer.Serialize(new
     protocol = "sts2-test/v1",
     golden_protocol_files = protocolFiles.Length,
     client_proof = actualProof,
+    request_payload_sha256 = requestPayloadSha256,
 }));

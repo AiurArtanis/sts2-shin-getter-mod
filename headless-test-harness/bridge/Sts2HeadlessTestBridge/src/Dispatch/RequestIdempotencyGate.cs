@@ -39,7 +39,7 @@ public sealed class RequestIdempotencyGate(int capacity = 256)
     public RequestIdempotencyDecision Accept(JsonElement request)
     {
         string requestId = ProtocolContract.RequireString(request, "request_id");
-        string digest = RequestDigest(request);
+        string digest = RequestPayloadSha256(request);
         lock (_gate)
         {
             if (!_entries.TryGetValue(requestId, out Entry? entry))
@@ -107,7 +107,7 @@ public sealed class RequestIdempotencyGate(int capacity = 256)
         return fields;
     }
 
-    private static string RequestDigest(JsonElement request)
+    public static string RequestPayloadSha256(JsonElement request)
     {
         var payload = new Dictionary<string, JsonElement>(StringComparer.Ordinal);
         foreach (JsonProperty property in request.EnumerateObject())

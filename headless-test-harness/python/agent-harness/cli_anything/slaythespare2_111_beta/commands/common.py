@@ -10,7 +10,11 @@ import click
 from .. import __version__
 from ..core.broker_client import BrokerClient
 from ..core.errors import ErrorCode, ProtocolFailure
-from ..core.runtime_session import ControlSession, validate_identifier
+from ..core.runtime_session import (
+    ControlSession,
+    normalize_protection_policy,
+    validate_identifier,
+)
 from ..core.schema import default_harness_root
 
 
@@ -40,21 +44,19 @@ def repository_root() -> Path:
     return default_harness_root().parent.resolve()
 
 
-def protected_roots(context: click.Context) -> tuple[Path, ...]:
-    explicit = tuple(Path(root).expanduser() for root in context.obj.get("protected_roots", ()))
-    if not explicit:
-        raise ProtocolFailure(
-            ErrorCode.ISOLATION_BREACH,
-            "live control requires explicit --protected-root values for every source, Steam, Workshop, and production deployment tree",
-        )
-    invalid = [str(root) for root in explicit if not root.is_absolute() or not root.is_dir()]
-    if invalid:
-        raise ProtocolFailure(
-            ErrorCode.ISOLATION_BREACH,
-            "every --protected-root must be an existing absolute directory",
-            details={"invalid_roots": invalid},
-        )
-    roots = [repository_root(), Path(context.obj["root"]).resolve(), *explicit]
+def protection_policy(context: click.Context) -> dict[str, Path]:
+    return normalize_protection_policy(
+        context.obj.get("protection_policy", {}),
+        implicit_roots=(repository_root(), Path(context.obj["root"])),
+    )
+
+
+def protected_roots(
+    context: click.Context,
+    policy: Mapping[str, Path] | None = None,
+) -> tuple[Path, ...]:
+    selected = protection_policy(context) if policy is None else policy
+    roots = [repository_root(), Path(context.obj["root"]).resolve(), *selected.values()]
     unique: dict[str, Path] = {}
     for root in roots:
         resolved = Path(root).expanduser().resolve()
@@ -77,10 +79,12 @@ def open_session(context: click.Context) -> ControlSession:
     identifier = control_session_id(context)
     root = Path(context.obj["runtime_root"]) / identifier
     try:
+        policy = protection_policy(context)
         return ControlSession.open(
             root,
             repository_root=repository_root(),
-            protected_roots=protected_roots(context),
+            protected_roots=protected_roots(context, policy),
+            protection_policy=policy,
         )
     except ProtocolFailure as exc:
         fail(context, exc)
@@ -90,19 +94,22 @@ def open_session(context: click.Context) -> ControlSession:
 def create_or_open_session(context: click.Context) -> ControlSession:
     try:
         identifier = control_session_id(context, create=True)
-        roots = protected_roots(context)
+        policy = protection_policy(context)
+        roots = protected_roots(context, policy)
         root = Path(context.obj["runtime_root"]) / identifier
         if root.exists() and any(root.iterdir()):
             return ControlSession.open(
                 root,
                 repository_root=repository_root(),
                 protected_roots=roots,
+                protection_policy=policy,
             )
         return ControlSession.create(
             Path(context.obj["runtime_root"]),
             identifier,
             repository_root=repository_root(),
             protected_roots=roots,
+            protection_policy=policy,
         )
     except ProtocolFailure as exc:
         fail(context, exc)
@@ -117,7 +124,7 @@ def bootstrap_broker(context: click.Context, session: ControlSession) -> BrokerC
     return BrokerClient.bootstrap(
         session,
         repository_root=repository_root(),
-        protected_roots=protected_roots(context),
+        protected_roots=session.protected_roots,
     )
 
 

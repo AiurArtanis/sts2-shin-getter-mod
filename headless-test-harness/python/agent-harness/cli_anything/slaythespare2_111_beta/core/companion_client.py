@@ -20,6 +20,7 @@ from .protocol import (
     base64url_no_padding,
     client_proof,
     constant_time_hex_equal,
+    request_payload_sha256,
     server_proof,
 )
 from .schema import SchemaRegistry
@@ -69,6 +70,11 @@ class CompanionClient:
         self.hello_ack_body: dict[str, Any] = {}
         self._pending: deque[dict[str, Any]] = deque()
         self._status: dict[str, dict[str, Any]] = {}
+        # A CompanionClient is owned by one broker instance and may reconnect
+        # many times to the same game process. Never forget which canonical
+        # payload first claimed a request ID during that process epoch.
+        self._idempotency_process_epoch: str | None = None
+        self._request_payload_digests: dict[str, str] = {}
 
     @staticmethod
     def _open_windows_pipe(pipe_name: str) -> BinaryIO:
@@ -181,6 +187,18 @@ class CompanionClient:
                 self._require_identity(body)
                 if body.get("process_epoch") != self.process_epoch or body.get("connection_id") != self.connection_id:
                     raise ProtocolFailure(ErrorCode.SERVER_AUTH_FAILED, "hello_ack epoch identity mismatch")
+                with self._condition:
+                    if self._idempotency_process_epoch is None:
+                        self._idempotency_process_epoch = self.process_epoch
+                    elif self._idempotency_process_epoch != self.process_epoch:
+                        raise ProtocolFailure(
+                            ErrorCode.SERVER_AUTH_FAILED,
+                            "companion client cannot change process epoch",
+                            details={
+                                "expected_process_epoch": self._idempotency_process_epoch,
+                                "actual_process_epoch": self.process_epoch,
+                            },
+                        )
                 adapter_id = body.get("adapter", {}).get("id")
                 if self.expected_adapter_id is not None and adapter_id != self.expected_adapter_id:
                     raise ProtocolFailure(
@@ -277,6 +295,15 @@ class CompanionClient:
                 if trace:
                     request["trace"] = dict(trace)
                 self.schemas.validate("protocol-v1", request)
+                digest = request_payload_sha256(request)
+                previous_digest = self._request_payload_digests.get(identifier)
+                if previous_digest is not None and previous_digest != digest:
+                    raise ProtocolFailure(
+                        ErrorCode.IDEMPOTENCY_CONFLICT,
+                        "request_id was already used with a different canonical payload in this process epoch",
+                        details={"request_id": identifier},
+                    )
+                self._request_payload_digests.setdefault(identifier, digest)
                 self._status[identifier] = {"phase": "sent", "terminal": None}
                 stream = self._stream
             self._write_to_stream(stream, request)

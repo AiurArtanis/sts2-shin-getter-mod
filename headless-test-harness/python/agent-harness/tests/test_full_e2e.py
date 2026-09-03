@@ -10,6 +10,12 @@ import pytest
 
 
 CLI_NAME = "cli-anything-slaythespare2-111-beta"
+PROTECTION_OPTIONS = (
+    ("production_source", "--protect-production-source"),
+    ("steam_game", "--protect-steam-game"),
+    ("workshop", "--protect-workshop"),
+    ("production_mod", "--protect-production-mod"),
+)
 
 
 def _resolve_cli() -> str:
@@ -46,6 +52,12 @@ def _run_control_cli(
     *args: str,
     timeout: int = 180,
 ) -> dict:
+    policy_parent = runtime_root.parent / "named-protection"
+    protection_args: list[str] = []
+    for category, option in PROTECTION_OPTIONS:
+        root = policy_parent / category
+        root.mkdir(parents=True, exist_ok=True)
+        protection_args.extend((option, str(root)))
     command = [
         _resolve_cli(),
         "--project-root",
@@ -54,8 +66,7 @@ def _run_control_cli(
         str(runtime_root),
         "--control-session",
         session_id,
-        "--protected-root",
-        str(project_root),
+        *protection_args,
         "--json",
         *args,
     ]
@@ -71,6 +82,38 @@ def _run_control_cli(
     )
     assert completed.returncode == 0, f"{command}\nSTDOUT:\n{completed.stdout}\nSTDERR:\n{completed.stderr}"
     return json.loads(completed.stdout)
+
+
+def _invoke_invalid_live_cli(
+    project_root: Path,
+    runtime_root: Path,
+    session_id: str,
+    protection_args: list[str],
+) -> tuple[subprocess.CompletedProcess[str], dict]:
+    command = [
+        _resolve_cli(),
+        "--project-root",
+        str(project_root),
+        "--runtime-root",
+        str(runtime_root),
+        "--control-session",
+        session_id,
+        *protection_args,
+        "--json",
+        "process",
+        "list",
+    ]
+    completed = subprocess.run(
+        command,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        timeout=30,
+        check=False,
+    )
+    return completed, json.loads(completed.stdout)
 
 
 @pytest.mark.e2e
@@ -103,7 +146,63 @@ def test_live_cli_fails_closed_without_explicit_protected_root(
     assert completed.returncode == 1
     payload = json.loads(completed.stdout)
     assert payload["error"]["code"] == "E_ISOLATION_BREACH"
-    assert "--protected-root" in payload["error"]["message"]
+    assert set(payload["error"]["details"]["missing_categories"]) == {
+        category for category, _ in PROTECTION_OPTIONS
+    }
+
+
+@pytest.mark.e2e
+@pytest.mark.parametrize("mode", ["single", "repeated"])
+def test_live_cli_rejects_redundant_project_root_as_named_policy(
+    project_root: Path,
+    tmp_path: Path,
+    mode: str,
+) -> None:
+    selected = PROTECTION_OPTIONS[:1] if mode == "single" else PROTECTION_OPTIONS
+    protection_args = [
+        item
+        for _, option in selected
+        for item in (option, str(project_root))
+    ]
+    completed, payload = _invoke_invalid_live_cli(
+        project_root,
+        tmp_path / "runtime",
+        f"redundant-{mode}",
+        protection_args,
+    )
+    assert completed.returncode == 1
+    assert payload["error"]["code"] == "E_ISOLATION_BREACH"
+    if mode == "single":
+        assert payload["error"]["details"]["missing_categories"]
+    else:
+        assert payload["error"]["details"].get("duplicate_categories") or payload["error"]["details"].get(
+            "redundant_roots"
+        )
+
+
+@pytest.mark.e2e
+@pytest.mark.parametrize("missing_category", [category for category, _ in PROTECTION_OPTIONS])
+def test_live_cli_rejects_each_missing_named_protection_category(
+    project_root: Path,
+    tmp_path: Path,
+    missing_category: str,
+) -> None:
+    protection_args: list[str] = []
+    for category, option in PROTECTION_OPTIONS:
+        if category == missing_category:
+            continue
+        root = tmp_path / "policy" / category
+        root.mkdir(parents=True, exist_ok=True)
+        protection_args.extend((option, str(root)))
+    completed, payload = _invoke_invalid_live_cli(
+        project_root,
+        tmp_path / "runtime",
+        f"missing-{missing_category.replace('_', '-')}",
+        protection_args,
+    )
+    assert completed.returncode == 1
+    assert payload["error"]["code"] == "E_ISOLATION_BREACH"
+    assert payload["error"]["details"]["missing_categories"] == [missing_category]
 
 
 @pytest.mark.e2e
@@ -179,6 +278,8 @@ def test_installed_cli_broker_component_poc0_from_arbitrary_cwd(
     runtime_root = tmp_path / "external-runtime"
     arbitrary_cwd = tmp_path / "unrelated-cwd"
     arbitrary_cwd.mkdir()
+    component_cwd = tmp_path / "component-cwd"
+    component_cwd.mkdir()
     monkeypatch.chdir(arbitrary_cwd)
     session_id = "installed-poc0"
 
@@ -195,7 +296,7 @@ def test_installed_cli_broker_component_poc0_from_arbitrary_cwd(
         "--adapter",
         "component-test-host",
         "--cwd",
-        str(tmp_path),
+        str(component_cwd),
         "--",
         shutil.which("dotnet") or "dotnet",
         str(component_dll),

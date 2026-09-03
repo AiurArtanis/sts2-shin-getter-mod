@@ -16,11 +16,24 @@ from typing import Any, Mapping, Sequence
 import pytest
 
 from cli_anything.slaythespare2_111_beta.core.evidence import evidence_metadata_template
+from cli_anything.slaythespare2_111_beta.core.errors import ProtocolFailure
+from cli_anything.slaythespare2_111_beta.core.runtime_session import (
+    PROTECTION_CATEGORIES,
+    REQUIRED_PROTECTION_CATEGORIES,
+    normalize_protection_policy,
+)
 
 
 CLI_NAME = "cli-anything-slaythespare2-111-beta"
 PROFILE_ENV = "STS2_HEADLESS_RUNTIME_PROFILE"
 RELEASE_GATE_ENV = "STS2_HEADLESS_RUNTIME_RELEASE_GATE"
+PROTECTION_OPTIONS = {
+    "production_source": "--protect-production-source",
+    "steam_game": "--protect-steam-game",
+    "workshop": "--protect-workshop",
+    "production_mod": "--protect-production-mod",
+    "production_deployment": "--protect-production-deployment",
+}
 
 pytestmark = [pytest.mark.runtime, pytest.mark.runtime_release]
 
@@ -92,12 +105,21 @@ def runtime_release_profile() -> dict[str, Any]:
         if not Path(profile[key]).exists():
             pytest.fail(f"runtime profile path does not exist: {key}={profile[key]}")
 
-    protected = profile.get("protected_roots")
-    if not isinstance(protected, list) or not protected:
-        pytest.fail("runtime profile requires a non-empty protected_roots array")
-    for root in protected:
-        if not isinstance(root, str) or not Path(root).is_absolute() or not Path(root).exists():
-            pytest.fail(f"protected root must be an existing absolute path: {root!r}")
+    protection_policy = profile.get("protection_policy")
+    if not isinstance(protection_policy, Mapping):
+        pytest.fail("runtime profile requires a named protection_policy mapping")
+    try:
+        normalized_policy = normalize_protection_policy(
+            protection_policy,
+            implicit_roots=(Path(profile["project_root"]),),
+        )
+    except ProtocolFailure as exc:
+        pytest.fail(f"invalid runtime protection_policy: {exc.code.value}: {exc}")
+    profile["protection_policy"] = {
+        category: str(normalized_policy[category])
+        for category in PROTECTION_CATEGORIES
+        if category in normalized_policy
+    }
     game_args = profile.get("game_args")
     if not isinstance(game_args, list) or not all(isinstance(item, str) for item in game_args):
         pytest.fail("runtime profile game_args must be an array of strings")
@@ -143,6 +165,7 @@ def _runtime_exec(
     timeout_ms: int = 30_000,
     local_timeout: float = 45.0,
     request_id: str | None = None,
+    require_success: bool = True,
 ) -> dict[str, Any]:
     argv = [
         *base,
@@ -163,7 +186,12 @@ def _runtime_exec(
     ]
     if request_id is not None:
         argv.extend(("--request-id", request_id))
-    return _run(argv, cwd=cwd, timeout=local_timeout + 15.0)[1]
+    return _run(
+        argv,
+        cwd=cwd,
+        timeout=local_timeout + 15.0,
+        require_success=require_success,
+    )[1]
 
 
 def _runtime_dispatch(
@@ -343,8 +371,8 @@ def test_real_runtime_release_gate(
         "--control-session",
         session_id,
     ]
-    for root in profile["protected_roots"]:
-        base.extend(("--protected-root", root))
+    for category in profile["protection_policy"]:
+        base.extend((PROTECTION_OPTIONS[category], profile["protection_policy"][category]))
     base.append("--json")
 
     started_at = _utc_now()
@@ -511,8 +539,9 @@ def test_real_runtime_release_gate(
             wait_for="queue_settled",
             request_id=choice_parent,
             local_timeout=15.0,
+            require_success=False,
         )
-        assert conflict["type"] == "failed"
+        assert conflict["ok"] is False
         assert conflict["error"]["code"] == "E_IDEMPOTENCY_CONFLICT"
 
         choice_data = choice_required["data"]

@@ -28,13 +28,26 @@ from cli_anything.slaythespare2_111_beta.core.process_manager import (
 from cli_anything.slaythespare2_111_beta.core.runtime_session import (
     ControlSession,
     InstanceState,
+    PROTECTION_CATEGORIES,
+    PROTECTION_POLICY_SCHEMA,
+    REQUIRED_PROTECTION_CATEGORIES,
     RuntimePathGuard,
     append_jsonl,
     atomic_write_json,
     default_runtime_root,
     default_state_root,
+    normalize_protection_policy,
     validate_identifier,
 )
+
+
+def _named_protection_policy(tmp_path: Path) -> dict[str, Path]:
+    policy: dict[str, Path] = {}
+    for category in REQUIRED_PROTECTION_CATEGORIES:
+        root = tmp_path / category
+        root.mkdir()
+        policy[category] = root
+    return policy
 
 
 def test_default_runtime_root_uses_local_app_data(tmp_path: Path) -> None:
@@ -153,6 +166,122 @@ def test_runtime_path_guard_rejects_each_declared_protected_root(
     guard = RuntimePathGuard(repository, [protected])
     with pytest.raises(ProtocolFailure) as failure:
         guard.validate(protected / "must-not-be-runtime")
+    assert failure.value.code == ErrorCode.ISOLATION_BREACH
+
+
+def test_named_protection_policy_accepts_all_four_distinct_categories(tmp_path: Path) -> None:
+    policy = _named_protection_policy(tmp_path)
+    normalized = normalize_protection_policy(policy)
+    assert tuple(normalized) == REQUIRED_PROTECTION_CATEGORIES
+    assert all(root.is_absolute() and root.is_dir() for root in normalized.values())
+
+
+def test_named_protection_policy_accepts_and_guards_optional_deployment_category(
+    tmp_path: Path,
+) -> None:
+    repository = tmp_path / "repository"
+    repository.mkdir()
+    policy = _named_protection_policy(tmp_path)
+    deployment = tmp_path / "production_deployment"
+    deployment.mkdir()
+    policy["production_deployment"] = deployment
+
+    normalized = normalize_protection_policy(policy)
+    assert tuple(normalized) == PROTECTION_CATEGORIES
+    session = ControlSession.create(
+        tmp_path / "runtime",
+        "session-1",
+        repository_root=repository,
+        protection_policy=policy,
+    )
+    assert session.load_index()["protection_policy"]["roots"]["production_deployment"] == str(
+        deployment.resolve()
+    )
+    with pytest.raises(ProtocolFailure) as failure:
+        session.guard.validate(deployment / "must-not-be-runtime")
+    assert failure.value.code == ErrorCode.ISOLATION_BREACH
+
+
+@pytest.mark.parametrize("category", REQUIRED_PROTECTION_CATEGORIES)
+def test_named_protection_policy_rejects_runtime_candidate_in_each_category(
+    tmp_path: Path,
+    category: str,
+) -> None:
+    repository = tmp_path / "repository"
+    repository.mkdir()
+    policy = _named_protection_policy(tmp_path)
+    session = ControlSession.create(
+        tmp_path / "runtime",
+        "session-1",
+        repository_root=repository,
+        protection_policy=policy,
+    )
+    with pytest.raises(ProtocolFailure) as failure:
+        session.guard.validate(policy[category] / "must-not-be-runtime")
+    assert failure.value.code == ErrorCode.ISOLATION_BREACH
+
+
+@pytest.mark.parametrize("tamper", ["swap_categories", "replace_path"])
+def test_control_session_open_rejects_tampered_persisted_named_policy(
+    tmp_path: Path,
+    tamper: str,
+) -> None:
+    repository = tmp_path / "repository"
+    repository.mkdir()
+    policy = _named_protection_policy(tmp_path)
+    session = ControlSession.create(
+        tmp_path / "runtime",
+        "session-1",
+        repository_root=repository,
+        protection_policy=policy,
+    )
+    index = session.load_index()
+    assert index["protection_policy"]["schema"] == PROTECTION_POLICY_SCHEMA
+    assert index["protection_policy"]["roots"] == {
+        category: str(policy[category].resolve())
+        for category in REQUIRED_PROTECTION_CATEGORIES
+    }
+
+    persisted = json.loads(session.paths.session_json.read_text(encoding="utf-8"))
+    roots = persisted["protection_policy"]["roots"]
+    if tamper == "swap_categories":
+        roots["production_source"], roots["steam_game"] = roots["steam_game"], roots["production_source"]
+    else:
+        replacement = tmp_path / "replacement-production-source"
+        replacement.mkdir()
+        roots["production_source"] = str(replacement.resolve())
+    session.paths.session_json.write_text(
+        json.dumps(persisted, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ProtocolFailure) as failure:
+        ControlSession.open(
+            session.paths.root,
+            repository_root=repository,
+            protection_policy=policy,
+        )
+    assert failure.value.code == ErrorCode.ISOLATION_BREACH
+
+
+def test_control_session_open_requires_named_policy_identity(tmp_path: Path) -> None:
+    repository = tmp_path / "repository"
+    repository.mkdir()
+    policy = _named_protection_policy(tmp_path)
+    session = ControlSession.create(
+        tmp_path / "runtime",
+        "session-1",
+        repository_root=repository,
+        protection_policy=policy,
+    )
+    reopened = ControlSession.open(
+        session.paths.root,
+        repository_root=repository,
+        protection_policy=policy,
+    )
+    assert reopened.protection_policy_sha256 == session.protection_policy_sha256
+    with pytest.raises(ProtocolFailure) as failure:
+        ControlSession.open(session.paths.root, repository_root=repository)
     assert failure.value.code == ErrorCode.ISOLATION_BREACH
 
 

@@ -67,12 +67,34 @@ def _configured_godot(context: click.Context, explicit: str | None) -> str:
     help="External root for live control sessions (never inside a repository or game tree).",
 )
 @click.option(
-    "--protected-root",
-    "protected_roots",
+    "--protect-production-source",
     type=click.Path(path_type=Path),
-    multiple=True,
-    envvar="STS2_HEADLESS_PROTECTED_ROOTS",
-    help="Protected source/game/deployment root; repeat for every tree that must remain read-only.",
+    envvar="STS2_HEADLESS_PROTECT_PRODUCTION_SOURCE",
+    help="Existing absolute production source root that live control must never modify.",
+)
+@click.option(
+    "--protect-steam-game",
+    type=click.Path(path_type=Path),
+    envvar="STS2_HEADLESS_PROTECT_STEAM_GAME",
+    help="Existing absolute Steam game-install root that live control must never modify.",
+)
+@click.option(
+    "--protect-workshop",
+    type=click.Path(path_type=Path),
+    envvar="STS2_HEADLESS_PROTECT_WORKSHOP",
+    help="Existing absolute Workshop root that live control must never modify.",
+)
+@click.option(
+    "--protect-production-mod",
+    type=click.Path(path_type=Path),
+    envvar="STS2_HEADLESS_PROTECT_PRODUCTION_MOD",
+    help="Existing absolute deployed production-mod root that live control must never modify.",
+)
+@click.option(
+    "--protect-production-deployment",
+    type=click.Path(path_type=Path),
+    envvar="STS2_HEADLESS_PROTECT_PRODUCTION_DEPLOYMENT",
+    help="Optional distinct normal deployment/user-data root that live control must never modify.",
 )
 @click.option(
     "--control-session",
@@ -87,7 +109,11 @@ def cli(
     project_root: Path | None,
     state_dir: Path | None,
     runtime_root: Path | None,
-    protected_roots: tuple[Path, ...],
+    protect_production_source: Path | None,
+    protect_steam_game: Path | None,
+    protect_workshop: Path | None,
+    protect_production_mod: Path | None,
+    protect_production_deployment: Path | None,
     control_session: str | None,
     json_mode: bool,
 ) -> None:
@@ -110,7 +136,17 @@ def cli(
             "store": SessionStore(state_path),
             "state_dir": state_path,
             "runtime_root": (runtime_root or default_runtime_root()).expanduser().resolve(),
-            "protected_roots": tuple(path.expanduser().resolve() for path in protected_roots),
+            "protection_policy": {
+                category: path
+                for category, path in {
+                    "production_source": protect_production_source,
+                    "steam_game": protect_steam_game,
+                    "workshop": protect_workshop,
+                    "production_mod": protect_production_mod,
+                    "production_deployment": protect_production_deployment,
+                }.items()
+                if path is not None
+            },
             "control_session": control_session,
             "emit": _emit,
         }

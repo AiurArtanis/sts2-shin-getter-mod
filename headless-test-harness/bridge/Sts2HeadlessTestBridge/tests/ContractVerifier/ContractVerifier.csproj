@@ -8,5 +8,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../../src/Contract/*.cs" Link="Contract/%(Filename)%(Extension)" />
+    <Compile Include="../../src/Dispatch/RequestIdempotencyGate.cs" Link="Dispatch/RequestIdempotencyGate.cs" />
   </ItemGroup>
 </Project>

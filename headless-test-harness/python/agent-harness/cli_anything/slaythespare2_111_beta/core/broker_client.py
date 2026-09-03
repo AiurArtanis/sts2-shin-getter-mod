@@ -85,6 +85,13 @@ class BrokerClient:
                 "--repository-root",
                 str(repository_root.resolve()),
             ]
+            if session.protection_policy_sha256 is not None:
+                command.extend(
+                    (
+                        "--protection-policy-sha256",
+                        session.protection_policy_sha256,
+                    )
+                )
             creationflags = 0
             if os.name == "nt":
                 creationflags = subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.CREATE_NO_WINDOW

@@ -170,7 +170,12 @@ def blocked_writer_component_host(component_host_dll: Path, tmp_path: Path):
         process.stderr.close()
 
 
-def _client(component_host: dict, *, token: bytes | None = None) -> CompanionClient:
+def _client(
+    component_host: dict,
+    *,
+    token: bytes | None = None,
+    resume_from_seq: int | None = None,
+) -> CompanionClient:
     client = CompanionClient(
         pipe_name=component_host["pipe_name"],
         session_id="component-session",
@@ -178,7 +183,7 @@ def _client(component_host: dict, *, token: bytes | None = None) -> CompanionCli
         token=token or component_host["token"],
         expected_adapter_id="component-test-host",
     )
-    client.connect(timeout_seconds=10)
+    client.connect(timeout_seconds=10, resume_from_seq=resume_from_seq)
     return client
 
 
@@ -456,12 +461,59 @@ def test_component_host_replayed_request_is_idempotent(component_host: dict) -> 
 
 
 def test_component_host_same_id_different_payload_conflicts(component_host: dict) -> None:
+    request_id = "server-side-payload-conflict"
     with _client(component_host) as client:
-        request_id = client.new_request_id()
         client.request("runtime.ping", {"value": 1}, request_id=request_id)
-        conflict = client.request("runtime.ping", {"value": 2}, request_id=request_id)
+        resume_from_seq = client.last_seq
+    # A fresh client has no local request ledger, so this assertion exercises
+    # the production C# process-epoch gate rather than the Python preflight.
+    # Resume after the original terminal so handshake replay cannot be mistaken
+    # for the response to the deliberately conflicting request.
+    with _client(component_host, resume_from_seq=resume_from_seq) as fresh_client:
+        conflict = fresh_client.request("runtime.ping", {"value": 2}, request_id=request_id)
     assert conflict["type"] == "failed"
     assert conflict["error"]["code"] == ErrorCode.IDEMPOTENCY_CONFLICT.value
+
+
+def test_component_client_rejects_conflicting_retry_before_delayed_second_write(
+    component_host: dict,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    with _client(component_host) as client:
+        request_id = "client-preflight-conflict-race"
+        original_write = client._write_to_stream
+        request_write_count = 0
+
+        def delay_second_request_write(stream: object, message: dict) -> None:
+            nonlocal request_write_count
+            if message.get("type") == "request" and message.get("request_id") == request_id:
+                request_write_count += 1
+                if request_write_count == 2:
+                    time.sleep(0.45)
+            original_write(stream, message)
+
+        monkeypatch.setattr(client, "_write_to_stream", delay_second_request_write)
+        client.dispatch(
+            "test.delayed",
+            {"delay_ms": 250},
+            request_id=request_id,
+            wait_for="immediate",
+            timeout_ms=10_000,
+        )
+        with pytest.raises(ProtocolFailure) as failure:
+            client.request(
+                "test.delayed",
+                {"delay_ms": 450},
+                request_id=request_id,
+                wait_for="immediate",
+                timeout_ms=10_000,
+            )
+        first_terminal = client.wait_terminal(request_id, timeout_seconds=5)
+
+    assert failure.value.code == ErrorCode.IDEMPOTENCY_CONFLICT
+    assert request_write_count == 1
+    assert first_terminal["type"] == "completed"
+    assert first_terminal["result"]["execution_count"] == 1
 
 
 def test_component_host_completed_id_never_reexecutes_after_terminal_cache_capacity(
@@ -488,16 +540,18 @@ def test_component_host_completed_id_never_reexecutes_after_terminal_cache_capac
             request_id=request_id,
             timeout_ms=10_000,
         )
-        conflict = client.request(
+        resume_from_seq = client.last_seq
+
+    assert first["result"]["execution_count"] == 1
+    assert repeated["type"] == "failed"
+    assert repeated["error"]["code"] == "E_IDEMPOTENCY_WINDOW_EXPIRED"
+    with _client(component_host, resume_from_seq=resume_from_seq) as fresh_client:
+        conflict = fresh_client.request(
             "test.delayed",
             {"delay_ms": 2},
             request_id=request_id,
             timeout_ms=10_000,
         )
-
-    assert first["result"]["execution_count"] == 1
-    assert repeated["type"] == "failed"
-    assert repeated["error"]["code"] == "E_IDEMPOTENCY_WINDOW_EXPIRED"
     assert conflict["type"] == "failed"
     assert conflict["error"]["code"] == ErrorCode.IDEMPOTENCY_CONFLICT.value
 

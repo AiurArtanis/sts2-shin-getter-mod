@@ -465,8 +465,16 @@ def _error_response(error: ProtocolFailure) -> bytes:
     return json.dumps({"ok": False, "error": error.to_error()}, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
 
 
-def serve(session_root: Path, repository_root: Path) -> int:
-    session = ControlSession.open(session_root, repository_root=repository_root)
+def serve(
+    session_root: Path,
+    repository_root: Path,
+    protection_policy_sha256: str | None = None,
+) -> int:
+    session = ControlSession.open(
+        session_root,
+        repository_root=repository_root,
+        expected_protection_policy_sha256=protection_policy_sha256,
+    )
     broker_epoch = secrets.token_hex(16)
     pipe_name = f"sts2-broker-{session.load_index()['session_id'][:16]}-{secrets.token_hex(16)}"
     lease = FileLock(session.paths.session_lock, timeout=0.1)
@@ -564,8 +572,13 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="TEST-ONLY Slay the Spire 2 control-session broker")
     parser.add_argument("--session-root", type=Path, required=True)
     parser.add_argument("--repository-root", type=Path, required=True)
+    parser.add_argument("--protection-policy-sha256")
     args = parser.parse_args(argv)
-    return serve(args.session_root.resolve(strict=True), args.repository_root.resolve(strict=True))
+    return serve(
+        args.session_root.resolve(strict=True),
+        args.repository_root.resolve(strict=True),
+        args.protection_policy_sha256,
+    )
 
 
 if __name__ == "__main__":
