@@ -157,6 +157,80 @@ def test_component_host_rejects_unrelated_mutation_while_choice_waits(component_
     assert terminal["error"]["code"] == ErrorCode.MUTATION_BUSY.value
 
 
+def test_component_host_action_parent_uses_exact_reference_and_full_queue_settle(component_host: dict) -> None:
+    with _client(component_host) as client:
+        parent = client.dispatch("test.action_parent", {}, wait_for="queue_settled")
+        enqueued = client.wait_event(parent, "action_enqueued")
+        assert enqueued["data"]["correlation"] == "exact_reference"
+        assert enqueued["data"]["action_id"] == 7
+
+        busy = client.request("test.mutation", {})
+        assert busy["type"] == "failed"
+        assert busy["error"]["code"] == ErrorCode.MUTATION_BUSY.value
+
+        continuation = client.request(
+            "test.action_complete",
+            {
+                "blocked_request_id": parent,
+                "action_handle": enqueued["data"]["action_handle"],
+            },
+        )
+        finished = client.wait_event(parent, "action_finished")
+        parent_terminal = client.wait_terminal(parent)
+
+    assert continuation["type"] == "completed"
+    assert continuation["result"]["released"] is True
+    assert enqueued["seq"] < finished["seq"] < parent_terminal["seq"]
+    assert finished["data"]["action_handle"] == enqueued["data"]["action_handle"]
+    assert parent_terminal["result"]["completion"] == "queue_settled"
+    assert parent_terminal["result"]["queue_empty"] is True
+    assert parent_terminal["result"]["executor_running"] is False
+
+
+def test_component_host_wrong_action_reference_cannot_release_mutation_lane(component_host: dict) -> None:
+    with _client(component_host) as client:
+        parent = client.dispatch("test.action_parent", {}, wait_for="queue_settled")
+        enqueued = client.wait_event(parent, "action_enqueued")
+        stale = client.request(
+            "test.action_complete",
+            {"blocked_request_id": parent, "action_handle": "action:component:wrong"},
+        )
+        assert stale["type"] == "failed"
+        assert stale["error"]["code"] == ErrorCode.STALE_HANDLE.value
+        assert client.request_status(parent)["terminal"] is None
+
+        client.request(
+            "test.action_complete",
+            {
+                "blocked_request_id": parent,
+                "action_handle": enqueued["data"]["action_handle"],
+            },
+        )
+        parent_terminal = client.wait_terminal(parent)
+
+    assert parent_terminal["type"] == "completed"
+
+
+def test_game_bridge_action_completion_has_no_sleep_or_nearest_action_fallback(harness_root: Path) -> None:
+    dispatch_root = harness_root / "bridge" / "Sts2HeadlessTestBridge" / "src" / "Dispatch"
+    observer = (dispatch_root / "ActionObserver.cs").read_text(encoding="utf-8")
+    execution = (dispatch_root / "RequestExecution.cs").read_text(encoding="utf-8")
+    registry = (dispatch_root / "CommandRegistry.cs").read_text(encoding="utf-8")
+    combined = "\n".join((observer, execution, registry))
+
+    assert "CompletionTask" in combined
+    assert "ActionQueueSet.IsEmpty" in combined
+    assert "ActionExecutor.IsRunning" in combined
+    assert "CurrentlyRunningAction" in combined
+    assert "RequestEnqueue(action)" in combined
+    assert "ReadyPredicate" in combined
+    assert "PlayerTurnPhase.Play" in combined
+    assert "Task.Delay(" not in combined
+    assert "Thread.Sleep(" not in combined
+    assert "nearest action" not in combined.lower()
+    assert "recent action" not in combined.lower()
+
+
 def test_component_host_rejects_stale_choice(component_host: dict) -> None:
     with _client(component_host) as client:
         parent = client.dispatch("test.choice_parent", {}, wait_for="queue_settled")

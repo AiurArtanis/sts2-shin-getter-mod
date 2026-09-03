@@ -16,6 +16,7 @@ public partial class BridgeRootNode : Node
     private BridgeConfiguration? _configuration;
     private MainThreadDispatcher? _dispatcher;
     private RequestExecution? _execution;
+    private ActionObserver? _actions;
     private ProtocolServer? _server;
     private CancellationTokenSource? _serverCancellation;
     private int _mainThreadId;
@@ -37,9 +38,12 @@ public partial class BridgeRootNode : Node
             _configuration,
             processEpoch,
             () => ReleaseInfo("version", "unknown") ?? "unknown",
-            () => ReleaseInfo("commit", null));
-        var registry = new CommandRegistry(snapshots);
-        _execution = new RequestExecution(registry, this, _mainThreadId);
+            () => ReleaseInfo("commit", null),
+            actionSnapshot: () => _actions?.Snapshot() ?? new Dictionary<string, object?>());
+        _actions = new ActionObserver(snapshots.Handles);
+        _actions.Synchronize();
+        var registry = new CommandRegistry(snapshots, _actions);
+        _execution = new RequestExecution(registry, _actions, this, _mainThreadId);
         _server = new ProtocolServer(
             _configuration.PipeName,
             _configuration.SessionId,
@@ -59,6 +63,7 @@ public partial class BridgeRootNode : Node
             return;
         foreach (PendingRequest request in _dispatcher.Drain())
             _execution.Execute(request, _dispatcher.Count);
+        _execution.Poll();
     }
 
     public override void _ExitTree()
@@ -66,6 +71,8 @@ public partial class BridgeRootNode : Node
         _server?.RequestStop();
         _serverCancellation?.Cancel();
         _serverCancellation?.Dispose();
+        _actions?.Dispose();
+        _actions = null;
         _configuration?.DestroySecret();
         _configuration = null;
     }

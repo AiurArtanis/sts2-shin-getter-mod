@@ -68,6 +68,7 @@ sealed class ComponentExecutor(ProtocolServer server)
     private long _choiceGeneration;
     private string? _choiceHandle;
     private string? _choiceCandidate;
+    private string? _actionHandle;
 
     public async Task HandleAsync(
         JsonElement request,
@@ -125,6 +126,74 @@ sealed class ComponentExecutor(ProtocolServer server)
                     ["backend"] = "component_test_host",
                     ["states"] = new Dictionary<string, string> { ["typed_card_play"] = "partial" },
                 }, cancellationToken);
+                break;
+            case "test.action_parent":
+                if (_mutationOwner is not null)
+                {
+                    await Failed(connection, requestId, ErrorCodes.MutationBusy, "mutation lane is busy", cancellationToken);
+                    break;
+                }
+                _mutationOwner = requestId;
+                _actionHandle = $"action:{connection.Handshake.ProcessEpoch}:7";
+                await connection.SendAsync(
+                    "event", requestId,
+                    new Dictionary<string, object?>
+                    {
+                        ["name"] = "action_enqueued",
+                        ["data"] = new Dictionary<string, object?>
+                        {
+                            ["action_handle"] = _actionHandle,
+                            ["action_id"] = 7,
+                            ["owner_id"] = 1,
+                            ["action_type"] = "ComponentAction",
+                            ["correlation"] = "exact_reference",
+                        },
+                    },
+                    cancellationToken: cancellationToken);
+                break;
+            case "test.action_complete":
+                if (!ValidActionContinuation(args))
+                {
+                    await Failed(connection, requestId, ErrorCodes.StaleHandle, "action continuation is stale", cancellationToken);
+                    break;
+                }
+                string actionParent = _mutationOwner!;
+                string actionHandle = _actionHandle!;
+                await Completed(
+                    connection,
+                    requestId,
+                    new Dictionary<string, object?> { ["released"] = true },
+                    cancellationToken);
+                await connection.SendAsync(
+                    "event", actionParent,
+                    new Dictionary<string, object?>
+                    {
+                        ["name"] = "action_finished",
+                        ["data"] = new Dictionary<string, object?>
+                        {
+                            ["action_handle"] = actionHandle,
+                            ["action_id"] = 7,
+                            ["owner_id"] = 1,
+                            ["action_type"] = "ComponentAction",
+                            ["state"] = "Finished",
+                        },
+                    },
+                    cancellationToken: cancellationToken);
+                JsonElement actionTerminal = await connection.SendAsync(
+                    "completed", actionParent,
+                    new Dictionary<string, object?>
+                    {
+                        ["result"] = new Dictionary<string, object?>
+                        {
+                            ["completion"] = "queue_settled",
+                            ["queue_empty"] = true,
+                            ["executor_running"] = false,
+                        },
+                    },
+                    cancellationToken: cancellationToken);
+                CacheTerminal(actionParent, actionTerminal);
+                _mutationOwner = null;
+                _actionHandle = null;
                 break;
             case "test.choice_parent":
                 if (_mutationOwner is not null)
@@ -208,6 +277,19 @@ sealed class ComponentExecutor(ProtocolServer server)
         if (!args.TryGetProperty("candidates", out JsonElement candidates) || candidates.GetArrayLength() != 1)
             return false;
         return candidates[0].GetString() == _choiceCandidate;
+    }
+
+    private bool ValidActionContinuation(JsonElement args)
+    {
+        if (_mutationOwner is null || _actionHandle is null)
+            return false;
+        if (!args.TryGetProperty("blocked_request_id", out JsonElement blocked)
+            || blocked.GetString() != _mutationOwner)
+        {
+            return false;
+        }
+        return args.TryGetProperty("action_handle", out JsonElement handle)
+            && handle.GetString() == _actionHandle;
     }
 
     private async Task Completed(
