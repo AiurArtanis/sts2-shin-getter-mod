@@ -156,6 +156,8 @@ When reporting a problem, include the game version, mod version, reproduction st
 
 Do not commit local game dependencies, `addons/`, `build/` artifacts, or personal test scripts.
 
+Read the [contribution guide](CONTRIBUTING.md) before submitting code, and follow the [Code of Conduct](CODE_OF_CONDUCT.md) in project spaces. Report vulnerabilities privately under the [Security Policy](SECURITY.md), not through a public issue.
+
 ## License and asset notice
 
 This is an unofficial fan-made mod. Names, characters, and source material related to *Slay the Spire 2* and Shin Getter remain the property of their respective rights holders.
