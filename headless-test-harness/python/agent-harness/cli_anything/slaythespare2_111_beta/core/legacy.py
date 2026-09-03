@@ -346,12 +346,20 @@ class FileLock:
 
     def __enter__(self) -> "FileLock":
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        self._handle = self.path.open("a+b")
-        self._handle.seek(0, os.SEEK_END)
-        if self._handle.tell() == 0:
-            self._handle.write(b"0")
-            self._handle.flush()
         deadline = time.monotonic() + self.timeout
+        try:
+            with self.path.open("xb") as seed:
+                seed.write(b"0")
+                seed.flush()
+                os.fsync(seed.fileno())
+        except FileExistsError:
+            # Another process/thread owns initialization. Wait until its one-byte
+            # lock range is durable before opening the shared lock file.
+            while self.path.stat().st_size == 0:
+                if time.monotonic() >= deadline:
+                    raise HarnessError(f"Timed out initializing state lock: {self.path}")
+                time.sleep(0.005)
+        self._handle = self.path.open("r+b")
         while True:
             try:
                 self._handle.seek(0)
