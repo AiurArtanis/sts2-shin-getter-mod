@@ -3459,8 +3459,8 @@
   },
   "mod_binary_reference_inventory": {
     "assembly": "shin-getter-mod-godot/build/ShinGetterMod.dll",
-    "direct_game_member_reference_count": 698,
-    "game_member_reference_count": 731,
+    "direct_game_member_reference_count": 699,
+    "game_member_reference_count": 732,
     "game_member_references": [
       {
         "name": ".ctor",
@@ -5791,7 +5791,7 @@
         "signature": "MegaCrit.Sts2.Core.Localization.DynamicVars.DynamicVarSet ()"
       },
       {
-        "name": "ToMutable",
+        "name": "get_CanonicalInstance",
         "owner": "MegaCrit.Sts2.Core.Models.EncounterModel",
         "owner_kind": "type-reference",
         "signature": "MegaCrit.Sts2.Core.Models.EncounterModel ()"
@@ -6407,6 +6407,12 @@
         "owner": "MegaCrit.Sts2.Core.Nodes.Combat.NCreature",
         "owner_kind": "type-reference",
         "signature": "MegaCrit.Sts2.Core.Nodes.Combat.NCreatureVisuals ()"
+      },
+      {
+        "name": "GetCurrentBody",
+        "owner": "MegaCrit.Sts2.Core.Nodes.Combat.NCreatureVisuals",
+        "owner_kind": "type-reference",
+        "signature": "Godot.Node2D ()"
       },
       {
         "name": "get_DefaultFocusedControl",
@@ -7849,7 +7855,7 @@
         "signature": "Void ()"
       }
     ],
-    "game_override_count": 1015,
+    "game_override_count": 1016,
     "game_overrides": [
       {
         "base_method": "GetArgumentCompletions",
@@ -8438,6 +8444,13 @@
         "base_signature": "System.Threading.Tasks.Task (MegaCrit.Sts2.Core.GameActions.Multiplayer.PlayerChoiceContext, MegaCrit.Sts2.Core.Entities.Players.Player)",
         "mod_method": "AfterPlayerTurnStartLate",
         "mod_type": "ShinGetterMod.Models.Powers.SGP_Evolution"
+      },
+      {
+        "base_method": "AfterPowerAmountChanged",
+        "base_owner": "MegaCrit.Sts2.Core.Models.AbstractModel",
+        "base_signature": "System.Threading.Tasks.Task (MegaCrit.Sts2.Core.GameActions.Multiplayer.PlayerChoiceContext, MegaCrit.Sts2.Core.Models.PowerModel, System.Decimal, MegaCrit.Sts2.Core.Entities.Creatures.Creature, MegaCrit.Sts2.Core.Models.CardModel)",
+        "mod_method": "AfterPowerAmountChanged",
+        "mod_type": "ShinGetterMod.Models.Powers.SGP_ChainReaction"
       },
       {
         "base_method": "AfterPowerAmountChanged",
@@ -14957,7 +14970,7 @@
         "mod_type": "ShinGetterMod.RichTextTags.RichTextYellow"
       }
     ],
-    "game_type_reference_count": 377,
+    "game_type_reference_count": 378,
     "game_type_references": [
       "MegaCrit.Sts2.Core.Animation.AnimState",
       "MegaCrit.Sts2.Core.Animation.CreatureAnimator",
@@ -15221,6 +15234,7 @@
       "MegaCrit.Sts2.Core.Nodes.CommonUi.NTickbox+PropertyName",
       "MegaCrit.Sts2.Core.Nodes.CommonUi.NTickbox+SignalName",
       "MegaCrit.Sts2.Core.Nodes.CommonUi.NTopBar",
+      "MegaCrit.Sts2.Core.Nodes.Events.Custom.NFakeMerchant",
       "MegaCrit.Sts2.Core.Nodes.Events.NEventLayout",
       "MegaCrit.Sts2.Core.Nodes.Events.NEventOptionButton",
       "MegaCrit.Sts2.Core.Nodes.GodotExtensions.NButton",
@@ -15338,10 +15352,10 @@
       "MegaCrit.Sts2.addons.mega_text.MegaRichTextLabel+SignalName"
     ],
     "generic_game_member_reference_count": 33,
-    "semantic_reference_sha256": "94E1781B451936C6925C4606EFB456573DFC080B64132E07F6079AB38DFBFFF1"
+    "semantic_reference_sha256": "B09D53931AAD86D0AA760365D94505B20E27A1FBD325AC3243689565AAB84B88"
   },
   "mod_source_inventory": {
-    "dynamic_target_call_count": 119,
+    "dynamic_target_call_count": 121,
     "dynamic_target_calls": [
       {
         "api": "AccessTools.Method",
@@ -16023,6 +16037,28 @@
       },
       {
         "api": "HarmonyPatch",
+        "location": "shin-getter-mod-godot/src/Patches/ShinGetterEventCharacterVisualPatch.cs:50",
+        "snippet": "HarmonyPatch(typeof(NFakeMerchant), \"StartCharacterAnimation\")",
+        "target_names": [
+          "StartCharacterAnimation"
+        ],
+        "target_type_names": [
+          "NFakeMerchant"
+        ]
+      },
+      {
+        "api": "HarmonyPatch",
+        "location": "shin-getter-mod-godot/src/Patches/ShinGetterEventCharacterVisualPatch.cs:57",
+        "snippet": "HarmonyPatch(typeof(TheArchitect), nameof(TheArchitect.OnRoomEnter))",
+        "target_names": [
+          "OnRoomEnter"
+        ],
+        "target_type_names": [
+          "TheArchitect"
+        ]
+      },
+      {
+        "api": "HarmonyPatch",
         "location": "shin-getter-mod-godot/src/Patches/ShinGetterEventInvasionPatch.cs:18",
         "snippet": "HarmonyPatch(typeof(EventModel), \"SetEventState\")",
         "target_names": [
@@ -16606,7 +16642,7 @@
       },
       {
         "api": "HarmonyPatch",
-        "location": "shin-getter-mod-godot/src/Patches/VigorPowerSetAmountPatch.cs:17",
+        "location": "shin-getter-mod-godot/src/Patches/VigorPowerSetAmountPatch.cs:14",
         "snippet": "HarmonyPatch(typeof(PowerModel), nameof(PowerModel.SetAmount))",
         "target_names": [
           "SetAmount"
@@ -16617,7 +16653,7 @@
       },
       {
         "api": "AccessTools.Field",
-        "location": "shin-getter-mod-godot/src/Patches/VigorPowerSetAmountPatch.cs:20",
+        "location": "shin-getter-mod-godot/src/Patches/VigorPowerSetAmountPatch.cs:17",
         "snippet": "AccessTools.Field(typeof(PowerModel), \"_internalData\")",
         "target_names": [
           "_internalData"
@@ -16628,7 +16664,7 @@
       },
       {
         "api": "AccessTools.Field",
-        "location": "shin-getter-mod-godot/src/Patches/VigorPowerSetAmountPatch.cs:67",
+        "location": "shin-getter-mod-godot/src/Patches/VigorPowerSetAmountPatch.cs:49",
         "snippet": "AccessTools.Field(internalData.GetType(), \"commandToModify\")",
         "target_names": [
           "commandToModify"
@@ -16637,7 +16673,7 @@
       },
       {
         "api": "AccessTools.Field",
-        "location": "shin-getter-mod-godot/src/Patches/VigorPowerSetAmountPatch.cs:68",
+        "location": "shin-getter-mod-godot/src/Patches/VigorPowerSetAmountPatch.cs:50",
         "snippet": "AccessTools.Field(internalData.GetType(), \"amountWhenAttackStarted\")",
         "target_names": [
           "amountWhenAttackStarted"
@@ -16681,6 +16717,7 @@
       "ObtainCharUnlockEpoch",
       "OfferRewards",
       "OnPlayWrapper",
+      "OnRoomEnter",
       "OnWindowChange",
       "Play",
       "PlayerChanged",
@@ -16698,6 +16735,7 @@
       "SetEventFinished",
       "SetEventState",
       "SetupForPlayer",
+      "StartCharacterAnimation",
       "StartCombat",
       "StartDeathAnim",
       "StartVfx",
@@ -16734,7 +16772,7 @@
       "get_IsShared",
       "get_ShouldRetainThisTurn"
     ],
-    "file_count": 324,
+    "file_count": 325,
     "files": [
       {
         "line_count": 106,
@@ -16802,9 +16840,9 @@
         "sha256": "C6D31B3EC40181711FC90420110EDEC4536946A2307E3222C56B8BDBA273CDF8"
       },
       {
-        "line_count": 985,
+        "line_count": 986,
         "path": "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs",
-        "sha256": "9811B9C9434B0F0B0B3CABDCC63245CBC7C940C4C685869FC79D19FB2B48D9ED"
+        "sha256": "835FABDF56626C769033195E6653D354C0725A82C3A772ADC25A31C15E6C8F40"
       },
       {
         "line_count": 905,
@@ -17659,7 +17697,7 @@
       {
         "line_count": 799,
         "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCardBase.cs",
-        "sha256": "498C8C38B961C7774B00CBBEC3BD59B6ECEDF7E0B60E2FDB3A5288AD3FA910B0"
+        "sha256": "E881BAE10FCEA03D0CF4DFA06467D15FFD1A9921D87A359E692912CB9C38A5BE"
       },
       {
         "line_count": 104,
@@ -17742,9 +17780,9 @@
         "sha256": "CA7C87ECE3F160D43CA1E7E4D939ECD5D0397CF1065DC7E49C12A2910E266FB4"
       },
       {
-        "line_count": 23,
+        "line_count": 51,
         "path": "shin-getter-mod-godot/src/Models/Powers/SGP_ChainReaction.cs",
-        "sha256": "9A078378DC2DDCDBB2869900B92EE4910D1ECF242EA121539CA0859EC34087F1"
+        "sha256": "09AB1CA3F636D9EA8CBAD69F1D4F174C9CB469C42063C6C65AB1635CE6EA766A"
       },
       {
         "line_count": 48,
@@ -17957,9 +17995,9 @@
         "sha256": "28E43DD5C940A90EEC296FF5B1E503707B2F02464F91842A959F290E1EAE1B8D"
       },
       {
-        "line_count": 81,
+        "line_count": 83,
         "path": "shin-getter-mod-godot/src/Models/Relics/SGR_GoodCitizenCard.cs",
-        "sha256": "4708DC96E5D02B4CE13E0E901C3A55D2671FB3B853A809755A62EE4C4C9EF96F"
+        "sha256": "E9B7737D3ED114DCCFE6334B276C46A265C693078EAE1DDB8FEB38CD20F65BCC"
       },
       {
         "line_count": 28,
@@ -18217,6 +18255,11 @@
         "sha256": "8CF066A74A022057C83CA29DBE519C0171082BADF4D1FB529B9BBC8B92A1A40E"
       },
       {
+        "line_count": 72,
+        "path": "shin-getter-mod-godot/src/Patches/ShinGetterEventCharacterVisualPatch.cs",
+        "sha256": "A66763F4FF22AB67A89A45875F4BC54E7FC397CB02F75FB495EB0BB5D4444E8D"
+      },
+      {
         "line_count": 255,
         "path": "shin-getter-mod-godot/src/Patches/ShinGetterEventInvasionPatch.cs",
         "sha256": "FE975BA0EE034872D4B0C18567C48BA26CB4B93A4EA85BBEB1CD64776E45C72E"
@@ -18312,9 +18355,9 @@
         "sha256": "41DDDE8EB7527CBB86DE6EDC97BFF48F0FDDC53177440D7BDDFD3D9AA7F24CA8"
       },
       {
-        "line_count": 70,
+        "line_count": 52,
         "path": "shin-getter-mod-godot/src/Patches/VigorPowerSetAmountPatch.cs",
-        "sha256": "6F17C83475BF5E19F84395DA9653E390F54908F3E6760A040A1EFFB65062E565"
+        "sha256": "C505F54582E767FD37AD9D664C74AF7A7ED88D7F1F8C043EC6433A869C757F98"
       },
       {
         "line_count": 15,
@@ -18357,8 +18400,8 @@
         "sha256": "A4BBEC159BB8BCFCF59AFDBB5EB634EA1C2414550205029A1E5B0D8BD1D9B5CF"
       }
     ],
-    "identifier_count": 5848,
-    "line_count": 28251,
+    "identifier_count": 5862,
+    "line_count": 28336,
     "override_names": [
       "AfterApplied",
       "AfterAttack",
@@ -136116,7 +136159,7 @@
         "kind": "method",
         "mod_candidate": true,
         "mod_locations": [
-          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:901",
+          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:902",
           "shin-getter-mod-godot/src/Models/Cards/SGC_Annihilation.cs:38",
           "shin-getter-mod-godot/src/Models/Cards/SGC_Annihilation.cs:80",
           "shin-getter-mod-godot/src/Models/Cards/SGC_ChangeAttack.cs:50",
@@ -137900,10 +137943,10 @@
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:118",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:121",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:130",
-          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:243",
-          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:248",
-          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:273",
-          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:278"
+          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:244",
+          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:249",
+          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:274",
+          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:279"
         ],
         "public_api": true,
         "qualified_name": "MegaCrit.Sts2.Core.Events::EventOption::EventOption",
@@ -151058,7 +151101,7 @@
         "mod_candidate": true,
         "mod_locations": [
           "shin-getter-mod-godot/src/Diagnostics/CardExport/ShinGetterCardPngExporter.cs:272",
-          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:678",
+          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:679",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue89.cs:841",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue89.cs:844",
           "shin-getter-mod-godot/src/Patches/ShinGetterAncientDialogueReplayPatch.cs:10",
@@ -167763,7 +167806,7 @@
         "kind": "method",
         "mod_candidate": true,
         "mod_locations": [
-          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:840"
+          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:841"
         ],
         "public_api": true,
         "qualified_name": "MegaCrit.Sts2.Core.Runs.History::CardEnchantmentHistoryEntry::CardEnchantmentHistoryEntry",
@@ -169797,8 +169840,8 @@
         "kind": "method",
         "mod_candidate": true,
         "mod_locations": [
-          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:674",
-          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:680"
+          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:675",
+          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:681"
         ],
         "public_api": true,
         "qualified_name": "MegaCrit.Sts2.Core.Runs::CardCreationOptions::ForNonCombatWithDefaultOdds",
@@ -201928,7 +201971,7 @@
         "kind": "struct",
         "mod_candidate": true,
         "mod_locations": [
-          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:840"
+          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:841"
         ],
         "public_api": true,
         "qualified_name": "MegaCrit.Sts2.Core.Runs.History::CardEnchantmentHistoryEntry",
