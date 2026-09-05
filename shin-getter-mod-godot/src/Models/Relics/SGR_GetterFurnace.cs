@@ -44,7 +44,6 @@ public sealed class SGR_GetterFurnace : ShinGetterRelicBase, IInfiniteEvolutionP
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
         new IHoverTip[] { HoverTipFactory.FromPower<SGP_Ki>() };
 
-    [SavedProperty(SerializationCondition.SaveIfNotTypeDefault)]
     public int PlayedVoiceMask
     {
         get => _playedVoiceMask;
@@ -55,7 +54,6 @@ public sealed class SGR_GetterFurnace : ShinGetterRelicBase, IInfiniteEvolutionP
         }
     }
 
-    [SavedProperty(SerializationCondition.SaveIfNotTypeDefault)]
     public int PlayedVoiceMaskHigh
     {
         get => _playedVoiceMaskHigh;
@@ -66,7 +64,6 @@ public sealed class SGR_GetterFurnace : ShinGetterRelicBase, IInfiniteEvolutionP
         }
     }
 
-    [SavedProperty(SerializationCondition.SaveIfNotTypeDefault)]
     public int OpeningVoiceMask
     {
         get => _openingVoiceMask;
@@ -77,7 +74,6 @@ public sealed class SGR_GetterFurnace : ShinGetterRelicBase, IInfiniteEvolutionP
         }
     }
 
-    [SavedProperty(SerializationCondition.SaveIfNotTypeDefault)]
     public int CombatStartVoiceCount
     {
         get => _combatStartVoiceCount;
