@@ -24,15 +24,20 @@ internal static class ShinGetterPowerHoverPatch
     }
 }
 
-[HarmonyPatch(typeof(NPower), "Reload")]
-internal static class ShinGetterPowerIconFlashPatch
+internal static class ShinGetterPowerModelAccess
 {
     private static readonly AccessTools.FieldRef<NPower, PowerModel?> ModelRef =
         AccessTools.FieldRefAccess<NPower, PowerModel?>("_model");
 
+    internal static PowerModel? Get(NPower powerNode) => ModelRef(powerNode);
+}
+
+[HarmonyPatch(typeof(NPower), "Reload")]
+internal static class ShinGetterPowerIconFlashPatch
+{
     private static void Postfix(NPower __instance)
     {
-        PowerModel? power = ModelRef(__instance);
+        PowerModel? power = ShinGetterPowerModelAccess.Get(__instance);
         if (power == null || power.GetType().Namespace != typeof(SGP_Ki).Namespace)
             return;
 
@@ -54,8 +59,10 @@ internal static class ShinGetterPowerIconTransitionPatch
         if (!__instance.IsNodeReady())
             return;
 
-        PowerModel power = __instance.Model;
-        if (!IsShinGetterFormPower(power) || !TryConsumeRemovedFormIcon(power, out Texture2D? previousIcon))
+        PowerModel? power = ShinGetterPowerModelAccess.Get(__instance);
+        if (power == null
+            || !IsShinGetterFormPower(power)
+            || !TryConsumeRemovedFormIcon(power, out Texture2D? previousIcon))
             return;
 
         TextureRect icon = __instance.GetNode<TextureRect>("%Icon");
