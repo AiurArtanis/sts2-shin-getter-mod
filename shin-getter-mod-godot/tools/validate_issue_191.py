@@ -19,6 +19,8 @@ def require(condition: bool, message: str) -> None:
 def main() -> None:
     patch = read("src/Patches/VigorPowerSetAmountPatch.cs")
     chain = read("src/Models/Powers/SGP_ChainReaction.cs")
+    furnace = read("src/Models/Relics/SGR_GetterFurnace.cs")
+    fragment_relic = read("src/Models/Relics/SGR_EmperorsFragment.cs")
 
     require("async void" not in patch,
             "Vigor SetAmount patch must not start unawaitable combat mutations")
@@ -40,6 +42,19 @@ def main() -> None:
         require(fragment in chain, f"Chain Reaction is missing {fragment!r}")
     require("new ThrowingPlayerChoiceContext" not in chain,
             "Chain Reaction must preserve the caller's synchronized choice context")
+
+    for source_name, source in (("Getter Furnace", furnace), ("Emperor's Fragment", fragment_relic)):
+        for property_name in (
+            "PlayedVoiceMask",
+            "PlayedVoiceMaskHigh",
+            "OpeningVoiceMask",
+            "CombatStartVoiceCount",
+        ):
+            property_marker = f"public int {property_name}"
+            property_index = source.index(property_marker)
+            property_prefix = source[max(0, property_index - 120):property_index]
+            require("[SavedProperty" not in property_prefix,
+                    f"{source_name} {property_name} is local presentation state and must not enter multiplayer checksums")
 
     print("issue#191 static validation passed")
 
