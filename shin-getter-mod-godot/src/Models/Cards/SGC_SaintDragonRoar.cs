@@ -19,7 +19,7 @@ using ShinGetterMod.Nodes.Vfx;
 
 namespace ShinGetterMod.Models.Cards;
 
-public sealed class SGC_HolyDragonRoar : ShinGetterCardBase
+public sealed class SGC_SaintDragonRoar : ShinGetterCardBase
 {
     public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Exhaust };
 
@@ -44,7 +44,7 @@ public sealed class SGC_HolyDragonRoar : ShinGetterCardBase
             new IntVar("BurnDamage", 5m),
         };
 
-    public SGC_HolyDragonRoar()
+    public SGC_SaintDragonRoar()
         : base(3, CardType.Attack, CardRarity.Ancient, TargetType.AllEnemies)
     {
     }
@@ -54,7 +54,7 @@ public sealed class SGC_HolyDragonRoar : ShinGetterCardBase
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         var combatState = CombatState
-            ?? throw new InvalidOperationException("Holy Dragon Roar requires an active combat state.");
+            ?? throw new InvalidOperationException("Saint Dragon Roar requires an active combat state.");
 
         List<CardModel> getterCards = new[] { PileType.Draw, PileType.Hand, PileType.Discard }
             .SelectMany(pileType => pileType.GetPile(Owner).Cards)
@@ -78,7 +78,7 @@ public sealed class SGC_HolyDragonRoar : ShinGetterCardBase
         await DamageCmd.Attack(totalDamage).FromCard(this)
             .TargetingAllOpponents(combatState)
             .WithNoAttackerAnim()
-            .BeforeDamage(() => ShinGetterCombatVfx.PlayHolyDragonRoarAtScreenCenter(Owner.Creature))
+            .BeforeDamage(() => ShinGetterCombatVfx.PlaySaintDragonRoarAtScreenCenter(Owner.Creature))
             .WithHitFx("vfx/vfx_starry_impact")
             .Execute(choiceContext);
 

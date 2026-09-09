@@ -245,7 +245,7 @@ internal static class ShinGetterVoiceService
     }
 
     private static bool UsesCustomCardVoiceTiming(CardModel card) =>
-        card is SGC_GetterWill or SGC_HolyDragonRoar or SGC_PoseidonThunder
+        card is SGC_GetterWill or SGC_SaintDragonRoar or SGC_PoseidonThunder
         || card is SGC_StonerSunshine
             && ShinGetterCardBase.IsInForm(card.Owner, ShinGetterForm.Getter1);
 
@@ -262,7 +262,7 @@ internal static class ShinGetterVoiceService
         SGC_StarSlash => Lines[ShinGetterVoiceCue.StarSlash],
         SGC_StonerSunshine => Lines[ShinGetterVoiceCue.StonerSunshine],
         SGC_GetterWill or SGC_GetterRayOverflow => Lines[ShinGetterVoiceCue.GetterRaySurge],
-        SGC_HolyDragonRoar or SGC_GetterNova => Lines[ShinGetterVoiceCue.GetterShine],
+        SGC_SaintDragonRoar or SGC_GetterNova => Lines[ShinGetterVoiceCue.GetterShine],
         SGC_HotBlood or SGC_FightingSpirit => Lines[ShinGetterVoiceCue.HotBlood],
         SGC_Avalanche => Lines[ShinGetterVoiceCue.Avalanche],
         SGC_GetterMissile => Lines[ShinGetterVoiceCue.GetterMissile],

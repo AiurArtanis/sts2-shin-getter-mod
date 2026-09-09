@@ -52,7 +52,7 @@ The content currently registered in `v1.2.1` includes:
 - Fixed Shin Getter 1 disappearing after Triple Wood Carving transformations.
 - Fixed character visuals in the Fake Merchant and Architect events.
 - Fixed Hedgehog Tactic's form-condition highlighting.
-- Corrected Holy Dragon Roar's description.
+- Corrected Saint Dragon Roar's description.
 - Fixed status-icon display errors.
 
 For 0.111 Beta, use the separate v1.2.0-beta.111 build. Do not mix stable and Beta packages.
