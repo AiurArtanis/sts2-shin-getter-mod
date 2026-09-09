@@ -15,7 +15,7 @@ Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter
 ## 🧪 0.111 Beta support
 
 - **Current stable game:** use `shin-getter-mod-v1.2.1.zip`.
-- **Slay the Spire 2 0.111 Beta:** use `shin-getter-mod-v1.2.1(111-beta).zip`.
+- **Slay the Spire 2 0.111 Beta:** use `shin-getter-mod-v1.2.1-beta.111.zip`.
 - Stable: [v1.2.1 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1); 0.111 Beta: [v1.2.1 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1).
 - Do not mix the stable and Beta four-file packages. After switching game branches, replace the DLL, PCK, JSON, and `mod_image.png` together, then restart the game.
 - Known external compatibility issue: old `BaseLib 3.3.7` fails its `CardPileCmd.Add` transpiler on 0.111 Beta and can freeze manual card play. Update BaseLib, or disable BaseLib and dependent mods in the Beta environment.
@@ -87,7 +87,7 @@ For 0.111 Beta, use the separate v1.2.1-beta.111 build. Do not mix stable and Be
 ### Install the 0.111 Beta build
 
 1. Confirm that the game is on **Slay the Spire 2 0.111 Beta**.
-2. Download `shin-getter-mod-v1.2.1(111-beta).zip` from the [v1.2.1 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1).
+2. Download `shin-getter-mod-v1.2.1-beta.111.zip` from the [v1.2.1 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1).
 3. Replace all four files in the same `ShinGetterMod` directory. Do not combine a stable v1.2.1 DLL with a Beta PCK, or vice versa.
 4. Fully quit and relaunch the game, enable the mod, and start a new run.
 

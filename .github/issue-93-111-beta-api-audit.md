@@ -44,7 +44,7 @@ This audit compares the released `mod-v1.2.1` source against the current formal-
 | Game channel | Mod manifest | Minimum game | Release tag | ZIP |
 | --- | --- | --- | --- | --- |
 | Current formal game | `v1.2.1` | `0.107.0` | `mod-v1.2.1` | `shin-getter-mod-v1.2.1.zip` |
-| Slay the Spire 2 0.111 Beta | `v1.2.1-beta.111` | `0.111.0` | `mod-v1.2.1-beta.111` | `shin-getter-mod-v1.2.1(111-beta).zip` |
+| Slay the Spire 2 0.111 Beta | `v1.2.1-beta.111` | `0.111.0` | `mod-v1.2.1-beta.111` | `shin-getter-mod-v1.2.1-beta.111.zip` |
 
 The Beta package is a complete v1.2.1 feature build, not a reduced compatibility build. Its distinct semantic version keeps the manifest, tag and archive name aligned with `AGENTS.md` and prevents users from confusing it with the formal-game package.
 

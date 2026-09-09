@@ -26,7 +26,7 @@ FORMAL_URL = (
 )
 BETA_VERSION = "v1.2.1-beta.111"
 BETA_TAG = "mod-v1.2.1-beta.111"
-BETA_ARCHIVE = "shin-getter-mod-v1.2.1(111-beta).zip"
+BETA_ARCHIVE = "shin-getter-mod-v1.2.1-beta.111.zip"
 BETA_DOWNLOAD_URL = FORMAL_URL
 LEGACY_BETA_RELEASE_URL = (
     "https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/"
