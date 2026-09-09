@@ -90,6 +90,7 @@ def validate_update_history() -> None:
     if len(versions) != len(entries):
         raise AssertionError("Update history versions must be unique.")
     expected_entries = {
+        "v1.2.1": ("2026-09-09", "SHIN_GETTER_CHUNIBYO.UPDATE.v1_2_1"),
         "v1.2.0": ("2026-08-25", "SHIN_GETTER_CHUNIBYO.UPDATE.v1_2_0"),
         "v1.1.0": ("2026-08-02", "SHIN_GETTER_CHUNIBYO.UPDATE.v1_1_0"),
         "v1.0.7": ("2026-07-21", "SHIN_GETTER_CHUNIBYO.UPDATE.v1_0_7"),

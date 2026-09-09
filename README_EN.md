@@ -46,6 +46,22 @@ The content currently registered in `v1.2.0` includes:
 - Simplified Chinese, English, and Japanese localization
 - A complete character mod loaded through DLL, PCK, and JSON artifacts
 
+## v1.2.1 release notes (preparation)
+
+A bug-fix update for stable 109, with no new cards or balance changes. Until publication, use the existing v1.2.0 download links below.
+
+- Fixed Shin Getter 1 disappearing after Triple Wood Carving transforms three times. Ordinary transformations no longer trigger opening-fusion preparation. (#187)
+- Fixed multiplayer resolution timing for Chain Reaction so Regen and Plating finish in order after Vigor is lost. Local voice-play history no longer participates in multiplayer state checks. (#191)
+- Fixed save serialization of Good Citizen Card shop records, preventing related post-event save failures. (#192)
+- Corrected character visuals in the Fake Merchant and Architect events: a static Ryoma image and Shin Getter 1 idle, respectively. (#195)
+- Restored Hedgehog Tactic's yellow condition highlighting for Shin Getter 3 / Shin Getter Dragon in all three languages. Gameplay effects are unchanged. (#196)
+- Corrected Holy Dragon Roar in all three languages to say it exhausts all Getter cards, not only cards in hand. Values and resolution scope are unchanged. (#198)
+- Guarded status-icon access before its model is ready, preserving flashes and color transitions. (#216)
+
+0.111 Beta remains v1.2.0-beta.111, using shin-getter-mod-v1.2.0(111-beta).zip from mod-v1.2.0. This update does not publish a new Beta package. Do not mix the stable and Beta four-file packages.
+
+Planned release (not yet published)：[mod-v1.2.1](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1) · `shin-getter-mod-v1.2.1.zip`
+
 ## 🆕 v1.2.0 release notes
 
 [Download v1.2.0](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0) (`shin-getter-mod-v1.2.0.zip`)

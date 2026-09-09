@@ -9,12 +9,18 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 REPO_ROOT = PROJECT_ROOT.parent
-VERSION = "v1.2.0"
-TAG = "mod-v1.2.0"
-ARCHIVE = "shin-getter-mod-v1.2.0.zip"
-UPDATE_KEY = "SHIN_GETTER_CHUNIBYO.UPDATE.v1_2_0"
+VERSION = "v1.2.1"
+TAG = "mod-v1.2.1"
+ARCHIVE = "shin-getter-mod-v1.2.1.zip"
+UPDATE_KEY = "SHIN_GETTER_CHUNIBYO.UPDATE.v1_2_1"
+RELEASE_ISSUES = (187, 191, 192, 195, 196, 198, 216)
+HISTORY_MARKERS = {
+    "zhs": ("三合一木雕", "连锁反应", "好市民证", "假商人", "刺猬战术", "圣龙咆哮", "状态图标"),
+    "eng": ("Triple Wood Carving", "Chain Reaction", "Good Citizen Card", "Fake Merchant", "Hedgehog Tactic", "Holy Dragon Roar", "status-icon"),
+    "jpn": ("三位一体の木彫り", "連鎖反応", "良き市民証", "偽商人", "ハリネズミ戦術", "聖龍咆哮", "状態アイコン"),
+}
 RELEASE_URL = (
-    "https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0"
+    "https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1"
 )
 
 RELEASE_FILES = {
@@ -67,7 +73,7 @@ def validate_manifest_and_history() -> None:
     history = json.loads(history_path.read_text(encoding="utf-8"))
     expected_latest = {
         "version": VERSION,
-        "date": "2026-08-25",
+        "date": "2026-09-09",
         "localization_key": UPDATE_KEY,
     }
     if not history or history[0] != expected_latest:
@@ -80,10 +86,14 @@ def validate_manifest_and_history() -> None:
         path = localization_root / language / "settings_ui.json"
         table = json.loads(path.read_text(encoding="utf-8"))
         body = table.get(UPDATE_KEY, "")
-        if len(body.splitlines()) < 18 or body.count("- ") < 12:
+        if body.count("- ") != len(RELEASE_ISSUES):
             raise AssertionError(
                 f"{VERSION} update history is incomplete for {language}: {path}"
             )
+        require(body, path, *HISTORY_MARKERS[language])
+        legacy = table.get("SHIN_GETTER_CHUNIBYO.UPDATE.v1_2_0", "")
+        if len(legacy.splitlines()) < 18 or legacy.count("- ") < 12:
+            raise AssertionError(f"The v1.2.0 scrolling-history fixture must remain: {path}")
 
 
 def validate_registered_content_counts() -> None:
@@ -103,7 +113,14 @@ def validate_release_files() -> None:
     for language, paths in RELEASE_FILES.items():
         for path in paths:
             text = path.read_text(encoding="utf-8")
+            if path.suffix == ".txt" and len(path.read_bytes()) > 8000:
+                raise AssertionError(f"Workshop description exceeds 8000 UTF-8 bytes: {path}")
             require(text, path, VERSION, TAG, ARCHIVE, RELEASE_URL)
+            require(text, path, *(f"#{issue}" for issue in RELEASE_ISSUES))
+            require(
+                text, path, "v1.2.0-beta.111", "shin-getter-mod-v1.2.0(111-beta).zip",
+                "https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0",
+            )
             require(text, path, *CONTENT_COUNT_MARKERS[language])
             require(text, path, *RELEASE_MARKERS[language])
             if not any(marker in text for marker in EVENT_COUNT_MARKERS[language]):
