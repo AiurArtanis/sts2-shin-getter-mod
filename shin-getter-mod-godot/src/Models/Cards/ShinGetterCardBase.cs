@@ -213,7 +213,7 @@ public abstract class ShinGetterCardBase : CardModel
             "SGC_Annihilation",
             "SGC_FinalGetterBeam",
             "SGC_GetterBeam",
-            "SGC_HolyDragonRoar",
+            "SGC_SaintDragonRoar",
             "SGC_PoseidonThunder",
             "SGC_StonerSunshine",
         };
@@ -230,7 +230,7 @@ public abstract class ShinGetterCardBase : CardModel
             "SGC_GetterTomahawk",
             "SGC_HotBlood",
             "SGC_HurricaneStrike",
-            "SGC_HolyDragonRoar",
+            "SGC_SaintDragonRoar",
             "SGC_StarSlash",
         };
 
@@ -257,7 +257,7 @@ public abstract class ShinGetterCardBase : CardModel
             "SGC_GetterFlash",
             "SGC_GetterRush",
             "SGC_GetterWill",
-            "SGC_HolyDragonRoar",
+            "SGC_SaintDragonRoar",
             "SGC_ShiningSpark",
             "SGC_StarSlash",
             "SGC_StonerSunshine",

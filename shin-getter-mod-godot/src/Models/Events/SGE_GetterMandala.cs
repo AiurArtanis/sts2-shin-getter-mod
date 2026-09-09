@@ -101,9 +101,9 @@ public sealed class SGE_GetterMandala : EventModel
 
         options.Add(new EventOption(
             this,
-            AddHolyDragonRoar,
-            InitialOptionKey("HOLY_DRAGON"),
-            HoverTipFactory.FromCard<SGC_HolyDragonRoar>()));
+            AddSaintDragonRoar,
+            InitialOptionKey("SAINT_DRAGON"),
+            HoverTipFactory.FromCard<SGC_SaintDragonRoar>()));
 
         if (owner.Deck.Cards.Any(card => IsGetterNamedCard(card) && card.IsUpgradable))
             options.Add(new EventOption(this, UpgradeGetterCards, InitialOptionKey("GUARDIAN_GOD")));
@@ -142,13 +142,13 @@ public sealed class SGE_GetterMandala : EventModel
             "FIRST_EVOLUTION");
     }
 
-    private async Task AddHolyDragonRoar()
+    private async Task AddSaintDragonRoar()
     {
         Player owner = EventOwner;
-        CardModel card = owner.RunState.CreateCard<SGC_HolyDragonRoar>(owner);
+        CardModel card = owner.RunState.CreateCard<SGC_SaintDragonRoar>(owner);
         CardCmd.Enchant<Corrupted>(card, 1m);
         CardCmd.PreviewCardPileAdd(await CardPileCmd.Add(card, PileType.Deck), 2f);
-        Finish("HOLY_DRAGON");
+        Finish("SAINT_DRAGON");
     }
 
     private Task UpgradeGetterCards()

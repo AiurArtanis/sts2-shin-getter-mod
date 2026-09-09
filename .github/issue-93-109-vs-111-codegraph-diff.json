@@ -8905,7 +8905,7 @@
         "base_owner": "MegaCrit.Sts2.Core.Models.CardModel",
         "base_signature": "System.Threading.Tasks.Task (MegaCrit.Sts2.Core.Entities.Creatures.Creature)",
         "mod_method": "OnEnqueuePlayVfx",
-        "mod_type": "ShinGetterMod.Models.Cards.SGC_HolyDragonRoar"
+        "mod_type": "ShinGetterMod.Models.Cards.SGC_SaintDragonRoar"
       },
       {
         "base_method": "OnEnqueuePlayVfx",
@@ -9185,13 +9185,6 @@
         "base_owner": "MegaCrit.Sts2.Core.Models.CardModel",
         "base_signature": "System.Threading.Tasks.Task (MegaCrit.Sts2.Core.GameActions.Multiplayer.PlayerChoiceContext, MegaCrit.Sts2.Core.Entities.Cards.CardPlay)",
         "mod_method": "OnPlay",
-        "mod_type": "ShinGetterMod.Models.Cards.SGC_HolyDragonRoar"
-      },
-      {
-        "base_method": "OnPlay",
-        "base_owner": "MegaCrit.Sts2.Core.Models.CardModel",
-        "base_signature": "System.Threading.Tasks.Task (MegaCrit.Sts2.Core.GameActions.Multiplayer.PlayerChoiceContext, MegaCrit.Sts2.Core.Entities.Cards.CardPlay)",
-        "mod_method": "OnPlay",
         "mod_type": "ShinGetterMod.Models.Cards.SGC_HotBlood"
       },
       {
@@ -9312,6 +9305,13 @@
         "base_signature": "System.Threading.Tasks.Task (MegaCrit.Sts2.Core.GameActions.Multiplayer.PlayerChoiceContext, MegaCrit.Sts2.Core.Entities.Cards.CardPlay)",
         "mod_method": "OnPlay",
         "mod_type": "ShinGetterMod.Models.Cards.SGC_RescheduleTicket"
+      },
+      {
+        "base_method": "OnPlay",
+        "base_owner": "MegaCrit.Sts2.Core.Models.CardModel",
+        "base_signature": "System.Threading.Tasks.Task (MegaCrit.Sts2.Core.GameActions.Multiplayer.PlayerChoiceContext, MegaCrit.Sts2.Core.Entities.Cards.CardPlay)",
+        "mod_method": "OnPlay",
+        "mod_type": "ShinGetterMod.Models.Cards.SGC_SaintDragonRoar"
       },
       {
         "base_method": "OnPlay",
@@ -10368,13 +10368,6 @@
         "base_owner": "MegaCrit.Sts2.Core.Models.CardModel",
         "base_signature": "System.Void ()",
         "mod_method": "OnUpgrade",
-        "mod_type": "ShinGetterMod.Models.Cards.SGC_HolyDragonRoar"
-      },
-      {
-        "base_method": "OnUpgrade",
-        "base_owner": "MegaCrit.Sts2.Core.Models.CardModel",
-        "base_signature": "System.Void ()",
-        "mod_method": "OnUpgrade",
         "mod_type": "ShinGetterMod.Models.Cards.SGC_HotBlood"
       },
       {
@@ -10495,6 +10488,13 @@
         "base_signature": "System.Void ()",
         "mod_method": "OnUpgrade",
         "mod_type": "ShinGetterMod.Models.Cards.SGC_RescheduleTicket"
+      },
+      {
+        "base_method": "OnUpgrade",
+        "base_owner": "MegaCrit.Sts2.Core.Models.CardModel",
+        "base_signature": "System.Void ()",
+        "mod_method": "OnUpgrade",
+        "mod_type": "ShinGetterMod.Models.Cards.SGC_SaintDragonRoar"
       },
       {
         "base_method": "OnUpgrade",
@@ -11285,7 +11285,7 @@
         "base_owner": "MegaCrit.Sts2.Core.Models.CardModel",
         "base_signature": "System.Collections.Generic.IEnumerable`1[[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]] ()",
         "mod_method": "get_AllPortraitPaths",
-        "mod_type": "ShinGetterMod.Models.Cards.SGC_HolyDragonRoar"
+        "mod_type": "ShinGetterMod.Models.Cards.SGC_SaintDragonRoar"
       },
       {
         "base_method": "get_AllPortraitPaths",
@@ -11313,7 +11313,7 @@
         "base_owner": "MegaCrit.Sts2.Core.Models.CardModel",
         "base_signature": "System.String ()",
         "mod_method": "get_BetaPortraitPath",
-        "mod_type": "ShinGetterMod.Models.Cards.SGC_HolyDragonRoar"
+        "mod_type": "ShinGetterMod.Models.Cards.SGC_SaintDragonRoar"
       },
       {
         "base_method": "get_BetaPortraitPath",
@@ -11370,13 +11370,6 @@
         "base_signature": "System.Collections.Generic.IEnumerable`1[[MegaCrit.Sts2.Core.Entities.Cards.CardKeyword, sts2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] ()",
         "mod_method": "get_CanonicalKeywords",
         "mod_type": "ShinGetterMod.Models.Cards.SGC_Guts"
-      },
-      {
-        "base_method": "get_CanonicalKeywords",
-        "base_owner": "MegaCrit.Sts2.Core.Models.CardModel",
-        "base_signature": "System.Collections.Generic.IEnumerable`1[[MegaCrit.Sts2.Core.Entities.Cards.CardKeyword, sts2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] ()",
-        "mod_method": "get_CanonicalKeywords",
-        "mod_type": "ShinGetterMod.Models.Cards.SGC_HolyDragonRoar"
       },
       {
         "base_method": "get_CanonicalKeywords",
@@ -11454,6 +11447,13 @@
         "base_signature": "System.Collections.Generic.IEnumerable`1[[MegaCrit.Sts2.Core.Entities.Cards.CardKeyword, sts2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] ()",
         "mod_method": "get_CanonicalKeywords",
         "mod_type": "ShinGetterMod.Models.Cards.SGC_RescheduleTicket"
+      },
+      {
+        "base_method": "get_CanonicalKeywords",
+        "base_owner": "MegaCrit.Sts2.Core.Models.CardModel",
+        "base_signature": "System.Collections.Generic.IEnumerable`1[[MegaCrit.Sts2.Core.Entities.Cards.CardKeyword, sts2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] ()",
+        "mod_method": "get_CanonicalKeywords",
+        "mod_type": "ShinGetterMod.Models.Cards.SGC_SaintDragonRoar"
       },
       {
         "base_method": "get_CanonicalKeywords",
@@ -11796,13 +11796,6 @@
         "base_owner": "MegaCrit.Sts2.Core.Models.CardModel",
         "base_signature": "System.Collections.Generic.IEnumerable`1[[MegaCrit.Sts2.Core.Localization.DynamicVars.DynamicVar, sts2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] ()",
         "mod_method": "get_CanonicalVars",
-        "mod_type": "ShinGetterMod.Models.Cards.SGC_HolyDragonRoar"
-      },
-      {
-        "base_method": "get_CanonicalVars",
-        "base_owner": "MegaCrit.Sts2.Core.Models.CardModel",
-        "base_signature": "System.Collections.Generic.IEnumerable`1[[MegaCrit.Sts2.Core.Localization.DynamicVars.DynamicVar, sts2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] ()",
-        "mod_method": "get_CanonicalVars",
         "mod_type": "ShinGetterMod.Models.Cards.SGC_HotBlood"
       },
       {
@@ -11923,6 +11916,13 @@
         "base_signature": "System.Collections.Generic.IEnumerable`1[[MegaCrit.Sts2.Core.Localization.DynamicVars.DynamicVar, sts2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] ()",
         "mod_method": "get_CanonicalVars",
         "mod_type": "ShinGetterMod.Models.Cards.SGC_RescheduleTicket"
+      },
+      {
+        "base_method": "get_CanonicalVars",
+        "base_owner": "MegaCrit.Sts2.Core.Models.CardModel",
+        "base_signature": "System.Collections.Generic.IEnumerable`1[[MegaCrit.Sts2.Core.Localization.DynamicVars.DynamicVar, sts2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] ()",
+        "mod_method": "get_CanonicalVars",
+        "mod_type": "ShinGetterMod.Models.Cards.SGC_SaintDragonRoar"
       },
       {
         "base_method": "get_CanonicalVars",
@@ -12804,13 +12804,6 @@
         "base_owner": "MegaCrit.Sts2.Core.Models.CardModel",
         "base_signature": "System.Collections.Generic.IEnumerable`1[[MegaCrit.Sts2.Core.HoverTips.IHoverTip, sts2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] ()",
         "mod_method": "get_ExtraHoverTips",
-        "mod_type": "ShinGetterMod.Models.Cards.SGC_HolyDragonRoar"
-      },
-      {
-        "base_method": "get_ExtraHoverTips",
-        "base_owner": "MegaCrit.Sts2.Core.Models.CardModel",
-        "base_signature": "System.Collections.Generic.IEnumerable`1[[MegaCrit.Sts2.Core.HoverTips.IHoverTip, sts2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] ()",
-        "mod_method": "get_ExtraHoverTips",
         "mod_type": "ShinGetterMod.Models.Cards.SGC_HotBlood"
       },
       {
@@ -12868,6 +12861,13 @@
         "base_signature": "System.Collections.Generic.IEnumerable`1[[MegaCrit.Sts2.Core.HoverTips.IHoverTip, sts2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] ()",
         "mod_method": "get_ExtraHoverTips",
         "mod_type": "ShinGetterMod.Models.Cards.SGC_Radiated"
+      },
+      {
+        "base_method": "get_ExtraHoverTips",
+        "base_owner": "MegaCrit.Sts2.Core.Models.CardModel",
+        "base_signature": "System.Collections.Generic.IEnumerable`1[[MegaCrit.Sts2.Core.HoverTips.IHoverTip, sts2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] ()",
+        "mod_method": "get_ExtraHoverTips",
+        "mod_type": "ShinGetterMod.Models.Cards.SGC_SaintDragonRoar"
       },
       {
         "base_method": "get_ExtraHoverTips",
@@ -13028,7 +13028,7 @@
         "base_owner": "MegaCrit.Sts2.Core.Models.CardModel",
         "base_signature": "System.String ()",
         "mod_method": "get_PortraitPath",
-        "mod_type": "ShinGetterMod.Models.Cards.SGC_HolyDragonRoar"
+        "mod_type": "ShinGetterMod.Models.Cards.SGC_SaintDragonRoar"
       },
       {
         "base_method": "get_PortraitPath",
@@ -15352,10 +15352,10 @@
       "MegaCrit.Sts2.addons.mega_text.MegaRichTextLabel+SignalName"
     ],
     "generic_game_member_reference_count": 33,
-    "semantic_reference_sha256": "B09D53931AAD86D0AA760365D94505B20E27A1FBD325AC3243689565AAB84B88"
+    "semantic_reference_sha256": "87A4B9265B4B4F1E2CA82DEFDA868AF83FF346A4AD4F5FB32DC437AFDB3267D5"
   },
   "mod_source_inventory": {
-    "dynamic_target_call_count": 121,
+    "dynamic_target_call_count": 125,
     "dynamic_target_calls": [
       {
         "api": "AccessTools.Method",
@@ -16322,8 +16322,19 @@
         ]
       },
       {
+        "api": "AccessTools.FieldRefAccess",
+        "location": "shin-getter-mod-godot/src/Patches/ShinGetterPowerUiPatch.cs:30",
+        "snippet": "AccessTools.FieldRefAccess<NPower, PowerModel?>(\"_model\")",
+        "target_names": [
+          "_model"
+        ],
+        "target_type_names": [
+          "NPower"
+        ]
+      },
+      {
         "api": "HarmonyPatch",
-        "location": "shin-getter-mod-godot/src/Patches/ShinGetterPowerUiPatch.cs:27",
+        "location": "shin-getter-mod-godot/src/Patches/ShinGetterPowerUiPatch.cs:35",
         "snippet": "HarmonyPatch(typeof(NPower), \"Reload\")",
         "target_names": [
           "Reload"
@@ -16334,7 +16345,7 @@
       },
       {
         "api": "HarmonyPatch",
-        "location": "shin-getter-mod-godot/src/Patches/ShinGetterPowerUiPatch.cs:39",
+        "location": "shin-getter-mod-godot/src/Patches/ShinGetterPowerUiPatch.cs:48",
         "snippet": "HarmonyPatch(typeof(NPower), \"Reload\")",
         "target_names": [
           "Reload"
@@ -16345,7 +16356,7 @@
       },
       {
         "api": "AccessTools.FieldRefAccess",
-        "location": "shin-getter-mod-godot/src/Patches/ShinGetterPowerUiPatch.cs:46",
+        "location": "shin-getter-mod-godot/src/Patches/ShinGetterPowerUiPatch.cs:55",
         "snippet": "AccessTools.FieldRefAccess<NPowerContainer, List<NPower>>(\"_powerNodes\")",
         "target_names": [
           "_powerNodes"
@@ -16356,7 +16367,7 @@
       },
       {
         "api": "HarmonyPatch",
-        "location": "shin-getter-mod-godot/src/Patches/ShinGetterPowerUiPatch.cs:158",
+        "location": "shin-getter-mod-godot/src/Patches/ShinGetterPowerUiPatch.cs:169",
         "snippet": "HarmonyPatch(typeof(NPowerContainer), \"Remove\")",
         "target_names": [
           "Remove"
@@ -16367,7 +16378,7 @@
       },
       {
         "api": "HarmonyPatch",
-        "location": "shin-getter-mod-godot/src/Patches/ShinGetterPowerUiPatch.cs:167",
+        "location": "shin-getter-mod-godot/src/Patches/ShinGetterPowerUiPatch.cs:178",
         "snippet": "HarmonyPatch(typeof(NPowerContainer), \"Add\")",
         "target_names": [
           "Add"
@@ -16378,7 +16389,7 @@
       },
       {
         "api": "HarmonyPatch",
-        "location": "shin-getter-mod-godot/src/Patches/ShinGetterPowerUiPatch.cs:176",
+        "location": "shin-getter-mod-godot/src/Patches/ShinGetterPowerUiPatch.cs:187",
         "snippet": "HarmonyPatch(typeof(NPowerFlashVfx), \"StartVfx\")",
         "target_names": [
           "StartVfx"
@@ -16389,7 +16400,7 @@
       },
       {
         "api": "AccessTools.FieldRefAccess",
-        "location": "shin-getter-mod-godot/src/Patches/ShinGetterPowerUiPatch.cs:180",
+        "location": "shin-getter-mod-godot/src/Patches/ShinGetterPowerUiPatch.cs:191",
         "snippet": "AccessTools.FieldRefAccess<NPowerFlashVfx, PowerModel>(\"_power\")",
         "target_names": [
           "_power"
@@ -16400,7 +16411,7 @@
       },
       {
         "api": "AccessTools.FieldRefAccess",
-        "location": "shin-getter-mod-godot/src/Patches/ShinGetterPowerUiPatch.cs:183",
+        "location": "shin-getter-mod-godot/src/Patches/ShinGetterPowerUiPatch.cs:194",
         "snippet": "AccessTools.FieldRefAccess<NPowerFlashVfx, Sprite2D>(\"_sprite\")",
         "target_names": [
           "_sprite"
@@ -16411,7 +16422,7 @@
       },
       {
         "api": "HarmonyPatch",
-        "location": "shin-getter-mod-godot/src/Patches/ShinGetterPowerUiPatch.cs:196",
+        "location": "shin-getter-mod-godot/src/Patches/ShinGetterPowerUiPatch.cs:207",
         "snippet": "HarmonyPatch(typeof(NPowerRemovedVfx), nameof(NPowerRemovedVfx.Create))",
         "target_names": [
           "Create"
@@ -16462,6 +16473,35 @@
         ],
         "target_type_names": [
           "ProgressSaveManager"
+        ]
+      },
+      {
+        "api": "HarmonyPatch",
+        "location": "shin-getter-mod-godot/src/Patches/ShinGetterSaintDragonMigrationPatch.cs:29",
+        "snippet": "HarmonyPatch(typeof(ModelId), MethodType.Constructor, new[] { typeof(string), typeof(string) })",
+        "target_names": [],
+        "target_type_names": [
+          "ModelId"
+        ]
+      },
+      {
+        "api": "HarmonyPatch",
+        "location": "shin-getter-mod-godot/src/Patches/ShinGetterSaintDragonMigrationPatch.cs:36",
+        "snippet": "HarmonyPatch(typeof(LocString), MethodType.Constructor, new[] { typeof(string), typeof(string) })",
+        "target_names": [],
+        "target_type_names": [
+          "LocString"
+        ]
+      },
+      {
+        "api": "HarmonyPatch",
+        "location": "shin-getter-mod-godot/src/Patches/ShinGetterSaintDragonMigrationPatch.cs:44",
+        "snippet": "HarmonyPatch(typeof(LocString), nameof(LocString.Exists), new[] { typeof(string), typeof(string) })",
+        "target_names": [
+          "Exists"
+        ],
+        "target_type_names": [
+          "LocString"
         ]
       },
       {
@@ -16697,6 +16737,7 @@
       "CreateForNewRun",
       "CreateRandomPotions",
       "EnterCombatWithoutExitingEvent",
+      "Exists",
       "FromSerializable",
       "GenerateInitialOptions",
       "GenerateInitialOptionsWrapper",
@@ -16754,6 +16795,7 @@
       "_internalData",
       "_lastHitButton",
       "_localPlayer",
+      "_model",
       "_numberOfDigs",
       "_poolFilters",
       "_power",
@@ -16772,7 +16814,7 @@
       "get_IsShared",
       "get_ShouldRetainThisTurn"
     ],
-    "file_count": 325,
+    "file_count": 326,
     "files": [
       {
         "line_count": 106,
@@ -16797,7 +16839,7 @@
       {
         "line_count": 1150,
         "path": "shin-getter-mod-godot/src/Audio/ShinGetterVoiceService.cs",
-        "sha256": "0E2AD475DD29E024A47E3F4C2AF587EBDA2127090B56E52A2DA45D2FE1516DB9"
+        "sha256": "BB298897F721AA2BBEDE97A6E62DD6E1105E8392B71DF1FAD3C5983A6CED1979"
       },
       {
         "line_count": 213,
@@ -16852,7 +16894,7 @@
       {
         "line_count": 117,
         "path": "shin-getter-mod-godot/src/Models/CardPools/ShinGetterCardPool.cs",
-        "sha256": "29A3EEAE8C5854CFD562B0202D86210A9174AF1BD29CE0EE08E862C67D11027C"
+        "sha256": "EC26EBF2796CAEA249A819D4BFDCAAC7B3FEF8A37611630E0DC354BDD088F14B"
       },
       {
         "line_count": 42,
@@ -17045,11 +17087,6 @@
         "sha256": "55C0A14D1BC35C54E0CE421FF3BEB244CF7C7F64AE17C8862BE62C818BD8250A"
       },
       {
-        "line_count": 96,
-        "path": "shin-getter-mod-godot/src/Models/Cards/SGC_HolyDragonRoar.cs",
-        "sha256": "7463C8008A40707BD44F6AF6A719913FE3054182CF5E6A9E48C390BAB9023F0C"
-      },
-      {
         "line_count": 49,
         "path": "shin-getter-mod-godot/src/Models/Cards/SGC_HotBlood.cs",
         "sha256": "C545408C1B9B91B226401E3389FFC82E5E735B00C1437D8984C921173AC0181E"
@@ -17138,6 +17175,11 @@
         "line_count": 55,
         "path": "shin-getter-mod-godot/src/Models/Cards/SGC_RescheduleTicket.cs",
         "sha256": "A58B3A08E1ACF192737D09ABFC33B37F665CC9580D7D077323DED04856246163"
+      },
+      {
+        "line_count": 96,
+        "path": "shin-getter-mod-godot/src/Models/Cards/SGC_SaintDragonRoar.cs",
+        "sha256": "45CC42AC12D95300DC402D4ABDD25EFD26BB759A8D2CD5A95F117D0350F7548E"
       },
       {
         "line_count": 41,
@@ -17697,7 +17739,7 @@
       {
         "line_count": 799,
         "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCardBase.cs",
-        "sha256": "E881BAE10FCEA03D0CF4DFA06467D15FFD1A9921D87A359E692912CB9C38A5BE"
+        "sha256": "2CCD9E4257490DC6DEEA67981BC109E139602585479EA0EF917441754CA5B7F1"
       },
       {
         "line_count": 104,
@@ -17722,7 +17764,7 @@
       {
         "line_count": 227,
         "path": "shin-getter-mod-godot/src/Models/Events/SGE_GetterMandala.cs",
-        "sha256": "2912C3324B8F4FDD2AE0D7B2C7205105A992BEABC41C024B4D2D1DF178EE6AC7"
+        "sha256": "821FC68B7E657754C1F87E6B172CA98A346AE3AEC52AD0F042907FB1B82F3AE9"
       },
       {
         "line_count": 56,
@@ -17980,14 +18022,14 @@
         "sha256": "E4166977FB718704CA4CBBE4011B954CA7CA95E124D56D1142607C4669E418D0"
       },
       {
-        "line_count": 231,
+        "line_count": 227,
         "path": "shin-getter-mod-godot/src/Models/Relics/SGR_EmperorsFragment.cs",
-        "sha256": "B1673049D4D6F381296818637863C2798695CC027F2D5D6FFEEA4441AB0D1767"
+        "sha256": "71374A237E17B5DD9A1653AA90F54F9BD85484AD9B80A7FDD268159A144CDEEA"
       },
       {
-        "line_count": 219,
+        "line_count": 215,
         "path": "shin-getter-mod-godot/src/Models/Relics/SGR_GetterFurnace.cs",
-        "sha256": "6B1C6634EBC606B446DB71B7794FED66B7332C7E52DBFC59113BF393C22D73C3"
+        "sha256": "427DDB4B1CA55FAD34C2FCBB7B72573F41BF83E257A462C08FD3B7CD12861267"
       },
       {
         "line_count": 49,
@@ -18122,7 +18164,7 @@
       {
         "line_count": 1003,
         "path": "shin-getter-mod-godot/src/Nodes/Vfx/ShinGetterCombatVfx.cs",
-        "sha256": "2AA2D30ADE3B217BDA67FC324CC13AD662C798CFEE60CE46EB9ABE9E8B2B1E1B"
+        "sha256": "A20DC0BE6E3E01E905BE679C123E47E516C34815772AF65D9FE9C06B1A739955"
       },
       {
         "line_count": 562,
@@ -18132,7 +18174,7 @@
       {
         "line_count": 115,
         "path": "shin-getter-mod-godot/src/Patches/CardConsoleAliasPatch.cs",
-        "sha256": "4386DCFBF88645F3E78475EED53C684571A78940C2FD896439D7667042A3E910"
+        "sha256": "0A34DEA4A31AE9E53A898207262504ECB8169B4C355147235EB088FBA1284D19"
       },
       {
         "line_count": 19,
@@ -18315,9 +18357,9 @@
         "sha256": "1F586F07CF005A07F2DA3783F7289F52595CB3904188A4AB6485A946DDC40C8D"
       },
       {
-        "line_count": 207,
+        "line_count": 218,
         "path": "shin-getter-mod-godot/src/Patches/ShinGetterPowerUiPatch.cs",
-        "sha256": "3F3B60618FA6FCB89EC5EA0DC1A5C32E7EB8E62CAD08AD387F2A2060FA00D1FE"
+        "sha256": "DA174D0549CCE9FADFB315BF9345F9EAAFF62D78E90A8B9DA17DAC891F8CCA4A"
       },
       {
         "line_count": 99,
@@ -18328,6 +18370,11 @@
         "line_count": 27,
         "path": "shin-getter-mod-godot/src/Patches/ShinGetterProgressEpochPatch.cs",
         "sha256": "0586120DB96E2705053362C5492A6408C1BD98568118DBFD4F14D9A25C6F7EB2"
+      },
+      {
+        "line_count": 49,
+        "path": "shin-getter-mod-godot/src/Patches/ShinGetterSaintDragonMigrationPatch.cs",
+        "sha256": "70160D380C0B9A07C55DE9A34808DF910F2483D4CC1B084A74E2AC7A16C2E5AF"
       },
       {
         "line_count": 47,
@@ -18400,8 +18447,8 @@
         "sha256": "A4BBEC159BB8BCFCF59AFDBB5EB634EA1C2414550205029A1E5B0D8BD1D9B5CF"
       }
     ],
-    "identifier_count": 5862,
-    "line_count": 28336,
+    "identifier_count": 5888,
+    "line_count": 28388,
     "override_names": [
       "AfterApplied",
       "AfterAttack",
@@ -135061,12 +135108,12 @@
           "shin-getter-mod-godot/src/Models/Cards/SGC_GetterFlash.cs:25",
           "shin-getter-mod-godot/src/Models/Cards/SGC_GetterWill.cs:24",
           "shin-getter-mod-godot/src/Models/Cards/SGC_Guts.cs:18",
-          "shin-getter-mod-godot/src/Models/Cards/SGC_HolyDragonRoar.cs:24",
-          "shin-getter-mod-godot/src/Models/Cards/SGC_HolyDragonRoar.cs:72",
           "shin-getter-mod-godot/src/Models/Cards/SGC_HotBlood.cs:23",
           "shin-getter-mod-godot/src/Models/Cards/SGC_InfiniteEvolution.cs:24",
           "shin-getter-mod-godot/src/Models/Cards/SGC_IronWall.cs:20",
-          "shin-getter-mod-godot/src/Models/Cards/SGC_Ki.cs:22"
+          "shin-getter-mod-godot/src/Models/Cards/SGC_Ki.cs:22",
+          "shin-getter-mod-godot/src/Models/Cards/SGC_Meltdown.cs:18",
+          "shin-getter-mod-godot/src/Models/Cards/SGC_Overload.cs:15"
         ],
         "public_api": true,
         "qualified_name": "MegaCrit.Sts2.Core.Commands::CardCmd::Exhaust",
@@ -135395,11 +135442,11 @@
           "shin-getter-mod-godot/src/Models/Cards/SGC_EvolutionResonance.cs:35",
           "shin-getter-mod-godot/src/Models/Cards/SGC_GetterClaw.cs:44",
           "shin-getter-mod-godot/src/Models/Cards/SGC_GetterWill.cs:41",
-          "shin-getter-mod-godot/src/Models/Cards/SGC_HolyDragonRoar.cs:59",
           "shin-getter-mod-godot/src/Models/Cards/SGC_HurricaneStrike.cs:48",
           "shin-getter-mod-godot/src/Models/Cards/SGC_PetalBreakthrough.cs:48",
           "shin-getter-mod-godot/src/Models/Cards/SGC_RescheduleTicket.cs:41",
           "shin-getter-mod-godot/src/Models/Cards/SGC_RescheduleTicket.cs:45",
+          "shin-getter-mod-godot/src/Models/Cards/SGC_SaintDragonRoar.cs:59",
           "shin-getter-mod-godot/src/Models/Cards/SGC_StarSlash.cs:42"
         ],
         "public_api": true,
@@ -151108,7 +151155,9 @@
           "shin-getter-mod-godot/src/Patches/ShinGetterProgressCompatibilityPatch.cs:14",
           "shin-getter-mod-godot/src/Patches/ShinGetterProgressCompatibilityPatch.cs:15",
           "shin-getter-mod-godot/src/Patches/ShinGetterProgressCompatibilityPatch.cs:69",
-          "shin-getter-mod-godot/src/Patches/ShinGetterProgressCompatibilityPatch.cs:97"
+          "shin-getter-mod-godot/src/Patches/ShinGetterProgressCompatibilityPatch.cs:97",
+          "shin-getter-mod-godot/src/Patches/ShinGetterSaintDragonMigrationPatch.cs:28",
+          "shin-getter-mod-godot/src/Patches/ShinGetterSaintDragonMigrationPatch.cs:29"
         ],
         "public_api": true,
         "qualified_name": "MegaCrit.Sts2.Core.Models::ModelId::ModelId",
