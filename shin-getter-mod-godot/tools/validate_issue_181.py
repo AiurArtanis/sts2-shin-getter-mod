@@ -13,11 +13,11 @@ VERSION = "v1.2.1"
 TAG = "mod-v1.2.1"
 ARCHIVE = "shin-getter-mod-v1.2.1.zip"
 UPDATE_KEY = "SHIN_GETTER_CHUNIBYO.UPDATE.v1_2_1"
-RELEASE_ISSUES = (187, 191, 192, 195, 196, 198, 216)
+RELEASE_ITEM_COUNT = 6
 HISTORY_MARKERS = {
-    "zhs": ("三合一木雕", "连锁反应", "好市民证", "假商人", "刺猬战术", "圣龙咆哮", "状态图标"),
-    "eng": ("Triple Wood Carving", "Chain Reaction", "Good Citizen Card", "Fake Merchant", "Hedgehog Tactic", "Holy Dragon Roar", "status-icon"),
-    "jpn": ("三位一体の木彫り", "連鎖反応", "良き市民証", "偽商人", "ハリネズミ戦術", "聖龍咆哮", "状態アイコン"),
+    "zhs": ("修复多人游戏崩溃问题。", "三合一木雕", "假商人", "刺猬战术", "圣龙咆哮", "状态图标"),
+    "eng": ("Fixed multiplayer crashes.", "Triple Wood Carving", "Fake Merchant", "Hedgehog Tactic", "Holy Dragon Roar", "status-icon"),
+    "jpn": ("マルチプレイのクラッシュを修正。", "三位一体の木彫り", "偽商人", "ハリネズミ戦術", "聖龍咆哮", "状態アイコン"),
 }
 RELEASE_URL = (
     "https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1"
@@ -86,7 +86,7 @@ def validate_manifest_and_history() -> None:
         path = localization_root / language / "settings_ui.json"
         table = json.loads(path.read_text(encoding="utf-8"))
         body = table.get(UPDATE_KEY, "")
-        if body.count("- ") != len(RELEASE_ISSUES):
+        if body.count("- ") != RELEASE_ITEM_COUNT:
             raise AssertionError(
                 f"{VERSION} update history is incomplete for {language}: {path}"
             )
@@ -116,7 +116,10 @@ def validate_release_files() -> None:
             if path.suffix == ".txt" and len(path.read_bytes()) > 8000:
                 raise AssertionError(f"Workshop description exceeds 8000 UTF-8 bytes: {path}")
             require(text, path, VERSION, TAG, ARCHIVE, RELEASE_URL)
-            require(text, path, *(f"#{issue}" for issue in RELEASE_ISSUES))
+            require(text, path, *HISTORY_MARKERS[language])
+            for placeholder in ("发布准备", "尚未发布", "发布目标", "preparation", "not yet published", "リリース準備", "公開予定", "未公開"):
+                if placeholder in text:
+                    raise AssertionError(f"Publication placeholder remains in {path}: {placeholder}")
             require(
                 text, path, "v1.2.0-beta.111", "shin-getter-mod-v1.2.0(111-beta).zip",
                 "https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0",

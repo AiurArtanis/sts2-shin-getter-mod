@@ -8,32 +8,29 @@
 
 [h2]🧪 0.111 Beta 适配[/h2]
 
-[b]正式版：[/b]使用 shin-getter-mod-v1.2.0.zip。
+[b]正式版：[/b]使用 shin-getter-mod-v1.2.1.zip。
 [b]0.111 Beta：[/b]使用 shin-getter-mod-v1.2.0(111-beta).zip。
 
-[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0]在 v1.2.0 Release 下载两个版本[/url]
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1]下载 v1.2.1[/url] | [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0]0.111 Beta: shin-getter-mod-v1.2.0(111-beta).zip[/url]
 
 Beta包完整保留77张卡牌、四种形态、事件、语音、动画与中二配置。正式版与Beta版四件套不能混用；切换游戏分支后请完整覆盖DLL、PCK、JSON与mod_image并重启游戏。
 
 [b]已知外部兼容问题：[/b]旧版BaseLib 3.3.7在0.111 Beta中会因CardPileCmd.Add transpiler失败导致出牌卡住。请更新BaseLib，或在Beta环境中禁用BaseLib及依赖它的模组。
 
-[h2]v1.2.1 更新说明（发布准备）[/h2]
-
-本次为正式109的修复更新，无新增卡牌或平衡调整。发布前仍使用下方已发布的 v1.2.0 下载入口。
+[h2]v1.2.1 更新说明[/h2]
 
 [list]
-[*]修复三合一木雕连续变形三次后，一号机模型消失；普通变形不再被误认为开场融合。 (#187)
-[*]修复连锁反应的多人结算时序；活力减少后的再生、覆甲按顺序完成。纯本地台词播放记录不再参与联机状态校验。 (#191)
-[*]修复好市民证商店记录的存档序列化异常，并补齐正式109的模组存档属性注册，避免相关保存失败与属性遗漏。 (#192)
-[*]修正假商人与建筑师事件中的角色画面：分别显示流龙马静态图与一号机待机。 (#195)
-[*]补齐刺猬战术在三号机／真盖塔龙条件下的黄色高亮，三语一致，实际效果不变。 (#196)
-[*]修正圣龙咆哮三语说明为消耗所有盖塔卡，不再错误限定为手牌；数值和结算范围未改。 (#198)
-[*]修复状态图标在模型尚未就绪时的访问异常，保留闪光和颜色过渡效果。 (#216)
+[*]修复多人游戏崩溃问题。
+[*]修复三合一木雕变形后一号机模型消失。
+[*]修复假商人、建筑师事件的角色显示。
+[*]修复刺猬战术形态条件高亮。
+[*]修正圣龙咆哮卡牌说明。
+[*]修复状态图标显示异常。
 [/list]
 
-0.111 Beta 仍使用 v1.2.0-beta.111 与 shin-getter-mod-v1.2.0(111-beta).zip，下载位置仍是 mod-v1.2.0；本次未发布新的 Beta 包。正式与 Beta 的四件套不可混用。
+0.111 Beta 请使用独立的 v1.2.0-beta.111，正式版与 Beta 包不可混用。
 
-发布目标（尚未发布）: [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1]mod-v1.2.1[/url] (shin-getter-mod-v1.2.1.zip)
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1]下载 v1.2.1 (shin-getter-mod-v1.2.1.zip)[/url]
 
 [h2]v1.2.0 历史概要[/h2]
 
@@ -94,7 +91,7 @@ Beta包完整保留77张卡牌、四种形态、事件、语音、动画与中�
 
 [h2]当前状态[/h2]
 
-[b]当前版本：v1.2.0[/b]
+[b]当前版本：v1.2.1[/b]
 
 本模组仍会持续维护；后续游戏更新可能影响兼容性。欢迎通过 GitHub 反馈问题，并尽量附上游戏版本、Mod 版本、复现步骤和相关日志。
 
