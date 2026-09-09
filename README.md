@@ -8,15 +8,15 @@
 
 让真盖塔穿越时空登上高塔。切换一号机的爆发、二号机的高速战术与三号机的钢铁防线，最终唤醒真盖塔龙，用盖塔射线吞没高塔。这里不是换一张角色皮肤，而是一套围绕变形、卡组与演出共同运转的玩法型角色 Mod。
 
-> 正式版 `v1.2.0`（游戏 `0.107.0+`）· 0.111 Beta 专用版 `v1.2.0-beta.111` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> 正式版 `v1.2.1`（游戏 `0.107.0+`）· 0.111 Beta 专用版 `v1.2.0-beta.111` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
-[下载 v1.2.0 正式版与 0.111 Beta 专用版](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0) · [提交问题](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+[下载 v1.2.1](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1) · [0.111 Beta](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
 ## 🧪 0.111 Beta 适配
 
-- **当前正式版游戏：**使用 `shin-getter-mod-v1.2.0.zip`。
+- **当前正式版游戏：**使用 `shin-getter-mod-v1.2.1.zip`。
 - **Slay the Spire 2 0.111 Beta：**使用 `shin-getter-mod-v1.2.0(111-beta).zip`。
-- 两个压缩包都在 [v1.2.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0) 中。Beta 包完整保留 77 张卡牌、四种形态、事件、语音、动画与中二配置，并非删减版。
+- 正式版：[v1.2.1 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1)；0.111 Beta：[v1.2.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0)。
 - 正式版与 Beta 版四件套不能混用。切换游戏分支后，请完整覆盖 DLL、PCK、JSON 与 `mod_image.png`，然后重启游戏。
 - 已知外部兼容问题：旧版 `BaseLib 3.3.7` 在 0.111 Beta 中会因 `CardPileCmd.Add` transpiler 失败导致出牌卡住。请更新 BaseLib，或在 Beta 环境中禁用 BaseLib 及依赖它的模组。
 
@@ -38,7 +38,7 @@
 
 ## 📦 内容一览
 
-`v1.2.0` 当前注册内容包括：
+`v1.2.1` 当前注册内容包括：
 
 - **77 张卡牌**，覆盖四种形态与多套核心机制
 - **13 个遗物**、**6 瓶药水**、**2 个附魔**
@@ -46,21 +46,18 @@
 - 中、英、日三语本地化
 - DLL、PCK 与 JSON 组合加载的完整角色 Mod
 
-## v1.2.1 更新说明（发布准备）
+## v1.2.1 更新说明
 
-本次为正式109的修复更新，无新增卡牌或平衡调整。发布前仍使用下方已发布的 v1.2.0 下载入口。
+- 修复多人游戏崩溃问题。
+- 修复三合一木雕变形后一号机模型消失。
+- 修复假商人、建筑师事件的角色显示。
+- 修复刺猬战术形态条件高亮。
+- 修正圣龙咆哮卡牌说明。
+- 修复状态图标显示异常。
 
-- 修复三合一木雕连续变形三次后，一号机模型消失；普通变形不再被误认为开场融合。 (#187)
-- 修复连锁反应的多人结算时序；活力减少后的再生、覆甲按顺序完成。纯本地台词播放记录不再参与联机状态校验。 (#191)
-- 修复好市民证商店记录的存档序列化异常，并补齐正式109的模组存档属性注册，避免相关保存失败与属性遗漏。 (#192)
-- 修正假商人与建筑师事件中的角色画面：分别显示流龙马静态图与一号机待机。 (#195)
-- 补齐刺猬战术在三号机／真盖塔龙条件下的黄色高亮，三语一致，实际效果不变。 (#196)
-- 修正圣龙咆哮三语说明为消耗所有盖塔卡，不再错误限定为手牌；数值和结算范围未改。 (#198)
-- 修复状态图标在模型尚未就绪时的访问异常，保留闪光和颜色过渡效果。 (#216)
+0.111 Beta 请使用独立的 v1.2.0-beta.111，正式版与 Beta 包不可混用。
 
-0.111 Beta 仍使用 v1.2.0-beta.111 与 shin-getter-mod-v1.2.0(111-beta).zip，下载位置仍是 mod-v1.2.0；本次未发布新的 Beta 包。正式与 Beta 的四件套不可混用。
-
-发布目标（尚未发布）：[mod-v1.2.1](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1) · `shin-getter-mod-v1.2.1.zip`
+[下载 v1.2.1](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1) · `shin-getter-mod-v1.2.1.zip`
 
 ## 🆕 v1.2.0 发布说明
 
@@ -82,7 +79,7 @@
 
 ### 安装发布版
 
-1. 从 [v1.2.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0) 下载 `shin-getter-mod-v1.2.0.zip`，解压得到 `ShinGetterMod.pck`、`ShinGetterMod.dll`、`ShinGetterMod.json` 与 `mod_image.png`。
+1. 从 [v1.2.1 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1) 下载 `shin-getter-mod-v1.2.1.zip`，解压得到 `ShinGetterMod.pck`、`ShinGetterMod.dll`、`ShinGetterMod.json` 与 `mod_image.png`。
 2. 在游戏的模组加载目录中创建 `ShinGetterMod` 子目录，并将四个文件放在一起。
 3. 启动游戏，从主菜单进入**设置 → 模组设置**，在**已下载的模组**中启用“真盖塔模组”。
 4. 确认加载提示后完全退出并重新启动游戏。新开一局，选择**真盖塔**即可开始。
@@ -91,7 +88,7 @@
 
 1. 确认游戏已切换到 **Slay the Spire 2 0.111 Beta**。
 2. 从 [v1.2.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0) 下载 `shin-getter-mod-v1.2.0(111-beta).zip`。
-3. 将 ZIP 内四个文件完整覆盖到同一个 `ShinGetterMod` 目录；不要与正式版 v1.2.0 的 DLL／PCK 混搭。
+3. 将 ZIP 内四个文件完整覆盖到同一个 `ShinGetterMod` 目录；不要与正式版 v1.2.1 的 DLL／PCK 混搭。
 4. 完全退出并重新启动游戏，再启用模组并新开一局。
 
 首次游玩时，优先观察形态专属卡的高亮提示，围绕当前形态建立节奏，再逐步尝试上面的构筑路线。
