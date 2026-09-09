@@ -121,8 +121,8 @@ def validate_release_files() -> None:
                 if placeholder in text:
                     raise AssertionError(f"Publication placeholder remains in {path}: {placeholder}")
             require(
-                text, path, "v1.2.0-beta.111", "shin-getter-mod-v1.2.0(111-beta).zip",
-                "https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0",
+                text, path, "v1.2.1-beta.111", "shin-getter-mod-v1.2.1(111-beta).zip",
+                "https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1",
             )
             require(text, path, *CONTENT_COUNT_MARKERS[language])
             require(text, path, *RELEASE_MARKERS[language])

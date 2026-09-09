@@ -8,15 +8,15 @@
 
 Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter 1's explosive offense, Shin Getter 2's high-speed tactics, and Shin Getter 3's iron defense; then awaken Shin Getter Dragon and let the Getter Rays consume the tower. This is a gameplay character mod built around transformations, deckbuilding, and presentation, not a simple reskin.
 
-> Stable build `v1.2.1` (game `0.107.0+`) · dedicated 0.111 Beta build `v1.2.0-beta.111` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> Stable build `v1.2.1` (game `0.107.0+`) · dedicated 0.111 Beta build `v1.2.1-beta.111` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
-[Download v1.2.1](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1) · [0.111 Beta](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+[Download v1.2.1](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1) · [0.111 Beta](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
 ## 🧪 0.111 Beta support
 
 - **Current stable game:** use `shin-getter-mod-v1.2.1.zip`.
-- **Slay the Spire 2 0.111 Beta:** use `shin-getter-mod-v1.2.0(111-beta).zip`.
-- Stable: [v1.2.1 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1); 0.111 Beta: [v1.2.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0).
+- **Slay the Spire 2 0.111 Beta:** use `shin-getter-mod-v1.2.1(111-beta).zip`.
+- Stable: [v1.2.1 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1); 0.111 Beta: [v1.2.1 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1).
 - Do not mix the stable and Beta four-file packages. After switching game branches, replace the DLL, PCK, JSON, and `mod_image.png` together, then restart the game.
 - Known external compatibility issue: old `BaseLib 3.3.7` fails its `CardPileCmd.Add` transpiler on 0.111 Beta and can freeze manual card play. Update BaseLib, or disable BaseLib and dependent mods in the Beta environment.
 
@@ -55,7 +55,7 @@ The content currently registered in `v1.2.1` includes:
 - Corrected Saint Dragon Roar's description.
 - Fixed status-icon display errors.
 
-For 0.111 Beta, use the separate v1.2.0-beta.111 build. Do not mix stable and Beta packages.
+For 0.111 Beta, use the separate v1.2.1-beta.111 build. Do not mix stable and Beta packages.
 
 [Download v1.2.1](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1) · `shin-getter-mod-v1.2.1.zip`
 
@@ -87,7 +87,7 @@ For 0.111 Beta, use the separate v1.2.0-beta.111 build. Do not mix stable and Be
 ### Install the 0.111 Beta build
 
 1. Confirm that the game is on **Slay the Spire 2 0.111 Beta**.
-2. Download `shin-getter-mod-v1.2.0(111-beta).zip` from the [v1.2.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0).
+2. Download `shin-getter-mod-v1.2.1(111-beta).zip` from the [v1.2.1 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1).
 3. Replace all four files in the same `ShinGetterMod` directory. Do not combine a stable v1.2.1 DLL with a Beta PCK, or vice versa.
 4. Fully quit and relaunch the game, enable the mod, and start a new run.
 
