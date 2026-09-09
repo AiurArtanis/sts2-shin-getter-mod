@@ -3459,8 +3459,8 @@
   },
   "mod_binary_reference_inventory": {
     "assembly": "shin-getter-mod-godot/build/ShinGetterMod.dll",
-    "direct_game_member_reference_count": 699,
-    "game_member_reference_count": 732,
+    "direct_game_member_reference_count": 700,
+    "game_member_reference_count": 733,
     "game_member_references": [
       {
         "name": ".ctor",
@@ -6413,6 +6413,12 @@
         "owner": "MegaCrit.Sts2.Core.Nodes.Combat.NCreatureVisuals",
         "owner_kind": "type-reference",
         "signature": "Godot.Node2D ()"
+      },
+      {
+        "name": "get_Bounds",
+        "owner": "MegaCrit.Sts2.Core.Nodes.Combat.NCreatureVisuals",
+        "owner_kind": "type-reference",
+        "signature": "Godot.Control ()"
       },
       {
         "name": "get_DefaultFocusedControl",
@@ -15352,7 +15358,7 @@
       "MegaCrit.Sts2.addons.mega_text.MegaRichTextLabel+SignalName"
     ],
     "generic_game_member_reference_count": 33,
-    "semantic_reference_sha256": "87A4B9265B4B4F1E2CA82DEFDA868AF83FF346A4AD4F5FB32DC437AFDB3267D5"
+    "semantic_reference_sha256": "DC4B7AD419959A003AE6E2A5D4DA4583B268C8D0D514F64E5642C7FF80C4D02C"
   },
   "mod_source_inventory": {
     "dynamic_target_call_count": 125,
@@ -16037,7 +16043,7 @@
       },
       {
         "api": "HarmonyPatch",
-        "location": "shin-getter-mod-godot/src/Patches/ShinGetterEventCharacterVisualPatch.cs:50",
+        "location": "shin-getter-mod-godot/src/Patches/ShinGetterEventCharacterVisualPatch.cs:58",
         "snippet": "HarmonyPatch(typeof(NFakeMerchant), \"StartCharacterAnimation\")",
         "target_names": [
           "StartCharacterAnimation"
@@ -16048,7 +16054,7 @@
       },
       {
         "api": "HarmonyPatch",
-        "location": "shin-getter-mod-godot/src/Patches/ShinGetterEventCharacterVisualPatch.cs:57",
+        "location": "shin-getter-mod-godot/src/Patches/ShinGetterEventCharacterVisualPatch.cs:65",
         "snippet": "HarmonyPatch(typeof(TheArchitect), nameof(TheArchitect.OnRoomEnter))",
         "target_names": [
           "OnRoomEnter"
@@ -16837,9 +16843,9 @@
         "sha256": "EC7E17998A918427183ED072CE371B5A8289421489AFAF891E2ED6A59A30ED20"
       },
       {
-        "line_count": 1150,
+        "line_count": 1151,
         "path": "shin-getter-mod-godot/src/Audio/ShinGetterVoiceService.cs",
-        "sha256": "BB298897F721AA2BBEDE97A6E62DD6E1105E8392B71DF1FAD3C5983A6CED1979"
+        "sha256": "77C6630C54AC4C7DC6D5B6C2514CB3366A6D2E35CF7DA8B53A98C0F4F44830FE"
       },
       {
         "line_count": 213,
@@ -18297,9 +18303,9 @@
         "sha256": "8CF066A74A022057C83CA29DBE519C0171082BADF4D1FB529B9BBC8B92A1A40E"
       },
       {
-        "line_count": 72,
+        "line_count": 80,
         "path": "shin-getter-mod-godot/src/Patches/ShinGetterEventCharacterVisualPatch.cs",
-        "sha256": "A66763F4FF22AB67A89A45875F4BC54E7FC397CB02F75FB495EB0BB5D4444E8D"
+        "sha256": "C8D58911BFE8B8DEB8CE322D3F05892991436129CC7FA2C65DE474CB0E1D4C77"
       },
       {
         "line_count": 255,
@@ -18447,8 +18453,8 @@
         "sha256": "A4BBEC159BB8BCFCF59AFDBB5EB634EA1C2414550205029A1E5B0D8BD1D9B5CF"
       }
     ],
-    "identifier_count": 5888,
-    "line_count": 28388,
+    "identifier_count": 5901,
+    "line_count": 28397,
     "override_names": [
       "AfterApplied",
       "AfterAttack",
@@ -135235,9 +135241,9 @@
         "kind": "method",
         "mod_candidate": true,
         "mod_locations": [
-          "shin-getter-mod-godot/src/Audio/ShinGetterVoiceService.cs:805",
-          "shin-getter-mod-godot/src/Audio/ShinGetterVoiceService.cs:974",
-          "shin-getter-mod-godot/src/Audio/ShinGetterVoiceService.cs:1090",
+          "shin-getter-mod-godot/src/Audio/ShinGetterVoiceService.cs:806",
+          "shin-getter-mod-godot/src/Audio/ShinGetterVoiceService.cs:975",
+          "shin-getter-mod-godot/src/Audio/ShinGetterVoiceService.cs:1091",
           "shin-getter-mod-godot/src/Diagnostics/CardExport/ShinGetterCardExportConsoleCmd.cs:211",
           "shin-getter-mod-godot/src/Diagnostics/CardExport/ShinGetterCardExportConsoleCmd.cs:215",
           "shin-getter-mod-godot/src/Diagnostics/CardExport/ShinGetterCardExportConsoleCmd.cs:222",

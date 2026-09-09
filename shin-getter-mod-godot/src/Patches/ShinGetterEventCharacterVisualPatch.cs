@@ -16,6 +16,7 @@ namespace ShinGetterMod.Patches;
 
 internal static class ShinGetterEventCharacterVisuals
 {
+    private const float FakeMerchantRyomaScaleMultiplier = 1.1f;
     private const string FakeMerchantRyomaTexturePath =
         "res://images/characters/shin_getter/merchant/s_g_o_merchant_ryoma_normal.png";
 
@@ -25,22 +26,29 @@ internal static class ShinGetterEventCharacterVisuals
         if (body.GetNodeOrNull<AnimatedSprite2D>("GetterOne") == null)
             return false;
 
-        body.GetNodeOrNull<CanvasItem>("GetterOne")?.Hide();
-        body.GetNodeOrNull<CanvasItem>("GetterTwo")?.Hide();
-        body.GetNodeOrNull<CanvasItem>("GetterThree")?.Hide();
-        body.GetNodeOrNull<CanvasItem>("ShinDragon")?.Hide();
-        body.SelfModulate = new Color(body.SelfModulate, 1f);
+        // The inherited Sprite2D body owns error.png as well as the four forms.
+        body.Hide();
 
-        if (body.GetNodeOrNull<Sprite2D>("FakeMerchantRyoma") == null)
+        if (visuals.GetNodeOrNull<Sprite2D>("FakeMerchantRyoma") == null)
         {
+            // FakeMerchant scales its container by 1.75; the shop does not.
+            Vector2 layoutCompensation = visuals.GetParent() is Control container
+                && !Mathf.IsZeroApprox(container.Scale.X)
+                && !Mathf.IsZeroApprox(container.Scale.Y)
+                    ? Vector2.One / container.Scale
+                    : Vector2.One;
+            Vector2 portraitScale = layoutCompensation * FakeMerchantRyomaScaleMultiplier;
             Sprite2D ryoma = new()
             {
                 Name = "FakeMerchantRyoma",
                 Texture = PreloadManager.Cache.GetTexture2D(FakeMerchantRyomaTexturePath),
-                Position = new Vector2(0f, -193.576f),
-                Scale = new Vector2(0.376f, 0.376f),
+                Position = new Vector2(0f, -193.576f) * portraitScale,
+                Scale = new Vector2(0.376f, 0.376f) * portraitScale,
             };
-            body.AddChildSafely(ryoma);
+            visuals.AddChildSafely(ryoma);
+            Rect2 spriteRect = ryoma.GetRect();
+            visuals.Bounds.Position = ryoma.Position + spriteRect.Position * ryoma.Scale;
+            visuals.Bounds.Size = spriteRect.Size * ryoma.Scale;
         }
 
         return true;

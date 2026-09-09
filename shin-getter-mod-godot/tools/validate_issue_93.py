@@ -18,21 +18,21 @@ BETA_SOURCE = Path(
     os.environ.get("SHIN_GETTER_STS2_111_SOURCE", r"E:\Work\SlaytheSpare2-111-beta")
 )
 
-FORMAL_VERSION = "v1.2.0"
-FORMAL_TAG = "mod-v1.2.0"
-FORMAL_ARCHIVE = "shin-getter-mod-v1.2.0.zip"
+FORMAL_VERSION = "v1.2.1"
+FORMAL_TAG = "mod-v1.2.1"
+FORMAL_ARCHIVE = "shin-getter-mod-v1.2.1.zip"
 FORMAL_URL = (
-    "https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0"
+    "https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1"
 )
-BETA_VERSION = "v1.2.0-beta.111"
-BETA_TAG = "mod-v1.2.0-beta.111"
-BETA_ARCHIVE = "shin-getter-mod-v1.2.0(111-beta).zip"
+BETA_VERSION = "v1.2.1-beta.111"
+BETA_TAG = "mod-v1.2.1-beta.111"
+BETA_ARCHIVE = "shin-getter-mod-v1.2.1(111-beta).zip"
 BETA_DOWNLOAD_URL = FORMAL_URL
 LEGACY_BETA_RELEASE_URL = (
     "https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/"
-    "mod-v1.2.0-beta.111"
+    "mod-v1.2.1-beta.111"
 )
-BETA_HISTORY_KEY = "SHIN_GETTER_CHUNIBYO.UPDATE.v1_2_0_beta_111"
+BETA_HISTORY_KEY = "SHIN_GETTER_CHUNIBYO.UPDATE.v1_2_1_beta_111"
 
 RELEASE_FILES = (
     REPO_ROOT / "README.md",
@@ -96,7 +96,7 @@ def validate_version_mapping() -> None:
     history = json.loads(read(history_path))
     expected_latest = {
         "version": BETA_VERSION,
-        "date": "2026-08-26",
+        "date": "2026-09-10",
         "localization_key": BETA_HISTORY_KEY,
     }
     if not history or history[0] != expected_latest:
@@ -121,7 +121,6 @@ def validate_version_mapping() -> None:
             FORMAL_ARCHIVE,
             FORMAL_URL,
             BETA_VERSION,
-            BETA_TAG,
             BETA_ARCHIVE,
             BETA_DOWNLOAD_URL,
             "0.111",

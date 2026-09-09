@@ -9,13 +9,18 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 REPO_ROOT = PROJECT_ROOT.parent
-VERSION = "v1.2.0"
-BETA_VERSION = "v1.2.0-beta.111"
-TAG = "mod-v1.2.0"
-ARCHIVE = "shin-getter-mod-v1.2.0.zip"
-UPDATE_KEY = "SHIN_GETTER_CHUNIBYO.UPDATE.v1_2_0"
+VERSION = "v1.2.1"
+TAG = "mod-v1.2.1"
+ARCHIVE = "shin-getter-mod-v1.2.1.zip"
+UPDATE_KEY = "SHIN_GETTER_CHUNIBYO.UPDATE.v1_2_1"
+RELEASE_ITEM_COUNT = 6
+HISTORY_MARKERS = {
+    "zhs": ("修复多人游戏崩溃问题。", "三合一木雕", "假商人", "刺猬战术", "圣龙咆哮", "状态图标"),
+    "eng": ("Fixed multiplayer crashes.", "Triple Wood Carving", "Fake Merchant", "Hedgehog Tactic", "Saint Dragon Roar", "status-icon"),
+    "jpn": ("マルチプレイのクラッシュを修正。", "三位一体の木彫り", "偽商人", "ハリネズミ戦術", "聖龍咆哮", "状態アイコン"),
+}
 RELEASE_URL = (
-    "https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0"
+    "https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1"
 )
 
 RELEASE_FILES = {
@@ -61,28 +66,17 @@ def require(text: str, path: Path, *needles: str) -> None:
 def validate_manifest_and_history() -> None:
     manifest_path = PROJECT_ROOT / "ShinGetterMod.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    current_version = manifest.get("version")
-    if current_version not in (VERSION, BETA_VERSION):
-        raise AssertionError(
-            f"Manifest version must be {VERSION} or its audited 0.111 Beta variant: {manifest}"
-        )
+    if manifest.get("version") != "v1.2.1-beta.111":
+        raise AssertionError(f"Manifest version must be {VERSION}: {manifest}")
 
     history_path = PROJECT_ROOT / "ShinGetterMod/update_history.json"
     history = json.loads(history_path.read_text(encoding="utf-8"))
-    expected_latest = (
-        {
-            "version": BETA_VERSION,
-            "date": "2026-08-26",
-            "localization_key": "SHIN_GETTER_CHUNIBYO.UPDATE.v1_2_0_beta_111",
-        }
-        if current_version == BETA_VERSION
-        else {
-            "version": VERSION,
-            "date": "2026-08-25",
-            "localization_key": UPDATE_KEY,
-        }
-    )
-    if not history or history[0] != expected_latest:
+    expected_latest = {
+        "version": VERSION,
+        "date": "2026-09-09",
+        "localization_key": UPDATE_KEY,
+    }
+    if not history or history[0].get("version") != "v1.2.1-beta.111" or history[1] != expected_latest:
         raise AssertionError(f"Latest update history entry is incorrect: {history[:1]}")
     if sum(entry.get("version") == VERSION for entry in history) != 1:
         raise AssertionError(f"Update history must contain exactly one {VERSION} entry.")
@@ -92,10 +86,14 @@ def validate_manifest_and_history() -> None:
         path = localization_root / language / "settings_ui.json"
         table = json.loads(path.read_text(encoding="utf-8"))
         body = table.get(UPDATE_KEY, "")
-        if len(body.splitlines()) < 18 or body.count("- ") < 12:
+        if body.count("- ") != RELEASE_ITEM_COUNT:
             raise AssertionError(
                 f"{VERSION} update history is incomplete for {language}: {path}"
             )
+        require(body, path, *HISTORY_MARKERS[language])
+        legacy = table.get("SHIN_GETTER_CHUNIBYO.UPDATE.v1_2_0", "")
+        if len(legacy.splitlines()) < 18 or legacy.count("- ") < 12:
+            raise AssertionError(f"The v1.2.0 scrolling-history fixture must remain: {path}")
 
 
 def validate_registered_content_counts() -> None:
@@ -115,7 +113,17 @@ def validate_release_files() -> None:
     for language, paths in RELEASE_FILES.items():
         for path in paths:
             text = path.read_text(encoding="utf-8")
+            if path.suffix == ".txt" and len(path.read_bytes()) > 8000:
+                raise AssertionError(f"Workshop description exceeds 8000 UTF-8 bytes: {path}")
             require(text, path, VERSION, TAG, ARCHIVE, RELEASE_URL)
+            require(text, path, *HISTORY_MARKERS[language])
+            for placeholder in ("发布准备", "尚未发布", "发布目标", "preparation", "not yet published", "リリース準備", "公開予定", "未公開"):
+                if placeholder in text:
+                    raise AssertionError(f"Publication placeholder remains in {path}: {placeholder}")
+            require(
+                text, path, "v1.2.1-beta.111", "shin-getter-mod-v1.2.1(111-beta).zip",
+                "https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1",
+            )
             require(text, path, *CONTENT_COUNT_MARKERS[language])
             require(text, path, *RELEASE_MARKERS[language])
             if not any(marker in text for marker in EVENT_COUNT_MARKERS[language]):

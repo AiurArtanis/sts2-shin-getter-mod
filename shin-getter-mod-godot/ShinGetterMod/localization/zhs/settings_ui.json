@@ -1,4 +1,5 @@
 {
+  "SHIN_GETTER_CHUNIBYO.UPDATE.v1_2_1": "- 修复多人游戏崩溃问题。\n- 修复三合一木雕变形后一号机模型消失。\n- 修复假商人、建筑师事件的角色显示。\n- 修复刺猬战术形态条件高亮。\n- 修正圣龙咆哮卡牌说明。\n- 修复状态图标显示异常。",
   "SHIN_GETTER_CHUNIBYO.TITLE": "中二配置",
   "SHIN_GETTER_CHUNIBYO.MODS": "模组",
   "SHIN_GETTER_CHUNIBYO.MOD_NAME": "真盖塔",
@@ -74,5 +75,6 @@
   "SHIN_GETTER_CHUNIBYO.UPDATE.v1_1_0": "功能：\n- 增加事件入侵玩法。\n- 增加模组开关配置入口“中二配置”。\n- 增加精英战与 BOSS 战 BGM 切换。\n\nBUG 修复：\n- 修复变形、卡牌结算与战斗结束流程中的多项异常。\n- 修复事件奖励、自动出牌和页面返回问题。\n- 修复配置界面的空白、布局、滚动、悬浮提示与三语显示。\n- 修复遭遇音乐触发时机和多人作用域。\n\nQoL / 平衡：\n- 提升变形攻击、夺取未来、三体同心等卡牌数值与形态收益。\n- 重做进化为常驻转换机制，并优化精神指令规则。\n- 优化动画切换流畅度和内存占用。",
   "SHIN_GETTER_CHUNIBYO.UPDATE.v1_0_7": "修复盖塔光束发射点、卡牌文本与衰退递归问题，并优化动画预载。",
   "SHIN_GETTER_CHUNIBYO.UPDATE.v1_0_6": "修复血肉戏法与衰退递归，完善外来卡牌动画分派。",
-  "SHIN_GETTER_CHUNIBYO.UPDATE.v1_0_5": "调整飓风打击二号机奖励为分身。"
+  "SHIN_GETTER_CHUNIBYO.UPDATE.v1_0_5": "调整飓风打击二号机奖励为分身。",
+  "SHIN_GETTER_CHUNIBYO.UPDATE.v1_2_1_beta_111": "v1.2.1 / 0.111 Beta\n- 同步v1.2.1正式版全部适用修复，并保留111 Beta API适配。\n- 请完整覆盖四件套，不要与正式109混用。\n- 旧版BaseLib 3.3.7请更新或禁用。"
 }
