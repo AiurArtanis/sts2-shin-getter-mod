@@ -9,9 +9,9 @@ Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter
 [h2]🧪 0.111 Beta support[/h2]
 
 [b]Stable game:[/b] use shin-getter-mod-v1.2.1.zip.
-[b]0.111 Beta:[/b] use shin-getter-mod-v1.2.1(111-beta).zip.
+[b]0.111 Beta:[/b] use shin-getter-mod-v1.2.1-beta.111.zip.
 
-[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1]Download v1.2.1[/url] | [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1]0.111 Beta: shin-getter-mod-v1.2.1(111-beta).zip[/url]
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1]Download v1.2.1[/url] | [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1]0.111 Beta: shin-getter-mod-v1.2.1-beta.111.zip[/url]
 
 The Beta package retains all 77 cards, four forms, events, voices, animations, and Chunibyo Config features. Do not mix the stable and Beta four-file packages; after switching game branches, replace the DLL, PCK, JSON, and mod_image together, then restart the game.
 
