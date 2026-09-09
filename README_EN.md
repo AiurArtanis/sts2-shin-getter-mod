@@ -8,17 +8,16 @@
 
 Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter 1's explosive offense, Shin Getter 2's high-speed tactics, and Shin Getter 3's iron defense; then awaken Shin Getter Dragon and let the Getter Rays consume the tower. This is a gameplay character mod built around transformations, deckbuilding, and presentation, not a simple reskin.
 
-> Formal build `v1.2.0` (game `0.107.0+`) · 0.111 Beta build `v1.2.0-beta.111` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> Stable build `v1.2.1` (game `0.107.0+`) · dedicated 0.111 Beta build `v1.2.1-beta.111` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
-[Download the stable and 0.111 Beta builds from v1.2.0](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0) · [Report an issue](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+[Download v1.2.1](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1) · [0.111 Beta](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
 ## 🧪 0.111 Beta support
 
-- **Current formal game:** use `v1.2.0` (`shin-getter-mod-v1.2.0.zip`, tag `mod-v1.2.0`).
-- **Slay the Spire 2 0.111 Beta:** use `v1.2.0-beta.111` (`shin-getter-mod-v1.2.0(111-beta).zip`, tag `mod-v1.2.0-beta.111`).
-- The Beta package retains all 77 cards, four forms, events, voices, animations, and Chunibyo Config features from formal v1.2.0; it is not a reduced build.
-- Do not mix the two packages. After switching game branches, replace all four files with the matching ZIP and restart the game.
-- Both archives are available from the [v1.2.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0).
+- **Current stable game:** use `shin-getter-mod-v1.2.1.zip`.
+- **Slay the Spire 2 0.111 Beta:** use `shin-getter-mod-v1.2.1(111-beta).zip`.
+- Stable: [v1.2.1 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1); 0.111 Beta: [v1.2.1 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1).
+- Do not mix the stable and Beta four-file packages. After switching game branches, replace the DLL, PCK, JSON, and `mod_image.png` together, then restart the game.
 - Known external compatibility issue: old `BaseLib 3.3.7` fails its `CardPileCmd.Add` transpiler on 0.111 Beta and can freeze manual card play. Update BaseLib, or disable BaseLib and dependent mods in the Beta environment.
 
 ## ⚡ Combat at a glance
@@ -39,13 +38,26 @@ Morale supports several high-impact effects. Evolution and Radiation create addi
 
 ## 📦 What's included
 
-The content currently registered in `v1.2.0` includes:
+The content currently registered in `v1.2.1` includes:
 
 - **77 cards** spanning four forms and several core mechanics
 - **13 relics**, **6 potions**, and **2 enchantments**
 - Multiple **event invasions**, **1 exclusive event**, and dedicated Ancient dialogue
 - Simplified Chinese, English, and Japanese localization
 - A complete character mod loaded through DLL, PCK, and JSON artifacts
+
+## v1.2.1 release notes
+
+- Fixed multiplayer crashes.
+- Fixed Shin Getter 1 disappearing after Triple Wood Carving transformations.
+- Fixed character visuals in the Fake Merchant and Architect events.
+- Fixed Hedgehog Tactic's form-condition highlighting.
+- Corrected Saint Dragon Roar's description.
+- Fixed status-icon display errors.
+
+For 0.111 Beta, use the separate v1.2.1-beta.111 build. Do not mix stable and Beta packages.
+
+[Download v1.2.1](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1) · `shin-getter-mod-v1.2.1.zip`
 
 ## 🆕 v1.2.0 release notes
 
@@ -67,7 +79,7 @@ The content currently registered in `v1.2.0` includes:
 
 ### Install the release
 
-1. Download `shin-getter-mod-v1.2.0.zip` from the [v1.2.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0), then extract `ShinGetterMod.pck`, `ShinGetterMod.dll`, `ShinGetterMod.json`, and `mod_image.png`.
+1. Download `shin-getter-mod-v1.2.1.zip` from the [v1.2.1 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1), then extract `ShinGetterMod.pck`, `ShinGetterMod.dll`, `ShinGetterMod.json`, and `mod_image.png`.
 2. Create a `ShinGetterMod` folder inside the game's mod-loading directory and place all four files together.
 3. Launch the game, open **Settings → Mod Settings**, and enable “真盖塔模组” (Shin Getter Mod) under **Installed Mods**.
 4. Accept the load prompt, fully quit, and relaunch the game. Start a new run and select **Shin Getter**.
@@ -75,8 +87,8 @@ The content currently registered in `v1.2.0` includes:
 ### Install the 0.111 Beta build
 
 1. Confirm that the game is on **Slay the Spire 2 0.111 Beta**.
-2. Download `shin-getter-mod-v1.2.0(111-beta).zip` from the [v1.2.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0).
-3. Replace all four files in the same `ShinGetterMod` directory. Do not combine a formal v1.2.0 DLL with a Beta PCK, or vice versa.
+2. Download `shin-getter-mod-v1.2.1(111-beta).zip` from the [v1.2.1 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1).
+3. Replace all four files in the same `ShinGetterMod` directory. Do not combine a stable v1.2.1 DLL with a Beta PCK, or vice versa.
 4. Fully quit and relaunch the game, enable the mod, and start a new run.
 
 On a first run, follow the highlighted form-specific cards to establish a rhythm, then branch into one of the routes above.
@@ -106,7 +118,7 @@ Once the Workshop edition is available, enable it as follows:
 
 ### Requirements
 
-- The current formal *Slay the Spire 2* `0.107.0+`, or the `0.111.0` Beta targeted by this branch
+- The current stable *Slay the Spire 2* `0.107.0+`, or the `0.111.0` Beta
 - Godot `4.5.1 Mono`
 - .NET SDK `9`
 - A local game project directory that Godot can load for validation
@@ -156,6 +168,8 @@ For Godot resource changes, also run `tools/validate-mod-resources.gd` against a
 When reporting a problem, include the game version, mod version, reproduction steps, and relevant logs whenever possible. Keep code contributions focused and run at least the relevant C# build. Changes to Godot resources should also pass the full build, resource-validation, and load-validation pipeline.
 
 Do not commit local game dependencies, `addons/`, `build/` artifacts, or personal test scripts.
+
+Read the [contribution guide](CONTRIBUTING.md) before submitting code, and follow the [Code of Conduct](CODE_OF_CONDUCT.md) in project spaces. Report vulnerabilities privately under the [Security Policy](SECURITY.md), not through a public issue.
 
 ## License and asset notice
 

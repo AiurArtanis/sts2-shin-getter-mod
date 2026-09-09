@@ -1,10 +1,10 @@
 # issue#93 — Slay the Spire 2 0.111 Beta API audit
 
-This audit compares the released `mod-v1.2.0` source against the current formal-game source and the read-only 0.111 Beta source before applying compatibility changes.
+This audit compares the released `mod-v1.2.1` source against the current formal-game source and the read-only 0.111 Beta source before applying compatibility changes.
 
 ## Inputs and method
 
-- Mod baseline: `patch/support-111-beta@671c62d8a25caec8c49bbb5a9fa7475902e636a3`, identical to `mod-v1.2.0^{}`.
+- Mod baseline: `patch/support-111-beta@671c62d8a25caec8c49bbb5a9fa7475902e636a3`, identical to `mod-v1.2.1^{}`.
 - Formal source: `E:\Work\SlaytheSpare2` (read-only).
 - 0.111 Beta source: `E:\Work\SlaytheSpare2-111-beta` (read-only).
 - Formal `sts2.dll`: 10,163,200 bytes, SHA-256 `C2D3E15310259957BA312F9D2362CBA193512EBE9819456A062366E6AF38B9B0`.
@@ -43,14 +43,14 @@ This audit compares the released `mod-v1.2.0` source against the current formal-
 
 | Game channel | Mod manifest | Minimum game | Release tag | ZIP |
 | --- | --- | --- | --- | --- |
-| Current formal game | `v1.2.0` | `0.107.0` | `mod-v1.2.0` | `shin-getter-mod-v1.2.0.zip` |
-| Slay the Spire 2 0.111 Beta | `v1.2.0-beta.111` | `0.111.0` | `mod-v1.2.0-beta.111` | `shin-getter-mod-v1.2.0(111-beta).zip` |
+| Current formal game | `v1.2.1` | `0.107.0` | `mod-v1.2.1` | `shin-getter-mod-v1.2.1.zip` |
+| Slay the Spire 2 0.111 Beta | `v1.2.1-beta.111` | `0.111.0` | `mod-v1.2.1-beta.111` | `shin-getter-mod-v1.2.1(111-beta).zip` |
 
-The Beta package is a complete v1.2.0 feature build, not a reduced compatibility build. Its distinct semantic version keeps the manifest, tag and archive name aligned with `AGENTS.md` and prevents users from confusing it with the formal-game package.
+The Beta package is a complete v1.2.1 feature build, not a reduced compatibility build. Its distinct semantic version keeps the manifest, tag and archive name aligned with `AGENTS.md` and prevents users from confusing it with the formal-game package.
 
 ## RED baseline
 
-Building the untouched `mod-v1.2.0` source against the audited Beta assemblies produced 0 warnings and 10 errors: one `GenerateAnimator` override, eight damage-hook overrides, and the removed `LobbyPlayer` type. The remaining call/Harmony differences were identified by the pre-edit CodeGraph, member-reference and private-target audit rather than waiting for compiler failures.
+Building the untouched `mod-v1.2.1` source against the audited Beta assemblies produced 0 warnings and 10 errors: one `GenerateAnimator` override, eight damage-hook overrides, and the removed `LobbyPlayer` type. The remaining call/Harmony differences were identified by the pre-edit CodeGraph, member-reference and private-target audit rather than waiting for compiler failures.
 
 ## Full 0.109 → 0.111 CodeGraph re-audit
 

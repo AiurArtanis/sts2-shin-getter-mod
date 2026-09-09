@@ -8,50 +8,35 @@
 
 [h2]🧪 0.111 Beta 适配[/h2]
 
-[b]当前正式版游戏：[/b]使用v1.2.0（shin-getter-mod-v1.2.0.zip，Tag mod-v1.2.0）。
+[b]正式版：[/b]使用 shin-getter-mod-v1.2.1.zip。
+[b]0.111 Beta：[/b]使用 shin-getter-mod-v1.2.1(111-beta).zip。
 
-[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0]下载正式版v1.2.0[/url]
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1]下载 v1.2.1[/url] | [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1]0.111 Beta: shin-getter-mod-v1.2.1(111-beta).zip[/url]
 
-[b]Slay the Spire 2 0.111 Beta：[/b]使用v1.2.0-beta.111（shin-getter-mod-v1.2.0(111-beta).zip，Tag mod-v1.2.0-beta.111）。
-
-[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0]在v1.2.0 Release下载0.111 Beta专用版[/url]
-
-Beta包完整保留正式版v1.2.0的77张卡牌、四种形态、事件、语音、动画与中二配置。两个包不能混用；切换游戏分支后请完整覆盖DLL、PCK、JSON与mod_image并重启游戏。
+Beta包完整保留77张卡牌、四种形态、事件、语音、动画与中二配置。正式版与Beta版四件套不能混用；切换游戏分支后请完整覆盖DLL、PCK、JSON与mod_image并重启游戏。
 
 [b]已知外部兼容问题：[/b]旧版BaseLib 3.3.7在0.111 Beta中会因CardPileCmd.Add transpiler失败导致出牌卡住。请更新BaseLib，或在Beta环境中禁用BaseLib及依赖它的模组。
 
-[h2]🆕 v1.2.0 更新说明[/h2]
-
-[b]正式版：v1.2.0；0.111 Beta专用版：v1.2.0-beta.111[/b]
-
-[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0]下载 v1.2.0（shin-getter-mod-v1.2.0.zip）[/url]
-
-[h3]功能[/h3]
+[h2]v1.2.1 更新说明[/h2]
 
 [list]
-[*]三种普通形态加入完整的战机分离／合体动画；真盖塔龙新增气旋、突进、钻头攻击三套30fps专属动作，一号机与真盖塔龙的烈阳闪光弹使用独立90帧演出。
-[*]新增先古卡“盖塔登场”、战机分离与分身表现；烈阳闪光弹可在战斗中按条件特殊入手，并拥有专属预览、语音、音乐和终结奖励。
-[*]18个原版事件加入真盖塔路线，同时新增4张事件牌、2件事件遗物和3瓶事件药水；这些事件奖励不会进入普通随机池。
-[*]中二配置新增处刑曲及普通／事件／精英／Boss战BGM的选择、随机和试听，并扩充战斗回应、低生命台词与字幕时序。
-[*]更新12张卡牌卡面，新增彩虹动画“NEW”版本提示，并完善卡框类型、卡牌浮层和配置界面交互。
+[*]修复多人游戏崩溃问题。
+[*]修复三合一木雕变形后一号机模型消失。
+[*]修复假商人、建筑师事件的角色显示。
+[*]修复刺猬战术形态条件高亮。
+[*]修正圣龙咆哮卡牌说明。
+[*]修复状态图标显示异常。
 [/list]
 
-[h3]BUG 修复[/h3]
+0.111 Beta 请使用独立的 v1.2.1-beta.111，正式版与 Beta 包不可混用。
 
-[list]
-[*]修复放射能牌面伤害、宠物承伤归一化、气力减伤和随机卡池／升级候选边界。
-[*]修复精神指令动态保留、腾空易伤持续时间、二号机撕咬重复动画和技能／能力卡错误叠加攻击卡框。
-[*]修复事件奖励与返回、事件牌消耗、盖塔钩爪回手、BGM随机试听及多人作用域等边界。
-[*]完善多段攻击、战机分离、分身、低生命回应和形态专属语音的结算与互斥。
-[/list]
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1]下载 v1.2.1 (shin-getter-mod-v1.2.1.zip)[/url]
 
-[h3]QoL／平衡[/h3]
+[h2]v1.2.0 历史概要[/h2]
 
-[list]
-[*]重做终极盖塔射线，并完善烈阳闪光弹的伤害、衰退、特殊入手与终结逻辑。
-[*]调整进化引擎、大胆计划、盖塔意志、天选之子和精神指令等卡牌与机制。
-[*]重建并清理角色动作素材，统一透明边和水印处理；真盖塔龙三套专属动作以30fps、约2秒播放。
-[/list]
+既有内容包括三种形态分离／合体、真盖塔龙30fps动作、90帧烈阳闪光弹、18个事件分支与彩虹NEW提示。完整历史更新见README；这些不是v1.2.1新增内容。
+
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/blob/main/README.md]README[/url]
 
 [hr][/hr]
 
@@ -106,7 +91,7 @@ Beta包完整保留正式版v1.2.0的77张卡牌、四种形态、事件、语�
 
 [h2]当前状态[/h2]
 
-[b]当前版本：v1.2.0[/b]
+[b]当前版本：v1.2.1[/b]
 
 本模组仍会持续维护；后续游戏更新可能影响兼容性。欢迎通过 GitHub 反馈问题，并尽量附上游戏版本、Mod 版本、复现步骤和相关日志。
 

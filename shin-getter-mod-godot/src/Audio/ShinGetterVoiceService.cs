@@ -405,7 +405,8 @@ internal static class ShinGetterVoiceService
         int combatStartVoiceCount = GetCombatStartVoiceCount(player);
         bool played = false;
 
-        if (player.RunState.CurrentMapPointHistoryEntry?.MapPointType == MapPointType.Unknown)
+        if (room.ParentEventId != null
+            || player.RunState.CurrentMapPointHistoryEntry?.MapPointType == MapPointType.Unknown)
         {
             played = TryPlayOneTime(player, Lines[ShinGetterVoiceCue.EventCombat]);
         }
