@@ -2,9 +2,10 @@
 """Static regression gate for issue#192 Good Citizen Card persistence."""
 
 from pathlib import Path
+import sys
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path(__file__).resolve().parents[1]
 RELIC_PATH = ROOT / "src/Models/Relics/SGR_GoodCitizenCard.cs"
 
 
@@ -15,6 +16,27 @@ def require(condition: bool, message: str) -> None:
 
 def main() -> None:
     relic = RELIC_PATH.read_text(encoding="utf-8-sig")
+    registration_path = ROOT / "src/Patches/ShinGetterSavedPropertiesPatch.cs"
+    require(registration_path.exists(), "109 production saved-property registration is missing")
+    registration = registration_path.read_text(encoding="utf-8-sig")
+    require(
+        "[HarmonyPatch(typeof(ModelDb), nameof(ModelDb.InitIds))]" in registration
+        and "[HarmonyPostfix]" in registration,
+        "registration must run in the production model initialization lifecycle",
+    )
+    require(
+        "typeof(Entry).Assembly.GetTypes()" in registration
+        and "typeof(AbstractModel).IsAssignableFrom(type)" in registration
+        and "!type.IsAbstract" in registration
+        and "StringComparer.Ordinal" in registration,
+        "register concrete models deterministically, including inherited saved properties",
+    )
+    require(
+        "SavedPropertiesTypeCache.InjectTypeIntoCache(type)" in registration
+        and "_netIdToPropertyNameMap" in registration
+        and "SetNetIdBitSize(bits)" in registration,
+        "native property registration must also refresh packet width",
+    )
 
     require(
         "[SavedProperty]\n    public List<int> FreePurchaseActIndices" not in relic,
