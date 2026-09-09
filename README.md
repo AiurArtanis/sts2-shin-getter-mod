@@ -15,7 +15,7 @@
 ## 🧪 0.111 Beta 适配
 
 - **当前正式版游戏：**使用 `shin-getter-mod-v1.2.1.zip`。
-- **Slay the Spire 2 0.111 Beta：**使用 `shin-getter-mod-v1.2.1(111-beta).zip`。
+- **Slay the Spire 2 0.111 Beta：**使用 `shin-getter-mod-v1.2.1-beta.111.zip`。
 - 正式版：[v1.2.1 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1)；0.111 Beta：[v1.2.1 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1)。
 - 正式版与 Beta 版四件套不能混用。切换游戏分支后，请完整覆盖 DLL、PCK、JSON 与 `mod_image.png`，然后重启游戏。
 - 已知外部兼容问题：旧版 `BaseLib 3.3.7` 在 0.111 Beta 中会因 `CardPileCmd.Add` transpiler 失败导致出牌卡住。请更新 BaseLib，或在 Beta 环境中禁用 BaseLib 及依赖它的模组。
@@ -87,7 +87,7 @@
 ### 安装 0.111 Beta 专用版
 
 1. 确认游戏已切换到 **Slay the Spire 2 0.111 Beta**。
-2. 从 [v1.2.1 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1) 下载 `shin-getter-mod-v1.2.1(111-beta).zip`。
+2. 从 [v1.2.1 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1) 下载 `shin-getter-mod-v1.2.1-beta.111.zip`。
 3. 将 ZIP 内四个文件完整覆盖到同一个 `ShinGetterMod` 目录；不要与正式版 v1.2.1 的 DLL／PCK 混搭。
 4. 完全退出并重新启动游戏，再启用模组并新开一局。
 
