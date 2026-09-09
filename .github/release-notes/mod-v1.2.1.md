@@ -60,6 +60,6 @@ v1.2.1：マルチプレイのクラッシュ、木彫りによる変形、イ�
 ## 0.111 Beta
 
 - `shin-getter-mod-v1.2.1.zip`: 正式109 / stable 109 / 正式109向け。
-- `shin-getter-mod-v1.2.1(111-beta).zip`: 0.111 Beta，模组版本 `v1.2.1-beta.111`，同步本次正式版修复。
+- `shin-getter-mod-v1.2.1-beta.111.zip`: 0.111 Beta，模组版本 `v1.2.1-beta.111`，同步本次正式版修复。
 - 两包四件套不可混用；切换游戏版本后完整覆盖四件套并重启。Do not mix files between builds; replace all four files and restart. バージョン切替時は4ファイルすべてを置き換えて再起動してください。
 - 旧版 BaseLib 3.3.7 在111 Beta可能导致出牌卡住，请更新或禁用，并停用依赖它的模组。Update or disable old BaseLib 3.3.7 and dependent mods on 111 Beta. 旧版BaseLib 3.3.7と依存MODは更新または無効化してください。

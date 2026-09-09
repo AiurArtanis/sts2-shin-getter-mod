@@ -9,9 +9,9 @@
 [h2]🧪 0.111 Beta 适配[/h2]
 
 [b]正式版：[/b]使用 shin-getter-mod-v1.2.1.zip。
-[b]0.111 Beta：[/b]使用 shin-getter-mod-v1.2.1(111-beta).zip。
+[b]0.111 Beta：[/b]使用 shin-getter-mod-v1.2.1-beta.111.zip。
 
-[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1]下载 v1.2.1[/url] | [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1]0.111 Beta: shin-getter-mod-v1.2.1(111-beta).zip[/url]
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1]下载 v1.2.1[/url] | [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1]0.111 Beta: shin-getter-mod-v1.2.1-beta.111.zip[/url]
 
 Beta包完整保留77张卡牌、四种形态、事件、语音、动画与中二配置。正式版与Beta版四件套不能混用；切换游戏分支后请完整覆盖DLL、PCK、JSON与mod_image并重启游戏。
 
