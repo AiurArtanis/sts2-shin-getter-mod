@@ -52,7 +52,7 @@ A bug-fix update for stable 109, with no new cards or balance changes. Until pub
 
 - Fixed Shin Getter 1 disappearing after Triple Wood Carving transforms three times. Ordinary transformations no longer trigger opening-fusion preparation. (#187)
 - Fixed multiplayer resolution timing for Chain Reaction so Regen and Plating finish in order after Vigor is lost. Local voice-play history no longer participates in multiplayer state checks. (#191)
-- Fixed save serialization of Good Citizen Card shop records, preventing related post-event save failures. (#192)
+- Fixed save serialization of Good Citizen Card shop records and registered mod saved properties on stable 109, addressing related save failures and omitted properties. (#192)
 - Corrected character visuals in the Fake Merchant and Architect events: a static Ryoma image and Shin Getter 1 idle, respectively. (#195)
 - Restored Hedgehog Tactic's yellow condition highlighting for Shin Getter 3 / Shin Getter Dragon in all three languages. Gameplay effects are unchanged. (#196)
 - Corrected Holy Dragon Roar in all three languages to say it exhausts all Getter cards, not only cards in hand. Values and resolution scope are unchanged. (#198)
