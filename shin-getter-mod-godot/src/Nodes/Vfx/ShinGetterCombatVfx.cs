@@ -427,7 +427,7 @@ internal static partial class ShinGetterCombatVfx
         await Cmd.Wait(0.16f);
     }
 
-    public static Task PlayHolyDragonRoarAtScreenCenter(Creature creature)
+    public static Task PlaySaintDragonRoarAtScreenCenter(Creature creature)
     {
         const float scaleMultiplier = 1.3f;
         NGame? game = NGame.Instance;

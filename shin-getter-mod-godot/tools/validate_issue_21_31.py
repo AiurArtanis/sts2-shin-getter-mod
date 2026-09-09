@@ -145,7 +145,7 @@ required_card_mappings = (
     "SGC_Spirit or SGC_SuperKi or SGC_AwakenedSoul => Lines[ShinGetterVoiceCue.Roar]",
     "SGC_StonerSunshine => Lines[ShinGetterVoiceCue.StonerSunshine]",
     "SGC_GetterWill or SGC_GetterRayOverflow => Lines[ShinGetterVoiceCue.GetterRaySurge]",
-    "SGC_HolyDragonRoar or SGC_GetterNova => Lines[ShinGetterVoiceCue.GetterShine]",
+    "SGC_SaintDragonRoar or SGC_GetterNova => Lines[ShinGetterVoiceCue.GetterShine]",
     "SGC_GetterMissile => Lines[ShinGetterVoiceCue.GetterMissile]",
     "SGC_ExpansionStrike or SGC_GetterElbow => Lines[ShinGetterVoiceCue.FireNow]",
     "SGC_Grapple => Lines[ShinGetterVoiceCue.MusashiSpecialMove]",
@@ -155,7 +155,7 @@ required_card_mappings = (
 for mapping in required_card_mappings:
     require(mapping in service, f"missing workbook card mapping: {mapping}")
 
-for custom_card in ("SGC_GetterWill", "SGC_HolyDragonRoar", "SGC_PoseidonThunder"):
+for custom_card in ("SGC_GetterWill", "SGC_SaintDragonRoar", "SGC_PoseidonThunder"):
     require(custom_card in service.split("UsesCustomCardVoiceTiming", 1)[1], f"missing custom voice timing: {custom_card}")
 
 getter_will = (ROOT / "src" / "Models" / "Cards" / "SGC_GetterWill.cs").read_text(encoding="utf-8")
@@ -170,21 +170,21 @@ card_base = (ROOT / "src" / "Models" / "Cards" / "ShinGetterCardBase.cs").read_t
 movement_timing_cards = card_base.split("MovementVfxTimingCards", 1)[1].split("BlockAnimationCards", 1)[0]
 require('"SGC_GetterWill"' in movement_timing_cards, "Getter Will's automatic pre-selection animation must be deferred")
 
-holy_dragon_roar = (ROOT / "src" / "Models" / "Cards" / "SGC_HolyDragonRoar.cs").read_text(encoding="utf-8")
+saint_dragon_roar = (ROOT / "src" / "Models" / "Cards" / "SGC_SaintDragonRoar.cs").read_text(encoding="utf-8")
 for timing_guard in (
     "if (getterCards.Count < 3)",
     "await CardCmd.Exhaust(choiceContext, getterCards[index])",
     "if (getterCards.Count >= 3 && index == getterCards.Count - 3)",
     "ShinGetterVoiceService.TryPlayCardVoiceAtCustomTiming(this, out _)",
 ):
-    require(timing_guard in holy_dragon_roar, f"Holy Dragon Roar timing guard is missing: {timing_guard}")
+    require(timing_guard in saint_dragon_roar, f"Saint Dragon Roar timing guard is missing: {timing_guard}")
 require(
-    holy_dragon_roar.index("if (getterCards.Count < 3)")
-    < holy_dragon_roar.index("if (getterCards.Count >= 3 && index == getterCards.Count - 3)")
-    < holy_dragon_roar.index("await CardCmd.Exhaust"),
-    "Holy Dragon Roar voice must play immediately below three cards or when the third-to-last exhaust starts",
+    saint_dragon_roar.index("if (getterCards.Count < 3)")
+    < saint_dragon_roar.index("if (getterCards.Count >= 3 && index == getterCards.Count - 3)")
+    < saint_dragon_roar.index("await CardCmd.Exhaust"),
+    "Saint Dragon Roar voice must play immediately below three cards or when the third-to-last exhaust starts",
 )
-require("index == getterCards.Count - 1" not in holy_dragon_roar, "Holy Dragon Roar must not wait for the last exhaust")
+require("index == getterCards.Count - 1" not in saint_dragon_roar, "Saint Dragon Roar must not wait for the last exhaust")
 
 poseidon_thunder = (ROOT / "src" / "Models" / "Cards" / "SGC_PoseidonThunder.cs").read_text(encoding="utf-8")
 require(
