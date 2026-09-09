@@ -16,6 +16,7 @@ namespace ShinGetterMod.Patches;
 
 internal static class ShinGetterEventCharacterVisuals
 {
+    private const float FakeMerchantRyomaScaleMultiplier = 1.1f;
     private const string FakeMerchantRyomaTexturePath =
         "res://images/characters/shin_getter/merchant/s_g_o_merchant_ryoma_normal.png";
 
@@ -36,12 +37,13 @@ internal static class ShinGetterEventCharacterVisuals
                 && !Mathf.IsZeroApprox(container.Scale.Y)
                     ? Vector2.One / container.Scale
                     : Vector2.One;
+            Vector2 portraitScale = layoutCompensation * FakeMerchantRyomaScaleMultiplier;
             Sprite2D ryoma = new()
             {
                 Name = "FakeMerchantRyoma",
                 Texture = PreloadManager.Cache.GetTexture2D(FakeMerchantRyomaTexturePath),
-                Position = new Vector2(0f, -193.576f) * layoutCompensation,
-                Scale = new Vector2(0.376f, 0.376f) * layoutCompensation,
+                Position = new Vector2(0f, -193.576f) * portraitScale,
+                Scale = new Vector2(0.376f, 0.376f) * portraitScale,
             };
             visuals.AddChildSafely(ryoma);
             Rect2 spriteRect = ryoma.GetRect();
