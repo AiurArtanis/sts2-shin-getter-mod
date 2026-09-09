@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 import sys
 
 
@@ -44,8 +45,9 @@ if "body.SelfModulate =" in patch or "body.AddChildSafely(ryoma)" in patch:
     failures.append("fallback ERROR texture must never be made opaque below Ryoma")
 for guard in (
     "Vector2.One / container.Scale",
-    "new Vector2(0f, -193.576f) * layoutCompensation",
-    "new Vector2(0.376f, 0.376f) * layoutCompensation",
+    "Vector2 portraitScale = layoutCompensation * FakeMerchantRyomaScaleMultiplier",
+    "new Vector2(0f, -193.576f) * portraitScale",
+    "new Vector2(0.376f, 0.376f) * portraitScale",
     "visuals.Bounds.Position = ryoma.Position + spriteRect.Position * ryoma.Scale",
     "visuals.Bounds.Size = spriteRect.Size * ryoma.Scale",
 ):
@@ -68,12 +70,20 @@ require(
     "ShinGetterBgmCatalog.ResolveForPlayback(configured).ResourcePath",
 )
 
-# The inherited event container magnifies both dimensions, not just the sprite texture.
+# Preserve container compensation, then apply the event-only art-direction adjustment.
+match = re.search(r"const float FakeMerchantRyomaScaleMultiplier = ([0-9.]+)f;", patch)
+if match is None or float(match.group(1)) != 1.1:
+    failures.append("feedback3 requires a bounded event-only 10 percent portrait increase")
+multiplier = float(match.group(1)) if match else 1.0
+require(merchant, "position = Vector2(0, -193.576)", "scale = Vector2(0.376, 0.376)")
 for container_scale in (1.0, 1.75, 2.0):
-    assert abs(0.376 / container_scale * container_scale - 0.376) < 1e-9
-    assert abs(-193.576 / container_scale * container_scale + 193.576) < 1e-9
+    effective_scale = 0.376 / container_scale * multiplier * container_scale
+    effective_offset = -193.576 / container_scale * multiplier * container_scale
+    assert abs(effective_scale - 0.376 * multiplier) < 1e-9
+    assert abs(effective_offset + 193.576 * multiplier) < 1e-9
+    assert abs(effective_offset / effective_scale - (-193.576 / 0.376)) < 1e-9
 
 if failures:
-    raise AssertionError("issue#195 feedback2 regressions:\n- " + "\n- ".join(failures))
+    raise AssertionError("issue#195 feedback2/3 regressions:\n- " + "\n- ".join(failures))
 
 print("issue#195 static regression: PASS")
