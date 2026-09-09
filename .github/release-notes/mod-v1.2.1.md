@@ -11,7 +11,7 @@
 - 修正圣龙咆哮卡牌说明。
 - 修复状态图标显示异常。
 
-0.111 Beta 请使用独立的 v1.2.0-beta.111，正式版与 Beta 包不可混用。
+0.111 Beta 请使用独立的 v1.2.1-beta.111，正式版与 Beta 包不可混用。
 
 [下载 v1.2.1](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1) · `shin-getter-mod-v1.2.1.zip`
 
@@ -30,7 +30,7 @@ v1.2.1：修复多人游戏崩溃问题；修复木雕变形、事件角色显�
 - Corrected Saint Dragon Roar's description.
 - Fixed status-icon display errors.
 
-For 0.111 Beta, use the separate v1.2.0-beta.111 build. Do not mix stable and Beta packages.
+For 0.111 Beta, use the separate v1.2.1-beta.111 build. Do not mix stable and Beta packages.
 
 [Download v1.2.1](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1) · `shin-getter-mod-v1.2.1.zip`
 
@@ -49,10 +49,17 @@ v1.2.1: Fixed multiplayer crashes, Triple Wood Carving transformations, event ch
 - 聖龍咆哮のカード説明を修正。
 - 状態アイコンの表示不具合を修正。
 
-0.111 Betaでは専用のv1.2.0-beta.111をご利用ください。正式版とBeta版のファイルを混在させないでください。
+0.111 Betaでは専用のv1.2.1-beta.111をご利用ください。正式版とBeta版のファイルを混在させないでください。
 
 [v1.2.1をダウンロード](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1) · `shin-getter-mod-v1.2.1.zip`
 
 ### changeNote
 
 v1.2.1：マルチプレイのクラッシュ、木彫りによる変形、イベントのキャラクター表示、ハリネズミ戦術の強調表示、状態アイコンの不具合を修正。聖龍咆哮の説明を修正しました。
+
+## 0.111 Beta
+
+- `shin-getter-mod-v1.2.1.zip`: 正式109 / stable 109 / 正式109向け。
+- `shin-getter-mod-v1.2.1(111-beta).zip`: 0.111 Beta，模组版本 `v1.2.1-beta.111`，同步本次正式版修复。
+- 两包四件套不可混用；切换游戏版本后完整覆盖四件套并重启。Do not mix files between builds; replace all four files and restart. バージョン切替時は4ファイルすべてを置き換えて再起動してください。
+- 旧版 BaseLib 3.3.7 在111 Beta可能导致出牌卡住，请更新或禁用，并停用依赖它的模组。Update or disable old BaseLib 3.3.7 and dependent mods on 111 Beta. 旧版BaseLib 3.3.7と依存MODは更新または無効化してください。

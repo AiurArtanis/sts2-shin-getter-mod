@@ -9,9 +9,9 @@
 [h2]🧪 0.111 Beta対応[/h2]
 
 [b]正式版：[/b]shin-getter-mod-v1.2.1.zipを使用してください。
-[b]0.111 Beta：[/b]shin-getter-mod-v1.2.0(111-beta).zipを使用してください。
+[b]0.111 Beta：[/b]shin-getter-mod-v1.2.1(111-beta).zipを使用してください。
 
-[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1]v1.2.1をダウンロード[/url] | [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.0]0.111 Beta: shin-getter-mod-v1.2.0(111-beta).zip[/url]
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1]v1.2.1をダウンロード[/url] | [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1]0.111 Beta: shin-getter-mod-v1.2.1(111-beta).zip[/url]
 
 Beta版にもカード77枚、4形態、イベント、ボイス、アニメーション、中二設定をすべて収録しています。正式版とBeta版の4ファイルを混在させず、ゲームブランチ切替後はDLL、PCK、JSON、mod_imageをまとめて上書きして再起動してください。
 
@@ -28,7 +28,7 @@ Beta版にもカード77枚、4形態、イベント、ボイス、アニメー�
 [*]状態アイコンの表示不具合を修正。
 [/list]
 
-0.111 Betaでは専用のv1.2.0-beta.111をご利用ください。正式版とBeta版のファイルを混在させないでください。
+0.111 Betaでは専用のv1.2.1-beta.111をご利用ください。正式版とBeta版のファイルを混在させないでください。
 
 [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1]v1.2.1をダウンロード (shin-getter-mod-v1.2.1.zip)[/url]
 
