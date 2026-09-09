@@ -16,7 +16,7 @@ UPDATE_KEY = "SHIN_GETTER_CHUNIBYO.UPDATE.v1_2_1"
 RELEASE_ITEM_COUNT = 6
 HISTORY_MARKERS = {
     "zhs": ("修复多人游戏崩溃问题。", "三合一木雕", "假商人", "刺猬战术", "圣龙咆哮", "状态图标"),
-    "eng": ("Fixed multiplayer crashes.", "Triple Wood Carving", "Fake Merchant", "Hedgehog Tactic", "Holy Dragon Roar", "status-icon"),
+    "eng": ("Fixed multiplayer crashes.", "Triple Wood Carving", "Fake Merchant", "Hedgehog Tactic", "Saint Dragon Roar", "status-icon"),
     "jpn": ("マルチプレイのクラッシュを修正。", "三位一体の木彫り", "偽商人", "ハリネズミ戦術", "聖龍咆哮", "状態アイコン"),
 }
 RELEASE_URL = (

@@ -24,7 +24,7 @@ The Beta package retains all 77 cards, four forms, events, voices, animations, a
 [*]Fixed Shin Getter 1 disappearing after Triple Wood Carving transformations.
 [*]Fixed character visuals in the Fake Merchant and Architect events.
 [*]Fixed Hedgehog Tactic's form-condition highlighting.
-[*]Corrected Holy Dragon Roar's description.
+[*]Corrected Saint Dragon Roar's description.
 [*]Fixed status-icon display errors.
 [/list]
 

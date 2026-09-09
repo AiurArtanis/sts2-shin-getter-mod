@@ -89,7 +89,7 @@ public sealed class ShinGetterCardPool : CardPoolModel
 			ModelDb.Card<SGC_Desperation>(),
 			ModelDb.Card<SGC_StonerSunshine>(),
 			ModelDb.Card<SGC_ShinForm>(),
-			ModelDb.Card<SGC_HolyDragonRoar>(),
+			ModelDb.Card<SGC_SaintDragonRoar>(),
 			ModelDb.Card<SGC_Radiated>(),
 			ModelDb.Card<SGC_InsectVirus>(),
 			ModelDb.Card<SGC_InfiniteEvolution>(),

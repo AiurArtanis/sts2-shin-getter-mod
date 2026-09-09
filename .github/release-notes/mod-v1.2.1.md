@@ -27,7 +27,7 @@ v1.2.1：修复多人游戏崩溃问题；修复木雕变形、事件角色显�
 - Fixed Shin Getter 1 disappearing after Triple Wood Carving transformations.
 - Fixed character visuals in the Fake Merchant and Architect events.
 - Fixed Hedgehog Tactic's form-condition highlighting.
-- Corrected Holy Dragon Roar's description.
+- Corrected Saint Dragon Roar's description.
 - Fixed status-icon display errors.
 
 For 0.111 Beta, use the separate v1.2.0-beta.111 build. Do not mix stable and Beta packages.
@@ -36,7 +36,7 @@ For 0.111 Beta, use the separate v1.2.0-beta.111 build. Do not mix stable and Be
 
 ### changeNote
 
-v1.2.1: Fixed multiplayer crashes, Triple Wood Carving transformations, event character visuals, Hedgehog Tactic highlighting, and status-icon errors. Corrected Holy Dragon Roar's description.
+v1.2.1: Fixed multiplayer crashes, Triple Wood Carving transformations, event character visuals, Hedgehog Tactic highlighting, and status-icon errors. Corrected Saint Dragon Roar's description.
 
 ## jpn
 

@@ -17,7 +17,7 @@ internal static class CardConsoleAliasPatch
     internal static readonly IReadOnlyDictionary<string, string> SpecialAliases =
         new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
-            ["s_g_c_saint_dragon_roar"] = "S_G_C_HOLY_DRAGON_ROAR",
+            ["s_g_c_saint_dragon_roar"] = "S_G_C_SAINT_DRAGON_ROAR",
         };
 
     private static void Prefix(string[] args)
