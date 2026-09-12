@@ -2,7 +2,7 @@
 """Read-only structural guard for issue#206; never launches Godot/the game.
 
 Not a runtime or visual acceptance test. Written but intentionally NOT RUN during
-the 2026-09-08 development checkpoint at the user's request. Optional source-root
+the 2026-09-08 checkpoint or 2026-09-12 review handoff at the user's request. Optional source-root
 checks use the read-only, decompiled official 109 source, not a running process.
 """
 from __future__ import annotations
@@ -117,6 +117,10 @@ def contracts() -> None:
         require(token in ui, f"Missing UI lifecycle/input boundary: {token}")
     require("NModalContainer" not in ui and "NErrorPopup" not in ui, "Errors must not contend for a modal slot")
     require('("TANX_RYOMA_BOND_03", 4)' in ui and '("TANX_BENKEI_BOND_02", 3)' in ui, "Voice cue binding drift")
+    require('"ryoma_getter_tomahawk.wav"' in ui and '"musashi_avalanche.wav"' in ui,
+            "Only approved 010/035 voice assets; 035 historical filename remains unchanged")
+    for forbidden in ("AnimatedSprite2D", "CreatureCmd.", "TriggerAnim(", "VfxCmd.", "NShinGetterStaticVisuals"):
+        require(forbidden not in ui, f"2026-09-12 scope is dialogue/voice only, not action choreography: {forbidden}")
     cue = ui[ui.index("private void TryCue"):ui.index("private void StopVoice")]
     require(cue.index("ConsumeCue") < cue.index("VoiceMode ==") < cue.index("_voice.Play()"), "Consume before silence/play")
     for forbidden in ("AttackCommand", "DamageCmd", "PowerCmd", "CombatStart", "CardPlay"):

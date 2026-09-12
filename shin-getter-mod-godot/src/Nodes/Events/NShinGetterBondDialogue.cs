@@ -237,6 +237,8 @@ internal sealed partial class NShinGetterBondDialogue : Control
 
     private void TryCue(ShinGetterBondEncounter encounter)
     {
+        // issue#206 scope confirmed 2026-09-12: normal dialogue plus these two voices
+        // only. No paired-action scene, temporary form switch or combat/VFX commands.
         string? filename = (encounter.DialogueId, encounter.Line) switch
         {
             ("TANX_RYOMA_BOND_03", 4) => "ryoma_getter_tomahawk.wav",
