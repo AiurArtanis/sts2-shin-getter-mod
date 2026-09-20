@@ -134,6 +134,7 @@ internal static class ShinGetterEncounterMusicService
 
         trackPath = (act, category) switch
         {
+            (_, ShinGetterBgmCategory.EventCombat) => GetTrackPath("onslaught"),
             (Overgrowth, ShinGetterBgmCategory.NormalCombat) => GetTrackPath(
                 ShinGetterBgmCatalog.GetterRoboSts2TrackId),
             (Underdocks, ShinGetterBgmCategory.NormalCombat) => GetTrackPath(

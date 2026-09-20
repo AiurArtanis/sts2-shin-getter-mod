@@ -85,12 +85,24 @@ public static class ShinGetterChunibyoConfigService
 
             string json = File.ReadAllText(path);
             Current = JsonSerializer.Deserialize<ShinGetterChunibyoConfig>(json, JsonOptions) ?? new();
+            NormalizeBgmSelections(Current);
         }
         catch (Exception ex)
         {
             GD.PushWarning($"Shin Getter could not load chunibyo config: {ex.Message}");
             Current = new();
         }
+    }
+
+    // Startup migration is in-memory: never overwrite unrelated config or fail startup
+    // when the config file is read-only. The next successful Save persists the repair.
+    internal static void NormalizeBgmSelections(ShinGetterChunibyoConfig config)
+    {
+        config.ExecutionBgmTrackId = ShinGetterBgmCatalog.ResolveOrDefault(config.ExecutionBgmTrackId).Id;
+        config.NormalCombatBgmTrackId = ShinGetterBgmCatalog.ResolveOrDefault(config.NormalCombatBgmTrackId).Id;
+        config.EventCombatBgmTrackId = ShinGetterBgmCatalog.ResolveOrDefault(config.EventCombatBgmTrackId).Id;
+        config.EliteCombatBgmTrackId = ShinGetterBgmCatalog.ResolveOrDefault(config.EliteCombatBgmTrackId).Id;
+        config.BossCombatBgmTrackId = ShinGetterBgmCatalog.ResolveOrDefault(config.BossCombatBgmTrackId).Id;
     }
 
     public static bool Save(out string error)
