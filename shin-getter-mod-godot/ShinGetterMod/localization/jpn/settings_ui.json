@@ -19,6 +19,8 @@
   "SHIN_GETTER_CHUNIBYO.VOICE.ALWAYS": "[red][sine]燃えてきた！[/sine][/red]",
   "SHIN_GETTER_CHUNIBYO.VOICE.ALWAYS_TOOLTIP": "条件を満たすたびに台詞を再生します。",
   "SHIN_GETTER_CHUNIBYO.BGM.TITLE": "BGM設定",
+  "SHIN_GETTER_CHUNIBYO.BGM.ENABLED_TOOLTIP": "MODのBGM（処刑曲・試聴を含む）を有効にします。オフにすると元の音楽へ戻り、選曲は保持されます。再びオンにした後は、次の通常の再生タイミングから適用されます。",
+  "SHIN_GETTER_CHUNIBYO.BGM.DISABLED_TOOLTIP": "左のチェックを入れるとBGM設定を開けます。",
   "SHIN_GETTER_CHUNIBYO.BGM.EXECUTION": "処刑曲",
   "SHIN_GETTER_CHUNIBYO.BGM.EXECUTION_NOTE": "2ターン目以降、フィニッシャーカードが手札に加わると発動します。",
   "SHIN_GETTER_CHUNIBYO.BGM.NORMAL": "通常戦",

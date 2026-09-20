@@ -19,6 +19,8 @@
   "SHIN_GETTER_CHUNIBYO.VOICE.ALWAYS": "[red][sine]Set Me Ablaze![/sine][/red]",
   "SHIN_GETTER_CHUNIBYO.VOICE.ALWAYS_TOOLTIP": "Plays a line every time its trigger condition is met.",
   "SHIN_GETTER_CHUNIBYO.BGM.TITLE": "BGM Settings",
+  "SHIN_GETTER_CHUNIBYO.BGM.ENABLED_TOOLTIP": "Enable mod BGM, including execution themes and previews. Turning off restores game music and keeps track choices. Re-enabling takes effect at the next normal trigger.",
+  "SHIN_GETTER_CHUNIBYO.BGM.DISABLED_TOOLTIP": "Turn on the checkbox on the left to edit BGM settings.",
   "SHIN_GETTER_CHUNIBYO.BGM.EXECUTION": "Execution Theme",
   "SHIN_GETTER_CHUNIBYO.BGM.EXECUTION_NOTE": "Triggers after a finisher enters your hand from turn two onward.",
   "SHIN_GETTER_CHUNIBYO.BGM.NORMAL": "Normal Combat",
