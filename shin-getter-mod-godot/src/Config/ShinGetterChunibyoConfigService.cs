@@ -20,6 +20,7 @@ public sealed class ShinGetterChunibyoConfig
     public bool ShowInMainMenu { get; set; } = true;
     public string LastReadUpdateVersion { get; set; } = string.Empty;
     public ShinGetterVoiceMode VoiceMode { get; set; } = ShinGetterVoiceMode.OncePerCombat;
+    public bool BgmEnabled { get; set; } = true;
     public string ExecutionBgmTrackId { get; set; } = ShinGetterBgmCatalog.DefaultTrackId;
     public string NormalCombatBgmTrackId { get; set; } = ShinGetterBgmCatalog.DefaultTrackId;
     public string EventCombatBgmTrackId { get; set; } = ShinGetterBgmCatalog.DefaultTrackId;
@@ -45,6 +46,12 @@ public static class ShinGetterChunibyoConfigService
     private static bool _loaded;
 
     internal static event Action? UpdateReadStateChanged;
+    internal static event Action? BgmEnabledChanged;
+
+    internal static bool IsBgmEnabled
+    {
+        get { Load(); return Current.BgmEnabled; }
+    }
 
     public static ShinGetterChunibyoConfig Current { get; private set; } = new();
 
@@ -108,6 +115,30 @@ public static class ShinGetterChunibyoConfigService
             GD.PushError($"Shin Getter could not save chunibyo config: {ex}");
             return false;
         }
+    }
+
+    internal static bool TrySetBgmEnabled(bool enabled, out string error)
+    {
+        Load();
+        bool previous = Current.BgmEnabled;
+        if (previous == enabled) { error = string.Empty; return true; }
+        Current.BgmEnabled = enabled;
+        if (!Save(out error))
+        {
+            Current.BgmEnabled = previous;
+            return false;
+        }
+
+        // Only a persisted change affects playback. Keep all per-category selections.
+        // Re-enable permits the next normal trigger; it does not replay a consumed finisher.
+        if (!enabled)
+        {
+            ShinGetterBgmPreviewService.Stop();
+            ShinGetterEncounterMusicService.StopActiveAndRestore();
+            ShinGetterExecutionMusicService.StopImmediatelyAndRestore();
+        }
+        BgmEnabledChanged?.Invoke();
+        return true;
     }
 
     internal static bool MarkCurrentUpdateRead(out string error)

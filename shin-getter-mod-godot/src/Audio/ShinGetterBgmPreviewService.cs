@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Nodes.Audio;
 using MegaCrit.Sts2.Core.Saves;
+using ShinGetterMod.Config;
 
 namespace ShinGetterMod.Audio;
 
@@ -27,6 +28,11 @@ internal static class ShinGetterBgmPreviewService
 
     internal static void Toggle(ShinGetterBgmTrack track, ShinGetterBgmCategory category)
     {
+        if (!ShinGetterChunibyoConfigService.IsBgmEnabled)
+        {
+            Stop();
+            return;
+        }
         if (!ShinGetterBgmCatalog.CanPreview(track))
         {
             Log.Info($"[ShinGetterBgmPreview] Ignored preview request for default track ({category}).");
@@ -57,6 +63,8 @@ internal static class ShinGetterBgmPreviewService
 
     private static void Start(ShinGetterBgmTrack track, ShinGetterBgmCategory category)
     {
+        if (!ShinGetterChunibyoConfigService.IsBgmEnabled)
+            return;
         if (NonInteractiveMode.IsActive)
         {
             Log.Warn($"[ShinGetterBgmPreview] Cannot preview {track.Id}: non-interactive mode is active.");
@@ -104,6 +112,7 @@ internal static class ShinGetterBgmPreviewService
         player.Finished += () =>
         {
             if (ReferenceEquals(_player, player)
+                && ShinGetterChunibyoConfigService.IsBgmEnabled
                 && State == ShinGetterBgmPreviewState.Playing
                 && GodotObject.IsInstanceValid(player))
             {
@@ -128,7 +137,10 @@ internal static class ShinGetterBgmPreviewService
         State = ShinGetterBgmPreviewState.Stopped;
 
         if (GodotObject.IsInstanceValid(player))
+        {
+            player!.Stop();
             player!.QueueFree();
+        }
         if (restoreGameMusic)
             NAudioManager.Instance?.SetBgmVol(SaveManager.Instance.SettingsSave.VolumeBgm);
 
