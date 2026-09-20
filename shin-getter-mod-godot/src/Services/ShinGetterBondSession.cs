@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
+using RandomNumberGenerator = System.Security.Cryptography.RandomNumberGenerator;
 using System.Text.Json;
 using Godot;
 using HarmonyLib;
@@ -175,20 +175,22 @@ internal sealed class ShinGetterBondSession
 
     private ShinGetterBondEncounter SelectEncounter()
     {
+        // Begin loads the save before selecting an encounter.
+        ShinGetterBondSave save = _save!;
         var encounter = new ShinGetterBondEncounter { Npc = _npc, Run = _run };
         string first = _npc + "_FIRST_01";
-        if (!IsAcquainted(_save!, _npc)) return WithDialogue(encounter, first);
+        if (!IsAcquainted(save, _npc)) return WithDialogue(encounter, first);
         if (Choices.Count != 0) return encounter;
 
         var histories = ReadReliableHistories();
-        long lastMet = _save.LastMetRun.GetValueOrDefault(_npc);
+        long lastMet = save.LastMetRun.GetValueOrDefault(_npc);
         // A real encounter in the current run clears the gap, even after skip.
         bool longAbsence = _npc != "NEOW" && lastMet > 0 && lastMet != _run
             && histories.Count(h => h.StartTime > lastMet && h.StartTime < _run) >= 5;
         if (longAbsence) return WithDialogue(encounter, _npc + "_RETURN_01");
 
         RunHistory? latest = histories.FirstOrDefault();
-        if (latest != null && latest.StartTime != _save.RespondedResults.GetValueOrDefault(_npc)
+        if (latest != null && latest.StartTime != save.RespondedResults.GetValueOrDefault(_npc)
             && RandomNumberGenerator.GetInt32(2) == 0)
         {
             // Abandonment is stored distinctly; never present a death story for it.
@@ -210,7 +212,7 @@ internal sealed class ShinGetterBondSession
                 ("PAEL_BENKEI_BOND_03", "THE_ARCHITECT_STORY_PAEL_01"),
                 ("OROBAS_RYOMA_BOND_03", "THE_ARCHITECT_STORY_OROBAS_01"),
             })
-                if (_save.Completed.Contains(source)) candidates.Add(echo);
+                if (save.Completed.Contains(source)) candidates.Add(echo);
         }
         return WithDialogue(encounter, Draw(candidates));
     }
