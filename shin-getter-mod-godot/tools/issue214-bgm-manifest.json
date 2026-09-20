@@ -1,0 +1,352 @@
+{
+  "sheet": "BGM列表",
+  "range": "A3:E25",
+  "workbook_sha256": "15f8b8987cd29a55458f6d36debebabbe477dc173b14d44bfc8d33351a444aea",
+  "tracks": [
+    {
+      "row": 3,
+      "id": "relief",
+      "resource": "audio/music/shin_getter/album/relief.mp3",
+      "source_file": "岩崎文紀 - 安堵.mp3",
+      "sheet_file": "岩崎文紀 - 安堵.mp3",
+      "default_scene": "",
+      "titles": {
+        "zhs": "安堵",
+        "jpn": "安堵",
+        "eng": "Relief"
+      },
+      "bytes": 4007992,
+      "sha256": "f6b4557879098d40044482b8030b87fcc1aeb18d7c4e90776c021b81afaa32e0"
+    },
+    {
+      "row": 4,
+      "id": "rebel_army",
+      "resource": "audio/music/shin_getter/encounters/boss_overgrowth.mp3",
+      "source_file": "岩崎文紀 - 反乱軍.mp3",
+      "sheet_file": "岩崎文紀 - 反乱軍.mp3",
+      "default_scene": "第一层（密林）BOSS",
+      "titles": {
+        "zhs": "反叛军",
+        "jpn": "反乱軍",
+        "eng": "Rebel Army"
+      },
+      "bytes": 3532359,
+      "sha256": "747fe5dfb9878e5b065e412fff24fc043f054c3406b5b5bddeb1da0d6794ef23"
+    },
+    {
+      "row": 5,
+      "id": "past",
+      "resource": "audio/music/shin_getter/album/past.mp3",
+      "source_file": "岩崎文紀 - 過去.mp3",
+      "sheet_file": "岩崎文紀 - 過去.mp3",
+      "default_scene": "",
+      "titles": {
+        "zhs": "过去",
+        "jpn": "過去",
+        "eng": "Past"
+      },
+      "bytes": 3180017,
+      "sha256": "ed6b14f511e40a829d5cd7e5239e9724ba52c9d24b43dab902ffde3806162166"
+    },
+    {
+      "row": 6,
+      "id": "tension",
+      "resource": "audio/music/shin_getter/encounters/elite_glory.mp3",
+      "source_file": "岩崎文紀 - 緊迫.mp3",
+      "sheet_file": "岩崎文紀 - 緊迫.mp3",
+      "default_scene": "第三层（荣耀）精英怪",
+      "titles": {
+        "zhs": "紧迫",
+        "jpn": "緊迫",
+        "eng": "Tension"
+      },
+      "bytes": 3914370,
+      "sha256": "c904fc1a900b0e6a49cb0f20a1dd0575cc6a053e2cca17b8aabd966e23c41385"
+    },
+    {
+      "row": 7,
+      "id": "mystery",
+      "resource": "audio/music/shin_getter/encounters/boss_underdocks.mp3",
+      "source_file": "岩崎文紀 - 謎.mp3",
+      "sheet_file": "岩崎文紀 - 謎.mp3",
+      "default_scene": "第一层（暗港）BOSS",
+      "titles": {
+        "zhs": "谜",
+        "jpn": "謎",
+        "eng": "Mystery"
+      },
+      "bytes": 3465481,
+      "sha256": "d0ac4cb0c2b1b5320df10ef0e80dcccc8116b42ffbef05651c6a918d3d7d2cd8"
+    },
+    {
+      "row": 8,
+      "id": "momentum",
+      "resource": "audio/music/shin_getter/encounters/elite_overgrowth.mp3",
+      "source_file": "岩崎文紀 - 気勢.mp3",
+      "sheet_file": "岩崎文紀 - 気勢.mp3",
+      "default_scene": "第一层（密林）精英怪",
+      "titles": {
+        "zhs": "气势",
+        "jpn": "気勢",
+        "eng": "Momentum"
+      },
+      "bytes": 3046268,
+      "sha256": "00a57d27e3ce439d2f72527ab9ccd5208ba2bbbf0a7c2ab748887afc9e0ebfef"
+    },
+    {
+      "row": 9,
+      "id": "majesty",
+      "resource": "audio/music/shin_getter/encounters/boss_hive.mp3",
+      "source_file": "岩崎文紀 - 威風.mp3",
+      "sheet_file": "岩崎文紀 - 威風.mp3",
+      "default_scene": "第二层（巢穴）BOSS",
+      "titles": {
+        "zhs": "威风",
+        "jpn": "威風",
+        "eng": "Majesty"
+      },
+      "bytes": 1550155,
+      "sha256": "8866717f4c52ecb9878e1101bea1ed4f15df3655d59e80104c5909b3e0ad2449"
+    },
+    {
+      "row": 10,
+      "id": "unknown",
+      "resource": "audio/music/shin_getter/encounters/elite_underdocks.mp3",
+      "source_file": "岩崎文紀 - 未知.mp3",
+      "sheet_file": "岩崎文紀 - 未知.mp3",
+      "default_scene": "第一层（暗港）精英怪",
+      "titles": {
+        "zhs": "未知",
+        "jpn": "未知",
+        "eng": "Unknown"
+      },
+      "bytes": 2992772,
+      "sha256": "307b8d828c872bf55ab6c79e2f8262f1005e8665014f686114958770a3a8bc34"
+    },
+    {
+      "row": 11,
+      "id": "onslaught",
+      "resource": "audio/music/shin_getter/album/onslaught.mp3",
+      "source_file": "岩崎文紀 - 襲来.mp3",
+      "sheet_file": "岩崎文紀 - 襲来.mp3",
+      "default_scene": "遭遇战",
+      "titles": {
+        "zhs": "来袭",
+        "jpn": "襲来",
+        "eng": "Onslaught"
+      },
+      "bytes": 3394010,
+      "sha256": "2ea32dc98c694043d9d6bd0af9709fce75ac9645c14bacef7a15c14632a57e63"
+    },
+    {
+      "row": 12,
+      "id": "bond_of_blood",
+      "resource": "audio/music/shin_getter/album/bond_of_blood.mp3",
+      "source_file": "岩崎文紀 - 血の絆.mp3",
+      "sheet_file": "岩崎文紀 - 血の絆.mp3",
+      "default_scene": "",
+      "titles": {
+        "zhs": "血之羁绊",
+        "jpn": "血の絆",
+        "eng": "Bond of Blood"
+      },
+      "bytes": 3043347,
+      "sha256": "e2ba0643d041a3bf1cac036aaf70ae397c043c74fe56b18bfa8b866f1e66545b"
+    },
+    {
+      "row": 13,
+      "id": "heroic",
+      "resource": "audio/music/shin_getter/album/heroic.mp3",
+      "source_file": "岩崎文紀 - 勇壮.mp3",
+      "sheet_file": "岩崎文紀 - 勇壮.mp3",
+      "default_scene": "处刑曲",
+      "titles": {
+        "zhs": "勇壮",
+        "jpn": "勇壮",
+        "eng": "Bravery"
+      },
+      "bytes": 1928850,
+      "sha256": "9ba79f25a65564911f4a58b315435c08301843b258e6ab5d54b3df519f5f8fc1"
+    },
+    {
+      "row": 14,
+      "id": "hymn",
+      "resource": "audio/music/shin_getter/album/hymn.mp3",
+      "source_file": "岩崎文紀 - 賛歌.mp3",
+      "sheet_file": "岩崎文紀 - 賛歌.mp3",
+      "default_scene": "",
+      "titles": {
+        "zhs": "赞歌",
+        "jpn": "賛歌",
+        "eng": "Hymn"
+      },
+      "bytes": 3834123,
+      "sha256": "c38717c7220acc431c1963abc438006693e648aa266a4b66d432cf89348152de"
+    },
+    {
+      "row": 15,
+      "id": "reminiscence",
+      "resource": "audio/music/shin_getter/album/reminiscence.mp3",
+      "source_file": "岩崎文紀 - 追憶.mp3",
+      "sheet_file": "岩崎文紀 - 追憶.mp3",
+      "default_scene": "",
+      "titles": {
+        "zhs": "追忆",
+        "jpn": "追憶",
+        "eng": "Reminiscence"
+      },
+      "bytes": 3260265,
+      "sha256": "0b27eb463a17effb4aef7127759b3082e503cac05ce017d78132a9c63cae4fb1"
+    },
+    {
+      "row": 16,
+      "id": "final_war",
+      "resource": "audio/music/shin_getter/encounters/boss_glory.mp3",
+      "source_file": "岩崎文紀 - 総大戦.mp3",
+      "sheet_file": "岩崎文紀 - 総大戦.mp3",
+      "default_scene": "第三层（荣耀）BOSS",
+      "titles": {
+        "zhs": "总决战",
+        "jpn": "総大戦",
+        "eng": "Final War"
+      },
+      "bytes": 2833947,
+      "sha256": "9f607de8cbf0419dba013b42f265eff8ee32544ce80aa78fe5040271c3fed574"
+    },
+    {
+      "row": 17,
+      "id": "creation",
+      "resource": "audio/music/shin_getter/album/creation.mp3",
+      "source_file": "岩崎文紀 - 創造.mp3",
+      "sheet_file": "岩崎文紀 - 創造.mp3",
+      "default_scene": "",
+      "titles": {
+        "zhs": "创造",
+        "jpn": "創造",
+        "eng": "Creation"
+      },
+      "bytes": 5014819,
+      "sha256": "0c292201aab8d200d93dcb99a00fb1c81e3c3fe5a7bd3f9374bcb8d2064f7afb"
+    },
+    {
+      "row": 18,
+      "id": "hostility",
+      "resource": "audio/music/shin_getter/album/hostility.mp3",
+      "source_file": "岩崎文紀 - 敵状.mp3",
+      "sheet_file": "岩崎文紀 - 敵状.mp3",
+      "default_scene": "",
+      "titles": {
+        "zhs": "敌情",
+        "jpn": "敵状",
+        "eng": "Hostility"
+      },
+      "bytes": 4138147,
+      "sha256": "296c0d677f07ff5b6f045e5c8b588a01082080c95284e61a0e17527a182a0fa2"
+    },
+    {
+      "row": 19,
+      "id": "forward",
+      "resource": "audio/music/shin_getter/encounters/elite_hive.mp3",
+      "source_file": "岩崎文紀 - 前進.mp3",
+      "sheet_file": "岩崎文紀 - 前進.mp3",
+      "default_scene": "第二层（巢穴）精英怪",
+      "titles": {
+        "zhs": "前进",
+        "jpn": "前進",
+        "eng": "Forward"
+      },
+      "bytes": 4242637,
+      "sha256": "239c69f942a038b9cae5d88e29cceac99ca750acde9ef43d36d5c9e259961a05"
+    },
+    {
+      "row": 20,
+      "id": "its_time",
+      "resource": "audio/music/shin_getter/album/its_time.mp3",
+      "source_file": "今がその時だ_STS2_Ver.mp3",
+      "sheet_file": "今がその時だ_STS2_Ver.mp3",
+      "default_scene": "",
+      "titles": {
+        "zhs": "就是现在",
+        "jpn": "今がその時だ",
+        "eng": "It's Time"
+      },
+      "bytes": 2317887,
+      "sha256": "9234712a14284fe7d280c0296201e6443904ad460df9d339856de74fbd1c63eb"
+    },
+    {
+      "row": 21,
+      "id": "dragon_sts2",
+      "resource": "audio/music/shin_getter/album/dragon_sts2.mp3",
+      "source_file": "DRAGON_STS2_Ver.mp3",
+      "sheet_file": "DRAGON_STS2_Ver.mp3",
+      "default_scene": "",
+      "titles": {
+        "zhs": "DRAGON（杀戮尖塔2版）",
+        "jpn": "DRAGON（slay the spire 2 ver.）",
+        "eng": "DRAGON(slay the spire 2 ver.)"
+      },
+      "bytes": 3823533,
+      "sha256": "2f1a8965e9d0d37230be1627397f435577ea5c847a180d4b0806727a2c192b3f"
+    },
+    {
+      "row": 22,
+      "id": "storm_sts2",
+      "resource": "audio/music/shin_getter/album/storm_sts2.mp3",
+      "source_file": "STORM_STS2_Ver.mp3",
+      "sheet_file": "STORM_STS2_Ver.mp3",
+      "default_scene": "",
+      "titles": {
+        "zhs": "STORM（杀戮尖塔2版）",
+        "jpn": "STORM（slay the spire 2 ver.）",
+        "eng": "STORM(slay the spire 2 ver.)"
+      },
+      "bytes": 4247469,
+      "sha256": "2cd69663f1f196f5032a93d5cac72d18f616a83bc74f6eae0783921a254a22df"
+    },
+    {
+      "row": 23,
+      "id": "heats_sts2",
+      "resource": "audio/music/shin_getter/album/heats_sts2.mp3",
+      "source_file": "HEATS_STS2_Ver.mp3",
+      "sheet_file": "HEATS_STS2_Ver.mp3",
+      "default_scene": "",
+      "titles": {
+        "zhs": "HEATS（杀戮尖塔2版）",
+        "jpn": "HEATS（slay the spire 2 ver.）",
+        "eng": "HEATS(slay the spire 2 ver.)"
+      },
+      "bytes": 2026989,
+      "sha256": "ae572b08033eeb31a204dd7d3a363e1c08dc18b35338e2ef33c9a2ecf272141f"
+    },
+    {
+      "row": 24,
+      "id": "getter_robo_sts2",
+      "resource": "audio/music/shin_getter/album/getter_robo_sts2.mp3",
+      "source_file": "GETTER_ROBO_STS2_Ver.mp3",
+      "sheet_file": "GETTER_ROBO_STS2_Ver.mp3",
+      "default_scene": "",
+      "titles": {
+        "zhs": "GETTER ROBO（杀戮尖塔2版）",
+        "jpn": "GETTER ROBO（slay the spire 2 ver.）",
+        "eng": "GETTER ROBO(slay the spire 2 ver.)"
+      },
+      "bytes": 3266541,
+      "sha256": "a505df846f935a6c88cd004b0f7057443ddbb26eb10a4d2835b3adbbc5183d79"
+    },
+    {
+      "row": 25,
+      "id": "bravery_iron_saga",
+      "resource": "audio/music/shin_getter/album/bravery_iron_saga.mp3",
+      "source_file": "Bravery(機動戰隊).mp3",
+      "sheet_file": "Bravery(機動戰隊Ver).mp3",
+      "default_scene": "",
+      "titles": {
+        "zhs": "勇壮（機動戰隊版）",
+        "jpn": "勇壮（機動戰隊Ver.）",
+        "eng": "Bravery(Iron Saga Ver.)"
+      },
+      "bytes": 3019213,
+      "sha256": "040ab21c25cfba350613da0ccb1192de212f7458b94e0a86267e516c1d82cf29"
+    }
+  ]
+}
