@@ -9,11 +9,11 @@
 [h2]🧪 0.111 Beta 适配[/h2]
 
 [b]正式109：[/b]使用 shin-getter-mod-v1.2.2.zip。
-[b]0.111 Beta：[/b]使用 shin-getter-mod-v1.2.1(111-beta).zip。
+[b]0.111 Beta：[/b]使用 shin-getter-mod-v1.2.2(111-beta).zip。
 
-[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2]下载 v1.2.2[/url] | [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1]0.111 Beta: shin-getter-mod-v1.2.1(111-beta).zip[/url]
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2]下载 v1.2.2[/url] | [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2]0.111 Beta: shin-getter-mod-v1.2.2(111-beta).zip[/url]
 
-Beta包保留v1.2.1的77张卡牌、四种形态、事件、语音、动画与中二配置，不包含v1.2.2的BGM更新。正式版与Beta版四件套不能混用；切换游戏分支后请完整覆盖DLL、PCK、JSON与mod_image并重启游戏。
+Beta包保留77张卡牌、四种形态、事件、语音、动画与中二配置，并同步v1.2.2的BGM总开关、23曲库及三语曲名。正式版与Beta版四件套不能混用；切换游戏分支后请完整覆盖DLL、PCK、JSON与mod_image并重启游戏。
 
 [b]已知外部兼容问题：[/b]旧版BaseLib 3.3.7在0.111 Beta中会因CardPileCmd.Add transpiler失败导致出牌卡住。请更新BaseLib，或在Beta环境中禁用BaseLib及依赖它的模组。
 
@@ -26,7 +26,7 @@ Beta包保留v1.2.1的77张卡牌、四种形态、事件、语音、动画与�
 [*]已移除或无效的旧选曲自动回退为预设。
 [/list]
 
-本次 v1.2.2 面向正式109；0.111 Beta 仍使用 v1.2.1-beta.111，不包含本次 BGM 更新。
+正式109使用v1.2.2；0.111 Beta使用v1.2.2-beta.111，两者均包含本次BGM更新。同一Release提供正式包shin-getter-mod-v1.2.2.zip与Beta包shin-getter-mod-v1.2.2(111-beta).zip，四件套不可混用。
 
 [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2]下载 v1.2.2 (shin-getter-mod-v1.2.2.zip)[/url]
 
@@ -104,7 +104,7 @@ Beta包保留v1.2.1的77张卡牌、四种形态、事件、语音、动画与�
 
 [h2]当前状态[/h2]
 
-[b]当前正式版：v1.2.2；0.111 Beta：v1.2.1-beta.111[/b]
+[b]当前正式版：v1.2.2；0.111 Beta：v1.2.2-beta.111[/b]
 
 本模组仍会持续维护；后续游戏更新可能影响兼容性。欢迎通过 GitHub 反馈问题，并尽量附上游戏版本、Mod 版本、复现步骤和相关日志。
 

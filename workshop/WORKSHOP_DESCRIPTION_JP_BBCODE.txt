@@ -9,11 +9,11 @@
 [h2]🧪 0.111 Beta対応[/h2]
 
 [b]正式109：[/b]shin-getter-mod-v1.2.2.zipを使用してください。
-[b]0.111 Beta：[/b]shin-getter-mod-v1.2.1(111-beta).zipを使用してください。
+[b]0.111 Beta：[/b]shin-getter-mod-v1.2.2(111-beta).zipを使用してください。
 
-[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2]v1.2.2をダウンロード[/url] | [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1]0.111 Beta: shin-getter-mod-v1.2.1(111-beta).zip[/url]
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2]v1.2.2をダウンロード[/url] | [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2]0.111 Beta: shin-getter-mod-v1.2.2(111-beta).zip[/url]
 
-Beta版はv1.2.1のカード77枚、4形態、イベント、ボイス、アニメーション、中二設定を収録しています。v1.2.2のBGM更新は含みません。正式版とBeta版の4ファイルを混在させず、ゲームブランチ切替後はDLL、PCK、JSON、mod_imageをまとめて上書きして再起動してください。
+Beta版はカード77枚、4形態、イベント、ボイス、アニメーション、中二設定を維持し、v1.2.2のBGMスイッチ、23曲の選曲一覧、3言語の曲名を収録しています。正式版とBeta版の4ファイルを混在させず、ゲームブランチ切替後はDLL、PCK、JSON、mod_imageをまとめて上書きして再起動してください。
 
 [b]既知の外部互換性問題：[/b]旧版BaseLib 3.3.7は0.111 BetaでCardPileCmd.Addのtranspilerに失敗し、カード使用時に停止する場合があります。BaseLibを更新するか、Beta環境ではBaseLibとその依存Modを無効にしてください。
 
@@ -26,7 +26,7 @@ Beta版はv1.2.1のカード77枚、4形態、イベント、ボイス、アニ�
 [*]削除済み・無効な保存済みの選曲は標準設定に戻ります。
 [/list]
 
-v1.2.2は正式109向けです。0.111 Betaは引き続きv1.2.1-beta.111を使用し、今回のBGM更新は含みません。
+正式109はv1.2.2、0.111 Betaはv1.2.2-beta.111を使用してください。両方に今回のBGM更新を収録しています。同じReleaseにshin-getter-mod-v1.2.2.zipとshin-getter-mod-v1.2.2(111-beta).zipを用意しています。4ファイルを混在させないでください。
 
 [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2]v1.2.2をダウンロード (shin-getter-mod-v1.2.2.zip)[/url]
 
@@ -104,7 +104,7 @@ v1.2.2は正式109向けです。0.111 Betaは引き続きv1.2.1-beta.111を使�
 
 [h2]現在の状態[/h2]
 
-[b]現在の正式版：v1.2.2；0.111 Beta：v1.2.1-beta.111[/b]
+[b]現在の正式版：v1.2.2；0.111 Beta：v1.2.2-beta.111[/b]
 
 本MODは継続して保守します。今後のゲーム更新によって互換性に影響が出る場合があります。不具合報告にはゲームバージョン、MODバージョン、再現手順、関連ログを添えてください。
 
