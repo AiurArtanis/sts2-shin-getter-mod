@@ -24,11 +24,11 @@ Version gate RED: new v1.2.2 contract failed on missing Beta history localizatio
 The mechanical CodeGraph inventory is refreshed for changed source hashes/compiled references, not a new full manual investigation.
 No Beta gameplay automation, PCK, initialization, deployment, tag or release is performed by this development branch.
 
-This audit compares the released `mod-v1.2.1` source against the current formal-game source and the read-only 0.111 Beta source before applying compatibility changes.
+The original 2026-08-26 audit below compared the released `mod-v1.2.0` source against the formal-game source and the read-only 0.111 Beta source before applying compatibility changes. Its baseline and RED evidence are historical, not a new v1.2.2 test.
 
 ## Inputs and method
 
-- Mod baseline: `patch/support-111-beta@671c62d8a25caec8c49bbb5a9fa7475902e636a3`, identical to `mod-v1.2.1^{}`.
+- Original mod baseline (2026-08-26): `patch/support-111-beta@671c62d8a25caec8c49bbb5a9fa7475902e636a3`, identical to `mod-v1.2.0^{}`.
 - Formal source: `E:\Work\SlaytheSpare2` (read-only).
 - 0.111 Beta source: `E:\Work\SlaytheSpare2-111-beta` (read-only).
 - Formal `sts2.dll`: 10,163,200 bytes, SHA-256 `C2D3E15310259957BA312F9D2362CBA193512EBE9819456A062366E6AF38B9B0`.
@@ -67,14 +67,14 @@ This audit compares the released `mod-v1.2.1` source against the current formal-
 
 | Game channel | Mod manifest | Minimum game | Release tag | ZIP |
 | --- | --- | --- | --- | --- |
-| Current formal game | `v1.2.1` | `0.107.0` | `mod-v1.2.1` | `shin-getter-mod-v1.2.1.zip` |
-| Slay the Spire 2 0.111 Beta | `v1.2.1-beta.111` | `0.111.0` | `mod-v1.2.1-beta.111` | `shin-getter-mod-v1.2.1-beta.111.zip` |
+| Current formal game (validated on 0.109) | `v1.2.2` | `0.107.0` | `mod-v1.2.2` | `shin-getter-mod-v1.2.2.zip` |
+| Slay the Spire 2 0.111 Beta | `v1.2.2-beta.111` | `0.111.0` | `mod-v1.2.2` (shared release) | `shin-getter-mod-v1.2.2(111-beta).zip` (local/display name) |
 
-The Beta package is a complete v1.2.1 feature build, not a reduced compatibility build. Its distinct semantic version keeps the manifest, tag and archive name aligned with `AGENTS.md` and prevents users from confusing it with the formal-game package.
+The Beta package preserves the v1.2.1 feature set and synchronizes the bounded v1.2.2 BGM changes. The manifest distinguishes the Beta binary; by explicit release policy both assets use the same `mod-v1.2.2` release page. GitHub's normalized asset name may differ from the local/display name. Final Beta packaging and upload remain the main development session's responsibility.
 
 ## RED baseline
 
-Building the untouched `mod-v1.2.1` source against the audited Beta assemblies produced 0 warnings and 10 errors: one `GenerateAnimator` override, eight damage-hook overrides, and the removed `LobbyPlayer` type. The remaining call/Harmony differences were identified by the pre-edit CodeGraph, member-reference and private-target audit rather than waiting for compiler failures.
+Historical 2026-08-26 RED: building the untouched `mod-v1.2.0` source against the audited Beta assemblies produced 0 warnings and 10 errors: one `GenerateAnimator` override, eight damage-hook overrides, and the removed `LobbyPlayer` type. The remaining call/Harmony differences were identified by the pre-edit CodeGraph, member-reference and private-target audit rather than waiting for compiler failures. This build was not repeated for the current BGM-only delta.
 
 ## Full 0.109 → 0.111 CodeGraph re-audit
 
