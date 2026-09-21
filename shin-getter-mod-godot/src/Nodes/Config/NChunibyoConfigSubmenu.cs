@@ -47,14 +47,34 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
     private NShinGetterVoicePaginator? _voiceModePaginator;
     private NShinGetterConfigActionButton? _updateHistoryButton;
     private FileDialog? _folderDialog;
+    private bool _interfaceBuilt;
+    private NShinGetterConfigTickbox? _bgmEnabledTickbox;
+    private Button? _bgmHeaderButton;
+    private Control? _bgmDetails;
+    private TextureRect? _bgmExpandArrow;
 
     protected override Control? InitialFocusedControl => _initialFocus;
 
     public override void _Ready()
     {
+        if (_interfaceBuilt) return;
+        _interfaceBuilt = true;
+        ShinGetterChunibyoConfigService.Load();
         SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         BuildInterface();
         Connect(CanvasItem.SignalName.VisibilityChanged, Callable.From(OnConfigVisibilityChanged));
+        RefreshBgmEnabledState();
+    }
+
+    public override void _EnterTree()
+    {
+        ShinGetterChunibyoConfigService.BgmEnabledChanged += RefreshBgmEnabledState;
+        if (_interfaceBuilt) Callable.From(RefreshBgmEnabledState).CallDeferred();
+    }
+
+    public override void _ExitTree()
+    {
+        ShinGetterChunibyoConfigService.BgmEnabledChanged -= RefreshBgmEnabledState;
     }
 
     public override void OnSubmenuOpened()
@@ -389,6 +409,26 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
 
     private Control CreateBgmSectionHeader(Control details)
     {
+        _bgmDetails = details;
+        var row = new HBoxContainer
+        {
+            Name = "BgmMasterRow",
+            SizeFlagsHorizontal = SizeFlags.ExpandFill,
+        };
+        row.AddThemeConstantOverride("separation", 12);
+        _bgmEnabledTickbox = CreateOriginalTickbox(
+            ShinGetterChunibyoConfigService.IsBgmEnabled, OnBgmEnabledToggled);
+        _bgmEnabledTickbox.Name = "BgmEnabledTickbox";
+        _bgmEnabledTickbox.CustomMinimumSize = new Vector2(72f, 72f);
+        _bgmEnabledTickbox.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+        // The original 320px-wide settings template offsets its reticle around the
+        // centre. Reset it for the compact leading control rather than clipping it.
+        _bgmEnabledTickbox.GetNode<Control>("SelectionReticle")
+            .SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        _bgmEnabledTickbox.TooltipText = Localize(
+            "SHIN_GETTER_CHUNIBYO.BGM.ENABLED_TOOLTIP",
+            "Enable mod BGM, including execution themes and previews. Track choices are retained when off.");
+        row.AddChild(_bgmEnabledTickbox);
         var button = new Button
         {
             Name = "BgmSettingsToggle",
@@ -399,6 +439,8 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
             Text = Localize("SHIN_GETTER_CHUNIBYO.BGM.TITLE", "BGM Settings"),
             Alignment = HorizontalAlignment.Left,
         };
+        _bgmHeaderButton = button;
+        row.AddChild(button);
         button.AddThemeFontOverride("font", PreloadManager.Cache.GetAsset<Font>(KreonFontPath));
         button.AddThemeFontSizeOverride("font_size", 34);
         button.AddThemeColorOverride("font_color", new Color(0.91f, 0.86f, 0.74f));
@@ -408,6 +450,8 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         button.AddThemeStyleboxOverride("hover", CreateBgmHeaderStyle(new Color(0.10f, 0.20f, 0.24f, 0.96f)));
         button.AddThemeStyleboxOverride("pressed", CreateBgmHeaderStyle(new Color(0.12f, 0.24f, 0.28f, 0.96f)));
         button.AddThemeStyleboxOverride("focus", CreateBgmHeaderStyle(new Color(0.10f, 0.20f, 0.24f, 0.96f)));
+        button.AddThemeStyleboxOverride("disabled", CreateBgmHeaderStyle(new Color(0.055f, 0.075f, 0.09f, 0.96f)));
+        button.AddThemeColorOverride("font_disabled_color", new Color(0.68f, 0.72f, 0.75f));
 
         var arrow = new TextureRect
         {
@@ -425,13 +469,62 @@ public partial class NChunibyoConfigSubmenu : NSubmenu
         arrow.PivotOffset = new Vector2(18f, 18f);
         arrow.Rotation = 0f;
         button.AddChild(arrow);
+        _bgmExpandArrow = arrow;
 
         button.Pressed += () =>
         {
+            if (!ShinGetterChunibyoConfigService.IsBgmEnabled)
+            {
+                RefreshBgmEnabledState();
+                return;
+            }
             details.Visible = button.ButtonPressed;
             arrow.Rotation = button.ButtonPressed ? -Mathf.Pi * 0.5f : 0f;
         };
-        return button;
+        return row;
+    }
+
+    private void OnBgmEnabledToggled(bool enabled)
+    {
+        if (!ShinGetterChunibyoConfigService.TrySetBgmEnabled(enabled, out string error))
+        {
+            RefreshBgmEnabledState();
+            ShowPopup(Localize("SHIN_GETTER_CHUNIBYO.SAVE_ERROR_TITLE", "Unable to save config"), error);
+        }
+        else
+            RefreshBgmEnabledState();
+    }
+
+    private void RefreshBgmEnabledState()
+    {
+        if (!IsInsideTree() || _bgmHeaderButton == null || _bgmDetails == null || _bgmEnabledTickbox == null)
+            return;
+        bool enabled = ShinGetterChunibyoConfigService.IsBgmEnabled;
+        _bgmEnabledTickbox.InitialIsTicked = enabled;
+        if (_bgmEnabledTickbox.IsNodeReady()) _bgmEnabledTickbox.IsTicked = enabled;
+        Control? focus = GetViewport().GuiGetFocusOwner();
+        bool moveFocus = focus == _bgmHeaderButton || (focus != null && _bgmDetails.IsAncestorOf(focus));
+        _bgmHeaderButton.Disabled = !enabled;
+        _bgmHeaderButton.FocusMode = enabled ? FocusModeEnum.All : FocusModeEnum.None;
+        _bgmHeaderButton.TooltipText = enabled ? string.Empty : Localize(
+            "SHIN_GETTER_CHUNIBYO.BGM.DISABLED_TOOLTIP", "Turn on the checkbox to edit BGM settings.");
+        if (!enabled)
+        {
+            _bgmHeaderButton.SetPressedNoSignal(false);
+            _bgmDetails.Hide(); // Native dropdown visibility handler also closes floating lists.
+            if (_bgmExpandArrow != null) _bgmExpandArrow.Rotation = 0f;
+            if (_lastFocusedControl == _bgmHeaderButton
+                || (_lastFocusedControl != null && _bgmDetails.IsAncestorOf(_lastFocusedControl)))
+                _lastFocusedControl = _bgmEnabledTickbox;
+            if (moveFocus && IsVisibleInTree())
+                _bgmEnabledTickbox.CallDeferred(Control.MethodName.GrabFocus);
+        }
+        if (_bgmExpandArrow != null) _bgmExpandArrow.Modulate = new Color(1f, 1f, 1f, enabled ? 1f : 0.4f);
+        // A disabled header must not trap horizontal/tab navigation on itself.
+        _bgmEnabledTickbox.FocusNeighborRight = enabled ? _bgmHeaderButton.GetPath() : new NodePath("");
+        _bgmEnabledTickbox.FocusNext = enabled ? _bgmHeaderButton.GetPath() : new NodePath("");
+        _bgmHeaderButton.FocusNeighborLeft = _bgmEnabledTickbox.GetPath();
+        _bgmHeaderButton.FocusPrevious = _bgmEnabledTickbox.GetPath();
     }
 
     private Control BuildBgmTrackRow(

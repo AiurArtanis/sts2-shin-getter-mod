@@ -10,8 +10,8 @@ Both CodeGraph databases are opened with SQLite `mode=ro&immutable=1`.
 - 0.111 Beta CodeGraph: 3552 files; game symbols inventoried: 40648.
 - File paths: 3410 shared, 142 added, 25 removed, 1907 content-changed.
 - Symbol groups: 3864 added/removed/declaration-changed; 1980 touch public/protected API.
-- Full mod traversal: 326 C# files, 28397 lines, 5901 identifiers, 125 Harmony/reflection calls with 91 distinct target names.
-- Compiled mod references: 378 game types, 700 direct game members and 33 members on constructed generic game types.
+- Full mod traversal: 326 C# files, 28554 lines, 5955 identifiers, 125 Harmony/reflection calls with 91 distinct target names.
+- Compiled mod references: 378 game types, 701 direct game members and 33 members on constructed generic game types.
 - Mechanical changed-symbol candidates found in mod source: 26. Every candidate appears below and in JSON with source locations.
 
 ## Symbol difference counts
