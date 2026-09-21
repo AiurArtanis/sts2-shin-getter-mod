@@ -54,7 +54,7 @@ internal static class ShinGetterBgmCatalog
             Track("creation", $"{AlbumRoot}/creation.mp3", "CREATION", "Creation"),
             Track("hostility", $"{AlbumRoot}/hostility.mp3", "HOSTILITY", "Hostility"),
             Track("forward", $"{EncounterRoot}/elite_hive.mp3", "FORWARD", "Forward"),
-            Track("its_time", $"{AlbumRoot}/its_time.mp3", "ITS_TIME", "It's Time"),
+            Track("its_time", $"{AlbumRoot}/its_time.mp3", "ITS_TIME", "It's Time(slay the spire 2 ver.)"),
             Track(DragonSts2TrackId, $"{AlbumRoot}/dragon_sts2.mp3", "DRAGON_STS2", "DRAGON(slay the spire 2 ver.)"),
             Track(StormSts2TrackId, $"{AlbumRoot}/storm_sts2.mp3", "STORM_STS2", "STORM(slay the spire 2 ver.)"),
             Track(HeatsSts2TrackId, $"{AlbumRoot}/heats_sts2.mp3", "HEATS_STS2", "HEATS(slay the spire 2 ver.)"),
