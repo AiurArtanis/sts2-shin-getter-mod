@@ -3459,8 +3459,8 @@
   },
   "mod_binary_reference_inventory": {
     "assembly": "shin-getter-mod-godot/build/ShinGetterMod.dll",
-    "direct_game_member_reference_count": 700,
-    "game_member_reference_count": 733,
+    "direct_game_member_reference_count": 701,
+    "game_member_reference_count": 734,
     "game_member_references": [
       {
         "name": ".ctor",
@@ -6845,6 +6845,12 @@
         "owner": "MegaCrit.Sts2.Core.Nodes.Screens.MainMenu.NSubmenu",
         "owner_kind": "type-reference",
         "signature": "Boolean (Godot.NativeInterop.godot_string_name& modreq(System.Runtime.InteropServices.InAttribute), Godot.NativeInterop.godot_variant& modreq(System.Runtime.InteropServices.InAttribute))"
+      },
+      {
+        "name": "_lastFocusedControl",
+        "owner": "MegaCrit.Sts2.Core.Nodes.Screens.MainMenu.NSubmenu",
+        "owner_kind": "type-reference",
+        "signature": "Godot.Control"
       },
       {
         "name": "get_InitialFocusedControl",
@@ -15358,7 +15364,7 @@
       "MegaCrit.Sts2.addons.mega_text.MegaRichTextLabel+SignalName"
     ],
     "generic_game_member_reference_count": 33,
-    "semantic_reference_sha256": "DC4B7AD419959A003AE6E2A5D4DA4583B268C8D0D514F64E5642C7FF80C4D02C"
+    "semantic_reference_sha256": "176878ACBE17A7E1F7FCA6C9EB3A12E1AF9B513D9FF263177149B15B0F88B571"
   },
   "mod_source_inventory": {
     "dynamic_target_call_count": 125,
@@ -16823,24 +16829,24 @@
     "file_count": 326,
     "files": [
       {
-        "line_count": 106,
+        "line_count": 103,
         "path": "shin-getter-mod-godot/src/Audio/ShinGetterBgmCatalog.cs",
-        "sha256": "65B5FC996AC4FCAF038DC93566DEB697343008B7FDA655EC40F340F80E6630AA"
+        "sha256": "5A066A7C34F18918C08C8683D9D8C19CFFCA0F301F0D96E70F84643C5F2C1D07"
       },
       {
-        "line_count": 150,
+        "line_count": 162,
         "path": "shin-getter-mod-godot/src/Audio/ShinGetterBgmPreviewService.cs",
-        "sha256": "9ECDF9D58D9348817CE027CDA798EACA92B1D70C67C5503DED69504979C8AC98"
+        "sha256": "AF6783DA41461831C73FB70C87A6C775FCCCD07E7FCAE19C645C19504761A783"
       },
       {
-        "line_count": 191,
+        "line_count": 195,
         "path": "shin-getter-mod-godot/src/Audio/ShinGetterEncounterMusicService.cs",
-        "sha256": "FD1EC239299CE781F4FFA1386D7B94CD6224B4F8FA14C5B3D1AB705A6E00C732"
+        "sha256": "98C568E1A157FD090F98492DAEAF7C97D1593D1940AAD0BFB34323BA2E8E0A3E"
       },
       {
-        "line_count": 239,
+        "line_count": 247,
         "path": "shin-getter-mod-godot/src/Audio/ShinGetterExecutionMusicService.cs",
-        "sha256": "EC7E17998A918427183ED072CE371B5A8289421489AFAF891E2ED6A59A30ED20"
+        "sha256": "1182E63CE8384D1E333C450112B4867FF90518676FF82E4A12A4E92632B03737"
       },
       {
         "line_count": 1151,
@@ -16848,9 +16854,9 @@
         "sha256": "77C6630C54AC4C7DC6D5B6C2514CB3366A6D2E35CF7DA8B53A98C0F4F44830FE"
       },
       {
-        "line_count": 213,
+        "line_count": 256,
         "path": "shin-getter-mod-godot/src/Config/ShinGetterChunibyoConfigService.cs",
-        "sha256": "324E5F95579E34735F3146664B5819CA776B54BE32FA70519D28C727C6E6FF35"
+        "sha256": "833E33DF8A37CCFFF4C0B94B4513594E326371FFC59FE5657946A6DB4FE19B56"
       },
       {
         "line_count": 239,
@@ -18103,9 +18109,9 @@
         "sha256": "63F78E25E3CFC9E3D995BFD9B78F3222C6BBD62271029B45DE91FC9385293F96"
       },
       {
-        "line_count": 1040,
+        "line_count": 1133,
         "path": "shin-getter-mod-godot/src/Nodes/Config/NChunibyoConfigSubmenu.cs",
-        "sha256": "7F6FC005DA7573D8910EAF7A39A3FC5B3FD975D2591FC5EAB7923ADE8F2351C8"
+        "sha256": "A59813FA83EE8420E81C2E7B5E98A81461BA8E438F7679FD93CCCF820B7E8E04"
       },
       {
         "line_count": 240,
@@ -18453,8 +18459,8 @@
         "sha256": "A4BBEC159BB8BCFCF59AFDBB5EB634EA1C2414550205029A1E5B0D8BD1D9B5CF"
       }
     ],
-    "identifier_count": 5901,
-    "line_count": 28397,
+    "identifier_count": 5955,
+    "line_count": 28554,
     "override_names": [
       "AfterApplied",
       "AfterAttack",
@@ -18526,6 +18532,7 @@
       "TryModifyEnergyCostInCombat",
       "TryModifyEnergyCostInCombatLate",
       "TryModifyPowerAmountReceived",
+      "_EnterTree",
       "_ExitTree",
       "_Process",
       "_ProcessCustomFX",
@@ -111706,7 +111713,7 @@
           "shin-getter-mod-godot/src/Diagnostics/ShinGetterAddAllCardsConsoleCmd.cs:27",
           "shin-getter-mod-godot/src/Diagnostics/ShinGetterAddAllCardsConsoleCmd.cs:44",
           "shin-getter-mod-godot/src/Diagnostics/ShinGetterAddAllCardsConsoleCmd.cs:125",
-          "shin-getter-mod-godot/src/Nodes/Config/NChunibyoConfigSubmenu.cs:502",
+          "shin-getter-mod-godot/src/Nodes/Config/NChunibyoConfigSubmenu.cs:595",
           "shin-getter-mod-godot/src/Nodes/RestSite/NShinGetterRestSiteCharacter.cs:57",
           "shin-getter-mod-godot/src/Nodes/RestSite/NShinGetterRestSiteCharacter.cs:59",
           "shin-getter-mod-godot/src/Nodes/RestSite/NShinGetterRestSiteCharacter.cs:78"

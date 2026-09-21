@@ -1,0 +1,1 @@
+v1.2.2: Added a master BGM switch; refreshed the 23-track selection with five new tracks; updated event, Hive elite, and execution music defaults. Invalid saved track choices now fall back to presets.

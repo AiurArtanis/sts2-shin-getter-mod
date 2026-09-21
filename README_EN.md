@@ -8,15 +8,15 @@
 
 Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter 1's explosive offense, Shin Getter 2's high-speed tactics, and Shin Getter 3's iron defense; then awaken Shin Getter Dragon and let the Getter Rays consume the tower. This is a gameplay character mod built around transformations, deckbuilding, and presentation, not a simple reskin.
 
-> Stable build `v1.2.1` (game `0.107.0+`) · dedicated 0.111 Beta build `v1.2.1-beta.111` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> Stable build `v1.2.2` (validated on game `0.109`) · dedicated 0.111 Beta build `v1.2.2-beta.111` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
-[Download v1.2.1](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1) · [0.111 Beta](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+[Download v1.2.2](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2) · [0.111 Beta](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
 ## 🧪 0.111 Beta support
 
-- **Current stable game:** use `shin-getter-mod-v1.2.1.zip`.
-- **Slay the Spire 2 0.111 Beta:** use `shin-getter-mod-v1.2.1-beta.111.zip`.
-- Stable: [v1.2.1 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1); 0.111 Beta: [v1.2.1 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1).
+- **Stable 109:** use `shin-getter-mod-v1.2.2.zip`.
+- **Slay the Spire 2 0.111 Beta:** use `shin-getter-mod-v1.2.2(111-beta).zip`.
+- Stable: [v1.2.2 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2); 0.111 Beta: [v1.2.2 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2).
 - Do not mix the stable and Beta four-file packages. After switching game branches, replace the DLL, PCK, JSON, and `mod_image.png` together, then restart the game.
 - Known external compatibility issue: old `BaseLib 3.3.7` fails its `CardPileCmd.Add` transpiler on 0.111 Beta and can freeze manual card play. Update BaseLib, or disable BaseLib and dependent mods in the Beta environment.
 
@@ -38,13 +38,24 @@ Morale supports several high-impact effects. Evolution and Radiation create addi
 
 ## 📦 What's included
 
-The content currently registered in `v1.2.1` includes:
+The content currently registered in `v1.2.2` includes:
 
 - **77 cards** spanning four forms and several core mechanics
 - **13 relics**, **6 potions**, and **2 enchantments**
 - Multiple **event invasions**, **1 exclusive event**, and dedicated Ancient dialogue
 - Simplified Chinese, English, and Japanese localization
 - A complete character mod loaded through DLL, PCK, and JSON artifacts
+
+## v1.2.2 release notes
+
+- Added a master switch for mod battle BGM, execution themes, and previews; track choices are retained when disabled.
+- Refreshed the 23-track BGM selection, adding Creation, Hostility, Forward, It's Time, and Bravery (Iron Saga Ver.).
+- Default event combat music is now Onslaught, Hive elite music is Forward, and the execution theme is the OVA version of Bravery.
+- Removed or invalid saved track choices now fall back to the default preset.
+
+Use v1.2.2 for stable 109 or v1.2.2-beta.111 for 0.111 Beta; both include these BGM changes. The same Release provides shin-getter-mod-v1.2.2.zip and shin-getter-mod-v1.2.2(111-beta).zip. Do not mix the four-file packages.
+
+[Download v1.2.2](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2) · `shin-getter-mod-v1.2.2.zip`
 
 ## v1.2.1 release notes
 
@@ -79,7 +90,7 @@ For 0.111 Beta, use the separate v1.2.1-beta.111 build. Do not mix stable and Be
 
 ### Install the release
 
-1. Download `shin-getter-mod-v1.2.1.zip` from the [v1.2.1 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1), then extract `ShinGetterMod.pck`, `ShinGetterMod.dll`, `ShinGetterMod.json`, and `mod_image.png`.
+1. Download `shin-getter-mod-v1.2.2.zip` from the [v1.2.2 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2), then extract `ShinGetterMod.pck`, `ShinGetterMod.dll`, `ShinGetterMod.json`, and `mod_image.png`.
 2. Create a `ShinGetterMod` folder inside the game's mod-loading directory and place all four files together.
 3. Launch the game, open **Settings → Mod Settings**, and enable “真盖塔模组” (Shin Getter Mod) under **Installed Mods**.
 4. Accept the load prompt, fully quit, and relaunch the game. Start a new run and select **Shin Getter**.
@@ -87,8 +98,8 @@ For 0.111 Beta, use the separate v1.2.1-beta.111 build. Do not mix stable and Be
 ### Install the 0.111 Beta build
 
 1. Confirm that the game is on **Slay the Spire 2 0.111 Beta**.
-2. Download `shin-getter-mod-v1.2.1-beta.111.zip` from the [v1.2.1 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1).
-3. Replace all four files in the same `ShinGetterMod` directory. Do not combine a stable v1.2.1 DLL with a Beta PCK, or vice versa.
+2. Download `shin-getter-mod-v1.2.2(111-beta).zip` from the [v1.2.2 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2).
+3. Replace all four files in the same `ShinGetterMod` directory. Do not combine a stable-build DLL with a Beta PCK, or vice versa.
 4. Fully quit and relaunch the game, enable the mod, and start a new run.
 
 On a first run, follow the highlighted form-specific cards to establish a rhythm, then branch into one of the routes above.
