@@ -2,6 +2,11 @@
   "sheet": "BGM列表",
   "range": "A3:E25",
   "workbook_sha256": "15f8b8987cd29a55458f6d36debebabbe477dc173b14d44bfc8d33351a444aea",
+  "title_revision": {
+    "date": "2026-09-21",
+    "range": "C20:E20",
+    "workbook_sha256": "580C8144619FE101AB8A3FDE91F7ABB462331E63C4E2919434A0210DF0AEFDB9"
+  },
   "tracks": [
     {
       "row": 3,
@@ -266,9 +271,9 @@
       "sheet_file": "今がその時だ_STS2_Ver.mp3",
       "default_scene": "",
       "titles": {
-        "zhs": "就是现在",
-        "jpn": "今がその時だ",
-        "eng": "It's Time"
+        "zhs": "就是现在（杀戮尖塔2版）",
+        "jpn": "今がその時だ（slay the spire 2 ver.）",
+        "eng": "It's Time(slay the spire 2 ver.)"
       },
       "bytes": 2317887,
       "sha256": "9234712a14284fe7d280c0296201e6443904ad460df9d339856de74fbd1c63eb"
