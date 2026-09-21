@@ -8,15 +8,15 @@
 
 時空を越えた真ゲッターが塔へ挑みます。ゲッター1の爆発力、ゲッター2の高速戦術、ゲッター3の鉄壁の防御を切り替え、最後には真ゲッタードラゴンを目覚めさせてゲッターレイで塔を飲み込みましょう。単なる見た目変更ではなく、変形、デッキ構築、演出が一体となったプレイアブルキャラクターMODです。
 
-> 正式版 `v1.2.1`（ゲーム `0.107.0+`）· 0.111 Beta専用版 `v1.2.1-beta.111` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> 正式版 `v1.2.2`（検証環境：ゲーム `0.109`）· 0.111 Beta専用版 `v1.2.1-beta.111` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
-[v1.2.1をダウンロード](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1) · [0.111 Beta](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+[v1.2.2をダウンロード](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2) · [0.111 Beta](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
 ## 🧪 0.111 Beta対応
 
-- **現在の正式版ゲーム：**`shin-getter-mod-v1.2.1.zip` を使用してください。
+- **正式109：**`shin-getter-mod-v1.2.2.zip` を使用してください。
 - **Slay the Spire 2 0.111 Beta：**`shin-getter-mod-v1.2.1(111-beta).zip` を使用してください。
-- 正式版：[v1.2.1 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1)。0.111 Beta：[v1.2.1 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1)。
+- 正式版：[v1.2.2 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2)。0.111 Beta：[v1.2.1 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1)。
 - 正式版とBeta版の4ファイルを混在させないでください。ゲームブランチ切替後はDLL、PCK、JSON、`mod_image.png`をまとめて上書きし、ゲームを再起動してください。
 - 既知の外部互換性問題：旧版 `BaseLib 3.3.7` は0.111 Betaで `CardPileCmd.Add` のtranspilerに失敗し、カード使用時に停止する場合があります。BaseLibを更新するか、Beta環境ではBaseLibとその依存Modを無効にしてください。
 
@@ -38,13 +38,24 @@
 
 ## 📦 収録内容
 
-`v1.2.1` で現在登録されている内容：
+`v1.2.2` で現在登録されている内容：
 
 - 4形態と複数の主要メカニクスを扱う**カード77枚**
 - **レリック13個**、**ポーション6個**、**エンチャント2個**
 - 複数の**イベント侵入**、**専用イベント1件**、専用の古の者との会話
 - 簡体字中国語、英語、日本語のローカライズ
 - DLL、PCK、JSONを組み合わせて読み込む完全なキャラクターMOD
+
+## v1.2.2 更新内容
+
+- 戦闘BGM・処刑曲・試聴をまとめて切り替えるMOD BGMスイッチを追加。オフにしても選曲は保持されます。
+- 選択可能なBGMを23曲に更新し、「創造」「敵状」「前進」「今がその時だ」「勇壮（機動戰隊Ver.）」を追加。
+- イベント戦の標準曲を「襲来」、巣窟のエリート戦を「前進」、処刑曲をOVA版「勇壮」に変更。
+- 削除済み・無効な保存済みの選曲は標準設定に戻ります。
+
+v1.2.2は正式109向けです。0.111 Betaは引き続きv1.2.1-beta.111を使用し、今回のBGM更新は含みません。
+
+[v1.2.2をダウンロード](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2) · `shin-getter-mod-v1.2.2.zip`
 
 ## v1.2.1 更新内容
 
@@ -79,7 +90,7 @@
 
 ### リリース版のインストール
 
-1. [v1.2.1 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1) から `shin-getter-mod-v1.2.1.zip` をダウンロードし、`ShinGetterMod.pck`、`ShinGetterMod.dll`、`ShinGetterMod.json`、`mod_image.png` を展開します。
+1. [v1.2.2 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2) から `shin-getter-mod-v1.2.2.zip` をダウンロードし、`ShinGetterMod.pck`、`ShinGetterMod.dll`、`ShinGetterMod.json`、`mod_image.png` を展開します。
 2. ゲームのMOD読み込みディレクトリに `ShinGetterMod` フォルダーを作成し、4ファイルをまとめて配置します。
 3. ゲームを起動し、**設定 → MOD設定**を開いて、**インストール済みのMOD**から「真盖塔模组」（真ゲッターMOD）を有効にします。
 4. 読み込み確認を承認した後、ゲームを完全に終了して再起動します。新しいランで**真ゲッター**を選択してください。
@@ -88,7 +99,7 @@
 
 1. ゲームが **Slay the Spire 2 0.111 Beta** になっていることを確認します。
 2. [v1.2.1 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1) から `shin-getter-mod-v1.2.1(111-beta).zip` をダウンロードします。
-3. ZIP内の4ファイルを同じ `ShinGetterMod` ディレクトリへすべて上書きします。正式版v1.2.1のDLLとBeta版PCKなどを混在させないでください。
+3. ZIP内の4ファイルを同じ `ShinGetterMod` ディレクトリへすべて上書きします。正式版のDLLとBeta版PCKなどを混在させないでください。
 4. ゲームを完全に終了して再起動し、Modを有効化して新しいランを開始します。
 
 最初のプレイでは、強調表示された形態専用カードを手掛かりにリズムを作り、慣れたら上記のビルドへ進むのがおすすめです。
