@@ -8,14 +8,27 @@
 
 [h2]🧪 0.111 Beta対応[/h2]
 
-[b]正式版：[/b]shin-getter-mod-v1.2.1.zipを使用してください。
+[b]正式109：[/b]shin-getter-mod-v1.2.2.zipを使用してください。
 [b]0.111 Beta：[/b]shin-getter-mod-v1.2.1(111-beta).zipを使用してください。
 
-[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1]v1.2.1をダウンロード[/url] | [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1]0.111 Beta: shin-getter-mod-v1.2.1(111-beta).zip[/url]
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2]v1.2.2をダウンロード[/url] | [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1]0.111 Beta: shin-getter-mod-v1.2.1(111-beta).zip[/url]
 
-Beta版にもカード77枚、4形態、イベント、ボイス、アニメーション、中二設定をすべて収録しています。正式版とBeta版の4ファイルを混在させず、ゲームブランチ切替後はDLL、PCK、JSON、mod_imageをまとめて上書きして再起動してください。
+Beta版はv1.2.1のカード77枚、4形態、イベント、ボイス、アニメーション、中二設定を収録しています。v1.2.2のBGM更新は含みません。正式版とBeta版の4ファイルを混在させず、ゲームブランチ切替後はDLL、PCK、JSON、mod_imageをまとめて上書きして再起動してください。
 
 [b]既知の外部互換性問題：[/b]旧版BaseLib 3.3.7は0.111 BetaでCardPileCmd.Addのtranspilerに失敗し、カード使用時に停止する場合があります。BaseLibを更新するか、Beta環境ではBaseLibとその依存Modを無効にしてください。
+
+[h2]v1.2.2 更新内容[/h2]
+
+[list]
+[*]戦闘BGM・処刑曲・試聴をまとめて切り替えるMOD BGMスイッチを追加。オフにしても選曲は保持されます。
+[*]選択可能なBGMを23曲に更新し、「創造」「敵状」「前進」「今がその時だ」「勇壮（機動戰隊Ver.）」を追加。
+[*]イベント戦の標準曲を「襲来」、巣窟のエリート戦を「前進」、処刑曲をOVA版「勇壮」に変更。
+[*]削除済み・無効な保存済みの選曲は標準設定に戻ります。
+[/list]
+
+v1.2.2は正式109向けです。0.111 Betaは引き続きv1.2.1-beta.111を使用し、今回のBGM更新は含みません。
+
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2]v1.2.2をダウンロード (shin-getter-mod-v1.2.2.zip)[/url]
 
 [h2]v1.2.1 更新内容[/h2]
 
@@ -36,7 +49,7 @@ Beta版にもカード77枚、4形態、イベント、ボイス、アニメー�
 
 既存の機能には分離・合体、真ゲッタードラゴンの30fpsアクション、90フレームのストナーサンシャイン、18イベントの分岐、虹色NEW表示があります。完全な履歴はREADMEをご覧ください。これらはv1.2.1の新機能ではありません。
 
-[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/blob/main/README_JP.md]README[/url]
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/blob/patch/v1.2.2-bgm-20260921/README_JP.md]README[/url]
 
 [hr][/hr]
 
@@ -91,7 +104,7 @@ Beta版にもカード77枚、4形態、イベント、ボイス、アニメー�
 
 [h2]現在の状態[/h2]
 
-[b]現在のバージョン：v1.2.1[/b]
+[b]現在の正式版：v1.2.2；0.111 Beta：v1.2.1-beta.111[/b]
 
 本MODは継続して保守します。今後のゲーム更新によって互換性に影響が出る場合があります。不具合報告にはゲームバージョン、MODバージョン、再現手順、関連ログを添えてください。
 

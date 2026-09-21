@@ -8,14 +8,27 @@
 
 [h2]🧪 0.111 Beta 适配[/h2]
 
-[b]正式版：[/b]使用 shin-getter-mod-v1.2.1.zip。
+[b]正式109：[/b]使用 shin-getter-mod-v1.2.2.zip。
 [b]0.111 Beta：[/b]使用 shin-getter-mod-v1.2.1(111-beta).zip。
 
-[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1]下载 v1.2.1[/url] | [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1]0.111 Beta: shin-getter-mod-v1.2.1(111-beta).zip[/url]
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2]下载 v1.2.2[/url] | [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1]0.111 Beta: shin-getter-mod-v1.2.1(111-beta).zip[/url]
 
-Beta包完整保留77张卡牌、四种形态、事件、语音、动画与中二配置。正式版与Beta版四件套不能混用；切换游戏分支后请完整覆盖DLL、PCK、JSON与mod_image并重启游戏。
+Beta包保留v1.2.1的77张卡牌、四种形态、事件、语音、动画与中二配置，不包含v1.2.2的BGM更新。正式版与Beta版四件套不能混用；切换游戏分支后请完整覆盖DLL、PCK、JSON与mod_image并重启游戏。
 
 [b]已知外部兼容问题：[/b]旧版BaseLib 3.3.7在0.111 Beta中会因CardPileCmd.Add transpiler失败导致出牌卡住。请更新BaseLib，或在Beta环境中禁用BaseLib及依赖它的模组。
+
+[h2]v1.2.2 更新说明[/h2]
+
+[list]
+[*]新增模组BGM总开关，统一控制战斗音乐、处刑曲与试听，关闭后保留选曲。
+[*]更新23首可选BGM，补充《创造》《敌情》《前进》《就是现在》及《勇壮（機動戰隊版）》。
+[*]事件战默认播放《来袭》，巢穴精英战改为《前进》，处刑曲默认播放OVA版《勇壮》。
+[*]已移除或无效的旧选曲自动回退为预设。
+[/list]
+
+本次 v1.2.2 面向正式109；0.111 Beta 仍使用 v1.2.1-beta.111，不包含本次 BGM 更新。
+
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2]下载 v1.2.2 (shin-getter-mod-v1.2.2.zip)[/url]
 
 [h2]v1.2.1 更新说明[/h2]
 
@@ -36,7 +49,7 @@ Beta包完整保留77张卡牌、四种形态、事件、语音、动画与中�
 
 既有内容包括三种形态分离／合体、真盖塔龙30fps动作、90帧烈阳闪光弹、18个事件分支与彩虹NEW提示。完整历史更新见README；这些不是v1.2.1新增内容。
 
-[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/blob/main/README.md]README[/url]
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/blob/patch/v1.2.2-bgm-20260921/README.md]README[/url]
 
 [hr][/hr]
 
@@ -91,7 +104,7 @@ Beta包完整保留77张卡牌、四种形态、事件、语音、动画与中�
 
 [h2]当前状态[/h2]
 
-[b]当前版本：v1.2.1[/b]
+[b]当前正式版：v1.2.2；0.111 Beta：v1.2.1-beta.111[/b]
 
 本模组仍会持续维护；后续游戏更新可能影响兼容性。欢迎通过 GitHub 反馈问题，并尽量附上游戏版本、Mod 版本、复现步骤和相关日志。
 
