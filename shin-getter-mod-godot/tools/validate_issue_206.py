@@ -76,6 +76,17 @@ def catalogue() -> None:
                 check_tags(option, f"{language}/{key}/Option")
 
 
+def encounter_priority(session: str) -> None:
+    selection = session[session.index("private ShinGetterBondEncounter SelectEncounter()"):
+                        session.index("private List<RunHistory> ReadReliableHistories()")]
+    require("ShinGetterBondSave save = _save!;" in selection, "Selection alias must come from the loaded save")
+    first = selection.index('if (!IsAcquainted(save, _npc))')
+    choices = selection.index("if (Choices.Count != 0)")
+    absence = selection.index("bool longAbsence")
+    result = selection.index("RunHistory? latest")
+    require(first < choices < absence < result, "First/bonds/absence/outcome priority regression")
+
+
 def contracts() -> None:
     session = read("src/Services/ShinGetterBondSession.cs")
     ui = read("src/Nodes/Events/NShinGetterBondDialogue.cs")
@@ -94,11 +105,17 @@ def contracts() -> None:
     ):
         require(token in session, f"Missing persistence/mode boundary: {token}")
     require("Rng.Next" not in session and "Rng.Chaotic" not in session, "Story draws must not use gameplay RNG")
-    first = session.index('if (!IsAcquainted(_save!, _npc))')
-    choices = session.index("if (Choices.Count != 0)")
-    absence = session.index("bool longAbsence")
-    result = session.index("RunHistory? latest")
-    require(first < choices < absence < result, "First/bonds/absence/outcome priority regression")
+    encounter_priority(session)
+    # Keep the ordering assertion effective after the approved non-null local alias fix.
+    first_line = 'if (!IsAcquainted(save, _npc)) return WithDialogue(encounter, first);'
+    choices_line = 'if (Choices.Count != 0) return encounter;'
+    swapped = session.replace(first_line, "__FIRST__").replace(choices_line, first_line).replace("__FIRST__", choices_line)
+    try:
+        encounter_priority(swapped)
+    except AssertionError:
+        pass
+    else:
+        raise AssertionError("Negative priority fixture was not rejected")
     advance = session[session.index("internal bool Advance()"):session.index("internal bool ConsumeCue")]
     require(advance.index("Encounter.Line + 1 <") < advance.index("next.Completed.Add"), "Must confirm beyond final line")
     require("next.RespondedResults[_npc]" in advance, "Result consumed only after completion")
