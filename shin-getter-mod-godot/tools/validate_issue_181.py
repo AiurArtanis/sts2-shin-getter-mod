@@ -4,7 +4,10 @@
 from __future__ import annotations
 
 import json
+import argparse
+import re
 from pathlib import Path
+from registered_card_contract import validate_registered_cards
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -63,11 +66,22 @@ def require(text: str, path: Path, *needles: str) -> None:
             raise AssertionError(f"Missing issue#181 marker in {path}: {needle}")
 
 
-def validate_manifest_and_history() -> None:
+def validate_manifest_and_history(expected_manifest: str | None = None) -> None:
     manifest_path = PROJECT_ROOT / "ShinGetterMod.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    if manifest.get("version") != VERSION:
-        raise AssertionError(f"Manifest version must be {VERSION}: {manifest}")
+    current = manifest.get("version", "")
+    if expected_manifest is not None and current != expected_manifest:
+        raise AssertionError(f"Manifest does not match pinned target {expected_manifest}: {current}")
+    # The published v1.2.1 notes/history below remain an immutable release fixture.
+    # Only the explicitly audited development protocol/content extension is allowed.
+    development = re.fullmatch(r"v(\d+)\.(\d+)\.(\d+)-dev\.(issue\d+)", current)
+    if development:
+        if current != "v1.3.0-dev.issue238" or manifest.get("affects_gameplay") is not True:
+            raise AssertionError(f"Unaudited development manifest/protocol: {manifest}")
+        if tuple(map(int, development.group(1, 2, 3))) <= (1, 2, 1):
+            raise AssertionError("Development target must be newer than the published fixture.")
+    elif current != VERSION:
+        raise AssertionError(f"Unaudited release stage: {current}")
 
     history_path = PROJECT_ROOT / "ShinGetterMod/update_history.json"
     history = json.loads(history_path.read_text(encoding="utf-8"))
@@ -80,6 +94,8 @@ def validate_manifest_and_history() -> None:
         raise AssertionError(f"Latest update history entry is incorrect: {history[:1]}")
     if sum(entry.get("version") == VERSION for entry in history) != 1:
         raise AssertionError(f"Update history must contain exactly one {VERSION} entry.")
+    if development and any(entry.get("version") == current for entry in history):
+        raise AssertionError("Unreleased development protocol must not rewrite published history.")
 
     localization_root = PROJECT_ROOT / "ShinGetterMod/localization"
     for language in RELEASE_FILES:
@@ -104,7 +120,11 @@ def validate_registered_content_counts() -> None:
         "potions": len(list((models / "Potions").glob("*.cs"))),
         "enchantments": len(list((models / "Enchantments").glob("*.cs"))),
     }
+    manifest = json.loads((PROJECT_ROOT / "ShinGetterMod.json").read_text(encoding="utf-8"))
     expected = {"cards": 77, "relics": 13, "potions": 6, "enchantments": 2}
+    if manifest["version"] == "v1.3.0-dev.issue238":
+        expected = {"cards": 82, "relics": 16, "potions": 7, "enchantments": 2}
+        validate_registered_cards((models / "CardPools/ShinGetterCardPool.cs").read_text(encoding="utf-8"))
     if actual != expected:
         raise AssertionError(f"Release content counts drifted: {actual} != {expected}")
 
@@ -150,7 +170,10 @@ def validate_release_files() -> None:
 
 
 def main() -> None:
-    validate_manifest_and_history()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--manifest-version", help="Optional CI pin for the actual release/development target")
+    args = parser.parse_args()
+    validate_manifest_and_history(args.manifest_version)
     validate_registered_content_counts()
     validate_release_files()
     print("issue#181 release-note validation passed")

@@ -119,7 +119,7 @@ internal static partial class ShinGetterEventInvasionService
             _ => Array.Empty<EventOption>(),
         };
 
-        foreach (EventOption invasion in invasions)
+        foreach (EventOption invasion in invasions.Concat(BuildFourthOptions(eventModel)))
         {
             if (options.All(option => option.TextKey != invasion.TextKey))
                 options.Add(invasion);

@@ -10,5 +10,7 @@
   "S_G_R_PHASE_COOLANT.title": "相位冷却液",
   "S_G_R_PHASE_COOLANT.description": "移除所有[gold]辐射[/gold]。获得{SGP_Ki:diff()}点[gold]气力[/gold]与{Energy:energyIcons()}。",
   "S_G_R_ADAPTIVE_INK.title": "适应墨剂",
-  "S_G_R_ADAPTIVE_INK.description": "获得{SGP_Evolution:diff()}层[getter_ray]进化[/getter_ray]与{RegenPower:diff()}层[gold]再生[/gold]。"
+  "S_G_R_ADAPTIVE_INK.description": "获得{SGP_Evolution:diff()}层[getter_ray]进化[/getter_ray]与{RegenPower:diff()}层[gold]再生[/gold]。",
+  "S_G_R_MOBILITY_CATALYST.title": "机动催化剂",
+  "S_G_R_MOBILITY_CATALYST.description": "获得[gold]战机分离[/gold]，获得1点能量，然后抽2张牌。"
 }

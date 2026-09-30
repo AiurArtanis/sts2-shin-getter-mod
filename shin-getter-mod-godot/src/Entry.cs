@@ -30,6 +30,6 @@ public static class Entry
         }
 
         ShinGetterPlayerEventState.VerifyJsonMetadata();
-        Log.Info("ShinGetterMod - loading success! (77 cards)");
+        Log.Info("ShinGetterMod - loading success! (82 cards)");
     }
 }

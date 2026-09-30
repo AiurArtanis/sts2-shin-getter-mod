@@ -10,5 +10,7 @@
   "S_G_R_PHASE_COOLANT.title": "位相冷却液",
   "S_G_R_PHASE_COOLANT.description": "すべての[gold]放射線[/gold]を取り除く。[gold]気力[/gold]を{SGP_Ki:diff()}、{Energy:energyIcons()}を得る。",
   "S_G_R_ADAPTIVE_INK.title": "適応インク",
-  "S_G_R_ADAPTIVE_INK.description": "[getter_ray]進化[/getter_ray]を{SGP_Evolution:diff()}、[gold]再生[/gold]を{RegenPower:diff()}得る。"
+  "S_G_R_ADAPTIVE_INK.description": "[getter_ray]進化[/getter_ray]を{SGP_Evolution:diff()}、[gold]再生[/gold]を{RegenPower:diff()}得る。",
+  "S_G_R_MOBILITY_CATALYST.title": "機動触媒",
+  "S_G_R_MOBILITY_CATALYST.description": "[gold]オープンゲット[/gold]を得て、エナジー1を得る。その後カードを2枚引く。"
 }

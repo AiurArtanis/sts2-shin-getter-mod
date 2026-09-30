@@ -38,5 +38,14 @@
   "S_G_R_BEACON_PRISM.flavor": "The drowned beacon refracts every color of the sea into a single guide-light; even a card that strays from Getter's course is illuminated once more.",
   "S_G_R_MYCELIAL_SILENCER.title": "Mycelial Silencer",
   "S_G_R_MYCELIAL_SILENCER.description": "After the first card you Exhaust each turn, gain {Block:diff()} Block.",
-  "S_G_R_MYCELIAL_SILENCER.flavor": "Mute one beat of the chorus, and the rest can no longer press into the cockpit."
+  "S_G_R_MYCELIAL_SILENCER.flavor": "Mute one beat of the chorus, and the rest can no longer press into the cockpit.",
+  "S_G_R_ACTIVATED_SAPPHIRE.title": "Activated Sapphire",
+  "S_G_R_ACTIVATED_SAPPHIRE.description": "Each combat, the fourth instance of actual HP damage you would take is reduced to 0. Once per combat.",
+  "S_G_R_SYMBIOTIC_FILTER.title": "Symbiotic Filter",
+  "S_G_R_SYMBIOTIC_FILTER.description": "Each combat, the first time a Status enters your hand, Exhaust it, then gain 1 [gold]Evolution[/gold].",
+  "S_G_R_EMBER.title": "Ember",
+  "S_G_R_EMBER.description": "Each combat, the first Attack or Skill you draw with Exhaust loses Exhaust for this combat. Other card types do not consume this opportunity.",
+  "S_G_R_ACTIVATED_SAPPHIRE.flavor": "Getter Rays left four pulses in the crystal. The last took the blow meant for the cockpit.",
+  "S_G_R_SYMBIOTIC_FILTER.flavor": "It learned to recognize contamination—and to leave its own trace in the Getter Rays.",
+  "S_G_R_EMBER.flavor": "The spark carried out of the grave still waits to burn again."
 }

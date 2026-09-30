@@ -7,6 +7,8 @@ import json
 import re
 import struct
 from pathlib import Path
+from registered_card_contract import validate_registered_cards
+from validate_issue_238 import ROUTES as ISSUE238_ROUTES, legacy_strings
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -244,9 +246,8 @@ def validate_models_and_pools() -> None:
     relic_pool = (SRC / "Models/RelicPools/ShinGetterRelicPool.cs").read_text(encoding="utf-8")
     potion_pool = (SRC / "Models/PotionPools/ShinGetterPotionPool.cs").read_text(encoding="utf-8")
     all_cards_body = card_pool.split("GenerateAllCards", 1)[1].split("FilterThroughEpochs", 1)[0]
-    if all_cards_body.count("ModelDb.Card<") != 77:
-        raise AssertionError("Shin Getter card pool must register exactly 77 cards.")
-    require(entry, "ShinGetterMod - loading success! (77 cards)")
+    validate_registered_cards(all_cards_body + card_pool.split("FilterThroughEpochs", 1)[1])
+    require(entry, "ShinGetterMod - loading success! (82 cards)")
     if "loading success! (72 cards)" in entry:
         raise AssertionError("Stale pre-issue#89 card count remains in initialization log.")
     for model in CARD_TYPES:
@@ -686,6 +687,10 @@ def validate_localization() -> None:
         f"SHIN_GETTER_EVENT_INVASION.{event}.pages.INITIAL.options.{route}.title"
         for event, route in RUNTIME_ROUTE_LABELS
     }
+    expected_route_title_keys.update(
+        f"SHIN_GETTER_EVENT_INVASION.{event}.pages.INITIAL.options.{route}.title"
+        for event, routes in ISSUE238_ROUTES.items() for route in routes
+    )
     separators = {"zhs": "：", "eng": ": ", "jpn": "："}
     for language in LANGUAGES:
         events = tables[language]["events"]
@@ -838,7 +843,13 @@ def validate_localization() -> None:
             if events.get(key) != expected:
                 raise AssertionError(f"Unexpected reopened issue#89 text for {language}: {key}")
         for suffix, fragments in reopened_result_fragments[language].items():
-            require(events[event_prefix + suffix], *fragments)
+            key = event_prefix + suffix
+            updated = legacy_strings(language)
+            if key in updated:
+                if events[key] != updated[key]:
+                    raise AssertionError(f"Current issue#238 prose differs from authority: {language}:{key}")
+            else:
+                require(events[key], *fragments)
         if any(event_prefix + suffix in events for suffix in obsolete_keys):
             raise AssertionError(f"Obsolete reopened issue#89 localization remains in {language}.")
 
@@ -936,7 +947,8 @@ def validate_localization() -> None:
         events = tables[language]["events"]
         if any("TRIPLE_REFINING" in key for key in events):
             raise AssertionError(f"Discarded reverse-refining localization remains in {language}.")
-        expected = abyssal_expected[language]
+        expected = dict(abyssal_expected[language])
+        expected["result"] = legacy_strings(language)[f"{abyssal_base}.pages.TRIPLE_COOLANT.description"]
         actual = {
             "option": events[
                 f"{abyssal_base}.pages.INITIAL.options.TRIPLE_COOLANT.description"

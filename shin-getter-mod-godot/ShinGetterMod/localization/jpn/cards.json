@@ -160,5 +160,16 @@
   "S_G_C_WISP_COORDINATE.title": "鬼火座標",
   "S_G_C_WISP_COORDINATE.description": "山札の上から{Cards:diff()}枚を見る。1枚を手札に加え、残りを好きな順番で山札の上に戻す。[gold]放射線[/gold]を{SGP_Radiation:diff()}得る。",
   "S_G_C_WISP_COORDINATE.selectionScreenPrompt": "手札に加えるカードを1枚選ぶ。",
-  "S_G_C_WISP_COORDINATE.orderSelectionScreenPrompt": "次に山札の上へ戻すカードを選ぶ。"
+  "S_G_C_WISP_COORDINATE.orderSelectionScreenPrompt": "次に山札の上へ戻すカードを選ぶ。",
+  "S_G_C_TABLET_OF_TRUTH.title": "真理の石板",
+  "S_G_C_TABLET_OF_TRUTH.description": "この戦闘に現在存在する自分のカードをすべてダウングレードする。HPを{Heal:diff()}回復する。\nこのカードが廃棄された時、この戦闘のアップグレード可能な自分のカードをすべてアップグレードする。",
+  "S_G_C_TRIPLE_WHIRLWIND.title": "三重旋風",
+  "S_G_C_TRIPLE_WHIRLWIND.description": "敵全体に{CalculatedDamage:diff()}ダメージを3回与える。{Block:diff()}ブロックを3回得る。\n[getter_ray]真ゲッタードラゴン[/getter_ray]：敵全体に[gold]衰退[/gold]3を与える。",
+  "S_G_C_DRILL_MISSILE.title": "ドリルミサイル",
+  "S_G_C_DRILL_MISSILE.description": "{CalculatedDamage:diff()}ダメージを与える。\n[white]ゲッター2[/white]：変形する。\n使用後、この戦闘中このカードは[gold]壊れたドリル[/gold]になる。",
+  "S_G_C_BROKEN_DRILL.title": "壊れたドリル",
+  "S_G_C_BROKEN_DRILL.description": "このカードが他の山札から手札に入るたび、[gold]衰退[/gold]2を得る。",
+  "S_G_C_ANNOTATIONS.title": "書き込み",
+  "S_G_C_ANNOTATIONS.description": "手札1枚をこの戦闘中エンチャントする。アタックには[gold]鋭利[/gold]、ブロックを得るスキルには[gold]身軽[/gold]、パワーには[gold]迅速[/gold]を{Enchantment:diff()}付与する。\n[red]ゲッター1[/red]：さらに[gold]活力[/gold]5を得る。",
+  "S_G_C_ANNOTATIONS.selectionScreenPrompt": "エンチャントする手札を選ぶ。キャンセルすると書き込みは消費されない。"
 }
