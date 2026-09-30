@@ -3,6 +3,7 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Modding;
 using ShinGetterMod.Config;
+using ShinGetterMod.Services;
 
 namespace ShinGetterMod;
 
@@ -28,6 +29,7 @@ public static class Entry
             }
         }
 
+        ShinGetterPlayerEventState.VerifyJsonMetadata();
         Log.Info("ShinGetterMod - loading success! (77 cards)");
     }
 }

@@ -33,6 +33,7 @@ using ShinGetterMod.Models.Cards;
 using ShinGetterMod.Models.Characters;
 using ShinGetterMod.Models.Potions;
 using ShinGetterMod.Models.Relics;
+using ShinGetterMod.Services;
 using ByrdpipRelic = MegaCrit.Sts2.Core.Models.Relics.Byrdpip;
 using LostWispEvent = MegaCrit.Sts2.Core.Models.Events.LostWisp;
 
@@ -150,9 +151,7 @@ internal static partial class ShinGetterEventInvasionService
         if (!isInitialPage && !isTrialVerdictPage && !isTinkerCardTypePage)
             return false;
 
-        return owner.GetRelic<SGR_GetterFurnace>()?.EventInvasionEnabled
-            ?? owner.GetRelic<SGR_EmperorsFragment>()?.EventInvasionEnabled
-            ?? false;
+        return ShinGetterPlayerEventState.Get(owner).Enabled;
     }
 
     internal static bool IsEnteringSinglePlayerEventCombat(EventModel eventModel) =>
