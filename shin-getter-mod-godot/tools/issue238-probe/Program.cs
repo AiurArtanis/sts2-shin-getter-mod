@@ -44,13 +44,40 @@ var loaded = JsonSerializer.Deserialize(json, JsonSerializationUtility.GetTypeIn
 Require((string?)Call("GetWire", loaded.Players[0]) == dataTrue, "completed journal JSON roundtrip");
 Require((string?)Call("GetWire", loaded.Players[2]) == dataFalse, "explicit false lost");
 Require((string?)Call("GetWire", loaded.Players[0].Anonymized()) == dataTrue, "anonymized state lost");
-foreach (var bad in new[] { "{", dataTrue.Replace("\"Version\":1", "\"Version\":2"), "" })
+var badPayloads = new List<string> { "{", dataTrue.Replace("\"Version\":1", "\"Version\":2"), "", "{}",
+    dataTrue.Replace("\"Initialized\":true", "\"Initialized\":false") };
+foreach (string field in new[] { "Version", "Initialized", "Enabled", "Seed", "Visits" })
+{
+    var value = System.Text.Json.Nodes.JsonNode.Parse(dataTrue)!.AsObject(); value.Remove(field);
+    badPayloads.Add(value.ToJsonString());
+}
+foreach (var bad in badPayloads)
 {
     bool rejected = false;
     try { Call("SetWire", Player(9, true), bad); } catch (TargetInvocationException e) when (e.InnerException is JsonException) { rejected = true; }
     Require(rejected, "damaged/unknown field accepted");
 }
+foreach (var bad in badPayloads.Where(v => v.Length > 0))
+{
+    var corruptedRun = System.Text.Json.Nodes.JsonNode.Parse(json)!;
+    corruptedRun["players"]![0]!["shin_getter_event_state_v1"] = bad;
+    bool rejected = false;
+    try { JsonSerializer.Deserialize(corruptedRun.ToJsonString(), JsonSerializationUtility.GetTypeInfo<SerializableRun>()); }
+    catch (JsonException) { rejected = true; }
+    Require(rejected, "nested native run accepted damaged payload");
+}
+var explicitNullRun = System.Text.Json.Nodes.JsonNode.Parse(json)!;
+explicitNullRun["players"]![0]!["shin_getter_event_state_v1"] = null;
+bool nullRejected = false;
+try { JsonSerializer.Deserialize(explicitNullRun.ToJsonString(), JsonSerializationUtility.GetTypeInfo<SerializableRun>()); }
+catch (JsonException) { nullRejected = true; }
+Require(nullRejected, "explicit JSON null treated as absent");
+var absentRun = System.Text.Json.Nodes.JsonNode.Parse(json)!;
+absentRun["players"]![0]!.AsObject().Remove("shin_getter_event_state_v1");
+var oldRun = JsonSerializer.Deserialize(absentRun.ToJsonString(), JsonSerializationUtility.GetTypeInfo<SerializableRun>())!;
+Require(Call("GetWire", oldRun.Players[0]) == null, "genuinely absent legacy field rejected");
 Console.WriteLine("native nested SerializableRun JSON: true/false/absent/complete/anonymized/corrupt/version PASS");
+Console.WriteLine("required schema attributes / contradictory uninitialized state / explicit null rejection / real absent legacy field PASS");
 
 // Inventory-only owner fixtures avoid SaveManager/Godot startup. Execute actual state Get/Restore.
 Player Owner(bool enabled, bool fragment)

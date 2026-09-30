@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
@@ -25,16 +26,24 @@ internal static class ShinGetterPlayerEventState
     internal const int MaxVisits = 64;
     internal sealed class Visit
     {
+        [JsonRequired]
         public string CompletedRoute { get; set; } = "";
+        [JsonRequired]
         public string Target { get; set; } = "";
+        [JsonRequired]
         public List<string> Candidates { get; set; } = new();
     }
     internal sealed class Data
     {
+        [JsonRequired]
         public int Version { get; set; } = 1;
+        [JsonRequired]
         public bool Initialized { get; set; }
+        [JsonRequired]
         public bool Enabled { get; set; }
+        [JsonRequired]
         public string Seed { get; set; } = "";
+        [JsonRequired]
         public SortedDictionary<string, Visit> Visits { get; set; } = new(StringComparer.Ordinal);
     }
     private sealed class Holder
@@ -96,7 +105,8 @@ internal static class ShinGetterPlayerEventState
 
     private static void Validate(Data state)
     {
-        if (state.Version != 1 || state.Seed == null || state.Visits == null || state.Visits.Count > MaxVisits)
+        if (state.Version != 1 || state.Seed == null || state.Seed.Length > 256 || state.Visits == null || state.Visits.Count > MaxVisits
+            || !state.Initialized && (state.Enabled || state.Seed.Length != 0 || state.Visits.Count != 0))
             throw new JsonException("Unsupported or damaged Shin Getter event state schema.");
         foreach (var pair in state.Visits)
             if (pair.Key.Length > 512 || pair.Value == null || pair.Value.Target == null
@@ -131,7 +141,8 @@ internal static class ShinGetterPlayerEventState
             || info.Properties.Any(p => p.Name == FieldName)) return;
         JsonPropertyInfo property = info.CreateJsonPropertyInfo(typeof(string), FieldName);
         property.Get = obj => GetWire((SerializablePlayer)obj);
-        property.Set = (obj, value) => SetWire((SerializablePlayer)obj, (string?)value);
+        property.Set = (obj, value) => SetWire((SerializablePlayer)obj,
+            value is string payload ? payload : throw new JsonException("Explicit null event state is not a missing legacy field."));
         property.ShouldSerialize = (obj, value) => IsShinGetter(((SerializablePlayer)obj).CharacterId) && value != null;
         info.Properties.Add(property);
     }
