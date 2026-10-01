@@ -514,7 +514,8 @@ public static class NShinGetterStaticVisuals
         if (sprites.ShinDragon.Node is AnimatedSprite2D shinDragonAnimation)
         {
             NShinGetterSpriteSequence.EnsureShinDragonIdleLoaded(shinDragonAnimation);
-            if (shinDragonAnimation.Visible && !shinDragonAnimation.IsPlaying())
+            if (shinDragonAnimation.Visible && !shinDragonAnimation.IsPlaying()
+                && !NShinGetterShiningSparkSequence.IsControlling(shinDragonAnimation))
                 NShinGetterSpriteAnimationStateMachine.PlayIdle(shinDragonAnimation, NShinGetterSpriteSequence.EnsureShinDragonIdleLoaded);
         }
 

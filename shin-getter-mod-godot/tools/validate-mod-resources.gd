@@ -205,6 +205,7 @@ const REQUIRED_RESOURCES := {
 	"res://images/characters/shin_getter/forms/shin_getter_dragon_dash_v2/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/forms/shin_getter_dragon_drill_attack/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/forms/shin_getter_dragon_stoner_sunshine/sprite_sheet.png": false,
+	"res://images/characters/shin_getter/forms/shin_getter_dragon_shining_spark/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/merchant/s_g_o_merchant_ryoma_citizen.png": false,
 	"res://images/characters/shin_getter/merchant/s_g_o_merchant_ryoma_normal.png": false,
 	"res://images/characters/shin_getter/rest/s_g_o_ryoma_rest.png": false,
@@ -276,7 +277,7 @@ const FORBIDDEN_RESOURCE_DEPENDENCIES := {
 }
 
 const CHARACTER_FRAME_MANIFEST_PATH := "art_sources/characters/shin_getter/forms/frame_manifest.txt"
-const EXPECTED_CHARACTER_SOURCE_FRAME_COUNT := 1370
+const EXPECTED_CHARACTER_SOURCE_FRAME_COUNT := 1404
 
 
 func _initialize() -> void:

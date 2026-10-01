@@ -9,9 +9,9 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
 using ShinGetterMod.Audio;
+using ShinGetterMod.Models.Powers;
 using ShinGetterMod.Nodes.Combat;
 using ShinGetterMod.Nodes.Vfx;
 
@@ -20,7 +20,7 @@ namespace ShinGetterMod.Models.Cards;
 /// <summary>
 /// 斩星斧 | 攻击 | 稀有 | 3费 | 烧牌/输出终端
 /// 消耗抽牌堆 1 张卡，将数值叠加在此卡上，造成 22 点基础伤害
-/// 一号机：每消耗 1 张牌获得 4 活力
+/// 一号机：本次攻击获得热血
 /// </summary>
 public sealed class SGC_StarSlash : ShinGetterCardBase
 {
@@ -28,7 +28,6 @@ public sealed class SGC_StarSlash : ShinGetterCardBase
     {
         new DamageVar(22m, ValueProp.Move),
         new CardsVar(1),
-        new DynamicVar("Vigor", 4m),
     };
 
     public SGC_StarSlash()
@@ -47,28 +46,28 @@ public sealed class SGC_StarSlash : ShinGetterCardBase
         foreach (var card in selected)
         {
             await CardCmd.Exhaust(choiceContext, card);
-            if (HasForm(Owner, ShinGetterForm.Getter1))
-            {
-                await PowerCmd.Apply<VigorPower>(
-                    choiceContext,
-                    Owner.Creature,
-                    DynamicVars["Vigor"].BaseValue,
-                    Owner.Creature,
-                    this);
-            }
         }
 
+        if (HasForm(Owner, ShinGetterForm.Getter1))
+            await PowerCmd.Apply<SGP_HotBlood>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
+
+        await PlayLegacyAnimationToImpact(cardPlay.Target);
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue + stackedValue).FromCard(this)
             .WithNoAttackerAnim()
             .Targeting(cardPlay.Target)
-            .BeforeDamage(() => NShinGetterStaticVisuals.PlayPhasedCreatureActionAnimation(
+            .WithHitFx("vfx/vfx_giant_horizontal_slash").Execute(choiceContext);
+    }
+
+    private Task PlayLegacyAnimationToImpact(MegaCrit.Sts2.Core.Entities.Creatures.Creature target)
+    {
+        // Both dedicated axe clips/weapon anchors are still missing; this is an explicit fallback.
+        return NShinGetterStaticVisuals.PlayPhasedCreatureActionAnimation(
                 Owner.Creature,
                 GetActionAnimationTrigger() ?? "Attack",
                 1f,
                 1f,
-                () => ShinGetterCombatVfx.PlayHeavyCleave(Owner.Creature, new[] { cardPlay.Target }),
-                firstHalfDurationOverride: 0.5f))
-            .WithHitFx("vfx/vfx_giant_horizontal_slash").Execute(choiceContext);
+                () => ShinGetterCombatVfx.PlayHeavyCleave(Owner.Creature, new[] { target }),
+                firstHalfDurationOverride: 0.5f);
     }
 
     protected override void OnUpgrade()

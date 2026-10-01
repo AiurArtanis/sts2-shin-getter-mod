@@ -58,6 +58,7 @@ internal static class NShinGetterSpriteSequence
     public const string ShinDragonDashV2FrameDirectory = "res://images/characters/shin_getter/forms/shin_getter_dragon_dash_v2";
     public const string ShinDragonDrillAttackFrameDirectory = "res://images/characters/shin_getter/forms/shin_getter_dragon_drill_attack";
     public const string ShinDragonStonerSunshineFrameDirectory = "res://images/characters/shin_getter/forms/shin_getter_dragon_stoner_sunshine";
+    public const string ShinDragonShiningSparkFrameDirectory = "res://images/characters/shin_getter/forms/shin_getter_dragon_shining_spark";
     public const string IdleAnimationName = "idle";
     public const string AttackAnimationName = "attack";
     public const string HeavyAttackAnimationName = "heavy_attack";
@@ -70,6 +71,8 @@ internal static class NShinGetterSpriteSequence
     public const string CycloneAnimationName = "cyclone";
     public const string DashV2AnimationName = "dash_v2";
     public const string DrillAttackAnimationName = "drill_attack";
+    public const string ShiningSparkAnimationName = "shining_spark";
+    public const int ShiningSparkMaxFrames = 34;
     public const int IdleMaxFrames = 24;
     public const int AttackMaxFrames = 40;
     public const int CastMaxFrames = 32;
@@ -196,6 +199,7 @@ internal static class NShinGetterSpriteSequence
             (CycloneAnimationName, ShinDragonCycloneFrameDirectory, ShinDragonSpecialMaxFrames, ShinDragonSpecialFramesPerSecond),
             (DashV2AnimationName, ShinDragonDashV2FrameDirectory, ShinDragonSpecialMaxFrames, ShinDragonSpecialFramesPerSecond),
             (DrillAttackAnimationName, ShinDragonDrillAttackFrameDirectory, ShinDragonSpecialMaxFrames, ShinDragonSpecialFramesPerSecond),
+            (ShiningSparkAnimationName, ShinDragonShiningSparkFrameDirectory, ShiningSparkMaxFrames, ActionFramesPerSecond),
             (BlockAnimationName, ShinDragonBlockFrameDirectory, ShinDragonBlockMaxFrames, ShinDragonBlockFramesPerSecond),
             (DashAnimationName, ShinDragonDashFrameDirectory, ShinDragonDashMaxFrames, ActionFramesPerSecond),
             (DeathAnimationName, ShinDragonDeathFrameDirectory, ShinDragonDeathMaxFrames, ActionFramesPerSecond));
@@ -208,7 +212,8 @@ internal static class NShinGetterSpriteSequence
         sprite.SpriteFrames = frames;
         LoadPingPongAnimation(frames, IdleAnimationName, ShinDragonIdleFrameDirectory, ShinDragonIdleMaxFrames, IdleFramesPerSecond, loop: true);
 
-        if (!sprite.IsPlaying() && frames.HasAnimation(IdleAnimationName))
+        if (!sprite.IsPlaying() && frames.HasAnimation(IdleAnimationName)
+            && !NShinGetterShiningSparkSequence.IsControlling(sprite))
             sprite.Play(IdleAnimationName);
     }
 
@@ -267,6 +272,7 @@ internal static class NShinGetterSpriteSequence
         CycloneAnimationName,
         DashV2AnimationName,
         DrillAttackAnimationName,
+        ShiningSparkAnimationName,
     };
 
     private static void EnsureRequestedAnimation(
