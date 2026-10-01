@@ -52,6 +52,7 @@ EXPECTED_SOURCE_DIGESTS = {
     "shin_getter_dragon_dash_v2": "1439ad27e079681fdd3636423cee7587e312ad618c3bf5297d9a2a099bbff443",
     "shin_getter_dragon_drill_attack": "be97edf3f43d5e197173b72f7ae6e70fe014149d47c5dd6102eef64140e1d46a",
     "shin_getter_dragon_stoner_sunshine": "d878cab0b7cff8a91537ef5b9704ce360962f7fa237d9bbff404f7ab924d6842",
+    "shin_getter_dragon_shining_spark": "265855e006cb47c20cdd0af5b031358b5591e7ddbbda8d872e9ec42611d3c753",
 }
 
 EXPECTED_CLEAN_RGB_DIGESTS = {
@@ -119,6 +120,7 @@ EXPECTED_FRAME_COUNTS = {
     "shin_getter_dragon_dash_v2": 60,
     "shin_getter_dragon_drill_attack": 60,
     "shin_getter_dragon_stoner_sunshine": 90,
+    "shin_getter_dragon_shining_spark": 34,
 }
 
 SPECIAL_CARD_GROUPS = {
@@ -127,13 +129,14 @@ SPECIAL_CARD_GROUPS = {
         "SGC_FocusFire", "SGC_Annihilation",
     ),
     "DashV2": (
-        "SGC_ShiningSpark", "SGC_GetterRush", "SGC_Acceleration",
+        "SGC_GetterRush", "SGC_Acceleration",
         "SGC_GetterFlash", "SGC_PetalBreakthrough",
     ),
     "DrillAttack": (
         "SGC_TornadoDrill", "SGC_SpiralDrill", "SGC_LigerAssault",
         "SGC_GetterClaw", "SGC_HurricaneStrike",
     ),
+    "ShiningSpark": ("SGC_ShiningSpark",),
 }
 
 SPECIAL_TIMING_EXEMPT_CARDS = {
@@ -299,7 +302,7 @@ def check_authoritative_sources() -> None:
     actual_actions = {path.name for path in SOURCE_ROOT.iterdir() if path.is_dir()}
     require(
         actual_actions == set(EXPECTED_SOURCE_DIGESTS),
-        "all 32 character actions must be covered by approved source digests",
+        "all character actions must be covered by reviewed source digests",
     )
     for action, expected_hash in EXPECTED_SOURCE_DIGESTS.items():
         frames = sorted((SOURCE_ROOT / action).glob("sprite_*.png"))
@@ -484,8 +487,8 @@ def check_builder_and_sheets() -> None:
         resource_path = f"res://images/characters/shin_getter/forms/{action}/sprite_sheet.png"
         require(resource_path in resource_validator, f"{action}: PCK resource check is missing")
 
-    require("EXPECTED_CHARACTER_SOURCE_FRAME_COUNT := 1370" in resource_validator,
-            "PCK source-frame exclusion count must include the three new 60-frame actions")
+    require("EXPECTED_CHARACTER_SOURCE_FRAME_COUNT := 1404" in resource_validator,
+            "PCK source-frame exclusion count must include the B1.3.0 action")
     require(
         '"getter_one_idle": CaptureSource("一号机", "待机_动态水印重跑", 241, True, True, True)'
         in cleaner,
@@ -646,19 +649,12 @@ def check_runtime_wiring() -> None:
             < pause_contract.index("await waitBeforeSecondHalf();")
             < pause_contract.rindex("sprite.SpeedScale = Math.Max(0.05f, secondHalfSpeedScale);"),
             "phased animation must pause at its midpoint, await the gate, then resume its second half")
-    shining_sequence = shining_spark.split("private async Task PlayShiningSparkSequence", 1)[1]
-    require('GetActionAnimationTrigger() != "DashV2"' in shining_sequence,
-            "Shining Spark split timing must remain gated to the current Shin Dragon form")
-    require("Task intro = ShinGetterVoiceService.PlayShiningSparkIntro(Owner);" in shining_sequence
-            and '"DashV2"' in shining_sequence
-            and "waitBeforeSecondHalf: () => intro" in shining_sequence,
-            "Shining must start with DashV2 first-half playback and gate its midpoint on the intro voice")
-    second_half = shining_sequence.split("() => Task.WhenAll(", 1)[1].split(
-        "fallbackFirstHalfDuration", 1
-    )[0]
-    require("PlayRush(Owner.Creature, target, whiteFlash: true)" in second_half
-            and "PlayShiningSparkFollowUp(Owner)" in second_half,
-            "Spark, the DashV2 second half, and the forward rush must begin together")
+    # B1.3.0 supersedes the axe-carrying DashV2 contract, not other special actions.
+    require("NShinGetterShiningSparkSequence.TryCreate(Owner.Creature, cardPlay.Target)" in shining_spark
+            and "await sequence.PlayToImpact(" in shining_spark
+            and "await sequence.Recover();" in shining_spark
+            and "sequence?.Close();" in shining_spark,
+            "Shining Spark must use its card-owned impact/recovery/cleanup sequence")
 
     require('GetActionAnimationTrigger() ?? "Attack"' in star_slash,
             "Star Slash manual timing must remain intact after removal from the special-card mapping")

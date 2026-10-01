@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -6,6 +7,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using MegaCrit.Sts2.Core.Models.Powers;
 using ShinGetterMod.Audio;
@@ -32,28 +34,56 @@ public sealed class SGC_ShiningSpark : ShinGetterCardBase
 	{
 	}
 
+	public override int ModifyCardPlayCount(CardModel card, Creature? target, int playCount)
+	{
+		return ReferenceEquals(card, this) && Owner.Creature.HasPower<SGP_ShinForm>()
+			? playCount + 1
+			: playCount;
+	}
+
 	protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
 	{
 		ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
 		await PowerCmd.Apply<VulnerablePower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
 		await PowerCmd.Apply<FrailPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
-		await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
-			.WithNoAttackerAnim()
-			.BeforeDamage(() => PlayShiningSparkSequence(cardPlay.Target))
-			.WithHitFx("vfx/vfx_starry_impact").Execute(choiceContext);
-		int ki = Owner.Creature.GetPower<SGP_Ki>()?.Amount ?? 0;
-		if (ki > 0)
+		NShinGetterShiningSparkSequence? sequence = Owner.Creature.HasPower<SGP_ShinForm>()
+			? NShinGetterShiningSparkSequence.TryCreate(Owner.Creature, cardPlay.Target)
+			: null;
+		try
 		{
-			await DamageCmd.Attack(DynamicVars["KiDamage"].BaseValue).WithHitCount(ki).FromCard(this)
-				.TargetingRandomOpponents(CombatState)
-				.AfterAttackerAnim(AccelerateFollowupAnimations(ki))
-				.WithHitFx("vfx/vfx_attack_lightning").Execute(choiceContext);
+			if (sequence != null)
+				await sequence.PlayToImpact(
+					() => ShinGetterVoiceService.PlayShiningSparkIntro(Owner),
+					() => ShinGetterVoiceService.PlayShiningSparkFollowUp(Owner));
+			else
+				await PlayShiningSparkFallback(cardPlay.Target);
+
+			await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
+				.WithNoAttackerAnim()
+				.WithHitFx("vfx/vfx_starry_impact").Execute(choiceContext);
+			int ki = Owner.Creature.GetPower<SGP_Ki>()?.Amount ?? 0;
+			if (ki > 0)
+			{
+				var followup = DamageCmd.Attack(DynamicVars["KiDamage"].BaseValue).WithHitCount(ki).FromCard(this)
+					.TargetingRandomOpponents(CombatState);
+				if (sequence != null)
+					followup.WithNoAttackerAnim();
+				else
+					followup.AfterAttackerAnim(AccelerateFollowupAnimations(ki));
+				await followup.WithHitFx("vfx/vfx_attack_lightning").Execute(choiceContext);
+			}
+			if (sequence != null)
+				await sequence.Recover();
+		}
+		finally
+		{
+			sequence?.Close();
 		}
 	}
 
-	private async Task PlayShiningSparkSequence(Creature target)
+	private async Task PlayShiningSparkFallback(Creature target)
 	{
-		if (GetActionAnimationTrigger() != "DashV2")
+		if (!Owner.Creature.HasPower<SGP_ShinForm>())
 		{
 			await Task.WhenAll(
 				ShinGetterCombatVfx.PlayWhiteFlash(Owner.Creature),
@@ -65,20 +95,11 @@ public sealed class SGC_ShiningSpark : ShinGetterCardBase
 			return;
 		}
 
-		Task intro = ShinGetterVoiceService.PlayShiningSparkIntro(Owner);
-		await Task.WhenAll(
-			ShinGetterCombatVfx.PlayWhiteFlash(Owner.Creature),
-			NShinGetterStaticVisuals.PlayPhasedCreatureActionAnimation(
-				Owner.Creature,
-				"DashV2",
-				1f,
-				1f,
-				() => Task.WhenAll(
-					ShinGetterCombatVfx.PlayRush(Owner.Creature, target, whiteFlash: true),
-					ShinGetterVoiceService.PlayShiningSparkFollowUp(Owner)),
-				fallbackFirstHalfDuration: 1.0f,
-				firstHalfDurationOverride: 1.0f,
-				waitBeforeSecondHalf: () => intro));
+		// Missing visual resources do not substitute the axe-carrying DashV2 for the new action.
+		await ShinGetterVoiceService.PlayShiningSparkIntro(Owner);
+		await ShinGetterCombatVfx.PlayWhiteFlash(Owner.Creature);
+		_ = ShinGetterVoiceService.PlayShiningSparkFollowUp(Owner);
+		await Cmd.CustomScaledWait(0.2f, 0.2f);
 	}
 
 	protected override void OnUpgrade()
