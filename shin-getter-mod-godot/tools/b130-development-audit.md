@@ -1,7 +1,9 @@
 # B1.3.0 Development Handoff
 
-Date: 2026-10-01. Branch: `ticket/balance-b1.3.0-20261001`.
-Base: `origin/main@b0f76260baba42d33952c28dff5fb66980e2efbc`.
+Initial handoff: 2026-10-01. Baseline corrected: 2026-10-02.
+Single active branch: `ticket/balance-b1.3.0-20261001`.
+Current base: formal release `mod-v1.2.2`, peeled commit `7286ae7f59e12f266b9d008ac2509f0ade648e93`.
+The original `origin/main@b0f76260baba42d33952c28dff5fb66980e2efbc` handoff and its review are historical only; they are not approval of the migrated baseline.
 
 ## Scope and Status
 
@@ -61,7 +63,7 @@ These are source-level contracts. Rendering, voice pause behavior and actual int
 
 No verified Getter1 or Dragon dedicated Star Slash clips, per-frame grip/axis data, or weapon mattes were available. `PlayLegacyAnimationToImpact` is intentionally named and documented as a fallback. It does **not** implement the planned growing ray axe, out-of-frame extension, synchronized weapon overlay or new two-handed downstroke. No invented anchors or fake dedicated resources were added. The animation part of `issue#215` must remain open.
 
-## Verification
+## Historical Verification: 2026-10-01
 
 Passed: `validate_b130_core.py` (487 source checks), `validate_b130_ultimates.py` (8 negative source variants rejected), `validate_b1_1_0.py`, `validate_issue_159.py`, `validate_issue_32.py`, `validate_issue_169.py`, `validate_issue_191.py`, `validate_issue_21_31.py`, all 33 sprite sheets and 4 idle resources via builder `--check`, and diff whitespace checks. Two focused source-review findings (manual pause reset, ancestor visibility) were fixed and guarded; the follow-up ownership-gate coverage gap was also addressed.
 
@@ -72,3 +74,19 @@ UID declarations: 570 checked, no duplicates. The new C# script has a UID sideca
 Residual: Harmony runtime binding was not executed. The FightingSpirit-only private `ValueProp` bit `1 << 30` is unused by the inspected base game, but compatibility with other mods' private bits is not established.
 
 No DLL compile, Godot/game execution, PCK export/validation, PR, merge, initialization, deployment, release version change, or shared-directory overwrite occurred. The dirty root checkout and original game source were not modified. Main developer review and target-line combined verification remain required; all four issues stay open.
+
+## Formal v1.2.2 Baseline Migration: 2026-10-02
+
+Artanis requested one B1.3.0 branch based on the previously released v1.2.2. The old main and formal release diverged after v1.2.1; inheriting old main did not include v1.2.2's BGM release changes and did include `issue#206`.
+
+- Preserved original submission `e2640d0d9dbecb72ebbefc33dd25046452536bb9` under recovery-only tag `archive/b1.3.0-pre-v1.2.2-20261002`, also pushed to origin. No existing release tag was moved.
+- Migrated only that B1.3.0 commit with `git rebase --onto 7286ae7f59e12f266b9d008ac2509f0ade648e93 b0f76260baba42d33952c28dff5fb66980e2efbc ticket/balance-b1.3.0-20261001`. Kept the same active branch and worktree; no second development branch.
+- Code migration commit: `c5d1eec08875a8b518c3d5d48b8ce4b550573187`. Its direct parent and merge-base with the formal tag are `7286ae7f59e12f266b9d008ac2509f0ade648e93`; formal-tag ancestor exit 0, old-main ancestor exit 1.
+- No conflicts or manual source resolutions. Original and migrated stable patch IDs both equal `b1d2ef3fc7069ca8b9cd8de3650e82da28bc9b06`. Before this audit update, both patches touch the same 63 paths. Only `validate-mod-resources.gd` has a different final blob because it retains v1.2.2's resource list while adding the same Shining Spark entry and changing 1370 to 1404 source frames.
+- Formal manifest remains `v1.2.2`. BGM audio, catalog/configuration, settings localization, release notes, update history, README and workshop release materials have no delta from the formal tag. No `issue#206` dialogue sources, runtime classes or unrelated feature commits were brought in.
+
+Current-baseline static checks passed: `validate_b130_core.py` (483 source checks), `validate_b130_ultimates.py` (8 negative variants rejected), `validate_b1_1_0.py`, `validate_issue_159.py`, `validate_issue_32.py`, `validate_issue_169.py`, `validate_issue_191.py`, `validate_issue_21_31.py`, `validate_issue_193.py`, and `validate_issue_214.py --combined193`. The v1.2.2 BGM gates were not removed or weakened. Builder `--check` verified 33 sheets / 1404 source frames and all four idle resources. All 43 tracked JSONs parse; 310 UID sidecars have no duplicates. Diff whitespace checks passed.
+
+The old 44/45 JSON failure does not apply to this baseline: the malformed Japanese dialogue belonged to the excluded old-main feature. No JSON repair or feature cherry-pick was performed. This is a new static result, not runtime acceptance.
+
+All 35 behavioral acceptance items remain unchecked. Previous `e2640d0d` white-box approval is retained only as history; the migrated submission requires fresh independent review. `issue#215` remains unfinished with the same Star Slash material gap and Shining Spark visual concerns. No main/Beta/PR changes, builds, Godot/game execution, PCK work, initialization, deployment, release version change or shared-root modification occurred during migration.
