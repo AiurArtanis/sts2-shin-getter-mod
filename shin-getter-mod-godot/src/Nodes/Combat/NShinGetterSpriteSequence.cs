@@ -72,7 +72,7 @@ internal static class NShinGetterSpriteSequence
     public const string DashV2AnimationName = "dash_v2";
     public const string DrillAttackAnimationName = "drill_attack";
     public const string ShiningSparkAnimationName = "shining_spark";
-    public const int ShiningSparkMaxFrames = 34;
+    public const int ShiningSparkMaxFrames = 47;
     public const int IdleMaxFrames = 24;
     public const int AttackMaxFrames = 40;
     public const int CastMaxFrames = 32;

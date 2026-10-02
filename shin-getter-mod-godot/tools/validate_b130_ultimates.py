@@ -5,7 +5,10 @@ import hashlib
 import json
 from pathlib import Path
 
+from PIL import Image
+
 from build_character_sprite_sheets import FRAME_COUNTS, load_frame_manifest, verify_sheet
+from import_shining_spark_frames import STAGES, validate_maps, verify_import
 from validate_b130_core import block, compact, has, ordered, read, require
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -80,36 +83,99 @@ def ownership_contract(clock: str) -> None:
     stage = block(clock, "private Task Stage(")
     has(stage, "if (_closed) return Task.CompletedTask;", "Closed sequence cannot start a new stage")
     has(stage, "if (!OwnsSprite()", "Each stage checks ownership before its initial update")
+    has(stage, "_sprite.Animation != NShinGetterSpriteSequence.ShiningSparkAnimationName",
+        "Starting recovery cannot replace a newer action between damage and the next process tick")
+
+
+def stage_clock_contract(clock: str) -> None:
+    for name, index in (("DiscardComplete", 11), ("ChargeStart", 12), ("ChargeHold", 35),
+                        ("RushStart", 36), ("DashPeak", 44), ("ImpactStart", 45), ("EndHold", 46)):
+        has(clock, f"private const int {name} = {index};", "47-frame disjoint stage boundaries")
+    create = block(clock, "public static NShinGetterShiningSparkSequence? TryCreate(")
+    has(create, "sprite.Pause();", "Dedicated clock must own playback, not uniform SpriteFrames fps")
+    play = block(clock, "public async Task PlayToImpact(")
+    ordered(play, ["await Stage(0.4f, u => SetFrame(0, DiscardComplete, u));", "Task voice = intro();",
+                   "await Stage(1f,", "SetFrame(ChargeStart, ChargeHold, u);", "await voice;",
+                   "CombatManager.Instance.WaitForUnpause()", "_ = release();", "await Stage(0.28f,",
+                   "SetFrame(RushStart, DashPeak, u);", "await Stage(0.08f,",
+                   "SetFrame(ImpactStart, EndHold, u);"], "Dedicated timing/charge hold/Spark launch")
+    recover = block(clock, "public async Task Recover()")
+    ordered(recover, ["await Stage(0.35f,", "SetFrame(EndHold, EndHold, 0f);",
+                      "_sprite.Position = start.Lerp(_origin, smooth);"], "Recover holds final airborne frame")
+    has(clock, "_sprite.Frame = first + Math.Min(last - first, (int)Math.Floor((last - first + 1) * progress));",
+        "Each stage frame gets equal duration; do not round endpoint interpolation")
+    for forbidden in ("_shell", "ShaderMaterial", "DrawPolyline(points", "Position.Y", "Rotation ="):
+        require(forbidden not in clock, "Baked jump/green energy needs no duplicate root jump or shell")
 
 
 def resources_and_clock() -> None:
     source_root = ROOT.parent / "art_sources/characters/shin_getter/forms"
     manifest = load_frame_manifest(source_root / "frame_manifest.txt")
-    require(FRAME_COUNTS[ACTION] == 34, "Shining source count is 34")
+    require(FRAME_COUNTS[ACTION] == 47, "Shining source count is 47")
+    verify_import()
     audit = json.loads(read(ROOT / "tools/b130-shining-material.json"))
-    require(audit["frame_count"] == 34, "Audit frame count")
+    require(audit["frame_count"] == 47, "Audit frame count")
     for frame in audit["frames"]:
         path = source_root / ACTION / Path(frame["path"]).name
         require(hashlib.sha256(path.read_bytes()).hexdigest() == frame["sha256"], "Source frame hash")
         require(not frame["empty"], "No empty source frame")
     verify_sheet(ACTION, source_root / ACTION, ROOT / "images/characters/shin_getter/forms" / ACTION,
-                 34, manifest[ACTION])
+                 47, manifest[ACTION])
+    with Image.open(ROOT / "images/characters/shin_getter/forms" / ACTION / "sprite_sheet.png") as sheet:
+        require(sheet.mode == "RGBA" and sheet.size == (5760, 4320), "Tight 8x6 grid")
+        for index, frame in enumerate(audit["frames"]):
+            x, y = (index % 8)*720, (index // 8)*720
+            with Image.open(source_root / ACTION / frame["path"]) as original:
+                require(sheet.crop((x, y, x+720, y+720)).tobytes() == original.tobytes(), "Exact RGBA cell bytes")
+        require(not any(sheet.crop((5040, 3600, 5760, 4320)).tobytes()), "One all-zero trailing cell")
     clock = read(ROOT / "src/Nodes/Combat/NShinGetterShiningSparkSequence.cs")
+    stage_clock_contract(clock)
     ownership_contract(clock)
     for variant in (
         clock.replace("|| IsControlling(sprite)", "", 1),
         clock.replace("sprite.SetMeta(ManualOwnerMeta, sequence.GetInstanceId());", "", 1),
         clock.replace("if (_closed || !OwnsSprite()) return;", "if (!OwnsSprite()) return;", 1),
+        clock.replace("_sprite.Animation != NShinGetterSpriteSequence.ShiningSparkAnimationName", "false", 1),
     ):
         try:
             ownership_contract(variant)
         except AssertionError:
             continue
         raise AssertionError("Broken ownership source variant unexpectedly passed")
-    for name, phase in (("DiscardComplete", "discard_complete"), ("ChargeHold", "charge_hold"),
-                        ("DashPeak", "dash_peak"), ("EndHold", "end_hold")):
-        index = audit["phase_suggestions_0_based"][phase]["sequence_index"]
-        has(clock, f"private const int {name} = {index};", "Runtime phase must match reviewed source")
+    for old, new in (("DiscardComplete = 11", "DiscardComplete = 18"),
+                     ("ChargeStart = 12", "ChargeStart = 11"),
+                     ("ChargeHold = 35", "ChargeHold = 26"),
+                     ("RushStart = 36", "RushStart = 35"),
+                     ("ImpactStart = 45", "ImpactStart = 44"),
+                     ("sprite.Pause();", ""),
+                     ("_ = release();", "await release();"),
+                     ("SetFrame(EndHold, EndHold, 0f);", ""),
+                     ("Math.Floor((last - first + 1) * progress)", "Math.Round((last - first) * progress)")):
+        require(old in clock, "Timing mutation must target real code")
+        try:
+            stage_clock_contract(clock.replace(old, new, 1))
+        except AssertionError:
+            continue
+        raise AssertionError("Broken 47-frame timing variant unexpectedly passed")
+    timing = json.loads(read(source_root / ACTION / "stage_timing_map.json"))
+    sampled = json.loads(read(source_root / ACTION / "sampled_frame_map.json"))
+    validate_maps(timing, sampled)
+    for name, first, last, budget in STAGES[:-1]:
+        for index in range(first, last+1):
+            duration = budget/(last-first+1)
+            for fraction in (0.001, 0.5, 0.999):
+                progress = ((index-first)+fraction)/(last-first+1)
+                actual = first+min(last-first, int((last-first+1)*progress))
+                require(actual == index, f"{name}: equal frame hold matches timing map at {fraction}")
+            require(abs(sampled[index]["duration_seconds"]-duration) < 1e-9, "Delivered equal hold timing")
+    broken_timing = json.loads(json.dumps(timing))
+    broken_timing["stages"][1]["first_index_0_based"] = 11
+    try:
+        validate_maps(broken_timing, sampled)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Broken stage-map variant unexpectedly passed")
     process = block(clock, "public override void _Process(")
     ordered(process, ["CombatManager.Instance.IsPaused", "_stageTime += (float)delta;", "_stageUpdate(progress);"],
             "Visual clock freezes during combat pause")
@@ -128,9 +194,8 @@ def resources_and_clock() -> None:
         require(fragment in visible, "Visibility includes parents and inherited alpha")
     for forbidden in ("CreateTween", "SignalName.Finished", "ownerNode.GlobalPosition =", "Random", "Rng"):
         require(forbidden not in clock, f"No hanging tween/logical displacement/game RNG: {forbidden}")
-    energy = block(clock, "private void UpdateEnergy()")
-    has(energy, "_sprite.SpriteFrames?.GetFrameTexture(_sprite.Animation, _sprite.Frame)",
-        "Energy silhouette follows the actual same-phase sprite frame")
+    has(block(clock, "private void UpdateTailHistory("), "GetFrameTexture(_sprite.Animation, _sprite.Frame)",
+        "History snapshots preserve actual baked energy and pose")
     imports = read(ROOT / f"images/characters/shin_getter/forms/{ACTION}/sprite_sheet.png.import")
     for fragment in ('"vram_texture": false', "compress/mode=0", "mipmaps/generate=false"):
         require(fragment in imports, "New action uses lossless, no mipmap, no VRAM")
@@ -139,6 +204,7 @@ def resources_and_clock() -> None:
     machine = read(ROOT / "src/Nodes/Combat/NShinGetterSpriteAnimationStateMachine.cs")
     has(machine, '"ShiningSpark" => NShinGetterSpriteSequence.ShiningSparkAnimationName', "Trigger registration")
     sequence = read(ROOT / "src/Nodes/Combat/NShinGetterSpriteSequence.cs")
+    has(sequence, "public const int ShiningSparkMaxFrames = 47;", "Runtime loader uses every delivered frame")
     require(sequence.count("ShiningSparkAnimationName,") >= 2, "New action is loaded on demand and released")
     has(block(sequence, "public static void EnsureShinDragonIdleLoaded("),
         "!NShinGetterShiningSparkSequence.IsControlling(sprite)", "Idle loading must preserve manual pause")
@@ -174,7 +240,7 @@ def main() -> None:
     negative_contracts(shining, star)
     resources_and_clock()
     localization()
-    print("B1.3.0 ultimate source/resource gate passed (8 negative source variants rejected)")
+    print("B1.3.0 ultimate source/resource gate passed (19 negative variants rejected; 47 exact RGBA cells)")
     print("Runtime rendering, Harmony binding, multiplayer and gameplay timing NOT executed.")
 
 

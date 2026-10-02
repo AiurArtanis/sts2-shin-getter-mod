@@ -16,8 +16,8 @@ def clock_contract(text: str) -> None:
                    "await Stage(0.08f,"], "Recoil/voice/accelerating dash/impact share the same stage clock")
     process = block(text, "public override void _Process(")
     ordered(process, ["if (CombatManager.Instance.IsPaused) return;", "_stageTime += (float)delta;",
-                      "UpdateTailHistory((float)delta);", "UpdateEnergy();", "QueueRedraw();"],
-            "Pause freezes frame/position/energy and actual history ages")
+                      "UpdateTailHistory((float)delta);", "QueueRedraw();"],
+            "Pause freezes frame/position/baked energy and actual history ages")
     history = block(text, "private void UpdateTailHistory(")
     for fragment in ("_tailAges[i] += delta;", "if (!_rushing || _travelDistance < 20f) return;",
                      "if (_sampleTime < 0.04f) return;", "tail.GlobalTransform = _sprite.GlobalTransform;",
@@ -26,8 +26,10 @@ def clock_contract(text: str) -> None:
     for forbidden in ("AddChild", "new Sprite2D", "tail.GlobalPosition -="):
         require(forbidden not in history, "History uses a fixed pool, not current-frame offset copies")
     draw = block(text, "public override void _Draw()")
-    has(draw, "DrawPolyline(points", "Energy shell has independent outer geometry")
-    has(draw, "Math.Min(_travelDistance * 0.18f, 100f)", "Short movement has a proportionally short tail")
+    has(draw, "_impactPulse <= 0f", "Only draw a short impact ring; baked energy needs no duplicate shell")
+    has(draw, "DrawPolyline(ring", "Impact cue remains separate from the baked body energy")
+    require("_shell" not in text and "ShaderMaterial" not in text and "DrawPolyline(points" not in text,
+            "New baked green energy must not receive another silhouette or body arc overlay")
     for forbidden in ("TIME", "Engine.TimeScale", "Random", "Rng", "ownerNode.GlobalPosition ="):
         require(forbidden not in text, f"Visual clock must not use {forbidden}")
 

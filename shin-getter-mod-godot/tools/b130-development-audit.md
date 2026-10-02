@@ -119,3 +119,33 @@ After the old action ceases to be protected, the helper requests a fresh attack 
 Focused source checks passed: B1.3.0 core 487, feedback 18 negative variants (the original 11 plus seven review regressions), ultimate eight negatives with unchanged 34-frame source/sheet verification, and issue#32. New regressions cover an old protected action past the midpoint, idle transition before the fresh request, explicit Attack/zero-progress confirmation, timeout and death/exit interruption. These are source contracts, not a simulated or observed game reproduction. The earlier 43 JSON / 310 UID and unchanged counter checks are reused because those files have no delta in this repair.
 
 This repair requires a new independent review. It does not authorize or perform compilation, game/Godot execution, merge, PCK work or deployment. Original human checkmarks and the 29 feedback-3 behavioral checks are retained; review evidence is not inserted into the player checklist.
+
+## New Shining Spark Clip Integration 5: 2026-10-02
+
+This revision continues `ticket/balance-b1.3.0-20261001` from `f51059b27fb542d7bafae3c489a31a0530acf3b2`, still based on formal `mod-v1.2.2@7286ae7f59e12f266b9d008ac2509f0ade648e93`. It does not merge old main or `issue#206`. The release manifest remains `v1.2.2`; gameplay values, all other cards and the voice service have no delta.
+
+The user explicitly accepted the new video's screen-facing charge, followed by rightward airborne propulsion. The main developer delivered the retimed frames and phase map. Source SHA-256: `d56ad4479bccb9b576d6eda73899403f36111b69a250f68a1d43041cd1851c88`. Only source timestamps `0 <= t < 5.4` are used; the last selected timestamp is 5.375s. The external MP4 and 130 full-size mother PNGs are read-only.
+
+47 delivered 720x720 RGBA PNGs are copied byte-for-byte from the action's `sprites_import`, together with `stage_timing_map.json` and `sampled_frame_map.json`. No re-keying, resizing, interpolation, repaint, reverse playback or extra poses. The source maps remain outside the Godot import scope. Runtime sheet is 8x6 / 5760x4320, 47 populated cells and one all-zero cell. Lossless, no mipmaps, non-VRAM and the same two-action loading cache. Source inventory is now 1417 frames / 33 sheets; the future PCK exclusion assertion is synchronized but PCK has not been exported or checked.
+
+| Stage | Zero-Based Frames | Budget |
+| --- | --- | --- |
+| Discard | 0-11 | 0.4s |
+| Charge (including one baked jump) | 12-35 | At least 1.0s |
+| Rush | 36-44 | 0.28s |
+| Impact | 45-46 | 0.08s |
+| Recover (hold final airborne pose) | 46 | 0.35s after real damage commands |
+
+Stages use disjoint ranges and `floor(frame_count * progress)` with endpoint clamping, so each delivered frame receives the map's equal hold duration. SpriteFrames' registered 30fps is not used as a replacement for this paused, manually advanced clock. Minimum phase budget remains 2.11s; actual duration adds Shining's extra hold and real main/Ki damage command time. Shining starts at charge entry, may extend frame35; Spark starts at rush entry and is not awaited before impact. Silent/consumed cues, pause, Normal/Fast, Instant/fallback, ownership, hidden/death/exit/form-change and combat-end boundaries are preserved.
+
+The new PNGs already contain the jump and green body arcs. No root jump is added. The duplicate current-body additive silhouette and procedural body arcs are removed. Runtime retains only the existing bounded recoil/cubic lunge/smooth return, five actual-frame historical tails with 40ms sampling / 160ms decay, and the brief impact ring. Logical Creature/team positions and gameplay RNG are untouched. Spark's follower/1.3 scaling and all voice claim rules are unchanged.
+
+Current reproducibility command: `python -B tools/import_shining_spark_frames.py verify`. The earlier 34-frame extractor and audit sections above are historical, not the current input or verification command. `b130-shining-material.json` now records delivered PNG hashes, raw delivery map hashes, portable canonical-JSON content hashes, phase ranges and provenance. Content hashes prevent Git's line-ending normalization from causing false provenance failures in another checkout. The obsolete extractor refuses the new output inventory rather than replacing it with 34 frames.
+
+Recovery's final-frame hold runs inside the guarded Stage callback. Stage also checks the current animation before its first update, preventing a newer/death animation from being overwritten between damage completion and the next process tick.
+
+Static checks passed: core 487 source checks, ultimate 19 negative variants and all 47 exact RGBA cells, visual feedback 18 negative variants, B1.1.0, issue#159, issue#32 and issue#21/issue#31. Builder `--check` reran all 33 sheets and four idle resources. All 45 tracked/new JSON files parse, including the two new maps. Diff whitespace checks pass. issue#159 initially failed only its historical 34-frame count; this action's approved aggregate digest, count and PCK exclusion count were updated, without weakening other actions' guards. Runtime rendering, real voice timing, actual combat and target-line compilation remain untested.
+
+Residual visual check: impact compresses source frames104 to130 into 80ms, so the baked green energy disappears quickly; no smooth fade is claimed. Final airborne pose is held during root recovery before returning to idle, with no invented landing. Main developer independent review and game testing must judge impact/recovery continuity. Star Slash's two-form dedicated material/weapon-overlay gap remains unresolved; B1.3.0 overall stays in development and all four issues stay open.
+
+No PR, merge, DLL compile, Godot/game startup, PCK work, initialization, deployment or shared-directory overwrite. Historical human checkmarks and prior feedback3/4 lists are retained. New direct behavior checks belong only in feedback5; engineering evidence remains in development feedback.

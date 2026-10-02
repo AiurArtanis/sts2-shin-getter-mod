@@ -10,7 +10,7 @@ sequence contiguous_24=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,
 sequence contiguous_30=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30
 sequence contiguous_36=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36
 sequence contiguous_48=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48
-sequence shining_spark_34=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34
+sequence shining_spark_47=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47
 
 action getter_one_attack=attack_40
 action getter_one_block=block_24
@@ -44,4 +44,4 @@ action shin_getter_dragon_cyclone=contiguous_60
 action shin_getter_dragon_dash_v2=contiguous_60
 action shin_getter_dragon_drill_attack=contiguous_60
 action shin_getter_dragon_stoner_sunshine=contiguous_90
-action shin_getter_dragon_shining_spark=shining_spark_34
+action shin_getter_dragon_shining_spark=shining_spark_47

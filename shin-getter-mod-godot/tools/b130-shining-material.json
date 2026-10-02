@@ -1,118 +1,149 @@
 {
-  "status": "development_preview_reviewed_runtime_visual_acceptance_pending",
-  "issue": "B1.3.0/215",
+  "status": "new_clip_integrated_pending_code_review_and_runtime_acceptance",
+  "issue": "issue#215",
   "input_video": "D:\\Library\\Pictures\\\u6740\u622e\u5c16\u58542-\u7d20\u6750\\anim-sprite\\\u89c6\u9891\u52a8\u753b\\\u771f\u76d6\u5854\u9f99\\\u771f\u76d6\u5854\u9f99-\u95ea\u5149\u7206\u88c2.mp4",
-  "input_video_sha256": "14ce9ac65c00c8ab0a119947f4872018e75b1ce85b5b4c7fa7d6b0890ab17244",
-  "video": {
-    "width": 960,
-    "height": 960,
-    "fps": 24.0,
-    "reported_frame_count": 145,
-    "decoded_frame_count": 145,
-    "duration_seconds": 6.041666666666667
+  "input_video_sha256": "d56ad4479bccb9b576d6eda73899403f36111b69a250f68a1d43041cd1851c88",
+  "source_delivery": "D:\\Library\\Pictures\\\u6740\u622e\u5c16\u58542-\u7d20\u6750\\anim-sprite\\sprites\\\u771f\u76d6\u5854\u9f99\\\u95ea\u5149\u7206\u88c2",
+  "source_clip_end_exclusive_seconds": 5.4,
+  "frame_count": 47,
+  "minimum_game_seconds": 2.11,
+  "map_delivery_sha256": {
+    "stage_timing_map.json": "ab6dd48aeb39085fc80399729de5f7d20137ba82dd322837f7b8b15ebf4810a2",
+    "sampled_frame_map.json": "66917b60ecb280fe2bd306f72866db85a4b0544c8237cb65084f6a03c5cabc44"
   },
-  "script": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\shin-getter-mod-godot\\tools\\extract_shining_spark_frames.py",
-  "script_sha256": "f19def93ccd697f8beab752d55738e561f68a6a82926225fcfb1d33f8d7baf08",
-  "readonly_pipeline": "D:\\Library\\Pictures\\\u6740\u622e\u5c16\u58542-\u7d20\u6750\\anim-sprite\\tools\\video_to_adaptive_sprite_frames.py",
-  "readonly_pipeline_sha256": "f7038b69fa4b35f6eb7c0cdab550907700baca1d0d2dc59c2dd1e23a41d67b2a",
-  "runtime": {
-    "python": "3.14.5 (tags/v3.14.5:5607950, May 10 2026, 10:43:50) [MSC v.1944 64 bit (AMD64)]",
-    "opencv": "4.13.0",
-    "numpy": "2.4.4"
+  "map_semantic_sha256": {
+    "stage_timing_map.json": "99fc77a5351d69d9fe909d92f4eb388d4baf8f0cbd3996d5207ef61e0881f3c6",
+    "sampled_frame_map.json": "78e85a4ac83e744bfe73d735a068c4d0774534af97469a170615aa5d6196a2ce"
   },
-  "output_directory": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark",
-  "qa_directory": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001",
-  "selection_method": "explicit_action_reviewed_sequential_decode_source_indices",
-  "selected_source_indices_0_based": [
-    0,
-    9,
-    14,
-    18,
-    22,
-    26,
-    30,
-    34,
-    40,
-    44,
-    47,
-    50,
-    53,
-    54,
-    56,
-    58,
-    59,
-    60,
-    61,
-    64,
-    70,
-    80,
-    88,
-    94,
-    100,
-    106,
-    112,
-    120,
-    124,
-    128,
-    132,
-    136,
-    140,
-    144
-  ],
-  "frame_count": 34,
-  "matting": {
-    "method": "existing_full_canvas_adaptive_difference_key_soft_alpha_despill",
-    "hard_distance": 60.0,
-    "feather_radius": 10,
-    "resize": "premultiplied_RGBA_INTER_AREA_960_to_720",
-    "crop_or_reanchor": false,
-    "watermark_removal": "none_no_visible_watermark_identified",
-    "weapon_removal": "none_baked_source_discard_only",
-    "generated_or_repainted": false
-  },
-  "phase_suggestions_0_based": {
-    "release_visible": {
-      "sequence_index": 12,
-      "source_index": 53,
-      "basis": "Both palms open; baked axe visible behind left silhouette, no added prop"
+  "stages": [
+    {
+      "name": "discard",
+      "first_index_0_based": 0,
+      "last_index_0_based": 11,
+      "frame_count": 12,
+      "budget_seconds": 0.4,
+      "game_start_seconds": 0.0,
+      "source_first_frame_1_based": 1,
+      "source_last_frame_1_based": 27,
+      "source_first_pts_seconds": 0.0,
+      "source_last_pts_seconds": 1.0833333333333333,
+      "source_indices_1_based": [
+        1,
+        3,
+        6,
+        8,
+        10,
+        13,
+        15,
+        18,
+        20,
+        22,
+        25,
+        27
+      ]
     },
-    "discard_complete": {
-      "sequence_index": 18,
-      "source_index": 61,
-      "basis": "Source 60 still has left-edge shaft; 61 is first persistently weapon-free frame"
+    {
+      "name": "charge",
+      "first_index_0_based": 12,
+      "last_index_0_based": 35,
+      "frame_count": 24,
+      "budget_seconds": 1.0,
+      "game_start_seconds": 0.4,
+      "source_first_frame_1_based": 28,
+      "source_last_frame_1_based": 85,
+      "source_first_pts_seconds": 1.125,
+      "source_last_pts_seconds": 3.5,
+      "source_indices_1_based": [
+        28,
+        30,
+        33,
+        35,
+        38,
+        40,
+        43,
+        45,
+        48,
+        50,
+        53,
+        55,
+        58,
+        60,
+        63,
+        65,
+        68,
+        70,
+        73,
+        75,
+        78,
+        80,
+        83,
+        85
+      ]
     },
-    "charge_hold": {
-      "sequence_index": 26,
-      "source_index": 112,
-      "basis": "Both fists drawn back, lowered stance; stable crouched hold around 104-119"
+    {
+      "name": "rush",
+      "first_index_0_based": 36,
+      "last_index_0_based": 44,
+      "frame_count": 9,
+      "budget_seconds": 0.28,
+      "game_start_seconds": 1.4,
+      "source_first_frame_1_based": 86,
+      "source_last_frame_1_based": 103,
+      "source_first_pts_seconds": 3.5416666666666665,
+      "source_last_pts_seconds": 4.25,
+      "source_indices_1_based": [
+        86,
+        88,
+        90,
+        92,
+        94,
+        97,
+        99,
+        101,
+        103
+      ]
     },
-    "dash_peak": {
-      "sequence_index": 31,
-      "source_index": 136,
-      "basis": "Deep forward lean reached; source has no translational dash or impact"
+    {
+      "name": "impact",
+      "first_index_0_based": 45,
+      "last_index_0_based": 46,
+      "frame_count": 2,
+      "budget_seconds": 0.08,
+      "game_start_seconds": 1.68,
+      "source_first_frame_1_based": 104,
+      "source_last_frame_1_based": 130,
+      "source_first_pts_seconds": 4.291666666666667,
+      "source_last_pts_seconds": 5.375,
+      "source_indices_1_based": [
+        104,
+        130
+      ]
     },
-    "end_hold": {
-      "sequence_index": 33,
-      "source_index": 144,
-      "basis": "Final weapon-free forward-lean pose; does not recover to idle"
+    {
+      "name": "recover",
+      "first_index_0_based": 46,
+      "last_index_0_based": 46,
+      "frame_count": 1,
+      "budget_seconds": 0.35,
+      "game_start_seconds": 1.76,
+      "source_first_frame_1_based": 130,
+      "source_last_frame_1_based": 130,
+      "note": "Reuse final PNG; runtime returns visual root. Preview holds pose only; no generated landing or reverse."
     }
-  },
+  ],
   "frames": [
     {
-      "sequence_index_0_based": 0,
-      "source_index_0_based": 0,
+      "index_0_based": 0,
+      "file": "sprite_000001.png",
       "source_frame_1_based": 1,
-      "source_time_seconds": 0.0,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000001.png",
-      "sha256": "428fe48401a26ddf29009f83d17560e6cd7de79e924ca516fb1e684d2a40661e",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_000.png",
-      "suggested_source_review_duration_ms": 375,
-      "decoded_source_rgb_sha256": "caef083f22850d12329b3e12362fa30c6697c7837f89f15699e3233a8e386c6f",
-      "background_rgb": [
-        234,
-        0,
-        245
-      ],
+      "source_pts_seconds": 0.0,
+      "stage": "discard",
+      "stage_start_seconds": 0.0,
+      "duration_seconds": 0.03333333333333333,
+      "game_start_seconds": 0.0,
+      "path": "sprite_000001.png",
+      "sha256": "5969935e219ea882285acec5461b3b684fd32a2a01705b1e68ef548723e5c5c1",
+      "empty": false,
       "dimensions": [
         720,
         720
@@ -121,39 +152,86 @@
       "alpha_extrema": [
         0,
         255
-      ],
-      "transparent_pixels": 398852,
-      "opaque_pixels": 91574,
-      "soft_alpha_pixels": 27974,
-      "visible_bbox_xyxy_exclusive": [
-        42,
-        117,
-        572,
-        686
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 0,
-      "protected_dark_or_red_pixels": 174912,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 5499,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 0
+      ]
     },
     {
-      "sequence_index_0_based": 1,
-      "source_index_0_based": 9,
+      "index_0_based": 1,
+      "file": "sprite_000002.png",
+      "source_frame_1_based": 3,
+      "source_pts_seconds": 0.083333333,
+      "stage": "discard",
+      "stage_start_seconds": 0.033333333,
+      "duration_seconds": 0.03333333333333333,
+      "game_start_seconds": 0.033333333,
+      "path": "sprite_000002.png",
+      "sha256": "0131aeb831150429d8492e71a521e05b2f2ab36c2607202670c3e51798089223",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 2,
+      "file": "sprite_000003.png",
+      "source_frame_1_based": 6,
+      "source_pts_seconds": 0.208333333,
+      "stage": "discard",
+      "stage_start_seconds": 0.066666667,
+      "duration_seconds": 0.03333333333333333,
+      "game_start_seconds": 0.066666667,
+      "path": "sprite_000003.png",
+      "sha256": "1c94c132eb19786c4692c9a2fe8422dfe0534b4cead8929a0f9f5f25923e83cf",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 3,
+      "file": "sprite_000004.png",
+      "source_frame_1_based": 8,
+      "source_pts_seconds": 0.291666667,
+      "stage": "discard",
+      "stage_start_seconds": 0.1,
+      "duration_seconds": 0.03333333333333333,
+      "game_start_seconds": 0.1,
+      "path": "sprite_000004.png",
+      "sha256": "450be7a16ed418eb04985da9993cb45cc8a259a635524735aa7ff8f96014ecf2",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 4,
+      "file": "sprite_000005.png",
       "source_frame_1_based": 10,
-      "source_time_seconds": 0.375,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000002.png",
-      "sha256": "5c62437c887cbc0d5f7ebc04e806ec35f5fcfaf9931d2877fdb06bac70d04182",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_009.png",
-      "suggested_source_review_duration_ms": 208,
-      "decoded_source_rgb_sha256": "ebf775d114f7d442e13c717baf454de800298fceecebea66eb49f73c89844a59",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
+      "source_pts_seconds": 0.375,
+      "stage": "discard",
+      "stage_start_seconds": 0.133333333,
+      "duration_seconds": 0.03333333333333333,
+      "game_start_seconds": 0.133333333,
+      "path": "sprite_000005.png",
+      "sha256": "b3f254e98ef40bd708f9fd1458d45b66a099d06b7aa5fecd0fdda08d966ebd19",
+      "empty": false,
       "dimensions": [
         720,
         720
@@ -162,39 +240,42 @@
       "alpha_extrema": [
         0,
         255
-      ],
-      "transparent_pixels": 399175,
-      "opaque_pixels": 92603,
-      "soft_alpha_pixels": 26622,
-      "visible_bbox_xyxy_exclusive": [
-        57,
-        73,
-        569,
-        686
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 0,
-      "protected_dark_or_red_pixels": 173273,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 6245,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 0
+      ]
     },
     {
-      "sequence_index_0_based": 2,
-      "source_index_0_based": 14,
+      "index_0_based": 5,
+      "file": "sprite_000006.png",
+      "source_frame_1_based": 13,
+      "source_pts_seconds": 0.5,
+      "stage": "discard",
+      "stage_start_seconds": 0.166666667,
+      "duration_seconds": 0.03333333333333333,
+      "game_start_seconds": 0.166666667,
+      "path": "sprite_000006.png",
+      "sha256": "6bdcb288ae12ed017c4e4996a62b4c74c1cfdd58315b98b2a4e708652d002d74",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 6,
+      "file": "sprite_000007.png",
       "source_frame_1_based": 15,
-      "source_time_seconds": 0.5833333333333334,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000003.png",
-      "sha256": "a1bf6547714d7d3d0c3ecab10fed77f7201190f478e28b41fd103b8774d8c758",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_014.png",
-      "suggested_source_review_duration_ms": 167,
-      "decoded_source_rgb_sha256": "0ad3ad15d5a69543f74c1f2c512cc2e43a2eabce041381d2a5e153b2b2155004",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
+      "source_pts_seconds": 0.583333333,
+      "stage": "discard",
+      "stage_start_seconds": 0.2,
+      "duration_seconds": 0.03333333333333333,
+      "game_start_seconds": 0.2,
+      "path": "sprite_000007.png",
+      "sha256": "236cb2a5bc7f669d61467f10436ccc62ae012832383b23099e5ca400f65dd26c",
+      "empty": false,
       "dimensions": [
         720,
         720
@@ -203,39 +284,20 @@
       "alpha_extrema": [
         0,
         255
-      ],
-      "transparent_pixels": 399248,
-      "opaque_pixels": 91348,
-      "soft_alpha_pixels": 27804,
-      "visible_bbox_xyxy_exclusive": [
-        112,
-        19,
-        570,
-        686
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 0,
-      "protected_dark_or_red_pixels": 172363,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 7079,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 0
+      ]
     },
     {
-      "sequence_index_0_based": 3,
-      "source_index_0_based": 18,
-      "source_frame_1_based": 19,
-      "source_time_seconds": 0.75,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000004.png",
-      "sha256": "407225ea7d372e7c9aaad099e7bf7dc680efe21569faceebccd011866ab012de",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_018.png",
-      "suggested_source_review_duration_ms": 167,
-      "decoded_source_rgb_sha256": "230c25869ae3857740757909eb8ac9d42d053c3c01978e114edc87cbf60aaee8",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
+      "index_0_based": 7,
+      "file": "sprite_000008.png",
+      "source_frame_1_based": 18,
+      "source_pts_seconds": 0.708333333,
+      "stage": "discard",
+      "stage_start_seconds": 0.233333333,
+      "duration_seconds": 0.03333333333333333,
+      "game_start_seconds": 0.233333333,
+      "path": "sprite_000008.png",
+      "sha256": "6d45bca92e4796877f9e43d458e07420bb846a70dc3d43ec4b5afa2354b1b940",
+      "empty": false,
       "dimensions": [
         720,
         720
@@ -244,39 +306,20 @@
       "alpha_extrema": [
         0,
         255
-      ],
-      "transparent_pixels": 401128,
-      "opaque_pixels": 89186,
-      "soft_alpha_pixels": 28086,
-      "visible_bbox_xyxy_exclusive": [
-        120,
-        0,
-        567,
-        686
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 8,
-      "protected_dark_or_red_pixels": 171008,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 8016,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 43
+      ]
     },
     {
-      "sequence_index_0_based": 4,
-      "source_index_0_based": 22,
-      "source_frame_1_based": 23,
-      "source_time_seconds": 0.9166666666666666,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000005.png",
-      "sha256": "c3d54f941c3eda59c9948f2b2b230c45a3293f209a2a0781bc67b217367bb662",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_022.png",
-      "suggested_source_review_duration_ms": 167,
-      "decoded_source_rgb_sha256": "1cf160512d350a527f1d12df3530a03ccf301be407854ba274f0a4e0143e0299",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
+      "index_0_based": 8,
+      "file": "sprite_000009.png",
+      "source_frame_1_based": 20,
+      "source_pts_seconds": 0.791666667,
+      "stage": "discard",
+      "stage_start_seconds": 0.266666667,
+      "duration_seconds": 0.03333333333333333,
+      "game_start_seconds": 0.266666667,
+      "path": "sprite_000009.png",
+      "sha256": "2c6f5b4e9cc5233ccc835c4c6a8d3cd6db67a2d703fb145f110372762198b1ba",
+      "empty": false,
       "dimensions": [
         720,
         720
@@ -285,39 +328,64 @@
       "alpha_extrema": [
         0,
         255
-      ],
-      "transparent_pixels": 401520,
-      "opaque_pixels": 90782,
-      "soft_alpha_pixels": 26098,
-      "visible_bbox_xyxy_exclusive": [
-        119,
-        0,
-        522,
-        686
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 0,
-      "protected_dark_or_red_pixels": 170765,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 6999,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 8
+      ]
     },
     {
-      "sequence_index_0_based": 5,
-      "source_index_0_based": 26,
+      "index_0_based": 9,
+      "file": "sprite_000010.png",
+      "source_frame_1_based": 22,
+      "source_pts_seconds": 0.875,
+      "stage": "discard",
+      "stage_start_seconds": 0.3,
+      "duration_seconds": 0.03333333333333333,
+      "game_start_seconds": 0.3,
+      "path": "sprite_000010.png",
+      "sha256": "6c5d7b052c0c9fa73932ded1a1b7cc369ba5f3321c60f816b414e4df25fe4ade",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 10,
+      "file": "sprite_000011.png",
+      "source_frame_1_based": 25,
+      "source_pts_seconds": 1.0,
+      "stage": "discard",
+      "stage_start_seconds": 0.333333333,
+      "duration_seconds": 0.03333333333333333,
+      "game_start_seconds": 0.333333333,
+      "path": "sprite_000011.png",
+      "sha256": "2895d2600ffa47c7d15dc6b9342531a9c7ee2d270b4c92fb5d3f5cfc2707876e",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 11,
+      "file": "sprite_000012.png",
       "source_frame_1_based": 27,
-      "source_time_seconds": 1.0833333333333333,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000006.png",
-      "sha256": "6e18e1d849310d7b0dd4694606dc4733666fa1d834089d5dbd7cdb0cd15fe602",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_026.png",
-      "suggested_source_review_duration_ms": 167,
-      "decoded_source_rgb_sha256": "f0db1e36f48b6568cbd4e403c9c1fa3afbb4dbeeb7320a343994956259d3d25c",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
+      "source_pts_seconds": 1.083333333,
+      "stage": "discard",
+      "stage_start_seconds": 0.366666667,
+      "duration_seconds": 0.03333333333333333,
+      "game_start_seconds": 0.366666667,
+      "path": "sprite_000012.png",
+      "sha256": "137335809467d9b462aa86bc027121c5c01fa4f33d39d91886b257c00b315aba",
+      "empty": false,
       "dimensions": [
         720,
         720
@@ -326,39 +394,20 @@
       "alpha_extrema": [
         0,
         255
-      ],
-      "transparent_pixels": 404974,
-      "opaque_pixels": 88691,
-      "soft_alpha_pixels": 24735,
-      "visible_bbox_xyxy_exclusive": [
-        118,
-        78,
-        632,
-        686
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 2,
-      "protected_dark_or_red_pixels": 166844,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 7017,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 0
+      ]
     },
     {
-      "sequence_index_0_based": 6,
-      "source_index_0_based": 30,
-      "source_frame_1_based": 31,
-      "source_time_seconds": 1.25,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000007.png",
-      "sha256": "608b8eac1d72da3709aa6706df4df9db2d78868fcf927712f1991e43a549ce3a",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_030.png",
-      "suggested_source_review_duration_ms": 167,
-      "decoded_source_rgb_sha256": "55bffc60c8dd97677ccc9fd3029330c88a6603be4f3ad376d2ba7104b224d329",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
+      "index_0_based": 12,
+      "file": "sprite_000013.png",
+      "source_frame_1_based": 28,
+      "source_pts_seconds": 1.125,
+      "stage": "charge",
+      "stage_start_seconds": 0.0,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 0.4,
+      "path": "sprite_000013.png",
+      "sha256": "b90c6a3f86b36d31a4504f3d120d5152d3acee7b2ea91ebda789ef575ad7c335",
+      "empty": false,
       "dimensions": [
         720,
         720
@@ -367,39 +416,64 @@
       "alpha_extrema": [
         0,
         255
-      ],
-      "transparent_pixels": 407256,
-      "opaque_pixels": 87227,
-      "soft_alpha_pixels": 23917,
-      "visible_bbox_xyxy_exclusive": [
-        117,
-        157,
-        680,
-        686
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 0,
-      "protected_dark_or_red_pixels": 163540,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 5745,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 0
+      ]
     },
     {
-      "sequence_index_0_based": 7,
-      "source_index_0_based": 34,
+      "index_0_based": 13,
+      "file": "sprite_000014.png",
+      "source_frame_1_based": 30,
+      "source_pts_seconds": 1.208333333,
+      "stage": "charge",
+      "stage_start_seconds": 0.041666667,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 0.441666667,
+      "path": "sprite_000014.png",
+      "sha256": "3d59128c7aafc0740df946e457351d0c234e453d95cee89abeca0c525d4b3715",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 14,
+      "file": "sprite_000015.png",
+      "source_frame_1_based": 33,
+      "source_pts_seconds": 1.333333333,
+      "stage": "charge",
+      "stage_start_seconds": 0.083333333,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 0.483333333,
+      "path": "sprite_000015.png",
+      "sha256": "8141de1d252a8c092efca3053462fd3cbca078d1cc53307960460b4bc5359239",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 15,
+      "file": "sprite_000016.png",
       "source_frame_1_based": 35,
-      "source_time_seconds": 1.4166666666666667,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000008.png",
-      "sha256": "9be5d272498adb754356f91f399fbed650a1cf26f266281295da85d070a1434d",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_034.png",
-      "suggested_source_review_duration_ms": 250,
-      "decoded_source_rgb_sha256": "cd5d33634184a59e1175d79c20ba2302e0b1640683298cdcf30c503986b88eed",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
+      "source_pts_seconds": 1.416666667,
+      "stage": "charge",
+      "stage_start_seconds": 0.125,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 0.525,
+      "path": "sprite_000016.png",
+      "sha256": "6aaeabcdfd6700c8f9d83e9c60a86665c82e48b50c0858943be6a0f7dbb65cc7",
+      "empty": false,
       "dimensions": [
         720,
         720
@@ -408,39 +482,20 @@
       "alpha_extrema": [
         0,
         255
-      ],
-      "transparent_pixels": 407926,
-      "opaque_pixels": 87643,
-      "soft_alpha_pixels": 22831,
-      "visible_bbox_xyxy_exclusive": [
-        115,
-        157,
-        662,
-        686
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 0,
-      "protected_dark_or_red_pixels": 162161,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 5301,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 0
+      ]
     },
     {
-      "sequence_index_0_based": 8,
-      "source_index_0_based": 40,
-      "source_frame_1_based": 41,
-      "source_time_seconds": 1.6666666666666667,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000009.png",
-      "sha256": "a7d38544908a9608b4b7febecc9235248be46025d30471701219227c811ae4d2",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_040.png",
-      "suggested_source_review_duration_ms": 167,
-      "decoded_source_rgb_sha256": "d12aad8639519b66d851f0e23f9479531e74ebffbe71d22898344cf12578757f",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
+      "index_0_based": 16,
+      "file": "sprite_000017.png",
+      "source_frame_1_based": 38,
+      "source_pts_seconds": 1.541666667,
+      "stage": "charge",
+      "stage_start_seconds": 0.166666667,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 0.566666667,
+      "path": "sprite_000017.png",
+      "sha256": "5f2761a8013e7e9ac7e2fc9d39e52fbfc910b804bc0db4d2e41ccdbf865f6517",
+      "empty": false,
       "dimensions": [
         720,
         720
@@ -449,39 +504,64 @@
       "alpha_extrema": [
         0,
         255
-      ],
-      "transparent_pixels": 409791,
-      "opaque_pixels": 86309,
-      "soft_alpha_pixels": 22300,
-      "visible_bbox_xyxy_exclusive": [
-        122,
-        157,
-        648,
-        686
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 0,
-      "protected_dark_or_red_pixels": 159521,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 5220,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 0
+      ]
     },
     {
-      "sequence_index_0_based": 9,
-      "source_index_0_based": 44,
+      "index_0_based": 17,
+      "file": "sprite_000018.png",
+      "source_frame_1_based": 40,
+      "source_pts_seconds": 1.625,
+      "stage": "charge",
+      "stage_start_seconds": 0.208333333,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 0.608333333,
+      "path": "sprite_000018.png",
+      "sha256": "85819e8e4522b68bab0b712bec20ffc721e0ec2aeb9d633a0270ccde1b515456",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 18,
+      "file": "sprite_000019.png",
+      "source_frame_1_based": 43,
+      "source_pts_seconds": 1.75,
+      "stage": "charge",
+      "stage_start_seconds": 0.25,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 0.65,
+      "path": "sprite_000019.png",
+      "sha256": "bfb6de43c80018be0bdb5990a4b4b7a85e3e7567748a3af702c105e31b71c004",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 19,
+      "file": "sprite_000020.png",
       "source_frame_1_based": 45,
-      "source_time_seconds": 1.8333333333333333,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000010.png",
-      "sha256": "62e033a9ebc8c3a2bb4538c212d16518516ee1128efccba2b3db973f83cb9f43",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_044.png",
-      "suggested_source_review_duration_ms": 125,
-      "decoded_source_rgb_sha256": "a9edc66d1a2bc46b51b645c45a7571f8d169d3ab5d96c1c7a2c2e3375c88390a",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
+      "source_pts_seconds": 1.833333333,
+      "stage": "charge",
+      "stage_start_seconds": 0.291666667,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 0.691666667,
+      "path": "sprite_000020.png",
+      "sha256": "5c8ff986e7aac31ee974d00b956dee013d44b43a40b4000256eaa80dcddd150c",
+      "empty": false,
       "dimensions": [
         720,
         720
@@ -490,39 +570,20 @@
       "alpha_extrema": [
         0,
         255
-      ],
-      "transparent_pixels": 414910,
-      "opaque_pixels": 82279,
-      "soft_alpha_pixels": 21211,
-      "visible_bbox_xyxy_exclusive": [
-        138,
-        157,
-        551,
-        686
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 4,
-      "protected_dark_or_red_pixels": 153575,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 5294,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 0
+      ]
     },
     {
-      "sequence_index_0_based": 10,
-      "source_index_0_based": 47,
+      "index_0_based": 20,
+      "file": "sprite_000021.png",
       "source_frame_1_based": 48,
-      "source_time_seconds": 1.9583333333333333,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000011.png",
-      "sha256": "e50a44ec64e3777f962d73b83904d76ac18eb064d6de9acd57daebbe04bd7fc9",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_047.png",
-      "suggested_source_review_duration_ms": 125,
-      "decoded_source_rgb_sha256": "b178d5bedf567a825433337d99faacecdddcb9b2502953f0ad4bc45921d2509b",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
+      "source_pts_seconds": 1.958333333,
+      "stage": "charge",
+      "stage_start_seconds": 0.333333333,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 0.733333333,
+      "path": "sprite_000021.png",
+      "sha256": "2b6e8e2825028fd55c08a035797b04cbfcee421f22ea5576367704367e0f46af",
+      "empty": false,
       "dimensions": [
         720,
         720
@@ -531,39 +592,20 @@
       "alpha_extrema": [
         0,
         255
-      ],
-      "transparent_pixels": 420815,
-      "opaque_pixels": 77987,
-      "soft_alpha_pixels": 19598,
-      "visible_bbox_xyxy_exclusive": [
-        147,
-        157,
-        501,
-        686
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 1,
-      "protected_dark_or_red_pixels": 146340,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 4652,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 0
+      ]
     },
     {
-      "sequence_index_0_based": 11,
-      "source_index_0_based": 50,
-      "source_frame_1_based": 51,
-      "source_time_seconds": 2.0833333333333335,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000012.png",
-      "sha256": "535762355eb8d57c03a145ba01b6494109fb60665c056315019964ec3fc14bfb",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_050.png",
-      "suggested_source_review_duration_ms": 125,
-      "decoded_source_rgb_sha256": "31ac354ff2f206ced1162a9117c372ced4a0f6058325261d03cc66f7a9e29b52",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
+      "index_0_based": 21,
+      "file": "sprite_000022.png",
+      "source_frame_1_based": 50,
+      "source_pts_seconds": 2.041666667,
+      "stage": "charge",
+      "stage_start_seconds": 0.375,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 0.775,
+      "path": "sprite_000022.png",
+      "sha256": "40ad887deed3ff84ee70d2f279edaf3c280de766c155bc7fab53a19229f8d19f",
+      "empty": false,
       "dimensions": [
         720,
         720
@@ -572,39 +614,20 @@
       "alpha_extrema": [
         0,
         255
-      ],
-      "transparent_pixels": 419702,
-      "opaque_pixels": 78538,
-      "soft_alpha_pixels": 20160,
-      "visible_bbox_xyxy_exclusive": [
-        139,
-        157,
-        501,
-        686
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 0,
-      "protected_dark_or_red_pixels": 148191,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 5518,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 0
+      ]
     },
     {
-      "sequence_index_0_based": 12,
-      "source_index_0_based": 53,
-      "source_frame_1_based": 54,
-      "source_time_seconds": 2.2083333333333335,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000013.png",
-      "sha256": "461b7476e3d64465093888bb0245f4b13d5c09120c29ab71cf4fc09ed56bce9e",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_053.png",
-      "suggested_source_review_duration_ms": 42,
-      "decoded_source_rgb_sha256": "ad4970571e33eaf576e4704df53b991c2450eabed3e5f1456042a9379fca9d0b",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
+      "index_0_based": 22,
+      "file": "sprite_000023.png",
+      "source_frame_1_based": 53,
+      "source_pts_seconds": 2.166666667,
+      "stage": "charge",
+      "stage_start_seconds": 0.416666667,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 0.816666667,
+      "path": "sprite_000023.png",
+      "sha256": "6e6adba0399bff3456f9842a1fbfd3c87f7fa16b5b16756caf520734fe2a539d",
+      "empty": false,
       "dimensions": [
         720,
         720
@@ -613,39 +636,20 @@
       "alpha_extrema": [
         0,
         255
-      ],
-      "transparent_pixels": 408011,
-      "opaque_pixels": 83834,
-      "soft_alpha_pixels": 26555,
-      "visible_bbox_xyxy_exclusive": [
-        30,
-        102,
-        530,
-        686
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 16,
-      "protected_dark_or_red_pixels": 161256,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 9698,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 0
+      ]
     },
     {
-      "sequence_index_0_based": 13,
-      "source_index_0_based": 54,
+      "index_0_based": 23,
+      "file": "sprite_000024.png",
       "source_frame_1_based": 55,
-      "source_time_seconds": 2.25,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000014.png",
-      "sha256": "42a4f7924a52fc267c0e4b0e77e88da8572faa01c6aafa5f5aad7c280291b763",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_054.png",
-      "suggested_source_review_duration_ms": 83,
-      "decoded_source_rgb_sha256": "656b1059bede3f73ae9f45294dde5dacab60487d6deaaab6767fd0263988350d",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
+      "source_pts_seconds": 2.25,
+      "stage": "charge",
+      "stage_start_seconds": 0.458333333,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 0.858333333,
+      "path": "sprite_000024.png",
+      "sha256": "575d91b9c63e3194834d3cedc9383c668615e4756799d2adba6de0d7a0c49cbb",
+      "empty": false,
       "dimensions": [
         720,
         720
@@ -654,39 +658,20 @@
       "alpha_extrema": [
         0,
         255
-      ],
-      "transparent_pixels": 406655,
-      "opaque_pixels": 88272,
-      "soft_alpha_pixels": 23473,
-      "visible_bbox_xyxy_exclusive": [
-        0,
-        84,
-        534,
-        686
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 2,
-      "protected_dark_or_red_pixels": 165324,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 6446,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 28
+      ]
     },
     {
-      "sequence_index_0_based": 14,
-      "source_index_0_based": 56,
-      "source_frame_1_based": 57,
-      "source_time_seconds": 2.3333333333333335,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000015.png",
-      "sha256": "7ee555b9762e81f0b5e850ed9bbbe6873ed21aa540cad35124cfb85bf3da0029",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_056.png",
-      "suggested_source_review_duration_ms": 83,
-      "decoded_source_rgb_sha256": "03f75e4ecc176dac187669911f73c470ee43779ef212325c809f9d2d812e8b67",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
+      "index_0_based": 24,
+      "file": "sprite_000025.png",
+      "source_frame_1_based": 58,
+      "source_pts_seconds": 2.375,
+      "stage": "charge",
+      "stage_start_seconds": 0.5,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 0.9,
+      "path": "sprite_000025.png",
+      "sha256": "983f2c408125d1d055cbc8a425a4dc0f7b1d94fbbdf5a703d95d6bec3e2e8962",
+      "empty": false,
       "dimensions": [
         720,
         720
@@ -695,80 +680,20 @@
       "alpha_extrema": [
         0,
         255
-      ],
-      "transparent_pixels": 410435,
-      "opaque_pixels": 83678,
-      "soft_alpha_pixels": 24287,
-      "visible_bbox_xyxy_exclusive": [
-        0,
-        37,
-        542,
-        686
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 2,
-      "protected_dark_or_red_pixels": 161365,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 6320,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 60
+      ]
     },
     {
-      "sequence_index_0_based": 15,
-      "source_index_0_based": 58,
-      "source_frame_1_based": 59,
-      "source_time_seconds": 2.4166666666666665,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000016.png",
-      "sha256": "681dda0bd6e55d9c17c7e6fa96aff578e8508e826d0442d13a81d46a0edf9097",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_058.png",
-      "suggested_source_review_duration_ms": 42,
-      "decoded_source_rgb_sha256": "8b8755fcd45d9feb907febdccb4faf6742606917a4f3fba43da30bd52b19c1ff",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
-      "dimensions": [
-        720,
-        720
-      ],
-      "mode": "RGBA",
-      "alpha_extrema": [
-        0,
-        255
-      ],
-      "transparent_pixels": 416891,
-      "opaque_pixels": 77310,
-      "soft_alpha_pixels": 24199,
-      "visible_bbox_xyxy_exclusive": [
-        0,
-        35,
-        543,
-        686
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 0,
-      "protected_dark_or_red_pixels": 153307,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 6605,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 67
-    },
-    {
-      "sequence_index_0_based": 16,
-      "source_index_0_based": 59,
+      "index_0_based": 25,
+      "file": "sprite_000026.png",
       "source_frame_1_based": 60,
-      "source_time_seconds": 2.4583333333333335,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000017.png",
-      "sha256": "a108d2aef6d40732053ca7abe393fb06918237a31ac239aa8f5fa4a9712580c1",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_059.png",
-      "suggested_source_review_duration_ms": 42,
-      "decoded_source_rgb_sha256": "94b2c553db3022eca9f39d95e8f7087e48694357f3db279df3beb2bdc4d3855e",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
+      "source_pts_seconds": 2.458333333,
+      "stage": "charge",
+      "stage_start_seconds": 0.541666667,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 0.941666667,
+      "path": "sprite_000026.png",
+      "sha256": "b405593b65842a34c7c8e6d4c916003dec3f3fa3d5ac9127652c65f1a513129a",
+      "empty": false,
       "dimensions": [
         720,
         720
@@ -777,39 +702,20 @@
       "alpha_extrema": [
         0,
         255
-      ],
-      "transparent_pixels": 418139,
-      "opaque_pixels": 77700,
-      "soft_alpha_pixels": 22561,
-      "visible_bbox_xyxy_exclusive": [
-        0,
-        157,
-        543,
-        686
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 0,
-      "protected_dark_or_red_pixels": 152130,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 5729,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 26
+      ]
     },
     {
-      "sequence_index_0_based": 17,
-      "source_index_0_based": 60,
-      "source_frame_1_based": 61,
-      "source_time_seconds": 2.5,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000018.png",
-      "sha256": "1e4993bf5dcbce7512488e925b1041a931376b1ff22aa0c5e5572718dbfeec91",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_060.png",
-      "suggested_source_review_duration_ms": 42,
-      "decoded_source_rgb_sha256": "403b5591cb01297a2cbf75b917c9c30ed302659bf340953799a20712341e2647",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
+      "index_0_based": 26,
+      "file": "sprite_000027.png",
+      "source_frame_1_based": 63,
+      "source_pts_seconds": 2.583333333,
+      "stage": "charge",
+      "stage_start_seconds": 0.583333333,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 0.983333333,
+      "path": "sprite_000027.png",
+      "sha256": "ecf6a47318a40c769d1002eff381b79b875a9b56e292de34930fb00883a46d04",
+      "empty": false,
       "dimensions": [
         720,
         720
@@ -818,80 +724,20 @@
       "alpha_extrema": [
         0,
         255
-      ],
-      "transparent_pixels": 418738,
-      "opaque_pixels": 77287,
-      "soft_alpha_pixels": 22375,
-      "visible_bbox_xyxy_exclusive": [
-        0,
-        157,
-        543,
-        686
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 0,
-      "protected_dark_or_red_pixels": 151666,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 5820,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 24
+      ]
     },
     {
-      "sequence_index_0_based": 18,
-      "source_index_0_based": 61,
-      "source_frame_1_based": 62,
-      "source_time_seconds": 2.5416666666666665,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000019.png",
-      "sha256": "1b81aacd3b46373a59732f17948e9406cc67ee1c9ddd1cbfef3417485e945244",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_061.png",
-      "suggested_source_review_duration_ms": 125,
-      "decoded_source_rgb_sha256": "b5b581ec8fd5229fea09a8505f02a371cd157e4b2655f0475b5252746a2ca79c",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
-      "dimensions": [
-        720,
-        720
-      ],
-      "mode": "RGBA",
-      "alpha_extrema": [
-        0,
-        255
-      ],
-      "transparent_pixels": 420368,
-      "opaque_pixels": 77246,
-      "soft_alpha_pixels": 20786,
-      "visible_bbox_xyxy_exclusive": [
-        87,
-        157,
-        537,
-        686
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 3,
-      "protected_dark_or_red_pixels": 149749,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 5292,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 0
-    },
-    {
-      "sequence_index_0_based": 19,
-      "source_index_0_based": 64,
+      "index_0_based": 27,
+      "file": "sprite_000028.png",
       "source_frame_1_based": 65,
-      "source_time_seconds": 2.6666666666666665,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000020.png",
-      "sha256": "a15f2e2b6c4dfe74b25df1932930729a096e22916e03255fa0139afc8670cdfa",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_064.png",
-      "suggested_source_review_duration_ms": 250,
-      "decoded_source_rgb_sha256": "5e590c2ff956a99d5c4714863afa6f62bebbbcb6763beb8303d523780c5ea8bf",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
+      "source_pts_seconds": 2.666666667,
+      "stage": "charge",
+      "stage_start_seconds": 0.625,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 1.025,
+      "path": "sprite_000028.png",
+      "sha256": "ba0b71ef9d782729cfe9772d2c0cc0abd883a0bc8bcfa20b3b16b1e6b2fdbae0",
+      "empty": false,
       "dimensions": [
         720,
         720
@@ -900,39 +746,20 @@
       "alpha_extrema": [
         0,
         255
-      ],
-      "transparent_pixels": 421589,
-      "opaque_pixels": 76347,
-      "soft_alpha_pixels": 20464,
-      "visible_bbox_xyxy_exclusive": [
-        95,
-        157,
-        522,
-        686
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 1,
-      "protected_dark_or_red_pixels": 147769,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 5188,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 0
+      ]
     },
     {
-      "sequence_index_0_based": 20,
-      "source_index_0_based": 70,
-      "source_frame_1_based": 71,
-      "source_time_seconds": 2.9166666666666665,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000021.png",
-      "sha256": "0d46ea20d455cb095384de749722fb881d8bfd29cf517a62a98d008492649971",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_070.png",
-      "suggested_source_review_duration_ms": 417,
-      "decoded_source_rgb_sha256": "886c6fd9c78c4c1bec3ee87d811b724077e25036cb8484174f4c4f3ca09ffd6b",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
+      "index_0_based": 28,
+      "file": "sprite_000029.png",
+      "source_frame_1_based": 68,
+      "source_pts_seconds": 2.791666667,
+      "stage": "charge",
+      "stage_start_seconds": 0.666666667,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 1.066666667,
+      "path": "sprite_000029.png",
+      "sha256": "c52427a1cc2a7ba7db85c96fe8cf75133db9e783983f7933cf260a3254b8859e",
+      "empty": false,
       "dimensions": [
         720,
         720
@@ -941,39 +768,20 @@
       "alpha_extrema": [
         0,
         255
-      ],
-      "transparent_pixels": 423002,
-      "opaque_pixels": 74677,
-      "soft_alpha_pixels": 20721,
-      "visible_bbox_xyxy_exclusive": [
-        117,
-        157,
-        501,
-        686
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 0,
-      "protected_dark_or_red_pixels": 145378,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 5156,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 0
+      ]
     },
     {
-      "sequence_index_0_based": 21,
-      "source_index_0_based": 80,
-      "source_frame_1_based": 81,
-      "source_time_seconds": 3.3333333333333335,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000022.png",
-      "sha256": "33a83019e496da731202ee6f55e5dab1afd45244e71790b85e6130db102e526b",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_080.png",
-      "suggested_source_review_duration_ms": 333,
-      "decoded_source_rgb_sha256": "d17adfcf8287bef87be41cee818408dedca064509ecb6f06c98515b1d9928e0b",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
+      "index_0_based": 29,
+      "file": "sprite_000030.png",
+      "source_frame_1_based": 70,
+      "source_pts_seconds": 2.875,
+      "stage": "charge",
+      "stage_start_seconds": 0.708333333,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 1.108333333,
+      "path": "sprite_000030.png",
+      "sha256": "a21ead5aaaec280cf6fd978bcb43e8019cb0d3dea7c64091acdfc7809d27daa6",
+      "empty": false,
       "dimensions": [
         720,
         720
@@ -982,39 +790,20 @@
       "alpha_extrema": [
         0,
         255
-      ],
-      "transparent_pixels": 423243,
-      "opaque_pixels": 75029,
-      "soft_alpha_pixels": 20128,
-      "visible_bbox_xyxy_exclusive": [
-        120,
-        159,
-        501,
-        686
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 0,
-      "protected_dark_or_red_pixels": 144824,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 5348,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 0
+      ]
     },
     {
-      "sequence_index_0_based": 22,
-      "source_index_0_based": 88,
-      "source_frame_1_based": 89,
-      "source_time_seconds": 3.6666666666666665,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000023.png",
-      "sha256": "436dad947080c41752c857d88bed1dc90628ece8451e153953e7c438c3a305ae",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_088.png",
-      "suggested_source_review_duration_ms": 250,
-      "decoded_source_rgb_sha256": "b404903300630dcf36ce7d9229c8b3792565b14b9afc38e48023b0bba35daf72",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
+      "index_0_based": 30,
+      "file": "sprite_000031.png",
+      "source_frame_1_based": 73,
+      "source_pts_seconds": 3.0,
+      "stage": "charge",
+      "stage_start_seconds": 0.75,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 1.15,
+      "path": "sprite_000031.png",
+      "sha256": "50ab24b5e08375ca86ee42dc417f7471f6b5fe714eed3830a78424da194c21cf",
+      "empty": false,
       "dimensions": [
         720,
         720
@@ -1023,39 +812,20 @@
       "alpha_extrema": [
         0,
         255
-      ],
-      "transparent_pixels": 424262,
-      "opaque_pixels": 74535,
-      "soft_alpha_pixels": 19603,
-      "visible_bbox_xyxy_exclusive": [
-        109,
-        175,
-        501,
-        686
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 0,
-      "protected_dark_or_red_pixels": 143134,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 5119,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 0
+      ]
     },
     {
-      "sequence_index_0_based": 23,
-      "source_index_0_based": 94,
-      "source_frame_1_based": 95,
-      "source_time_seconds": 3.9166666666666665,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000024.png",
-      "sha256": "d86a30322f54fc0c34ea0ec293b687690667c8ad9bc7fdbe08471f747389abb7",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_094.png",
-      "suggested_source_review_duration_ms": 250,
-      "decoded_source_rgb_sha256": "27c75d170fc9b57d81339c512a32bc43824457d010a648ac212503cee450651f",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
+      "index_0_based": 31,
+      "file": "sprite_000032.png",
+      "source_frame_1_based": 75,
+      "source_pts_seconds": 3.083333333,
+      "stage": "charge",
+      "stage_start_seconds": 0.791666667,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 1.191666667,
+      "path": "sprite_000032.png",
+      "sha256": "140d9a539e2cb82913fc6156ed7b97880b456903d496d2d15effd1c04e8f04cf",
+      "empty": false,
       "dimensions": [
         720,
         720
@@ -1064,39 +834,262 @@
       "alpha_extrema": [
         0,
         255
-      ],
-      "transparent_pixels": 424560,
-      "opaque_pixels": 73232,
-      "soft_alpha_pixels": 20608,
-      "visible_bbox_xyxy_exclusive": [
-        97,
-        217,
-        502,
-        686
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 0,
-      "protected_dark_or_red_pixels": 142460,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 5839,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 0
+      ]
     },
     {
-      "sequence_index_0_based": 24,
-      "source_index_0_based": 100,
+      "index_0_based": 32,
+      "file": "sprite_000033.png",
+      "source_frame_1_based": 78,
+      "source_pts_seconds": 3.208333333,
+      "stage": "charge",
+      "stage_start_seconds": 0.833333333,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 1.233333333,
+      "path": "sprite_000033.png",
+      "sha256": "fcac05c2f782fe834501c015bac7dd8abf5c3a7bbf535368fc853c31b469e3c9",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 33,
+      "file": "sprite_000034.png",
+      "source_frame_1_based": 80,
+      "source_pts_seconds": 3.291666667,
+      "stage": "charge",
+      "stage_start_seconds": 0.875,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 1.275,
+      "path": "sprite_000034.png",
+      "sha256": "4c9388fffec22664bdbb0c1b8ad88ff1f72b48ae6543061b3921cbf8801416bc",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 34,
+      "file": "sprite_000035.png",
+      "source_frame_1_based": 83,
+      "source_pts_seconds": 3.416666667,
+      "stage": "charge",
+      "stage_start_seconds": 0.916666667,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 1.316666667,
+      "path": "sprite_000035.png",
+      "sha256": "48c613b56f1eec6297663000d35214670277fa3acd2e055cb65a7b561518dc53",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 35,
+      "file": "sprite_000036.png",
+      "source_frame_1_based": 85,
+      "source_pts_seconds": 3.5,
+      "stage": "charge",
+      "stage_start_seconds": 0.958333333,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 1.358333333,
+      "path": "sprite_000036.png",
+      "sha256": "f729c2479dc96fec38a2e836a6a5d71a5624ec53b3047c29d0f553cf3f046c3b",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 36,
+      "file": "sprite_000037.png",
+      "source_frame_1_based": 86,
+      "source_pts_seconds": 3.541666667,
+      "stage": "rush",
+      "stage_start_seconds": 0.0,
+      "duration_seconds": 0.031111111111111114,
+      "game_start_seconds": 1.4,
+      "path": "sprite_000037.png",
+      "sha256": "b782b51e948f0a2caaad049207aaecd777436ddc2e38ab8c2876df2c49a8d5cd",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 37,
+      "file": "sprite_000038.png",
+      "source_frame_1_based": 88,
+      "source_pts_seconds": 3.625,
+      "stage": "rush",
+      "stage_start_seconds": 0.031111111,
+      "duration_seconds": 0.031111111111111114,
+      "game_start_seconds": 1.431111111,
+      "path": "sprite_000038.png",
+      "sha256": "e9bd1616100429f4d4fac0ac338adad345e9076f0f1dc48b21e164ae61e0c765",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 38,
+      "file": "sprite_000039.png",
+      "source_frame_1_based": 90,
+      "source_pts_seconds": 3.708333333,
+      "stage": "rush",
+      "stage_start_seconds": 0.062222222,
+      "duration_seconds": 0.031111111111111114,
+      "game_start_seconds": 1.462222222,
+      "path": "sprite_000039.png",
+      "sha256": "f275f8758cd75660ddb40cd7d8a7d6de3ee1cc52d9a4a4e6408e8f53088c5bef",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 39,
+      "file": "sprite_000040.png",
+      "source_frame_1_based": 92,
+      "source_pts_seconds": 3.791666667,
+      "stage": "rush",
+      "stage_start_seconds": 0.093333333,
+      "duration_seconds": 0.031111111111111114,
+      "game_start_seconds": 1.493333333,
+      "path": "sprite_000040.png",
+      "sha256": "c20ba9d8b29afba9431f829392103cd66cf8e15159c541799eb231736af3ab34",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 40,
+      "file": "sprite_000041.png",
+      "source_frame_1_based": 94,
+      "source_pts_seconds": 3.875,
+      "stage": "rush",
+      "stage_start_seconds": 0.124444444,
+      "duration_seconds": 0.031111111111111114,
+      "game_start_seconds": 1.524444444,
+      "path": "sprite_000041.png",
+      "sha256": "c83eb9069c60766f1c58eb88d94f1ce53817d84719fd775115551ae36ee031ef",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 41,
+      "file": "sprite_000042.png",
+      "source_frame_1_based": 97,
+      "source_pts_seconds": 4.0,
+      "stage": "rush",
+      "stage_start_seconds": 0.155555556,
+      "duration_seconds": 0.031111111111111114,
+      "game_start_seconds": 1.555555556,
+      "path": "sprite_000042.png",
+      "sha256": "70943c60d1b7c64c6ee79d0c5f0adf62014957d49dc707fbe47163c2bb59270d",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 42,
+      "file": "sprite_000043.png",
+      "source_frame_1_based": 99,
+      "source_pts_seconds": 4.083333333,
+      "stage": "rush",
+      "stage_start_seconds": 0.186666667,
+      "duration_seconds": 0.031111111111111114,
+      "game_start_seconds": 1.586666667,
+      "path": "sprite_000043.png",
+      "sha256": "775037aa465701229e177707e577a9676a96ab55d780f0070f4c28113242f1b5",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 43,
+      "file": "sprite_000044.png",
       "source_frame_1_based": 101,
-      "source_time_seconds": 4.166666666666667,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000025.png",
-      "sha256": "24b9a97633eaceb94144ac58483fb91738d0a4b1b50f66068df2d558821cb497",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_100.png",
-      "suggested_source_review_duration_ms": 250,
-      "decoded_source_rgb_sha256": "6bb8def7c1dd485c7ffe37ba5c232bfbf53d5ac1c9c1eea4152fd21bf5fb8ab7",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
+      "source_pts_seconds": 4.166666667,
+      "stage": "rush",
+      "stage_start_seconds": 0.217777778,
+      "duration_seconds": 0.031111111111111114,
+      "game_start_seconds": 1.617777778,
+      "path": "sprite_000044.png",
+      "sha256": "3930a2640ff7c0c9ac21fdd7c348292fe6a972760019feebe9ad44b057e2dcf4",
+      "empty": false,
       "dimensions": [
         720,
         720
@@ -1105,39 +1098,20 @@
       "alpha_extrema": [
         0,
         255
-      ],
-      "transparent_pixels": 425359,
-      "opaque_pixels": 71243,
-      "soft_alpha_pixels": 21798,
-      "visible_bbox_xyxy_exclusive": [
-        94,
-        234,
-        510,
-        686
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 0,
-      "protected_dark_or_red_pixels": 141761,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 5458,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 0
+      ]
     },
     {
-      "sequence_index_0_based": 25,
-      "source_index_0_based": 106,
-      "source_frame_1_based": 107,
-      "source_time_seconds": 4.416666666666667,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000026.png",
-      "sha256": "cba36f1221920a7d52d17fbee61943e522eb2d238b1c915ed8dc068b9b7bce35",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_106.png",
-      "suggested_source_review_duration_ms": 250,
-      "decoded_source_rgb_sha256": "15489091586629ce10a156e56868124b6cb9804d70446055e398ab55989ba8b2",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
+      "index_0_based": 44,
+      "file": "sprite_000045.png",
+      "source_frame_1_based": 103,
+      "source_pts_seconds": 4.25,
+      "stage": "rush",
+      "stage_start_seconds": 0.248888889,
+      "duration_seconds": 0.031111111111111114,
+      "game_start_seconds": 1.648888889,
+      "path": "sprite_000045.png",
+      "sha256": "2cf595b679c25cb33ab9cfa675409fda07e544c982e82d2ae11b033fa971a239",
+      "empty": false,
       "dimensions": [
         720,
         720
@@ -1146,39 +1120,20 @@
       "alpha_extrema": [
         0,
         255
-      ],
-      "transparent_pixels": 425341,
-      "opaque_pixels": 71655,
-      "soft_alpha_pixels": 21404,
-      "visible_bbox_xyxy_exclusive": [
-        94,
-        234,
-        510,
-        686
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 0,
-      "protected_dark_or_red_pixels": 141834,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 5164,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 0
+      ]
     },
     {
-      "sequence_index_0_based": 26,
-      "source_index_0_based": 112,
-      "source_frame_1_based": 113,
-      "source_time_seconds": 4.666666666666667,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000027.png",
-      "sha256": "d8adc6cc175c300456d6681a6546bad1a43197e37679ffca6182dbf8d85c252c",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_112.png",
-      "suggested_source_review_duration_ms": 333,
-      "decoded_source_rgb_sha256": "958f98aa62e321e7706f10e5e901a06c3749327adf577e20d8843b744594c711",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
+      "index_0_based": 45,
+      "file": "sprite_000046.png",
+      "source_frame_1_based": 104,
+      "source_pts_seconds": 4.291666667,
+      "stage": "impact",
+      "stage_start_seconds": 0.0,
+      "duration_seconds": 0.04,
+      "game_start_seconds": 1.68,
+      "path": "sprite_000046.png",
+      "sha256": "1dc78b31a6ab9e6b64d0af3a4d586093d345c35f5744399335b779b9bf5ae0bd",
+      "empty": false,
       "dimensions": [
         720,
         720
@@ -1187,39 +1142,20 @@
       "alpha_extrema": [
         0,
         255
-      ],
-      "transparent_pixels": 425333,
-      "opaque_pixels": 71778,
-      "soft_alpha_pixels": 21289,
-      "visible_bbox_xyxy_exclusive": [
-        94,
-        234,
-        510,
-        686
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 0,
-      "protected_dark_or_red_pixels": 141833,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 5135,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 0
+      ]
     },
     {
-      "sequence_index_0_based": 27,
-      "source_index_0_based": 120,
-      "source_frame_1_based": 121,
-      "source_time_seconds": 5.0,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000028.png",
-      "sha256": "133aa9dfa2bb69530e0dce754aa41ec82b18af6c118ac2460329b9ee87ecf0bc",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_120.png",
-      "suggested_source_review_duration_ms": 167,
-      "decoded_source_rgb_sha256": "8cd7a9f3fcc79dfd2e616a3a9c2749a88e46d661806e7a7d331adcfd2856732b",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
+      "index_0_based": 46,
+      "file": "sprite_000047.png",
+      "source_frame_1_based": 130,
+      "source_pts_seconds": 5.375,
+      "stage": "impact",
+      "stage_start_seconds": 0.04,
+      "duration_seconds": 0.04,
+      "game_start_seconds": 1.72,
+      "path": "sprite_000047.png",
+      "sha256": "596125efcaf0624bd997085d09a636ccb6a55c94c9617493c85696b4523d4d76",
+      "empty": false,
       "dimensions": [
         720,
         720
@@ -1228,311 +1164,27 @@
       "alpha_extrema": [
         0,
         255
-      ],
-      "transparent_pixels": 426590,
-      "opaque_pixels": 71666,
-      "soft_alpha_pixels": 20144,
-      "visible_bbox_xyxy_exclusive": [
-        96,
-        241,
-        521,
-        686
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 0,
-      "protected_dark_or_red_pixels": 139638,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 5560,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 0
-    },
-    {
-      "sequence_index_0_based": 28,
-      "source_index_0_based": 124,
-      "source_frame_1_based": 125,
-      "source_time_seconds": 5.166666666666667,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000029.png",
-      "sha256": "c13d32deb50d4d07b241eb9e0a5f7786dcf286f0c40e28ca812983204e549299",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_124.png",
-      "suggested_source_review_duration_ms": 167,
-      "decoded_source_rgb_sha256": "2e9fe4689ddf9ee8736d0b435e3ea514e4aeecc8e393caf62ee4225b5b1de895",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
-      "dimensions": [
-        720,
-        720
-      ],
-      "mode": "RGBA",
-      "alpha_extrema": [
-        0,
-        255
-      ],
-      "transparent_pixels": 429396,
-      "opaque_pixels": 70209,
-      "soft_alpha_pixels": 18795,
-      "visible_bbox_xyxy_exclusive": [
-        108,
-        253,
-        534,
-        686
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 0,
-      "protected_dark_or_red_pixels": 135578,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 5450,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 0
-    },
-    {
-      "sequence_index_0_based": 29,
-      "source_index_0_based": 128,
-      "source_frame_1_based": 129,
-      "source_time_seconds": 5.333333333333333,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000030.png",
-      "sha256": "57ce3dff9d3f5dbb1412d0afe663bf728689c8059d5385bdbf9f48547ee14ae4",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_128.png",
-      "suggested_source_review_duration_ms": 167,
-      "decoded_source_rgb_sha256": "133c2de8288a26372cde328cfaaf7978b97aaf3b0f709d4d4fd5dd3a81cade08",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
-      "dimensions": [
-        720,
-        720
-      ],
-      "mode": "RGBA",
-      "alpha_extrema": [
-        0,
-        255
-      ],
-      "transparent_pixels": 433238,
-      "opaque_pixels": 66739,
-      "soft_alpha_pixels": 18423,
-      "visible_bbox_xyxy_exclusive": [
-        142,
-        258,
-        543,
-        684
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 0,
-      "protected_dark_or_red_pixels": 129085,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 5310,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 0
-    },
-    {
-      "sequence_index_0_based": 30,
-      "source_index_0_based": 132,
-      "source_frame_1_based": 133,
-      "source_time_seconds": 5.5,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000031.png",
-      "sha256": "090724e7abce891283c67e5b279c5abb6cc0048710126909c1be07360be40721",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_132.png",
-      "suggested_source_review_duration_ms": 167,
-      "decoded_source_rgb_sha256": "d46655f8c7c543ec419c069f6aeda979891560f01c94baea634cce4413dd7761",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
-      "dimensions": [
-        720,
-        720
-      ],
-      "mode": "RGBA",
-      "alpha_extrema": [
-        0,
-        255
-      ],
-      "transparent_pixels": 435300,
-      "opaque_pixels": 64605,
-      "soft_alpha_pixels": 18495,
-      "visible_bbox_xyxy_exclusive": [
-        154,
-        243,
-        546,
-        683
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 0,
-      "protected_dark_or_red_pixels": 125912,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 4931,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 0
-    },
-    {
-      "sequence_index_0_based": 31,
-      "source_index_0_based": 136,
-      "source_frame_1_based": 137,
-      "source_time_seconds": 5.666666666666667,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000032.png",
-      "sha256": "2464edde133496201915e4121bb8d4ffd544b7fcad2daad659190bab3ef0320c",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_136.png",
-      "suggested_source_review_duration_ms": 167,
-      "decoded_source_rgb_sha256": "fe8d9eee9583216e92b7f5be8e9883886017628fcc64ab81244ecf1a2b7574ff",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
-      "dimensions": [
-        720,
-        720
-      ],
-      "mode": "RGBA",
-      "alpha_extrema": [
-        0,
-        255
-      ],
-      "transparent_pixels": 435847,
-      "opaque_pixels": 63945,
-      "soft_alpha_pixels": 18608,
-      "visible_bbox_xyxy_exclusive": [
-        151,
-        240,
-        546,
-        681
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 0,
-      "protected_dark_or_red_pixels": 125406,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 4626,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 0
-    },
-    {
-      "sequence_index_0_based": 32,
-      "source_index_0_based": 140,
-      "source_frame_1_based": 141,
-      "source_time_seconds": 5.833333333333333,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000033.png",
-      "sha256": "0e25ccbbca38812e085dc491f6ff250be5c7044051f2a77d44ced312ffcfb974",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_140.png",
-      "suggested_source_review_duration_ms": 167,
-      "decoded_source_rgb_sha256": "d6793e28d2494d8879d742d10e3d2d08f7302687605a26a5c4c72ace56710625",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
-      "dimensions": [
-        720,
-        720
-      ],
-      "mode": "RGBA",
-      "alpha_extrema": [
-        0,
-        255
-      ],
-      "transparent_pixels": 435864,
-      "opaque_pixels": 64251,
-      "soft_alpha_pixels": 18285,
-      "visible_bbox_xyxy_exclusive": [
-        151,
-        240,
-        546,
-        681
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 0,
-      "protected_dark_or_red_pixels": 125418,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 4237,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 0
-    },
-    {
-      "sequence_index_0_based": 33,
-      "source_index_0_based": 144,
-      "source_frame_1_based": 145,
-      "source_time_seconds": 6.0,
-      "path": "E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\art_sources\\characters\\shin_getter\\forms\\shin_getter_dragon_shining_spark\\sprite_000034.png",
-      "sha256": "fd1efe9da451e9bbe954d866575a541f53d21b6f00be123a4b8140c15c5d1000",
-      "raw_qa_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\raw_source_960\\source_144.png",
-      "suggested_source_review_duration_ms": 42,
-      "decoded_source_rgb_sha256": "16a8505d4bab029cd9e1dc18c582807642f25b5defbd9f194607d9a75133a65f",
-      "background_rgb": [
-        234,
-        0,
-        243
-      ],
-      "dimensions": [
-        720,
-        720
-      ],
-      "mode": "RGBA",
-      "alpha_extrema": [
-        0,
-        255
-      ],
-      "transparent_pixels": 435858,
-      "opaque_pixels": 64787,
-      "soft_alpha_pixels": 17755,
-      "visible_bbox_xyxy_exclusive": [
-        151,
-        240,
-        546,
-        681
-      ],
-      "empty": false,
-      "strong_magenta_residual_pixels": 0,
-      "protected_dark_or_red_pixels": 125369,
-      "protected_dark_or_red_alpha_zero_pixels": 0,
-      "protected_dark_or_red_alpha_below_240_pixels": 4026,
-      "transparent_nonzero_rgb_pixels": 0,
-      "canvas_edge_visible_pixels": 0
+      ]
     }
   ],
-  "validation": {
-    "empty_selected_frames": 0,
-    "protected_dark_or_red_alpha_zero_selected": 0,
-    "transparent_nonzero_rgb_selected": 0,
-    "strong_magenta_detector_hits_selected_sum": 39,
-    "strong_magenta_detector_hits_selected_max": 16,
-    "strong_magenta_detector_hits_weapon_free_sum": 4,
-    "reproducibility_check_command": "python -B \"E:\\Work\\StS2 Mods\\_worktrees\\ShinGetterMod-b1.3.0-20261001\\shin-getter-mod-godot\\tools\\extract_shining_spark_frames.py\" verify",
-    "all_frame_metrics_path": "E:\\Work\\StS2 Mods\\_validation\\b130-shining-20261001\\all-frame-metrics.json"
+  "import_method": "byte_exact_copy_of_delivered_sprites_import_no_resize_rekey_or_interpolation",
+  "preview": {
+    "path": "D:\\Library\\Pictures\\\u6740\u622e\u5c16\u58542-\u7d20\u6750\\anim-sprite\\sprites\\\u771f\u76d6\u5854\u9f99\\\u95ea\u5149\u7206\u88c2\\\u95ea\u5149\u7206\u88c2_sampled_dark.gif",
+    "sha256": "6895f9004e6a26225ba8764f822f4e7d354fe95ce860e5751b5784425b99707f",
+    "frames": 47,
+    "duration_ms": 2110
   },
-  "integration_constraints": [
-    "Parent visual approval required before integration",
-    "No second falling axe",
-    "No armed DashV2 replacement",
-    "Godot supplies translation and hold durations",
-    "Source timing GIF is review only, not recommended gameplay timing"
+  "runtime_notes": [
+    "Charge includes exactly one source jump and screen-facing energy buildup; facing is accepted by user.",
+    "Extend Shining wait at charge final index only; do not slow rush.",
+    "Rush starts at index36; impact starts at index45. Damage events remain gameplay-controlled.",
+    "Recover holds index46 for .35s while runtime returns visual root; no reverse or initial-pose reset.",
+    "The long stable source tail is compressed into impact endpoints, so source green fade becomes quick; review the minimum-tempo preview.",
+    "Keep baked green effects; no re-keying, no interpolation, no invented frames."
   ],
-  "visual_review": {
-    "status": "candidate_reviewed_pending_parent_acceptance",
-    "coverage": "All 145 source/matte frames inspected in labelled contact sheets; key source and alpha details inspected at full size; all 34 selected frames checked on light and dark contact sheets",
-    "persistently_weapon_free_source_range_0_based": [
-      61,
-      144
-    ],
-    "persistently_weapon_free_sequence_range_0_based": [
-      18,
-      33
-    ],
-    "body_alpha_zero_check": "No protected dark/red source pixels fully removed across all 145 frames; edge softening is not counted as full removal",
-    "watermark": "No visible text/logo/watermark found; no corner erasure applied",
-    "edge_review": "No continuous visible bright magenta fringe in reviewed mattes; sparse strong-magenta detector hits remain and are not represented as absolute zero spill",
-    "limitations": [
-      "Axe briefly occluded in source 47-50, visible again from 51; not a second spawned axe, but source temporal discontinuity remains",
-      "Raised axe touches/clips top boundary in part of source 17-23; source character is not clipped",
-      "Axe surface shape and hue fluctuate in source video; no generative repair or RGB repaint applied",
-      "Open-hand and wing silhouettes vary slightly; rear cape/black shapes receive normal edge soft alpha",
-      "Source provides stationary crouch/forward exertion, no actual dash, impact, or idle recovery",
-      "No crop, per-frame reanchor, or synthesized missing weapon/body pixels; parent must judge source scale/foot drift in scene",
-      "Sparse per-pixel chroma detections are recorded; parent must inspect full-size details before approval"
-    ],
-    "approval": "Not approved for runtime until parent visual acceptance"
+  "acceptance": {
+    "screen_facing_charge": "explicitly_accepted_by_user",
+    "runtime": "not_run",
+    "impact_green_fade": "source_104_to_130_in_80ms_requires_gameplay_review"
   }
 }
