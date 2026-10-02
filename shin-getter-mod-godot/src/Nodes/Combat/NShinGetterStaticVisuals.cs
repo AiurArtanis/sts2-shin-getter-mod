@@ -161,8 +161,13 @@ public static class NShinGetterStaticVisuals
         }
 
         AnimatedSprite2D sprite = form.Sprite;
+        if (!await WaitForPreviousSpecialAttack(creature, sprite))
+        {
+            await onImpact();
+            return;
+        }
         NShinGetterSpriteAnimationStateMachine.QueueNextActionSpeed(sprite, 1f);
-        if (!TryPlayVisibleActionAnimation(sprite, "Attack", form.EnsureLoaded)
+        if (!NShinGetterSpriteAnimationStateMachine.TryStartFreshAttack(sprite, form.EnsureLoaded)
             || sprite.SpriteFrames is not { } frames)
         {
             await onImpact();
@@ -178,6 +183,27 @@ public static class NShinGetterStaticVisuals
         await onImpact();
         await WaitForAttackPhase(creature, sprite, animation, frames, frameUnits, duration);
     }
+
+    private static async Task<bool> WaitForPreviousSpecialAttack(Creature creature, AnimatedSprite2D sprite)
+    {
+        float budget = 6f;
+        while (IsAttackVisualAvailable(creature, sprite)
+            && SaveManager.Instance.PrefsSave.FastMode != FastModeType.Instant)
+        {
+            if (!CombatManager.Instance.IsPaused)
+            {
+                if (!NShinGetterSpriteAnimationStateMachine.IsKeepingAttack(sprite)) return true;
+                if (budget <= 0f) return false;
+            }
+            await Cmd.Wait(0.02f, ignoreCombatEnd: true);
+            if (!CombatManager.Instance.IsPaused) budget -= 0.02f;
+        }
+        return false;
+    }
+
+    private static bool IsAttackVisualAvailable(Creature creature, AnimatedSprite2D sprite) =>
+        GodotObject.IsInstanceValid(sprite) && sprite.IsInsideTree() && sprite.IsVisibleInTree()
+        && sprite.Modulate.A > 0.01f && !creature.IsDead && !CombatManager.Instance.IsOverOrEnding;
 
     private static async Task WaitForAttackPhase(Creature creature, AnimatedSprite2D sprite,
         StringName animation, SpriteFrames frames, double phaseUnits, float duration)

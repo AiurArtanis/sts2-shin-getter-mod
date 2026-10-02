@@ -78,6 +78,23 @@ internal static class NShinGetterSpriteAnimationStateMachine
         return true;
     }
 
+    internal static bool IsKeepingAttack(AnimatedSprite2D sprite) =>
+        ShouldKeepActiveSpecialAnimation(sprite, States.GetOrCreateValue(sprite), "Attack");
+
+    internal static bool TryStartFreshAttack(AnimatedSprite2D sprite,
+        Action<AnimatedSprite2D, string> ensureLoaded)
+    {
+        // TryPlay also returns true when preserving an old special action; that is not a new attack.
+        if (IsKeepingAttack(sprite)
+            || !TryPlay(sprite, "Attack", ensureLoaded)
+            || sprite.Animation != NShinGetterSpriteSequence.AttackAnimationName
+            || !sprite.IsPlaying())
+            return false;
+
+        sprite.SetFrameAndProgress(0, 0f);
+        return sprite.Frame == 0 && sprite.FrameProgress == 0f;
+    }
+
     public static void QueueNextActionSpeed(AnimatedSprite2D sprite, float speedScale)
     {
         State state = States.GetOrCreateValue(sprite);

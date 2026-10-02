@@ -61,7 +61,9 @@ def icon_contract(text: str) -> None:
 def full_attack_contract(text: str) -> None:
     attack = block(text, "public static async Task PlayCompleteCreatureAttack(")
     ordered(attack, ["NonInteractiveMode.IsActive", "FastModeType.Instant", "await onImpact();",
-                     "QueueNextActionSpeed(sprite, 1f)", 'TryPlayVisibleActionAnimation(sprite, "Attack",',
+                     "if (!await WaitForPreviousSpecialAttack(creature, sprite))",
+                     "await onImpact();", "QueueNextActionSpeed(sprite, 1f)",
+                     'TryStartFreshAttack(sprite, form.EnsureLoaded)',
                      "frames.GetFrameDuration(animation, index)", "frameUnits * 0.5d, duration);",
                      "await onImpact();", "frameUnits, duration);"],
             "Full normal-speed animation: impact in the middle, recovery before returning")
@@ -75,13 +77,41 @@ def full_attack_contract(text: str) -> None:
             "No unconditional wait on a signal that interruption may never emit")
 
 
+def previous_special_contract(text: str) -> None:
+    wait = block(text, "private static async Task<bool> WaitForPreviousSpecialAttack(")
+    ordered(wait, ["float budget = 6f;", "while (IsAttackVisualAvailable(creature, sprite)",
+                   "FastModeType.Instant", "if (!CombatManager.Instance.IsPaused)",
+                   "if (!NShinGetterSpriteAnimationStateMachine.IsKeepingAttack(sprite)) return true;",
+                   "if (budget <= 0f) return false;", "await Cmd.Wait(0.02f, ignoreCombatEnd: true);",
+                   "if (!CombatManager.Instance.IsPaused) budget -= 0.02f;", "return false;"],
+            "Old protected action must finish before a fresh request, with a finite pause-aware budget")
+    for forbidden in ("FrameProgress", "sprite.Frame", "SetFrame", "PlayIdle", "Stop(", "ToSignal"):
+        require(forbidden not in wait, "An old action past its midpoint cannot count as the new attack")
+    has(text, "GodotObject.IsInstanceValid(sprite) && sprite.IsInsideTree() && sprite.IsVisibleInTree()"
+        " && sprite.Modulate.A > 0.01f && !creature.IsDead && !CombatManager.Instance.IsOverOrEnding",
+        "Waiting interruption must exit on death/hidden/exit/combat ending")
+
+
+def fresh_attack_contract(text: str) -> None:
+    has(text, 'ShouldKeepActiveSpecialAnimation(sprite, States.GetOrCreateValue(sprite), "Attack");',
+        "Old-action check must reuse the actual state-machine suppression predicate")
+    start = block(text, "internal static bool TryStartFreshAttack(")
+    ordered(start, ["if (IsKeepingAttack(sprite)", '!TryPlay(sprite, "Attack", ensureLoaded)',
+                    "sprite.Animation != NShinGetterSpriteSequence.AttackAnimationName",
+                    "!sprite.IsPlaying()", "return false;", "sprite.SetFrameAndProgress(0, 0f);",
+                    "return sprite.Frame == 0 && sprite.FrameProgress == 0f;"],
+            "A true TryPlay is insufficient: require Attack and reset both frame and progress")
+
+
 def main() -> None:
     clock = read(ROOT / "src/Nodes/Combat/NShinGetterShiningSparkSequence.cs")
     subtitle = read(ROOT / "src/Nodes/Vfx/NShinGetterSparkSubtitleFollower.cs")
     icon = read(ROOT / "src/Nodes/Vfx/NShinGetterHotBloodIconFlash.cs")
     attack = read(ROOT / "src/Nodes/Combat/NShinGetterStaticVisuals.cs")
+    machine = read(ROOT / "src/Nodes/Combat/NShinGetterSpriteAnimationStateMachine.cs")
     for validator, text in ((clock_contract, clock), (subtitle_contract, subtitle),
-                            (icon_contract, icon), (full_attack_contract, attack)):
+                            (icon_contract, icon), (full_attack_contract, attack),
+                            (previous_special_contract, attack), (fresh_attack_contract, machine)):
         validator(text)
     voice = read(ROOT / "src/Audio/ShinGetterVoiceService.cs")
     has(voice, 'if (localizationKey == "SHIN_GETTER.voice.spark") '
@@ -100,8 +130,17 @@ def main() -> None:
         (icon_contract, icon, "var container = owner.GetVfxContainer();",
          "if (!owner.HasPower<SGP_HotBlood>()) return; var container = owner.GetVfxContainer();"),
         (full_attack_contract, attack, "frameUnits, duration);", "frameUnits * 0.5d, duration);"),
-        (full_attack_contract, attack, "budget -= 0.02f;", ""),
+        (full_attack_contract, attack, "if (completed >= phaseUnits) return;\n            budget -= 0.02f;",
+         "if (completed >= phaseUnits) return;"),
         (full_attack_contract, attack, "if (CombatManager.Instance.IsPaused) continue;", ""),
+        (full_attack_contract, attack, "if (!await WaitForPreviousSpecialAttack(creature, sprite))",
+         "if (false)"),
+        (previous_special_contract, attack, "IsKeepingAttack(sprite)) return true;", "IsKeepingAttack(sprite)) return false;"),
+        (previous_special_contract, attack, "if (budget <= 0f) return false;", ""),
+        (previous_special_contract, attack, "!creature.IsDead", "true"),
+        (previous_special_contract, attack, "sprite.IsInsideTree()", "true"),
+        (fresh_attack_contract, machine, "|| sprite.Animation != NShinGetterSpriteSequence.AttackAnimationName", ""),
+        (fresh_attack_contract, machine, "sprite.SetFrameAndProgress(0, 0f);", ""),
     ]
     for validator, text, old, new in cases:
         require(old in text, "Negative mutation must target actual source")
