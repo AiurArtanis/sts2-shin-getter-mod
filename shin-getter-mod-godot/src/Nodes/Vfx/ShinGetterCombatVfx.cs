@@ -36,6 +36,8 @@ internal static partial class ShinGetterCombatVfx
 
     public static Task PlayHotBloodAura(Creature creature) => PlayForbiddenIncantationAura(creature, HotBloodOrange, 0.52f, 145f, 2, 12, ShakeStrength.Medium);
 
+    public static void FlashHotBloodIcon(Creature creature) => NShinGetterHotBloodIconFlash.Play(creature);
+
     public static Task PlaySpiritAura(Creature creature) => PlayForbiddenIncantationAura(creature, SpiritGold, 0.62f, 172f, 3, 16, ShakeStrength.Strong);
 
     public static Task PlaySuperKiAura(Creature creature) => PlayForbiddenIncantationAura(creature, SpiritGold, 0.78f, 196f, 4, 22, ShakeStrength.Strong, withLightning: true);

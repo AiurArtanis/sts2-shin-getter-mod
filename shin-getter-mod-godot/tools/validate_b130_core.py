@@ -74,25 +74,30 @@ def validate_mod() -> None:
     has(shift, "base(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)",
         "Shift cost/type/target must remain unchanged")
     attack = ('DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this)'
-              '.Targeting(target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);')
+              '.Targeting(target).WithNoAttackerAnim().WithHitFx("vfx/vfx_attack_slash");')
     ordered(play, [
         'ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");',
         "var target = cardPlay.Target;",
         "var combatState = Owner.Creature.CombatState;",
         "if (IsUpgraded) await Transform(choiceContext, Owner, this);",
-        "var firstAttack = await " + attack,
+        "var firstAttack = " + attack,
+        "await NShinGetterStaticVisuals.PlayCompleteCreatureAttack(Owner.Creature,"
+        " () => firstAttack.Execute(choiceContext));",
         "var firstResults = firstAttack.Results.Take(1).SelectMany(results => results)"
         ".Where(result => result.Receiver == target).ToArray();",
         "if (firstResults.Length == 0 || firstResults.Sum(result => result.UnblockedDamage) >= 6) return;",
         "await Transform(choiceContext, Owner, this);",
         "if (firstResults.Any(result => result.WasTargetKilled)"
         " || combatState == null || !combatState.ContainsCreature(target) || !target.IsHittable) return;",
-        "await " + attack,
+        "var followup = " + attack,
+        "await NShinGetterStaticVisuals.PlayCompleteCreatureAttack(Owner.Creature,"
+        " () => followup.Execute(choiceContext));",
     ], "Shift first-hit/fixed-threshold/transform/death/escape order")
     require(compact(play).count(compact(attack)) == 2, "Exactly two direct attack sites")
     require(play.count("Transform(choiceContext, Owner, this)") == 2,
             "No unconditional trailing transform")
-    require(compact(play).endswith(compact("await " + attack + "}")),
+    require(compact(play).endswith(compact("await NShinGetterStaticVisuals.PlayCompleteCreatureAttack("
+            "Owner.Creature, () => followup.Execute(choiceContext)); }")),
             "Follow-up must end play without recursive result processing")
     for forbidden in ("PowerCmd", "CurrentHp", "TotalDamage", "BlockedDamage", "OverkillDamage",
                       "OnPlay(", "WithHitCount", "TargetingRandom", "for (", "while ("):
@@ -111,16 +116,17 @@ def validate_mod() -> None:
         'DynamicVars["VigorPower"].BaseValue, Owner.Creature, this)', "Ki uses its upgraded PowerVar")
 
     before = block(spirit, "public override async Task BeforeDamageReceived(")
-    has(before, "if (target == Owner && dealer != null && props.IsPoweredAttack() && Amount > 0)",
-        "Counter remains before incoming powered damage")
+    has(before, "if (target != Owner || dealer == null || dealer.Side == Owner.Side "
+        "|| dealer.IsDead || Owner.IsDead || !props.IsPoweredAttack() || Amount <= 0 "
+        "|| props.HasFlag(CounterDamage)) return;", "Counter only handles live hostile powered damage")
     has(before, "await CreatureCmd.Damage(choiceContext, dealer, Amount, "
         "ValueProp.Move | ValueProp.SkipHurtAnim | CounterDamage, Owner, null);",
         "Counter keeps stack damage/dealer and adds only the source tag")
     require("DamageCmd.Attack" not in spirit and "ValueProp.Unpowered" not in spirit,
             "Counter must not consume Vigor or disable all powered modifiers")
     late = block(spirit, "public override decimal ModifyHpLostAfterOstyLate(")
-    require(compact(late) == compact("{ if (target == Owner && dealer?.IsDead == true "
-            "&& props.IsPoweredAttack()) return 0m; return amount; }"),
+    require(compact(late) == compact("{ return CancelsIncomingDamage(target, props, dealer, cardSource) "
+            "? 0m : amount; }"),
             "Counter kill must still cancel incoming HP loss")
     has(spirit, "internal const ValueProp CounterDamage = (ValueProp)(1 << 30);",
         "Counter source tag must be explicit and stable")
@@ -142,8 +148,8 @@ def validate_mod() -> None:
     ordered(entry, ["typeof(HarmonyPatch)", "new PatchClassProcessor(harmony, type).Patch();"],
             "Existing initialization must discover the same-file patch")
     card = read(ROOT / "src/Models/Cards/SGC_FightingSpirit.cs")
-    has(card, "new DamageVar(5m, ValueProp.Move)", "Fighting Spirit base stacks remain 5")
-    has(card, "DynamicVars.Damage.UpgradeValueBy(3m)", "Fighting Spirit upgraded stacks remain 8")
+    has(card, 'new DynamicVar("CounterDamage", 5m)', "Fighting Spirit static base stacks remain 5")
+    has(card, 'DynamicVars["CounterDamage"].UpgradeValueBy(3m)', "Fighting Spirit upgraded stacks remain 8")
     base = read(ROOT / "src/Models/Cards/ShinGetterCardBase.cs")
     transform = block(base, "public static async Task Transform(")
     ordered(transform, ["if (!CanTransformInCombat(player))", "return;",

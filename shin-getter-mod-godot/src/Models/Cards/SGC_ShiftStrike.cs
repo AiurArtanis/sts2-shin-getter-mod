@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Nodes.Combat;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -34,7 +35,10 @@ public sealed class SGC_ShiftStrike : ShinGetterCardBase
         if (IsUpgraded)
             await Transform(choiceContext, Owner, this);
 
-        var firstAttack = await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+        var firstAttack = DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(target)
+            .WithNoAttackerAnim().WithHitFx("vfx/vfx_attack_slash");
+        await NShinGetterStaticVisuals.PlayCompleteCreatureAttack(Owner.Creature,
+            () => firstAttack.Execute(choiceContext));
         var firstResults = firstAttack.Results.Take(1).SelectMany(results => results)
             .Where(result => result.Receiver == target).ToArray();
 
@@ -48,7 +52,10 @@ public sealed class SGC_ShiftStrike : ShinGetterCardBase
             || combatState == null || !combatState.ContainsCreature(target) || !target.IsHittable)
             return;
 
-        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+        var followup = DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(target)
+            .WithNoAttackerAnim().WithHitFx("vfx/vfx_attack_slash");
+        await NShinGetterStaticVisuals.PlayCompleteCreatureAttack(Owner.Creature,
+            () => followup.Execute(choiceContext));
     }
 
     protected override void OnUpgrade()

@@ -34,16 +34,11 @@ public sealed class SGC_ShiningSpark : ShinGetterCardBase
 	{
 	}
 
-	public override int ModifyCardPlayCount(CardModel card, Creature? target, int playCount)
-	{
-		return ReferenceEquals(card, this) && Owner.Creature.HasPower<SGP_ShinForm>()
-			? playCount + 1
-			: playCount;
-	}
-
 	protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
 	{
 		ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
+		if (Owner.Creature.HasPower<SGP_ShinForm>())
+			await PowerCmd.Apply<SGP_Ki>(choiceContext, Owner.Creature, 3m, Owner.Creature, this);
 		await PowerCmd.Apply<VulnerablePower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
 		await PowerCmd.Apply<FrailPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
 		NShinGetterShiningSparkSequence? sequence = Owner.Creature.HasPower<SGP_ShinForm>()
@@ -62,10 +57,10 @@ public sealed class SGC_ShiningSpark : ShinGetterCardBase
 				.WithNoAttackerAnim()
 				.WithHitFx("vfx/vfx_starry_impact").Execute(choiceContext);
 			int ki = Owner.Creature.GetPower<SGP_Ki>()?.Amount ?? 0;
-			if (ki > 0)
+			if (ki > 0 && Owner.Creature.CombatState is { } combatState)
 			{
 				var followup = DamageCmd.Attack(DynamicVars["KiDamage"].BaseValue).WithHitCount(ki).FromCard(this)
-					.TargetingRandomOpponents(CombatState);
+					.TargetingRandomOpponents(combatState);
 				if (sequence != null)
 					followup.WithNoAttackerAnim();
 				else

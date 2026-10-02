@@ -23,6 +23,7 @@ using ShinGetterMod.Models.Cards;
 using ShinGetterMod.Models.Characters;
 using ShinGetterMod.Models.Powers;
 using ShinGetterMod.Models.Relics;
+using ShinGetterMod.Nodes.Vfx;
 
 namespace ShinGetterMod.Audio;
 
@@ -904,6 +905,8 @@ internal static class ShinGetterVoiceService
         if (subtitle == null)
             return;
 
+        if (localizationKey == "SHIN_GETTER.voice.spark")
+            NShinGetterSparkSubtitleFollower.Attach(subtitle, player.Creature);
         state.CurrentSubtitle = subtitle;
         int generation = ++state.SubtitleGeneration;
         float displaySeconds = category == VoicePlaybackCategory.Opening
@@ -919,7 +922,8 @@ internal static class ShinGetterVoiceService
         float displaySeconds)
     {
         await Cmd.Wait(Math.Max(displaySeconds, 0.01f));
-        if (state.SubtitleGeneration != generation || state.CurrentSubtitle != subtitle)
+        if (state.SubtitleGeneration != generation || state.CurrentSubtitle != subtitle
+            || !GodotObject.IsInstanceValid(subtitle))
             return;
 
         state.CurrentSubtitle = null;

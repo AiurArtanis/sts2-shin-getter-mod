@@ -232,6 +232,7 @@ public abstract class ShinGetterCardBase : CardModel
             "SGC_HotBlood",
             "SGC_HurricaneStrike",
             "SGC_SaintDragonRoar",
+            "SGC_ShiftStrike",
             "SGC_StarSlash",
         };
 

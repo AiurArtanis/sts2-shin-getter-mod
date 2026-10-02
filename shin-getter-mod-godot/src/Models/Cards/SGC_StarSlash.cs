@@ -48,6 +48,7 @@ public sealed class SGC_StarSlash : ShinGetterCardBase
             await CardCmd.Exhaust(choiceContext, card);
         }
 
+        ShinGetterCombatVfx.FlashHotBloodIcon(Owner.Creature);
         if (HasForm(Owner, ShinGetterForm.Getter1))
             await PowerCmd.Apply<SGP_HotBlood>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
 

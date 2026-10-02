@@ -13,15 +13,15 @@ ACTION = "shin_getter_dragon_shining_spark"
 
 
 def shining_contract(source: str) -> None:
-    replay = block(source, "public override int ModifyCardPlayCount(")
-    require(compact(replay) == compact("{ return ReferenceEquals(card, this) "
-            "&& Owner.Creature.HasPower<SGP_ShinForm>() ? playCount + 1 : playCount; }"),
-            "Replay must affect only this card in the current Dragon form")
+    require("ModifyCardPlayCount" not in source, "Dragon reward must not replay this card")
     play = block(source, "protected override async Task OnPlay(")
-    ordered(play, ["PowerCmd.Apply<VulnerablePower>", "PowerCmd.Apply<FrailPower>",
+    ordered(play, ["if (Owner.Creature.HasPower<SGP_ShinForm>()) "
+                   "await PowerCmd.Apply<SGP_Ki>(choiceContext, Owner.Creature, 3m, Owner.Creature, this);",
+                   "PowerCmd.Apply<VulnerablePower>", "PowerCmd.Apply<FrailPower>",
                    "NShinGetterShiningSparkSequence.TryCreate(Owner.Creature, cardPlay.Target)",
                    "await sequence.PlayToImpact(", "await DamageCmd.Attack(DynamicVars.Damage.BaseValue)",
-                   '.TargetingRandomOpponents(CombatState)',
+                   'if (ki > 0 && Owner.Creature.CombatState is { } combatState)',
+                   '.TargetingRandomOpponents(combatState)',
                    "await sequence.Recover();", "finally", "sequence?.Close();"],
             "Shining effects/impact/damage/ki/recovery/cleanup order")
     require("BeforeDamage(" not in play, "Hit FX must not precede the awaited impact phase")
@@ -37,6 +37,7 @@ def star_contract(source: str) -> None:
     play = block(source, "protected override async Task OnPlay(")
     ordered(play, ["CardSelectCmd.FromCombatPile", "Math.Min(selected.Sum(SumOriginalCardValues), 50m)",
                    "foreach (var card in selected)", "await CardCmd.Exhaust(choiceContext, card);",
+                   "ShinGetterCombatVfx.FlashHotBloodIcon(Owner.Creature);",
                    "if (HasForm(Owner, ShinGetterForm.Getter1))",
                    "await PowerCmd.Apply<SGP_HotBlood>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);",
                    "await PlayLegacyAnimationToImpact(cardPlay.Target);",
@@ -55,8 +56,8 @@ def star_contract(source: str) -> None:
 
 def negative_contracts(shining: str, star: str) -> None:
     variants = [
-        (shining_contract, shining.replace("ReferenceEquals(card, this) && ", "", 1)),
-        (shining_contract, shining.replace("playCount + 1", "playCount + 2", 1)),
+        (shining_contract, shining.replace("if (Owner.Creature.HasPower<SGP_ShinForm>())", "if (true)", 1)),
+        (shining_contract, shining.replace("Owner.Creature, 3m, Owner.Creature, this", "Owner.Creature, 6m, Owner.Creature, this", 1)),
         (shining_contract, shining.replace("await sequence.PlayToImpact(", "_ = sequence.PlayToImpact(", 1)),
         (star_contract, star.replace("Math.Min(selected.Sum(SumOriginalCardValues), 50m)",
                                     "selected.Sum(SumOriginalCardValues)", 1)),
@@ -147,9 +148,9 @@ def resources_and_clock() -> None:
 
 
 def localization() -> None:
-    markers = {"zhs": ("低于6", "热血", "重放1次", "不受"),
-               "eng": ("less than 6", "Valor", "Replay once", "does not increase"),
-               "jpn": ("6未満", "熱血", "1回リプレイ", "加算を受けない")}
+    markers = {"zhs": ("低于6", "热血", "先获得3", "不受"),
+               "eng": ("less than 6", "Valor", "Gain 3", "does not increase"),
+               "jpn": ("6未満", "熱血", "を3得る", "加算を受けない")}
     for language, values in markers.items():
         cards = json.loads(read(ROOT / f"ShinGetterMod/localization/{language}/cards.json"))
         powers = json.loads(read(ROOT / f"ShinGetterMod/localization/{language}/powers.json"))
@@ -157,6 +158,10 @@ def localization() -> None:
             require(marker in cards[f"S_G_C_{card}.description"], f"{language}: new {card} wording")
         require(values[-1] in powers["S_G_P_FIGHTING_SPIRIT.description"], "Counter tooltip agrees")
         star = cards["S_G_C_STAR_SLASH.description"]
+        fighting = cards["S_G_C_FIGHTING_SPIRIT.description"]
+        require("{CounterDamage:diff()}" in fighting and "{Damage:" not in fighting,
+                "Counter card has a static, non-previewed 5/8 variable")
+        require("[getter_ray]" in cards["S_G_C_SHINING_SPARK.description"], "Dragon reward uses Getter Ray color")
         require("{Vigor" not in star, "No stale Star Vigor variable")
         require("{Cards:diff()}" in star and "{Damage:diff()}" in star, "Star dynamic vars preserved")
 
