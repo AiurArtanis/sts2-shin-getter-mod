@@ -8,6 +8,7 @@ from pathlib import Path
 from PIL import Image
 
 from validate_b130_core import block, has, ordered, read, require
+from validate_b130_subtitle_layout import compact, fits, place
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -46,8 +47,11 @@ def main() -> None:
     transform = block(clock, "internal static Rect2 TransformRect(")
     require(transform.count("Expand(") == 3, "Project all four corners, including rotation/nonuniform scale")
 
-    # Verify the AABB math over all frame/flip/center combinations and rotated canvas bases.
+    # Exercise the complete production-equivalent selector after transforming both contents' AABBs.
     cases = 0
+    native_cases = 0
+    compact_cases = 0
+    unavailable_cases = 0
     for x0, y0, x1, y1 in bounds:
         for flip_x, flip_y in ((False, False), (True, False), (False, True), (True, True)):
             for centered in (False, True):
@@ -55,16 +59,37 @@ def main() -> None:
                 ys = (720 - y1, 720 - y0) if flip_y else (y0, y1)
                 origin = -360 if centered else 0
                 for angle in (0.0, 0.35, -0.2):
-                    points = [(100 + (x + origin + 17) * 0.6 * math.cos(angle)
-                               - (y + origin - 9) * 0.8 * math.sin(angle),
-                               500 + (x + origin + 17) * 0.6 * math.sin(angle)
-                               + (y + origin - 9) * 0.8 * math.cos(angle)) for x in xs for y in ys]
-                    body_top = min(y for _, y in points)
-                    # Bubble includes its own root rotation, shadow and content offsets in runtime.
-                    bubble_bottom = 200.0
-                    shift_y = body_top - 24.0 - bubble_bottom
-                    require(bubble_bottom + shift_y <= body_top - 23.99, "Above-body clearance")
-                    cases += 1
+                    for canvas_x, canvas_y, width, height in ((0.75, 0.75, 960, 540),
+                                                             (1, 1, 1280, 720),
+                                                             (1.5, 1.5, 1920, 1080),
+                                                             (2, 1.2, 2560, 864)):
+                        points = [(width * 0.35 + canvas_x * ((x + origin + 17) * 0.6 * math.cos(angle)
+                                   - (y + origin - 9) * 0.8 * math.sin(angle)),
+                                   height * 0.48 + canvas_y * ((x + origin + 17) * 0.6 * math.sin(angle)
+                                   + (y + origin - 9) * 0.8 * math.cos(angle))) for x in xs for y in ys]
+                        bx, by = min(x for x, _ in points), min(y for _, y in points)
+                        body = (bx, by, max(x for x, _ in points) - bx, max(y for _, y in points) - by)
+                        # Rotate a measured union of bubble, text and shadow, not an arbitrary bottom edge.
+                        bubble_points = [(canvas_x * (x * math.cos(0.12) - y * math.sin(0.12)),
+                                          canvas_y * (x * math.sin(0.12) + y * math.cos(0.12)))
+                                         for x in (-214, 426) for y in (-140, 140)]
+                        size = (max(x for x, _ in bubble_points) - min(x for x, _ in bubble_points),
+                                max(y for _, y in bubble_points) - min(y for _, y in bubble_points))
+                        view = (16, 16, width - 32, height - 32)
+                        placed = place(size, body, view)
+                        if placed is None:
+                            # Match runtime's basis-column magnitudes after nonuniform Canvas/root rotation.
+                            font_scale = (1.95 * math.hypot(canvas_x * math.cos(0.12), canvas_y * math.sin(0.12)),
+                                          1.95 * math.hypot(canvas_x * math.sin(0.12), canvas_y * math.cos(0.12)))
+                            placed = compact(list("Spaaaaaark !"), body, view, font_scale)
+                            compact_cases += placed is not None
+                            unavailable_cases += placed is None
+                        else:
+                            native_cases += 1
+                        if placed is not None:
+                            require(fits(placed, body, view), "Full viewport containment and body separation")
+                        cases += 1
+    require(native_cases > 0 and compact_cases > 0, "Both actual native and fallback decisions are exercised")
 
     shader = read(ROOT / "shaders/shin_getter_shining_shell.gdshader")
     shader_contract(shader)
@@ -95,7 +120,8 @@ def main() -> None:
                 samples += 1
     resources = read(ROOT / "tools/validate-mod-resources.gd")
     has(resources, '"res://shaders/shin_getter_shining_shell.gdshader": false', "Future PCK gate loads the new shader")
-    print(f"Visual revision6 offline gate passed: 47 PNG bounds, {cases} AABB math cases, "
+    print(f"Visual revision6 offline gate passed: 47 PNG bounds, {cases} full layout cases "
+          f"({native_cases} native/{compact_cases} compact/{unavailable_cases} unavailable), "
           f"{samples} atlas-footprint cases, {rejected} bad shader sources rejected")
     print("Godot shader compilation, pixels, font layout and visual acceptance NOT executed.")
 

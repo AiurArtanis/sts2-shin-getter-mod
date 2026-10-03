@@ -59,13 +59,22 @@ def subtitle_contract(text: str) -> None:
     ordered(process, ["_owner.IsDead || CombatManager.Instance.IsOverOrEnding", "_subtitle.Hide();",
                       "QueueFree();", "if (CombatManager.Instance.IsPaused) return;",
                       "NShinGetterShiningSparkSequence.GetFrameLocalRect(_sprite)",
-                      "body.Position.Y - BodyGap - bubble.End.Y",
+                      "ShinGetterSubtitleLayout.TryPlace(bubble.Size, body, viewport, BodyGap, out Rect2 placed)",
+                      "TryCompactLayout(body, viewport)",
+                      "Vector2 shift = placed.Position - bubble.Position;",
                       "parent.GetGlobalTransformWithCanvas().AffineInverse() * viewportPosition",
                       "_subtitle.Show();"],
-            "Follow the baked body in viewport space, keeping the actual bubble above it")
+            "Use a fully validated viewport/body placement, with a fixed-font compact fallback")
     has(process, "NShinGetterShiningSparkSequence.IsActuallyVisible(_sprite)",
         "Follower visibility includes SelfModulate and ancestor alpha")
-    has(process, "body.End.X + BodyGap - bubble.Position.X", "Top overflow moves aside, not back onto the head")
+    has(process, "_subtitle.Hide();", "No clipped/overlapping success when no readable slot exists")
+    has(text, "_nativeText.AutoSizeEnabled = false;", "Do not silently shrink the requested font")
+    fallback = block(text, "private bool TryCompactLayout(")
+    for fragment in ("ShinGetterSubtitleLayout.FreeBands(body, viewport, BodyGap)",
+                     "TryWrapText(plainText, font, fontSize, width, out string wrapped)",
+                     "_compactText.GetMinimumSize()", "ShinGetterSubtitleLayout.TryPlace(localSize * scale",
+                     "canvas.AffineInverse() * desired", "_nativeText.MaxFontSize"):
+        has(fallback, fragment, "Measure complete fixed-font text and validate its final viewport rectangle")
     dimensions = block(text, "private Rect2 GetBubbleViewportRect()")
     for fragment in ('"%Bubble", "%Shadow", "%Text"', "sprite.GetRect()", "control.Size", "Merge(rect)"):
         has(dimensions, fragment, "Measure real speech contents, not the zero-size root Control")
@@ -169,7 +178,7 @@ def main() -> None:
         (fresh_attack_contract, machine, "sprite.SetFrameAndProgress(0, 0f);", ""),
         (subtitle_contract, subtitle, "if (subtitle.HasNode(FollowerName)) return;", ""),
         (subtitle_contract, subtitle, "NShinGetterShiningSparkSequence.GetFrameLocalRect(_sprite)", "new Rect2()"),
-        (subtitle_contract, subtitle, "body.End.X + BodyGap - bubble.Position.X", "0f"),
+        (subtitle_contract, subtitle, "ShinGetterSubtitleLayout.TryPlace(bubble.Size, body, viewport, BodyGap, out Rect2 placed)", "false"),
         (subtitle_contract, subtitle, "ProcessPriority = 100", "ProcessPriority = -100"),
         (clock_contract, clock, "ShowBehindParent = true", "ShowBehindParent = false"),
         (clock_contract, clock, "drawRect.Grow(28f)", "drawRect"),
