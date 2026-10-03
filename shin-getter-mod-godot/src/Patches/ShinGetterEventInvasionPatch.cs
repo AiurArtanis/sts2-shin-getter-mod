@@ -90,7 +90,7 @@ internal static class ShinGetterEventOptionIconPatch
             || key.Contains(".TRIPLE_", StringComparison.Ordinal);
         Control icon = CreateIconLayer(key, isTriple);
         icon.Name = "ShinGetterOptionIcon";
-        icon.ZIndex = 8;
+        icon.ZIndex = 0;
         icon.MouseFilter = Control.MouseFilterEnum.Ignore;
         if (__instance.Option.IsLocked)
             icon.Modulate = new Color(0.62f, 0.62f, 0.62f, 0.58f);
