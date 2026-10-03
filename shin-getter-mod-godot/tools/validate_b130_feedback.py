@@ -57,7 +57,8 @@ def subtitle_contract(text: str) -> None:
     ordered(attach, ["subtitle.Hide();", "subtitle.AddChild("], "Do not flash at the stationary anchor on entry")
     process = block(text, "public override void _Process(")
     ordered(process, ["_owner.IsDead || CombatManager.Instance.IsOverOrEnding", "_subtitle.Hide();",
-                      "QueueFree();", "if (CombatManager.Instance.IsPaused) return;",
+                      "QueueFree();", "bool paused = CombatManager.Instance.IsPaused;",
+                      "SuspendNativeSpeech();", "if (_pauseLayoutReady) return;", "RestoreNativePause();",
                       "NShinGetterShiningSparkSequence.GetFrameLocalRect(_sprite)",
                       "ShinGetterSubtitleLayout.TryPlace(bubble.Size, body, viewport, BodyGap, out Rect2 placed)",
                       "TryCompactLayout(body, viewport)",
@@ -69,9 +70,9 @@ def subtitle_contract(text: str) -> None:
         "Follower visibility includes SelfModulate and ancestor alpha")
     has(process, "_subtitle.Hide();", "No clipped/overlapping success when no readable slot exists")
     has(text, "_nativeText.AutoSizeEnabled = false;", "Do not silently shrink the requested font")
-    has(text, "public override void _Ready() => RenderingServer.FramePreDraw += OnFramePreDraw;",
+    has(text, "RenderingServer.FramePreDraw += OnFramePreDraw;",
         "Correct the native post-Process Tween before rendering")
-    has(text, "public override void _ExitTree() => RenderingServer.FramePreDraw -= OnFramePreDraw;",
+    has(block(text, "public override void _ExitTree()"), "RenderingServer.FramePreDraw -= OnFramePreDraw;",
         "Release the rendering callback with this bubble's follower")
     render = block(text, "private void OnFramePreDraw()")
     ordered(render, ["IsInsideTree()", "IsQueuedForDeletion()", "GodotObject.IsInstanceValid(_subtitle)",

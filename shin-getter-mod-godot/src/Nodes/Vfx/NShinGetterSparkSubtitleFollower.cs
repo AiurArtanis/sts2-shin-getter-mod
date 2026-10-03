@@ -1,8 +1,10 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Globalization;
+using System.Reflection;
 using System.Text;
 using Godot;
+using HarmonyLib;
 using MegaCrit.Sts2.addons.mega_text;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -25,6 +27,14 @@ internal partial class NShinGetterSparkSubtitleFollower : Node
     private Label? _compactText;
     private ColorRect? _compactBackground;
     private bool _layoutWarning;
+    private static readonly FieldInfo? NativeTweenField = AccessTools.Field(typeof(NSpeechBubbleVfx), "_tween");
+    private Tween? _entryTween;
+    private bool _entryTweenPaused;
+    private bool _nativeProcessingSuspended;
+    private bool _nativeWasProcessing;
+    private bool _textProcessingSuspended;
+    private ProcessModeEnum _textProcessMode;
+    private bool _pauseLayoutReady;
 
     internal static void Attach(NSpeechBubbleVfx subtitle, Creature owner, bool enlarge)
     {
@@ -52,9 +62,20 @@ internal partial class NShinGetterSparkSubtitleFollower : Node
         }
     }
 
-    public override void _Ready() => RenderingServer.FramePreDraw += OnFramePreDraw;
+    public override void _Ready()
+    {
+        // AddChildSafely may defer the speech root, so capture its entry tween after its own Ready.
+        _subtitle.Ready += CaptureEntryTween;
+        CaptureEntryTween();
+        RenderingServer.FramePreDraw += OnFramePreDraw;
+    }
 
-    public override void _ExitTree() => RenderingServer.FramePreDraw -= OnFramePreDraw;
+    public override void _ExitTree()
+    {
+        RenderingServer.FramePreDraw -= OnFramePreDraw;
+        if (GodotObject.IsInstanceValid(_subtitle)) _subtitle.Ready -= CaptureEntryTween;
+        RestoreNativePause();
+    }
 
     private void OnFramePreDraw()
     {
@@ -70,11 +91,30 @@ internal partial class NShinGetterSparkSubtitleFollower : Node
             || !NShinGetterShiningSparkSequence.IsActuallyVisible(_sprite)
             || _owner.IsDead || CombatManager.Instance.IsOverOrEnding)
         {
+            RestoreNativePause();
             _subtitle.Hide();
             QueueFree();
             return;
         }
-        if (CombatManager.Instance.IsPaused) return;
+        FreezeFontSize();
+        bool paused = CombatManager.Instance.IsPaused;
+        if (paused)
+        {
+            SuspendNativeSpeech();
+            if (_entryTween == null)
+            {
+                // Unknown native lifecycle: never claim a stable paused layout while its tween can run.
+                HideUnplaceableSubtitle();
+                return;
+            }
+            // Correct the transition frame once, then keep both native transforms and placement frozen.
+            if (_pauseLayoutReady) return;
+        }
+        else
+        {
+            RestoreNativePause();
+            _pauseLayoutReady = false;
+        }
         if (_subtitle.GetParent() is not CanvasItem parent) return;
         Transform2D parentCanvas = parent.GetGlobalTransformWithCanvas();
         if (!parentCanvas.IsFinite() || Mathf.Abs(parentCanvas.Determinant()) < 0.000001f)
@@ -82,7 +122,6 @@ internal partial class NShinGetterSparkSubtitleFollower : Node
             HideUnplaceableSubtitle();
             return;
         }
-        FreezeFontSize();
         Rect2 body = NShinGetterShiningSparkSequence.TransformRect(
             NShinGetterShiningSparkSequence.GetFrameLocalRect(_sprite), _sprite.GetGlobalTransformWithCanvas());
         Rect2 bubble = GetBubbleViewportRect();
@@ -92,12 +131,57 @@ internal partial class NShinGetterSparkSubtitleFollower : Node
         {
             if (TryCompactLayout(body, viewport)) _subtitle.Show();
             else HideUnplaceableSubtitle();
+            _pauseLayoutReady = paused;
             return;
         }
         Vector2 shift = placed.Position - bubble.Position;
         Vector2 viewportPosition = _subtitle.GetGlobalTransformWithCanvas().Origin + shift;
         _subtitle.Position = parent.GetGlobalTransformWithCanvas().AffineInverse() * viewportPosition;
         _subtitle.Show();
+        _pauseLayoutReady = paused;
+    }
+
+    private void CaptureEntryTween()
+    {
+        _entryTween ??= NativeTweenField?.GetValue(_subtitle) as Tween;
+    }
+
+    private void SuspendNativeSpeech()
+    {
+        if (!_nativeProcessingSuspended)
+        {
+            _nativeWasProcessing = _subtitle.IsProcessing();
+            _subtitle.SetProcess(false);
+            _nativeProcessingSuspended = true;
+        }
+        if (_nativeText != null && !_textProcessingSuspended)
+        {
+            _textProcessMode = _nativeText.ProcessMode;
+            _nativeText.ProcessMode = ProcessModeEnum.Disabled;
+            _textProcessingSuspended = true;
+        }
+        // Only pause the captured entry tween. AnimOut replaces it; that fade must keep its lifetime.
+        if (GodotObject.IsInstanceValid(_entryTween) && _entryTween!.IsValid()
+            && ReferenceEquals(NativeTweenField?.GetValue(_subtitle), _entryTween) && _entryTween.IsRunning())
+        {
+            _entryTween.Pause();
+            _entryTweenPaused = true;
+        }
+    }
+
+    private void RestoreNativePause()
+    {
+        if (GodotObject.IsInstanceValid(_subtitle) && !_subtitle.IsQueuedForDeletion())
+        {
+            if (_nativeProcessingSuspended) _subtitle.SetProcess(_nativeWasProcessing);
+            if (_textProcessingSuspended && GodotObject.IsInstanceValid(_nativeText))
+                _nativeText!.ProcessMode = _textProcessMode;
+            if (_entryTweenPaused && GodotObject.IsInstanceValid(_entryTween) && _entryTween!.IsValid()
+                && ReferenceEquals(NativeTweenField?.GetValue(_subtitle), _entryTween)) _entryTween.Play();
+        }
+        _nativeProcessingSuspended = false;
+        _textProcessingSuspended = false;
+        _entryTweenPaused = false;
     }
 
     private void HideUnplaceableSubtitle()
