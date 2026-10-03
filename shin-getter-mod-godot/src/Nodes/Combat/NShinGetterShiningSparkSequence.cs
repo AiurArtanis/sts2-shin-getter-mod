@@ -22,6 +22,27 @@ internal partial class NShinGetterShiningSparkSequence : Node2D
     private const int ImpactStart = 45;
     private const int EndHold = 46;
     private const string ManualOwnerMeta = "shin_getter_shining_spark_owner";
+    private const string EnergyShaderPath = "res://shaders/shin_getter_shining_shell.gdshader";
+    // Alpha >= 128 bounds from the approved 47 PNGs, in unflipped source pixels.
+    private static readonly Vector4[] FrameBounds =
+    {
+        new(42, 117, 570, 685), new(50, 98, 571, 685), new(104, 29, 573, 685),
+        new(120, 0, 563, 685), new(122, 0, 534, 685), new(123, 56, 570, 685),
+        new(125, 156, 617, 685), new(123, 158, 562, 685), new(122, 158, 501, 702),
+        new(119, 159, 501, 720), new(0, 159, 501, 720), new(0, 162, 501, 720),
+        new(96, 165, 501, 685), new(90, 176, 511, 685), new(85, 193, 525, 685),
+        new(85, 198, 526, 685), new(90, 180, 526, 682), new(114, 120, 543, 662),
+        new(149, 54, 564, 628), new(152, 58, 559, 632), new(161, 64, 555, 638),
+        new(164, 69, 553, 642), new(165, 75, 552, 648), new(165, 80, 553, 652),
+        new(165, 86, 553, 659), new(165, 89, 553, 663), new(165, 90, 553, 663),
+        new(165, 90, 553, 663), new(165, 90, 553, 663), new(165, 90, 553, 663),
+        new(165, 90, 553, 663), new(165, 90, 553, 663), new(162, 94, 555, 664),
+        new(158, 101, 556, 664), new(146, 131, 556, 660), new(138, 141, 555, 652),
+        new(135, 143, 553, 648), new(132, 140, 550, 637), new(146, 127, 567, 634),
+        new(173, 117, 612, 627), new(208, 114, 653, 606), new(119, 114, 664, 576),
+        new(69, 114, 667, 559), new(66, 114, 667, 558), new(66, 114, 667, 558),
+        new(66, 114, 667, 558), new(75, 159, 675, 556),
+    };
     private readonly TaskCompletionSource<bool> _ended = new();
     private AnimatedSprite2D _sprite = null!;
     private Creature _owner = null!;
@@ -36,6 +57,9 @@ internal partial class NShinGetterShiningSparkSequence : Node2D
     private float _sampleTime;
     private bool _rushing;
     private float _impactPulse;
+    private Polygon2D? _energy;
+    private ShaderMaterial? _energyMaterial;
+    private float _energyStrength;
     private TaskCompletionSource<bool>? _stageCompletion;
     private Action<float>? _stageUpdate;
     private float _stageDuration;
@@ -89,6 +113,19 @@ internal partial class NShinGetterShiningSparkSequence : Node2D
             _tails[i] = new Sprite2D { Material = additive, Visible = false };
             AddChild(_tails[i]);
         }
+        Shader? shader = ResourceLoader.Load<Shader>(EnergyShaderPath);
+        if (shader != null)
+        {
+            _energyMaterial = new ShaderMaterial { Shader = shader };
+            _energy = new Polygon2D
+            {
+                Name = "ShiningSparkEnergyShell",
+                Material = _energyMaterial,
+                ShowBehindParent = true,
+                Visible = false,
+            };
+            _sprite.AddChild(_energy);
+        }
     }
 
     public async Task PlayToImpact(Func<Task> intro, Func<Task> release)
@@ -100,6 +137,7 @@ internal partial class NShinGetterShiningSparkSequence : Node2D
         await Stage(1f, u =>
         {
             SetFrame(ChargeStart, ChargeHold, u);
+            _energyStrength = 0.65f * u * u * (3f - 2f * u);
             float retreat = Mathf.Clamp((u - 0.65f) / 0.35f, 0f, 1f);
             _sprite.Position = _origin + _recoil * retreat * retreat;
         });
@@ -110,6 +148,7 @@ internal partial class NShinGetterShiningSparkSequence : Node2D
         if (_closed) return;
         _ = release(); // Playback starts now; impact does not wait for the line to finish.
         _rushing = true;
+        _energyStrength = 1f;
         _sampleTime = 0.04f;
         await Stage(0.28f, u =>
         {
@@ -117,6 +156,7 @@ internal partial class NShinGetterShiningSparkSequence : Node2D
             _sprite.Position = (_origin + _recoil).Lerp(_origin + _lunge, u * u * u);
         });
         _rushing = false;
+        _energyStrength = 0.95f;
         await Stage(0.08f, u =>
         {
             SetFrame(ImpactStart, EndHold, u);
@@ -132,6 +172,7 @@ internal partial class NShinGetterShiningSparkSequence : Node2D
         await Stage(0.35f, u =>
         {
             SetFrame(EndHold, EndHold, 0f);
+            _energyStrength = 0.95f * (1f - u);
             float smooth = u * u * (3f - 2f * u);
             _sprite.Position = start.Lerp(_origin, smooth);
         });
@@ -184,7 +225,55 @@ internal partial class NShinGetterShiningSparkSequence : Node2D
             }
         }
         UpdateTailHistory((float)delta);
+        UpdateEnergyShell();
         QueueRedraw();
+    }
+
+    private void UpdateEnergyShell()
+    {
+        if (_energy == null || _energyMaterial == null) return;
+        Texture2D? frame = _sprite.SpriteFrames?.GetFrameTexture(_sprite.Animation, _sprite.Frame);
+        if (frame == null) return;
+        Texture2D atlas = frame is AtlasTexture atlasFrame ? atlasFrame.Atlas : frame;
+        Rect2 region = frame is AtlasTexture selected ? selected.Region : new Rect2(Vector2.Zero, frame.GetSize());
+        Rect2 drawRect = GetFrameLocalRect(_sprite, opaqueBounds: false);
+        Rect2 padded = drawRect.Grow(28f);
+        _energy.Polygon = new[] { padded.Position, new Vector2(padded.End.X, padded.Position.Y),
+            padded.End, new Vector2(padded.Position.X, padded.End.Y) };
+        _energyMaterial.SetShaderParameter("frame_atlas", atlas);
+        _energyMaterial.SetShaderParameter("atlas_size", atlas.GetSize());
+        _energyMaterial.SetShaderParameter("frame_region", new Vector4(region.Position.X, region.Position.Y,
+            region.Size.X, region.Size.Y));
+        _energyMaterial.SetShaderParameter("frame_origin", drawRect.Position);
+        _energyMaterial.SetShaderParameter("frame_size", drawRect.Size);
+        _energyMaterial.SetShaderParameter("flipped", new Vector2(_sprite.FlipH ? 1f : 0f, _sprite.FlipV ? 1f : 0f));
+        _energyMaterial.SetShaderParameter("strength", _energyStrength);
+        _energy.Visible = _energyStrength > 0f;
+    }
+
+    internal static Rect2 GetFrameLocalRect(AnimatedSprite2D sprite, bool opaqueBounds = true)
+    {
+        Vector2 size = sprite.SpriteFrames?.GetFrameTexture(sprite.Animation, sprite.Frame)?.GetSize()
+            ?? new Vector2(720f, 720f);
+        Rect2 rect = new(Vector2.Zero, size);
+        if (opaqueBounds && sprite.Animation == NShinGetterSpriteSequence.ShiningSparkAnimationName
+            && sprite.Frame >= 0 && sprite.Frame < FrameBounds.Length)
+        {
+            Vector4 bounds = FrameBounds[sprite.Frame];
+            rect = new Rect2(bounds.X, bounds.Y, bounds.Z - bounds.X, bounds.W - bounds.Y);
+        }
+        if (sprite.FlipH) rect.Position = new Vector2(size.X - rect.End.X, rect.Position.Y);
+        if (sprite.FlipV) rect.Position = new Vector2(rect.Position.X, size.Y - rect.End.Y);
+        rect.Position += sprite.Offset - (sprite.Centered ? size * 0.5f : Vector2.Zero);
+        return rect;
+    }
+
+    internal static Rect2 TransformRect(Rect2 rect, Transform2D transform)
+    {
+        Rect2 result = new(transform * rect.Position, Vector2.Zero);
+        result = result.Expand(transform * new Vector2(rect.End.X, rect.Position.Y));
+        result = result.Expand(transform * rect.End);
+        return result.Expand(transform * new Vector2(rect.Position.X, rect.End.Y));
     }
 
     private void SetFrame(int first, int last, float progress) =>
@@ -253,7 +342,7 @@ internal partial class NShinGetterShiningSparkSequence : Node2D
         && _sprite.HasMeta(ManualOwnerMeta)
         && _sprite.GetMeta(ManualOwnerMeta).AsUInt64() == GetInstanceId();
 
-    private static bool IsActuallyVisible(AnimatedSprite2D sprite)
+    internal static bool IsActuallyVisible(AnimatedSprite2D sprite)
     {
         if (!sprite.IsVisibleInTree()) return false;
         float alpha = sprite.SelfModulate.A;
@@ -269,6 +358,11 @@ internal partial class NShinGetterShiningSparkSequence : Node2D
         if (_closed) return;
         _closed = true;
         _stageUpdate = null;
+        if (_energy != null && GodotObject.IsInstanceValid(_energy))
+        {
+            _energy.Hide();
+            _energy.QueueFree();
+        }
         if (OwnsSprite())
         {
             _sprite.RemoveMeta(ManualOwnerMeta);

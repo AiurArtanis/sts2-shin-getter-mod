@@ -104,8 +104,8 @@ def stage_clock_contract(clock: str) -> None:
                       "_sprite.Position = start.Lerp(_origin, smooth);"], "Recover holds final airborne frame")
     has(clock, "_sprite.Frame = first + Math.Min(last - first, (int)Math.Floor((last - first + 1) * progress));",
         "Each stage frame gets equal duration; do not round endpoint interpolation")
-    for forbidden in ("_shell", "ShaderMaterial", "DrawPolyline(points", "Position.Y", "Rotation ="):
-        require(forbidden not in clock, "Baked jump/green energy needs no duplicate root jump or shell")
+    for forbidden in ("_shell.Texture", "_sprite.Modulate =", "DrawPolyline(points", "_sprite.Position.Y", "Rotation ="):
+        require(forbidden not in clock, "Keep the baked jump and armor; no duplicate root jump/body repaint")
 
 
 def resources_and_clock() -> None:
@@ -189,7 +189,7 @@ def resources_and_clock() -> None:
         "Late cleanup must not restore a sprite now owned by another playback")
     ordered(end, ["_sprite.RemoveMeta(ManualOwnerMeta)", "_sprite.Position = _origin"],
             "Release manual ownership before returning to idle")
-    visible = block(clock, "private static bool IsActuallyVisible(")
+    visible = block(clock, "internal static bool IsActuallyVisible(")
     for fragment in ("sprite.IsVisibleInTree()", "sprite.SelfModulate.A", "node.GetParent()", "item.Modulate.A"):
         require(fragment in visible, "Visibility includes parents and inherited alpha")
     for forbidden in ("CreateTween", "SignalName.Finished", "ownerNode.GlobalPosition =", "Random", "Rng"):

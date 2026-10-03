@@ -905,8 +905,9 @@ internal static class ShinGetterVoiceService
         if (subtitle == null)
             return;
 
-        if (localizationKey == "SHIN_GETTER.voice.spark")
-            NShinGetterSparkSubtitleFollower.Attach(subtitle, player.Creature);
+        if (localizationKey is "SHIN_GETTER.voice.shining" or "SHIN_GETTER.voice.spark")
+            NShinGetterSparkSubtitleFollower.Attach(subtitle, player.Creature,
+                enlarge: localizationKey == "SHIN_GETTER.voice.spark");
         state.CurrentSubtitle = subtitle;
         int generation = ++state.SubtitleGeneration;
         float displaySeconds = category == VoicePlaybackCategory.Opening

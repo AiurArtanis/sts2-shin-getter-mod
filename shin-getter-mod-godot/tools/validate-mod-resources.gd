@@ -4,6 +4,7 @@ const REQUIRED_RESOURCES := {
 	"res://materials/cards/frames/card_frame_shin_getter_mat.tres": false,
 	"res://materials/transitions/shin_getter_transition_mat.tres": false,
 	"res://shaders/shin_getter_hsv.gdshader": false,
+	"res://shaders/shin_getter_shining_shell.gdshader": false,
 	"res://animations/character_select/shin_getter/character_select_shin_getter_bg.png": false,
 	"res://audio/sfx/characters/shin_getter/shin_getter_select.wav": false,
 	"res://audio/sfx/characters/shin_getter/voices/transform.wav": false,

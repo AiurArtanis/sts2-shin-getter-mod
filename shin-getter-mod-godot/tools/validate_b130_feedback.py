@@ -16,7 +16,7 @@ def clock_contract(text: str) -> None:
                    "await Stage(0.08f,"], "Recoil/voice/accelerating dash/impact share the same stage clock")
     process = block(text, "public override void _Process(")
     ordered(process, ["if (CombatManager.Instance.IsPaused) return;", "_stageTime += (float)delta;",
-                      "UpdateTailHistory((float)delta);", "QueueRedraw();"],
+                      "UpdateTailHistory((float)delta);", "UpdateEnergyShell();", "QueueRedraw();"],
             "Pause freezes frame/position/baked energy and actual history ages")
     history = block(text, "private void UpdateTailHistory(")
     for fragment in ("_tailAges[i] += delta;", "if (!_rushing || _travelDistance < 20f) return;",
@@ -26,26 +26,49 @@ def clock_contract(text: str) -> None:
     for forbidden in ("AddChild", "new Sprite2D", "tail.GlobalPosition -="):
         require(forbidden not in history, "History uses a fixed pool, not current-frame offset copies")
     draw = block(text, "public override void _Draw()")
-    has(draw, "_impactPulse <= 0f", "Only draw a short impact ring; baked energy needs no duplicate shell")
+    has(draw, "_impactPulse <= 0f", "Immediate drawing only handles the brief impact ring")
     has(draw, "DrawPolyline(ring", "Impact cue remains separate from the baked body energy")
-    require("_shell" not in text and "ShaderMaterial" not in text and "DrawPolyline(points" not in text,
-            "New baked green energy must not receive another silhouette or body arc overlay")
+    require("_sprite.Modulate =" not in text and "DrawPolyline(points" not in text,
+            "Keep the original armor and avoid detached body arcs")
+    has(text, "ShowBehindParent = true", "Soft shell is behind the actual sprite, not a body tint")
+    has(text, "new ShaderMaterial { Shader = shader }", "Each owner has a separate shell material")
+    energy = block(text, "private void UpdateEnergyShell()")
+    for fragment in ("GetFrameTexture(_sprite.Animation, _sprite.Frame)", "selected.Region",
+                     "drawRect.Grow(28f)", 'SetShaderParameter("flipped"',
+                     'SetShaderParameter("strength", _energyStrength)'):
+        has(energy, fragment, "Current-frame, padded, owner-local energy shell")
+    require("GetImage" not in text, "No per-frame GPU readback")
+    has(play, "_energyStrength = 0.65f * u * u * (3f - 2f * u);", "Charge builds a continuous shell")
+    has(play, "_energyStrength = 1f;", "Rush reinforces the shell")
+    has(block(text, "public async Task Recover()"), "_energyStrength = 0.95f * (1f - u);",
+        "Recovery fades the independent shell, without changing the baked pose")
+    has(block(text, "private void End()"), "_energy.QueueFree();", "Owner exits free their sprite-child shell")
     for forbidden in ("TIME", "Engine.TimeScale", "Random", "Rng", "ownerNode.GlobalPosition ="):
         require(forbidden not in text, f"Visual clock must not use {forbidden}")
 
 
 def subtitle_contract(text: str) -> None:
     attach = block(text, "internal static void Attach(")
-    has(attach, "subtitle.Scale *= 1.3f;", "Scale only the Spark bubble by 30 percent")
+    ordered(attach, ["if (subtitle.HasNode(FollowerName)) return;", "Vector2 baseScale = subtitle.Scale;",
+                     "subtitle.Scale = baseScale * (enlarge ? 1.3f * 1.5f : 1f);"],
+            "Idempotent Spark-only scaling: original 1.3 times another 50 percent, not cumulative")
     has(attach, "subtitle.AddChild(new NShinGetterSparkSubtitleFollower", "Follower lifetime belongs to this bubble")
-    has(attach, "subtitle.GetGlobalTransformWithCanvas().Origin - sprite.GetGlobalTransformWithCanvas().Origin",
-        "Capture anchor relative to the moving sprite in viewport space")
+    has(attach, "ProcessPriority = 100", "Follow after the sequence updates its frame and transform")
+    ordered(attach, ["subtitle.Hide();", "subtitle.AddChild("], "Do not flash at the stationary anchor on entry")
     process = block(text, "public override void _Process(")
     ordered(process, ["_owner.IsDead || CombatManager.Instance.IsOverOrEnding", "_subtitle.Hide();",
                       "QueueFree();", "if (CombatManager.Instance.IsPaused) return;",
-                      "_sprite.GetGlobalTransformWithCanvas().Origin + _viewportOffset",
-                      "parent.GetGlobalTransformWithCanvas().AffineInverse() * viewportPosition"],
-            "Follow the actual sprite across canvas transforms; stop on death/exit")
+                      "NShinGetterShiningSparkSequence.GetFrameLocalRect(_sprite)",
+                      "body.Position.Y - BodyGap - bubble.End.Y",
+                      "parent.GetGlobalTransformWithCanvas().AffineInverse() * viewportPosition",
+                      "_subtitle.Show();"],
+            "Follow the baked body in viewport space, keeping the actual bubble above it")
+    has(process, "NShinGetterShiningSparkSequence.IsActuallyVisible(_sprite)",
+        "Follower visibility includes SelfModulate and ancestor alpha")
+    has(process, "body.End.X + BodyGap - bubble.Position.X", "Top overflow moves aside, not back onto the head")
+    dimensions = block(text, "private Rect2 GetBubbleViewportRect()")
+    for fragment in ('"%Bubble", "%Shadow", "%Text"', "sprite.GetRect()", "control.Size", "Merge(rect)"):
+        has(dimensions, fragment, "Measure real speech contents, not the zero-size root Control")
     for forbidden in ("TalkPosition", "Scale", "CreateTween"):
         require(forbidden not in process, "No stationary anchor or repeated scaling")
 
@@ -116,8 +139,9 @@ def main() -> None:
                             (previous_special_contract, attack), (fresh_attack_contract, machine)):
         validator(text)
     voice = read(ROOT / "src/Audio/ShinGetterVoiceService.cs")
-    has(voice, 'if (localizationKey == "SHIN_GETTER.voice.spark") '
-        'NShinGetterSparkSubtitleFollower.Attach(subtitle, player.Creature);', "Only Spark opts into the follower")
+    has(voice, 'if (localizationKey is "SHIN_GETTER.voice.shining" or "SHIN_GETTER.voice.spark") '
+        'NShinGetterSparkSubtitleFollower.Attach(subtitle, player.Creature, '
+        'enlarge: localizationKey == "SHIN_GETTER.voice.spark");', "Both lines follow; only Spark is enlarged")
     base = read(ROOT / "src/Models/Cards/ShinGetterCardBase.cs")
     timing = base.split("AttackTimingHandledByVfxCards =", 1)[1].split("};", 1)[0]
     require('"SGC_ShiftStrike"' in timing, "Shift owns its attack timing, without a separate ordinary delay")
@@ -126,7 +150,7 @@ def main() -> None:
         (clock_contract, clock, "_origin + _recoil * retreat * retreat", "_origin"),
         (clock_contract, clock, "if (CombatManager.Instance.IsPaused) return;", ""),
         (clock_contract, clock, "tail.GlobalTransform = _sprite.GlobalTransform;", ""),
-        (subtitle_contract, subtitle, "subtitle.Scale *= 1.3f;", "subtitle.Scale *= 2f;"),
+        (subtitle_contract, subtitle, "1.3f * 1.5f", "1.3f"),
         (subtitle_contract, subtitle, "parent.GetGlobalTransformWithCanvas().AffineInverse() * viewportPosition", "viewportPosition"),
         (icon_contract, icon, "ModelDb.Power<SGP_HotBlood>().BigIcon", "null"),
         (icon_contract, icon, "var container = owner.GetVfxContainer();",
@@ -143,6 +167,14 @@ def main() -> None:
         (previous_special_contract, attack, "sprite.IsInsideTree()", "true"),
         (fresh_attack_contract, machine, "|| sprite.Animation != NShinGetterSpriteSequence.AttackAnimationName", ""),
         (fresh_attack_contract, machine, "sprite.SetFrameAndProgress(0, 0f);", ""),
+        (subtitle_contract, subtitle, "if (subtitle.HasNode(FollowerName)) return;", ""),
+        (subtitle_contract, subtitle, "NShinGetterShiningSparkSequence.GetFrameLocalRect(_sprite)", "new Rect2()"),
+        (subtitle_contract, subtitle, "body.End.X + BodyGap - bubble.Position.X", "0f"),
+        (subtitle_contract, subtitle, "ProcessPriority = 100", "ProcessPriority = -100"),
+        (clock_contract, clock, "ShowBehindParent = true", "ShowBehindParent = false"),
+        (clock_contract, clock, "drawRect.Grow(28f)", "drawRect"),
+        (clock_contract, clock, "_energyStrength = 0.95f * (1f - u);", "_energyStrength = 1f;"),
+        (clock_contract, clock, "_energy.QueueFree();", ""),
     ]
     for validator, text, old, new in cases:
         require(old in text, "Negative mutation must target actual source")
