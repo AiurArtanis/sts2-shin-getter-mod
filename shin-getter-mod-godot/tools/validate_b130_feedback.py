@@ -69,6 +69,14 @@ def subtitle_contract(text: str) -> None:
         "Follower visibility includes SelfModulate and ancestor alpha")
     has(process, "_subtitle.Hide();", "No clipped/overlapping success when no readable slot exists")
     has(text, "_nativeText.AutoSizeEnabled = false;", "Do not silently shrink the requested font")
+    has(text, "public override void _Ready() => RenderingServer.FramePreDraw += OnFramePreDraw;",
+        "Correct the native post-Process Tween before rendering")
+    has(text, "public override void _ExitTree() => RenderingServer.FramePreDraw -= OnFramePreDraw;",
+        "Release the rendering callback with this bubble's follower")
+    render = block(text, "private void OnFramePreDraw()")
+    ordered(render, ["IsInsideTree()", "IsQueuedForDeletion()", "GodotObject.IsInstanceValid(_subtitle)",
+                     "_subtitle.IsQueuedForDeletion()", "return;", "_Process(0d);"],
+            "The final render pass reuses pause/visibility/body/layout guards and skips dying bubbles")
     fallback = block(text, "private bool TryCompactLayout(")
     for fragment in ("ShinGetterSubtitleLayout.FreeBands(body, viewport, BodyGap)",
                      "TryWrapText(plainText, font, fontSize, width, out string wrapped)",
@@ -180,6 +188,10 @@ def main() -> None:
         (subtitle_contract, subtitle, "NShinGetterShiningSparkSequence.GetFrameLocalRect(_sprite)", "new Rect2()"),
         (subtitle_contract, subtitle, "ShinGetterSubtitleLayout.TryPlace(bubble.Size, body, viewport, BodyGap, out Rect2 placed)", "false"),
         (subtitle_contract, subtitle, "ProcessPriority = 100", "ProcessPriority = -100"),
+        (subtitle_contract, subtitle, "RenderingServer.FramePreDraw += OnFramePreDraw;", ""),
+        (subtitle_contract, subtitle, "RenderingServer.FramePreDraw -= OnFramePreDraw;", ""),
+        (subtitle_contract, subtitle, "_subtitle.IsQueuedForDeletion()", "false"),
+        (subtitle_contract, subtitle, "_Process(0d);", ""),
         (clock_contract, clock, "ShowBehindParent = true", "ShowBehindParent = false"),
         (clock_contract, clock, "drawRect.Grow(28f)", "drawRect"),
         (clock_contract, clock, "_energyStrength = 0.95f * (1f - u);", "_energyStrength = 1f;"),

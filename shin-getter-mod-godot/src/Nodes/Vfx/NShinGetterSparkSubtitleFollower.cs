@@ -52,6 +52,18 @@ internal partial class NShinGetterSparkSubtitleFollower : Node
         }
     }
 
+    public override void _Ready() => RenderingServer.FramePreDraw += OnFramePreDraw;
+
+    public override void _ExitTree() => RenderingServer.FramePreDraw -= OnFramePreDraw;
+
+    private void OnFramePreDraw()
+    {
+        // Native bubble tweens run after _Process; measure their final transforms before drawing.
+        if (!IsInsideTree() || IsQueuedForDeletion() || !GodotObject.IsInstanceValid(_subtitle)
+            || _subtitle.IsQueuedForDeletion()) return;
+        _Process(0d);
+    }
+
     public override void _Process(double delta)
     {
         if (!GodotObject.IsInstanceValid(_sprite) || !_sprite.IsInsideTree()

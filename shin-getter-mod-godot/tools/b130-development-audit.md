@@ -176,3 +176,15 @@ Main developer rejected revision6 at `7999cfd0b9b84464b1cc9afa41ec5d0db83a3967` 
 - Focused checks: core488, feedback26 negatives, ultimates19 negatives/47 exact RGBA cells, visual4512/752 atlas-footprint cases/four shader negatives, layout five negatives, all45 tracked JSONs, all311 unique UID files and diff-check pass. Previous unchanged shader/energy/gameplay evidence remains historical; no new shader, PNG, atlas, stage-clock, voice-claim, damage or other-card edits.
 
 Same isolated branch and formal v1.2.2 baseline; installed candidate is still c82bfca7. No build, Godot/game startup, PCK, initialization, deployment, pr, merge, release or shared-root write. Submit this one-item correction for independent review; real fonts/pixels, compact-caption appearance, energy perception and performance remain runtime/human acceptance work. Star Slash material gap and the batch's open status are unchanged.
+
+## Pre-Draw Layout Follow-Up 8: 2026-10-03
+
+Main developer independently approved correction7 at `130cbc3de46bc22debaafad8fdfdba769c83fcfb`: the 640x280 side-overflow P2 is closed, with no new definite code blocker found. Its five focused offline gates, all45 JSON files and commit diff-check passed independently. This is not compiler, font-shaping, shader/pixel or game acceptance evidence.
+
+After submission, checked the actual native speech Tween and local Godot4.5.1 API documentation. The native entry animation changes Bubble.Scale and root rotation; Godot processes Tween after all Node._Process calls. ProcessPriority100 alone does not guarantee that the measured contents stay unchanged until drawing. This is an API/source timing risk, not an asserted game reproduction.
+
+- Add one FramePreDraw final positioning pass that reuses the same pause/owner/visibility/complete-layout guards after the original Tween has run. Keep normal _Process as well; do not replace or shorten the native speech animation. This callback does not advance the combat/energy/voice clock.
+- Bind in _Ready and unbind in _ExitTree. Skip callbacks outside the tree or while either the follower or its subtitle is queued for deletion, avoiding revival and global-event retention after the original voice lifetime.
+- Feedback source gate now rejects30 variants, including missing subscription/unsubscription, lost deletion guard and missing final pass. Layout five negatives and visual4512 decision/752 footprint/four shader negative cases pass unchanged. No production layout equations or gameplay/material/resources changed.
+
+Same isolated branch, parent130cbc3d and formal v1.2.2 baseline. No compile, Godot/game startup, export, initialization, deployment or shared-directory write. Submit this small follow-up for independent review; native entry pixels and global-event runtime binding remain for directional game validation. Preserve correction7's approval and revision6's prior rejection as history.
