@@ -582,7 +582,7 @@ def validate_event_runtime() -> None:
         raise AssertionError("The discarded reverse-refining route must not remain in runtime code.")
 
     citizen = (SRC / "Models/Relics/SGR_GoodCitizenCard.cs").read_text(encoding="utf-8")
-    require(citizen, "[SavedProperty]", "FreePurchaseActIndices", "goldSpent == 0")
+    require(citizen, "[SavedProperty]", "FreePurchaseActIndices", "goldSpent != 0")
     if not re.search(r"FreePurchaseActIndices\.Add\(Owner\.RunState\.CurrentActIndex\)", citizen):
         raise AssertionError("Free purchases must persist their act indices.")
 
