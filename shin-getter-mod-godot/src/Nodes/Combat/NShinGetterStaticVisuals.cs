@@ -574,7 +574,8 @@ public static class NShinGetterStaticVisuals
         if (sprites.GetterOne.Node is AnimatedSprite2D getterOneAnimation)
         {
             NShinGetterSpriteSequence.EnsureIdleLoaded(getterOneAnimation);
-            if (getterOneAnimation.Visible && !getterOneAnimation.IsPlaying())
+            if (getterOneAnimation.Visible && !getterOneAnimation.IsPlaying()
+                && !NShinGetterStarSlashSequence.IsControlling(getterOneAnimation))
                 NShinGetterSpriteAnimationStateMachine.PlayIdle(getterOneAnimation);
         }
 
@@ -596,7 +597,8 @@ public static class NShinGetterStaticVisuals
         {
             NShinGetterSpriteSequence.EnsureShinDragonIdleLoaded(shinDragonAnimation);
             if (shinDragonAnimation.Visible && !shinDragonAnimation.IsPlaying()
-                && !NShinGetterShiningSparkSequence.IsControlling(shinDragonAnimation))
+                && !NShinGetterShiningSparkSequence.IsControlling(shinDragonAnimation)
+                && !NShinGetterStarSlashSequence.IsControlling(shinDragonAnimation))
                 NShinGetterSpriteAnimationStateMachine.PlayIdle(shinDragonAnimation, NShinGetterSpriteSequence.EnsureShinDragonIdleLoaded);
         }
 

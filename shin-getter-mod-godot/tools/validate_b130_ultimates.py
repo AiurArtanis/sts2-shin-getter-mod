@@ -53,8 +53,9 @@ def star_contract(source: str) -> None:
     has(source, "new CardsVar(1)", "Star base exhaust selection remains one")
     has(source, "DynamicVars.Cards.UpgradeValueBy(1m)", "Star upgrade selects two")
     has(source, "base(3, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)", "Star cost remains 3")
-    require("dedicated axe clips/weapon anchors are still missing" in source,
-            "Missing Star materials must remain explicit, not fake dedicated animation")
+    for fragment in ("NShinGetterStarSlashSequence.TryCreate(Owner)", "await sequence.PlayToImpact();",
+                     "await sequence.Recover();", "sequence?.Close();"):
+        require(fragment in source, "Star now has dedicated phases, recovery and cleanup; other forms keep fallback")
 
 
 def negative_contracts(shining: str, star: str) -> None:

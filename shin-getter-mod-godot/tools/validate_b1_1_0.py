@@ -139,12 +139,13 @@ def validate_sprite_sheets() -> None:
         "dash_v2": ("compress/mode=0", None),
         "drill_attack": ("compress/mode=0", None),
         "shining_spark": ("compress/mode=0", None),
+        "star_slash": ("compress/mode=0", None),
     }
     for sidecar in imports:
         text = sidecar.read_text(encoding="utf-8")
         directory_name = sidecar.parent.name
         action = next(
-            (special for special in ("stoner_sunshine", "dash_v2", "drill_attack", "shining_spark")
+            (special for special in ("stoner_sunshine", "dash_v2", "drill_attack", "shining_spark", "star_slash")
              if directory_name.endswith(f"_{special}")),
             directory_name.rsplit("_", 1)[-1],
         )

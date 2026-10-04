@@ -92,6 +92,8 @@ internal enum ShinGetterVoiceCue
     HayatoLowHp25 = 59,
     BenkeiLowHp50 = 60,
     BenkeiLowHp25 = 61,
+    StarSlashDragonPreparation = 62,
+    StarSlashOnePreparation = 63,
 }
 
 internal static class ShinGetterVoiceService
@@ -106,6 +108,7 @@ internal static class ShinGetterVoiceService
         InterruptingNonCard,
         DamageResponse,
         Card,
+        StarSlashPreparation,
     }
 
     private sealed record VoiceLine(
@@ -182,6 +185,8 @@ internal static class ShinGetterVoiceService
         new("063", ShinGetterVoiceCue.StonerArrivalOurWill, "ryoma_our_will_getter_power.wav", "SHIN_GETTER.voice.stonerArrivalOurWill", ShinGetterForm.Getter1),
         new("064", ShinGetterVoiceCue.StonerArrivalUniteHearts, "hayato_unite_hearts.wav", "SHIN_GETTER.voice.stonerArrivalUniteHearts", ShinGetterForm.Getter2),
         new("065", ShinGetterVoiceCue.StonerArrivalUseSunshine, "benkei_use_stoner_sunshine.wav", "SHIN_GETTER.voice.stonerArrivalUseSunshine", ShinGetterForm.Getter3),
+        new("066", ShinGetterVoiceCue.StarSlashDragonPreparation, "ryoma_burn_shin_dragon.wav", "SHIN_GETTER.voice.starSlashDragonPreparation", Category: VoicePlaybackCategory.StarSlashPreparation),
+        new("067", ShinGetterVoiceCue.StarSlashOnePreparation, "ryoma_go_shin_getter.wav", "SHIN_GETTER.voice.starSlashOnePreparation", Category: VoicePlaybackCategory.StarSlashPreparation),
     };
 
     private static readonly IReadOnlyDictionary<ShinGetterVoiceCue, VoiceLine> Lines = VoiceLines
@@ -214,6 +219,40 @@ internal static class ShinGetterVoiceService
 
     internal static void TryPlayCardVoice(CardModel card) =>
         TryPlayCardVoice(card, requireCardPlayStart: false);
+
+    // Caller has checked the same candidate/manual-choice boundary as CardSelectCmd.
+    internal static void TryPlayStarSlashPreparation(CardModel card)
+    {
+        if (card is not SGC_StarSlash || card.Owner is not { Character: ShinGetter } player)
+            return;
+        ShinGetterVoiceCue? cue = player.Creature.HasPower<SGP_ShinForm>()
+            ? ShinGetterVoiceCue.StarSlashDragonPreparation
+            : player.Creature.HasPower<SGP_ShinGetterOne>()
+                ? ShinGetterVoiceCue.StarSlashOnePreparation : null;
+        if (cue is { } value && TryPlayOneTime(player, Lines[value]))
+            PlaybackStates.GetOrCreateValue(player).StarSlashPreparationSubtitle =
+                PlaybackStates.GetOrCreateValue(player).CurrentSubtitle;
+    }
+
+    internal static void FinishStarSlashPreparation(Player player)
+    {
+        VoicePlaybackState state = PlaybackStates.GetOrCreateValue(player);
+        AudioStreamPlayer? audio = state.StarSlashPreparationPlayer;
+        state.StarSlashPreparationPlayer = null;
+        if (audio != null)
+        {
+            state.ActiveVoicePlayers.Remove(audio);
+            if (GodotObject.IsInstanceValid(audio))
+            {
+                audio.Stop();
+                audio.QueueFree();
+            }
+        }
+        if (state.StarSlashPreparationSubtitle != null
+            && state.CurrentSubtitle == state.StarSlashPreparationSubtitle)
+            StopCurrentSubtitle(state);
+        state.StarSlashPreparationSubtitle = null;
+    }
 
     internal static void TryPlayCardVoiceAtCardPlayStart(CardModel card) =>
         TryPlayCardVoice(card, requireCardPlayStart: true);
@@ -645,7 +684,7 @@ internal static class ShinGetterVoiceService
 
         if (!LinesByCode.TryGetValue(code, out VoiceLine? line))
         {
-            message = "Usage: sgs <001-047|049-050|052-065>";
+            message = "Usage: sgs <001-047|049-050|052-067>";
             return false;
         }
 
@@ -805,12 +844,16 @@ internal static class ShinGetterVoiceService
             VolumeDb = Mathf.LinearToDb(volume),
         };
         state.ActiveVoicePlayers.Add(audioPlayer);
+        if (category == VoicePlaybackCategory.StarSlashPreparation)
+            state.StarSlashPreparationPlayer = audioPlayer;
         if (category == VoicePlaybackCategory.DamageResponse)
             state.ActiveDamageResponsePlayer = audioPlayer;
 
         audioPlayer.Finished += () =>
         {
             state.ActiveVoicePlayers.Remove(audioPlayer);
+            if (state.StarSlashPreparationPlayer == audioPlayer)
+                state.StarSlashPreparationPlayer = null;
             if (state.ActiveDamageResponsePlayer == audioPlayer)
                 state.ActiveDamageResponsePlayer = null;
 
@@ -881,6 +924,7 @@ internal static class ShinGetterVoiceService
         {
             state.ActiveVoicePlayers.Clear();
             state.ActiveDamageResponsePlayer = null;
+            state.StarSlashPreparationPlayer = null;
             state.IsStoppingVoiceAudio = false;
         }
     }
@@ -1087,21 +1131,29 @@ internal static class ShinGetterVoiceService
     {
         public bool Contains(ShinGetterVoiceCue cue)
         {
-            int index = (int)cue;
-            return index < 31
-                ? (Low & (1 << index)) != 0
-                : (High & (1 << (index - 31))) != 0;
+            var (low, bit) = GetLocation(cue);
+            return ((low ? Low : High) & bit) != 0;
         }
 
         public VoiceHistoryMasks Add(ShinGetterVoiceCue cue)
         {
-            int index = (int)cue;
-            if (index is < 0 or >= 62)
-                throw new ArgumentOutOfRangeException(nameof(cue), cue, "Voice cue must fit in two persisted int masks.");
+            var (low, bit) = GetLocation(cue);
+            return low ? this with { Low = Low | bit } : this with { High = High | bit };
+        }
 
-            return index < 31
-                ? this with { Low = Low | (1 << index) }
-                : this with { High = High | (1 << (index - 31)) };
+        private static (bool Low, int Bit) GetLocation(ShinGetterVoiceCue cue)
+        {
+            int index = (int)cue;
+            if (index is < 0 or >= 64)
+                throw new ArgumentOutOfRangeException(nameof(cue), cue, "Voice cue must fit in two persisted int masks.");
+            // Released 0..61 keep their original 31+31 mapping. Only the unused sign bits are new.
+            return index switch
+            {
+                62 => (true, int.MinValue),
+                63 => (false, int.MinValue),
+                < 31 => (true, 1 << index),
+                _ => (false, 1 << (index - 31)),
+            };
         }
 
         public static VoiceHistoryMasks operator |(VoiceHistoryMasks left, VoiceHistoryMasks right) =>
@@ -1110,6 +1162,8 @@ internal static class ShinGetterVoiceService
 
     private sealed class VoicePlaybackState
     {
+        public AudioStreamPlayer? StarSlashPreparationPlayer;
+        public NSpeechBubbleVfx? StarSlashPreparationSubtitle;
         public readonly List<AudioStreamPlayer> ActiveVoicePlayers = new();
         public readonly Queue<VoiceLine> PendingKillVoiceLines = new();
         public bool IsStoppingVoiceAudio;

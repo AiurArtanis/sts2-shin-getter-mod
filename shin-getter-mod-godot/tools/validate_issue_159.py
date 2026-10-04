@@ -53,6 +53,9 @@ EXPECTED_SOURCE_DIGESTS = {
     "shin_getter_dragon_drill_attack": "be97edf3f43d5e197173b72f7ae6e70fe014149d47c5dd6102eef64140e1d46a",
     "shin_getter_dragon_stoner_sunshine": "d878cab0b7cff8a91537ef5b9704ce360962f7fa237d9bbff404f7ab924d6842",
     "shin_getter_dragon_shining_spark": "f290d48b33c0e77d435bc24b86df56f4b7d751353b8549e2410055d77083f425",
+    # ART-003 byte-exact deliveries; weapon/visual acceptance remains a separate issue#124 gate.
+    "getter_one_star_slash": "4bf8eb725fd213067f06c4bebd3eb26e1330151a503497b4920dfb6211adb217",
+    "shin_getter_dragon_star_slash": "6bafee710e3ae75c1e9265ba443286b63ab3aa2ec840ff8c933ac7a1927b43ef",
 }
 
 EXPECTED_CLEAN_RGB_DIGESTS = {
@@ -121,6 +124,8 @@ EXPECTED_FRAME_COUNTS = {
     "shin_getter_dragon_drill_attack": 60,
     "shin_getter_dragon_stoner_sunshine": 90,
     "shin_getter_dragon_shining_spark": 47,
+    "getter_one_star_slash": 76,
+    "shin_getter_dragon_star_slash": 71,
 }
 
 SPECIAL_CARD_GROUPS = {
@@ -487,7 +492,7 @@ def check_builder_and_sheets() -> None:
         resource_path = f"res://images/characters/shin_getter/forms/{action}/sprite_sheet.png"
         require(resource_path in resource_validator, f"{action}: PCK resource check is missing")
 
-    require("EXPECTED_CHARACTER_SOURCE_FRAME_COUNT := 1417" in resource_validator,
+    require("EXPECTED_CHARACTER_SOURCE_FRAME_COUNT := 1564" in resource_validator,
             "PCK source-frame exclusion count must include the B1.3.0 action")
     require(
         '"getter_one_idle": CaptureSource("一号机", "待机_动态水印重跑", 241, True, True, True)'

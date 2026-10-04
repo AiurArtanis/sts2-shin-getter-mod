@@ -27,6 +27,7 @@ internal static class NShinGetterSpriteAnimationStateMachine
             "DashV2" => NShinGetterSpriteSequence.DashV2AnimationName,
             "DrillAttack" => NShinGetterSpriteSequence.DrillAttackAnimationName,
             "ShiningSpark" => NShinGetterSpriteSequence.ShiningSparkAnimationName,
+            "StarSlash" => NShinGetterSpriteSequence.StarSlashAnimationName,
             "Dash" => NShinGetterSpriteSequence.DashAnimationName,
             "Hit" => NShinGetterSpriteSequence.BlockAnimationName,
             "Block" => NShinGetterSpriteSequence.BlockAnimationName,
@@ -140,15 +141,18 @@ internal static class NShinGetterSpriteAnimationStateMachine
         AnimatedSprite2D sprite,
         State state,
         string trigger) =>
-        (sprite.IsPlaying() || NShinGetterShiningSparkSequence.IsControlling(sprite))
-        && trigger is "Attack" or "HeavyAttack" or "Cast" or "Dash" or "Hit"
+        (sprite.IsPlaying() || NShinGetterShiningSparkSequence.IsControlling(sprite)
+            || NShinGetterStarSlashSequence.IsControlling(sprite))
+        && (trigger is "Attack" or "HeavyAttack" or "Cast" or "Dash" or "Hit"
+            || NShinGetterStarSlashSequence.IsControlling(sprite) && trigger is "Block" or "Idle")
         && IsSpecialAnimation(state.ActiveOneShotAnimation);
 
     private static bool IsSpecialAnimation(string animationName) =>
         animationName is NShinGetterSpriteSequence.CycloneAnimationName
             or NShinGetterSpriteSequence.DashV2AnimationName
             or NShinGetterSpriteSequence.DrillAttackAnimationName
-            or NShinGetterSpriteSequence.ShiningSparkAnimationName;
+            or NShinGetterSpriteSequence.ShiningSparkAnimationName
+            or NShinGetterSpriteSequence.StarSlashAnimationName;
 
     private static void PlayIdle(AnimatedSprite2D sprite, State state)
     {

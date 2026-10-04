@@ -46,9 +46,12 @@ FRAME_COUNTS = {
     "shin_getter_dragon_drill_attack": 60,
     "shin_getter_dragon_stoner_sunshine": 90,
     "shin_getter_dragon_shining_spark": 47,
+    "getter_one_star_slash": 76,
+    "shin_getter_dragon_star_slash": 71,
 }
 COLUMNS_BY_FRAME_COUNT = {24: 6, 30: 6, 32: 8, 36: 6, 40: 8, 48: 8, 60: 10, 90: 10}
-COLUMNS_BY_ACTION = {"shin_getter_dragon_shining_spark": 8}
+COLUMNS_BY_ACTION = {"shin_getter_dragon_shining_spark": 8,
+                     "getter_one_star_slash": 10, "shin_getter_dragon_star_slash": 10}
 IDLE_RESOURCES = {
     "getter_one_idle": "shin_getter_one_idle_frames.tres",
     "getter_two_idle": "shin_getter_two_idle_frames.tres",

@@ -4,8 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Multiplayer.Game;
+using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
@@ -38,30 +41,58 @@ public sealed class SGC_StarSlash : ShinGetterCardBase
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
-        var selected = (await CardSelectCmd.FromCombatPile(choiceContext, PileType.Draw.GetPile(Owner), Owner,
-            new CardSelectorPrefs(CardSelectorPrefs.ExhaustSelectionPrompt, DynamicVars.Cards.IntValue))).ToList();
-        ShinGetterVoiceService.TryPlayCardVoice(this);
-
-        decimal stackedValue = Math.Min(selected.Sum(SumOriginalCardValues), 50m);
-        foreach (var card in selected)
+        var pile = PileType.Draw.GetPile(Owner);
+        var prefs = new CardSelectorPrefs(CardSelectorPrefs.ExhaustSelectionPrompt, DynamicVars.Cards.IntValue);
+        // Same auto-select boundary as the native command; do not add a forced manual prompt.
+        bool willChoose = !CombatManager.Instance.IsOverOrEnding && pile.Cards.Count > 0
+            && (prefs.RequireManualConfirmation || pile.Cards.Count > prefs.MinSelect)
+            && CardSelectCmd.Selector == null && !NonInteractiveMode.IsActive
+            && RunManager.Instance.NetService.Type != NetGameType.Replay;
+        NShinGetterStarSlashSequence sequence = NShinGetterStarSlashSequence.TryCreate(Owner);
+        try
         {
-            await CardCmd.Exhaust(choiceContext, card);
+            if (willChoose) ShinGetterVoiceService.TryPlayStarSlashPreparation(this);
+            // The raise runs independently. Never await it before opening the native selector.
+            var selected = (await CardSelectCmd.FromCombatPile(choiceContext, pile, Owner, prefs)).ToList();
+            ShinGetterVoiceService.FinishStarSlashPreparation(Owner);
+            if (Owner.Creature.IsDead || CombatManager.Instance.IsOverOrEnding) return;
+            ShinGetterVoiceService.TryPlayCardVoiceAtCustomTiming(this, out float voiceDuration);
+            sequence?.Confirm(voiceDuration);
+
+            decimal stackedValue = Math.Min(selected.Sum(SumOriginalCardValues), 50m);
+            foreach (var card in selected)
+            {
+                await CardCmd.Exhaust(choiceContext, card);
+            }
+            if (Owner.Creature.IsDead || CombatManager.Instance.IsOverOrEnding) return;
+
+            ShinGetterCombatVfx.FlashHotBloodIcon(Owner.Creature);
+            if (HasForm(Owner, ShinGetterForm.Getter1))
+                await PowerCmd.Apply<SGP_HotBlood>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
+
+            if (sequence != null)
+            {
+                await sequence.PlayToImpact();
+                if (Owner.Creature.IsDead || CombatManager.Instance.IsOverOrEnding) return;
+                await ShinGetterCombatVfx.PlayHeavyCleave(Owner.Creature, new[] { cardPlay.Target });
+            }
+            else await PlayLegacyAnimationToImpact(cardPlay.Target);
+            await DamageCmd.Attack(DynamicVars.Damage.BaseValue + stackedValue).FromCard(this)
+                .WithNoAttackerAnim()
+                .Targeting(cardPlay.Target)
+                .WithHitFx("vfx/vfx_giant_horizontal_slash").Execute(choiceContext);
+            if (sequence != null) await sequence.Recover();
         }
-
-        ShinGetterCombatVfx.FlashHotBloodIcon(Owner.Creature);
-        if (HasForm(Owner, ShinGetterForm.Getter1))
-            await PowerCmd.Apply<SGP_HotBlood>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
-
-        await PlayLegacyAnimationToImpact(cardPlay.Target);
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue + stackedValue).FromCard(this)
-            .WithNoAttackerAnim()
-            .Targeting(cardPlay.Target)
-            .WithHitFx("vfx/vfx_giant_horizontal_slash").Execute(choiceContext);
+        finally
+        {
+            sequence?.Close();
+            ShinGetterVoiceService.FinishStarSlashPreparation(Owner);
+        }
     }
 
     private Task PlayLegacyAnimationToImpact(MegaCrit.Sts2.Core.Entities.Creatures.Creature target)
     {
-        // Both dedicated axe clips/weapon anchors are still missing; this is an explicit fallback.
+        // Other forms/non-rendered execution retain the previous animation and impact VFX.
         return NShinGetterStaticVisuals.PlayPhasedCreatureActionAnimation(
                 Owner.Creature,
                 GetActionAnimationTrigger() ?? "Attack",
