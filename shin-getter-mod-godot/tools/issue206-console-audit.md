@@ -22,7 +22,9 @@ argument completion are supported. Full syntax/semantics/examples:
 Plans are validated before any write and mutate a copy under the original
 profile/revision/file-lock/flush/atomic-replace transaction. Reset deletes only the
 selected NPC's completion, legacy evidence, absence/result records, encounter/cue
-snapshots and pending requests. It does not re-import real history. ALL is scoped to
+snapshots and pending requests. Existing sidecars never re-import history. On first
+edit without a sidecar, the existing conservative legacy migration preserves other
+NPCs' acquaintance facts; reset removes only its targets. Status does not migrate. ALL is scoped to
 compatible NPCs, shown explicitly in the result; it never manufactures fourth stages.
 
 The optional schema-1 `DebugNextDialogues` dictionary persists requests across
@@ -54,11 +56,11 @@ gameplay RNG, event rewards, character power or voice consumer is written by `sg
 - RED: `validate_issue_206_console.py` failed with `sgd command has not been implemented`.
 - GREEN: new wiring guard; original issue#206 guard with official109 source-root;
   issue#21/#31 voice guard; issue#192 persistence guard.
-- `dotnet run --project tests/Issue206Console/Issue206Console.csproj`:826 assertions
+- `dotnet run --project tests/Issue206Console/Issue206Console.csproj`:832 assertions
   PASS. Links full production parser/plan/DTO/catalogue/session/command source,
   real multilingual resources and actual Harmony FieldRef; only game/Godot environment
   bindings are fixtures. Runs real file transactions in unique temporary profiles.
-  Tests pending selection/consumption,83+ invalid/contiguous-stage combinations,
+  Tests pending selection/consumption,84 NPC/pilot/stage combinations plus invalid inputs,
   NPC-local/ALL reset, file lock/retry, profile switches, corrupt input, old schema,
   deterministic win/loss/return/chat/variants, guard errors and completions.
 - Formal109 isolated developer build:0 warning/0 error.

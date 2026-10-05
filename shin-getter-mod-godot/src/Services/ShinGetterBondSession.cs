@@ -55,7 +55,7 @@ internal sealed class ShinGetterBondSession
     {
         _profile = SaveManager.Instance.CurrentProfileId;
         _path = ProjectSettings.GlobalizePath(SaveManager.Instance.GetProfileScopedPath("shin_getter_bonds.json"));
-        _run = RunManager.Instance.IsInProgress ? StartTime(RunManager.Instance) : 0;
+        _run = RunManager.Instance.IsInProgress ? StartTime(RunManager.Instance) : DateTimeOffset.UtcNow.ToUnixTimeSeconds() + 1;
         _npc = _key = "";
     }
 
@@ -72,8 +72,10 @@ internal sealed class ShinGetterBondSession
         try
         {
             var session = new ShinGetterBondSession();
-            // A test reset must never re-import acquaintances from real run history.
-            session._save = session.Read(migrateIfMissing: false);
+            // Status never imports. First creation for an edit preserves other NPCs'
+            // trustworthy old acquaintances; Apply removes the explicitly reset NPC.
+            // Existing sidecars are authoritative and are never re-imported.
+            session._save = plan.IsReadOnly ? session.Read(migrateIfMissing: false) : session.Read(migrateIfMissing: true);
             if (!plan.IsReadOnly && !session.Commit(next => plan.Apply(next)))
             {
                 message = "Progress unchanged: " + session.Error;

@@ -35,6 +35,10 @@ var planStatus = Parse("ALL", "status");
 Check(ShinGetterBondSession.TryConsole(planStatus, out _), "status failed on absent sidecar");
 Check(!Directory.Exists(SaveManager.Instance.Root), "status wrote files");
 Check(SaveManager.Instance.HistoryReads == 0, "status imported history");
+var legacyHistory = new RunHistory { StartTime = 50 };
+legacyHistory.MapPointHistory.Add(new() { new() { Rooms = new() {
+    new() { ModelId = new("EVENT", "PAEL") }, new() { ModelId = new("EVENT", "TANX") } } } });
+SaveManager.Instance.Histories.Add(legacyHistory);
 foreach (string[] bad in new[]
 {
     Array.Empty<string>(), new[] { "OROBAS" }, new[] { "unknown", "clear" }, new[] { "ALL", "clear", "extra" },
@@ -68,6 +72,7 @@ Check(Parse("Architect", "status").Targets.Single() == "THE_ARCHITECT", "Archite
 Command("TANX", "unlock", "RYOMA", "2");
 var pending = Load();
 Check(pending.DebugNextDialogues["TANX"] == "TANX_RYOMA_BOND_03", "request not persisted");
+Check(pending.LegacyAcquaintances.ContainsKey("PAEL"), "first edit discarded an unrelated legacy acquaintance");
 string path = SaveManager.Instance.GetProfileScopedPath("shin_getter_bonds.json");
 byte[] unchanged = File.ReadAllBytes(path);
 Command("TANX", "status");
@@ -113,7 +118,7 @@ Check(!cleared.DebugNextDialogues.ContainsKey("TANX") && !cleared.LegacyAcquaint
 Check(orobas == JsonSerializer.Serialize(cleared.Completed.Where(x => x.StartsWith("OROBAS_")).OrderBy(x => x)), "clear touched another NPC");
 var firstAgain = Scene("TANX", 3);
 Check(firstAgain.Begin() && firstAgain.Encounter!.DialogueId == "TANX_FIRST_01", "clear did not restore first meeting");
-Check(Load().LegacyMigrationVersion == 1 && SaveManager.Instance.HistoryReads == 0, "reset re-imported game history");
+Check(Load().LegacyMigrationVersion == 1 && SaveManager.Instance.HistoryReads == 1, "existing sidecar reset re-imported game history");
 
 // File lock failure leaves progress+pending byte exact; retry commits once.
 firstAgain.Skip();
@@ -199,6 +204,14 @@ Check(command.GetArgumentCompletions(null, new[] { "NEOW", "unlock", "win", "" }
 Check(command.GetArgumentCompletions(null, new[] { "TANX", "unlock", "win", "" }).Candidates.SequenceEqual(new[] { "1" }), "NPC variant completion");
 RunManager.Instance.IsInProgress = false;
 Check(command.Process(null, new[] { "ALL", "clear" }).success, "main menu profile edit");
+SaveManager.Instance.CurrentProfileId = 2;
+Command("TANX", "clear");
+var firstReset = Load();
+Check(firstReset.LegacyAcquaintances.ContainsKey("PAEL") && !firstReset.LegacyAcquaintances.ContainsKey("TANX"), "first reset changed an unrelated legacy acquaintance");
+int historyReads = SaveManager.Instance.HistoryReads;
+SaveManager.Instance.CurrentProfileId = 3;
+Check(command.Process(null, new[] { "ALL", "status" }).success, "new profile query failed");
+Check(!File.Exists(SaveManager.Instance.GetProfileScopedPath("shin_getter_bonds.json")) && historyReads == SaveManager.Instance.HistoryReads, "readonly status migrated an empty profile");
 var invalid = new ShinGetterBondSave();
 invalid.DebugNextDialogues["TANX"] = "OROBAS_FIRST_01";
 try { ShinGetterBondConsolePlan.ValidatePending(invalid); Check(false, "cross-NPC pending accepted"); } catch (InvalidDataException) { Check(true, "rejected"); }
