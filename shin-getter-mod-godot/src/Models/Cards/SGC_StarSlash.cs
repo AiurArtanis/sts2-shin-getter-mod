@@ -51,8 +51,12 @@ public sealed class SGC_StarSlash : ShinGetterCardBase
         NShinGetterStarSlashSequence sequence = NShinGetterStarSlashSequence.TryCreate(Owner);
         try
         {
-            if (willChoose) ShinGetterVoiceService.TryPlayStarSlashPreparation(this);
-            // The raise runs independently. Never await it before opening the native selector.
+            if (willChoose && sequence != null)
+            {
+                Task preparationVoice = ShinGetterVoiceService.TryPlayStarSlashPreparation(this);
+                await sequence.WaitForSelection(preparationVoice);
+            }
+            if (Owner.Creature.IsDead || CombatManager.Instance.IsOverOrEnding) return;
             var selected = (await CardSelectCmd.FromCombatPile(choiceContext, pile, Owner, prefs)).ToList();
             ShinGetterVoiceService.FinishStarSlashPreparation(Owner);
             if (Owner.Creature.IsDead || CombatManager.Instance.IsOverOrEnding) return;
@@ -70,18 +74,21 @@ public sealed class SGC_StarSlash : ShinGetterCardBase
             if (HasForm(Owner, ShinGetterForm.Getter1))
                 await PowerCmd.Apply<SGP_HotBlood>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
 
+            Task recovery = Task.CompletedTask;
+            Task impactVfx = Task.CompletedTask;
             if (sequence != null)
             {
                 await sequence.PlayToImpact();
                 if (Owner.Creature.IsDead || CombatManager.Instance.IsOverOrEnding) return;
-                await ShinGetterCombatVfx.PlayHeavyCleave(Owner.Creature, new[] { cardPlay.Target });
+                recovery = sequence.Recover();
+                impactVfx = ShinGetterCombatVfx.PlayHeavyCleave(Owner.Creature, new[] { cardPlay.Target });
             }
             else await PlayLegacyAnimationToImpact(cardPlay.Target);
-            await DamageCmd.Attack(DynamicVars.Damage.BaseValue + stackedValue).FromCard(this)
+            Task damage = DamageCmd.Attack(DynamicVars.Damage.BaseValue + stackedValue).FromCard(this)
                 .WithNoAttackerAnim()
                 .Targeting(cardPlay.Target)
                 .WithHitFx("vfx/vfx_giant_horizontal_slash").Execute(choiceContext);
-            if (sequence != null) await sequence.Recover();
+            await Task.WhenAll(damage, impactVfx, recovery);
         }
         finally
         {

@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Godot;
@@ -17,12 +18,15 @@ namespace ShinGetterMod.Nodes.Combat;
 internal partial class NShinGetterStarSlashSequence : Node2D
 {
     private const string OwnerMeta = "shin_getter_star_slash_owner";
+    private const float CleaveSpeed = 1.5f;
     private readonly TaskCompletionSource<bool> _ended = new();
     private AnimatedSprite2D _sprite = null!;
     private Player _player = null!;
     private NShinGetterStarSlashData _data = null!;
     private Action<AnimatedSprite2D> _ensureIdle = null!;
     private Task _prepared = Task.CompletedTask;
+    private Task _preparationVoice = Task.CompletedTask;
+    private TaskCompletionSource<bool>? _selectionReady;
     private TaskCompletionSource<bool>? _phaseDone;
     private float _phaseFrom;
     private float _phaseTo;
@@ -33,6 +37,16 @@ internal partial class NShinGetterStarSlashSequence : Node2D
     private float _voiceDuration;
     private float _poseTime;
     private bool _closed;
+    private bool _warnedInvalidPolygon;
+    private int _foregroundFrame = -1;
+    private bool _foregroundFlipH;
+    private bool _foregroundFlipV;
+    private bool _foregroundCentered;
+    private Vector2 _foregroundOffset;
+    private Texture2D? _foregroundTexture;
+    private Vector2[] _foregroundVertices = Array.Empty<Vector2>();
+    private Vector2[] _foregroundUvs = Array.Empty<Vector2>();
+    private int[] _foregroundIndices = Array.Empty<int>();
 
     public static NShinGetterStarSlashSequence? TryCreate(Player player)
     {
@@ -74,6 +88,14 @@ internal partial class NShinGetterStarSlashSequence : Node2D
         _voiceDuration = Math.Max(0f, voiceDuration);
     }
 
+    public Task WaitForSelection(Task preparationVoice)
+    {
+        if (_closed) return Task.CompletedTask;
+        _preparationVoice = preparationVoice;
+        _selectionReady = new TaskCompletionSource<bool>();
+        return _selectionReady.Task;
+    }
+
     public async Task PlayToImpact()
     {
         await Task.WhenAny(_prepared, _ended.Task);
@@ -81,12 +103,18 @@ internal partial class NShinGetterStarSlashSequence : Node2D
         await _prepared; // A fast confirmation still completes the real raise once.
         // Confirmation audio started before Exhaust hooks. Account for their elapsed visual time.
         float hold = Mathf.Clamp(_voiceDuration - (_clock - _confirmedAt)
-            - (_data.ImpactTime - _data.HoldTime), 0f, 2f);
+            - (_data.ImpactTime - _data.HoldTime) / CleaveSpeed, 0f, 2f);
         if (hold > 0f) await Hold(hold);
-        if (!_closed) await Phase(_data.HoldTime, _data.ImpactTime);
+        if (!_closed) await Phase(_data.HoldTime, _data.ImpactTime,
+            (_data.ImpactTime - _data.HoldTime) / CleaveSpeed);
     }
 
-    public Task Recover() => _closed ? Task.CompletedTask : Phase(_data.ImpactTime, _data.TotalTime);
+    public async Task Recover()
+    {
+        if (_closed) return;
+        await Phase(_data.ImpactTime, _data.TotalTime, (_data.TotalTime - _data.ImpactTime) / CleaveSpeed);
+        Close(); // Return to idle even if damage hooks are still completing.
+    }
 
     private Task Phase(float from, float to, float duration = -1f)
     {
@@ -121,6 +149,8 @@ internal partial class NShinGetterStarSlashSequence : Node2D
                 _phaseDone.TrySetResult(true);
             }
         }
+        if (_prepared.IsCompleted && _preparationVoice.IsCompleted)
+            _selectionReady?.TrySetResult(true);
     }
 
     private void SetPose(float time)
@@ -141,17 +171,34 @@ internal partial class NShinGetterStarSlashSequence : Node2D
             NShinGetterStarSlashData.BuildWeapon(frame, _poseTime, _data.HoldTime);
         Vector2[][] opaque = frame.WeaponCover.Concat(geometry.Blades).Append(geometry.Shaft)
             .Select(polygon => polygon.Select(Local).ToArray()).ToArray();
-        foreach (Vector2[] polygon in opaque) DrawColoredPolygon(polygon, core);
+        foreach (Vector2[] polygon in opaque) DrawTriangulated(polygon, core);
         foreach (Vector2[] light in geometry.BladeLights)
-            DrawColoredPolygon(light.Select(Local).ToArray(), new Color(128f / 255f, 1f, 183f / 255f, 1f));
+            DrawTriangulated(light.Select(Local).ToArray(), new Color(128f / 255f, 1f, 183f / 255f, 1f));
         // Union is only for the outer edge; concave crescent cores stay opaque and are not convex-hulled.
         foreach (Vector2[] outline in MergeOutline(opaque))
             DrawPolyline(outline.Append(outline[0]).ToArray(), new Color(61f / 255f, 1f, 144f / 255f, 70f / 255f), 9f, true);
         DrawPolyline(geometry.Centerline.Select(Local).ToArray(),
             new Color(222f / 255f, 1f, 229f / 255f, 1f), 3.2f, true);
+        UpdateForeground(frame);
+        if (_foregroundTexture != null && _foregroundIndices.Length > 0)
+            DrawTriangles(_foregroundVertices, _foregroundIndices, Colors.White, _foregroundUvs, _foregroundTexture);
+    }
+
+    private void UpdateForeground(NShinGetterStarSlashData.Frame frame)
+    {
+        if (_foregroundFrame == _sprite.Frame && _foregroundFlipH == _sprite.FlipH
+            && _foregroundFlipV == _sprite.FlipV && _foregroundCentered == _sprite.Centered
+            && _foregroundOffset == _sprite.Offset) return;
+        _foregroundFrame = _sprite.Frame;
+        _foregroundFlipH = _sprite.FlipH;
+        _foregroundFlipV = _sprite.FlipV;
+        _foregroundCentered = _sprite.Centered;
+        _foregroundOffset = _sprite.Offset;
+        _foregroundTexture = null;
+        _foregroundIndices = Array.Empty<int>();
         Texture2D? texture = _sprite.SpriteFrames?.GetFrameTexture(_sprite.Animation, _sprite.Frame);
         if (texture == null) return;
-        // DrawPolygon samples a texture RID: unwrap the AtlasTexture and map the frame's pixels
+        // Triangle arrays sample a texture RID: unwrap the AtlasTexture and map the frame's pixels
         // into its sheet region explicitly, rather than treating frame-local UVs as whole-sheet UVs.
         Texture2D foregroundTexture = texture;
         Vector2 uvOrigin = Vector2.Zero;
@@ -161,12 +208,49 @@ internal partial class NShinGetterStarSlashSequence : Node2D
             uvOrigin = atlas.Region.Position;
         }
         Vector2 foregroundSize = foregroundTexture.GetSize();
-        Color[] foregroundColor = { Colors.White };
+        var vertices = new List<Vector2>();
+        var uvs = new List<Vector2>();
+        var indices = new List<int>();
         // Armor that was in front of the source handle stays in front; fingers are last.
         foreach (Vector2[] foreground in frame.BodyForeground.Concat(frame.Hands))
-            DrawPolygon(foreground.Select(Local).ToArray(), foregroundColor,
-                foreground.Select(point => NShinGetterStarSlashData.ForegroundUv(
-                    point, uvOrigin, foregroundSize)).ToArray(), foregroundTexture);
+        {
+            Vector2[] polygon = NShinGetterStarSlashData.CleanPolygon(foreground);
+            int[] triangles = Triangulate(polygon);
+            if (triangles.Length == 0) continue;
+            int offset = vertices.Count;
+            vertices.AddRange(polygon.Select(Local));
+            uvs.AddRange(polygon.Select(point => NShinGetterStarSlashData.ForegroundUv(
+                point, uvOrigin, foregroundSize)));
+            indices.AddRange(triangles.Select(index => index + offset));
+        }
+        _foregroundTexture = foregroundTexture;
+        _foregroundVertices = vertices.ToArray();
+        _foregroundUvs = uvs.ToArray();
+        _foregroundIndices = indices.ToArray();
+    }
+
+    private int[] Triangulate(Vector2[] polygon)
+    {
+        int[] indices = polygon.Length >= 3 ? Geometry2D.TriangulatePolygon(polygon) : Array.Empty<int>();
+        if (indices.Length == 0 && !_warnedInvalidPolygon)
+        {
+            _warnedInvalidPolygon = true;
+            GD.PushWarning($"Star Slash polygon rejected at frame {_sprite.Frame}; native render acceptance required.");
+        }
+        return indices;
+    }
+
+    private void DrawTriangulated(Vector2[] polygon, Color color)
+    {
+        Vector2[] vertices = NShinGetterStarSlashData.CleanPolygon(polygon);
+        int[] indices = Triangulate(vertices);
+        if (indices.Length > 0) DrawTriangles(vertices, indices, color, Array.Empty<Vector2>(), null);
+    }
+
+    private void DrawTriangles(Vector2[] vertices, int[] indices, Color color, Vector2[] uvs, Texture2D? texture)
+    {
+        RenderingServer.CanvasItemAddTriangleArray(GetCanvasItem(), indices, vertices, new[] { color },
+            uvs, Array.Empty<int>(), Array.Empty<float>(), texture?.GetRid() ?? default, -1);
     }
 
     private static Vector2[][] MergeOutline(Vector2[][] polygons)
@@ -230,6 +314,11 @@ internal partial class NShinGetterStarSlashSequence : Node2D
                 NShinGetterSpriteAnimationStateMachine.PlayIdle(_sprite, _ensureIdle);
         }
         _phaseDone?.TrySetResult(false);
+        _selectionReady?.TrySetResult(false);
         _ended.TrySetResult(false);
+        _foregroundTexture = null;
+        _foregroundVertices = Array.Empty<Vector2>();
+        _foregroundUvs = Array.Empty<Vector2>();
+        _foregroundIndices = Array.Empty<int>();
     }
 }

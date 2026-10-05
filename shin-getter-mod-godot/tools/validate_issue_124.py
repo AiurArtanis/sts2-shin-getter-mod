@@ -15,6 +15,7 @@ import subprocess
 import wave
 
 from validate_b130_core import block, compact, has, ordered, require
+from repair_star_slash_foreground import baseline as metadata_baseline, repair_document
 
 ROOT = Path(__file__).resolve().parents[1]
 REPO = ROOT.parent
@@ -41,18 +42,22 @@ def card_contract(source: str) -> None:
         has(play, token, "Preparation must mirror real native UI eligibility")
     require("RequireManualConfirmation = true" not in source, "Do not force UI for native automatic selections")
     ordered(play, ["NShinGetterStarSlashSequence.TryCreate(Owner)", "try",
-                   "if (willChoose) ShinGetterVoiceService.TryPlayStarSlashPreparation(this);",
+                   "if (willChoose && sequence != null)", "Task preparationVoice = ShinGetterVoiceService.TryPlayStarSlashPreparation(this);",
+                   "await sequence.WaitForSelection(preparationVoice);",
                    "await CardSelectCmd.FromCombatPile", "ShinGetterVoiceService.FinishStarSlashPreparation(Owner);",
                    "TryPlayCardVoiceAtCustomTiming(this, out float voiceDuration)", "sequence?.Confirm(voiceDuration);",
                    "Math.Min(selected.Sum(SumOriginalCardValues), 50m)", "await CardCmd.Exhaust(choiceContext, card);",
                    "ShinGetterCombatVfx.FlashHotBloodIcon(Owner.Creature);",
                    "if (HasForm(Owner, ShinGetterForm.Getter1))", "await PowerCmd.Apply<SGP_HotBlood>",
-                   "await sequence.PlayToImpact();", "await ShinGetterCombatVfx.PlayHeavyCleave",
-                   "await DamageCmd.Attack", '.WithHitFx("vfx/vfx_giant_horizontal_slash")',
-                   "await sequence.Recover();", "finally", "sequence?.Close();",
+                   "await sequence.PlayToImpact();", "recovery = sequence.Recover();",
+                   "impactVfx = ShinGetterCombatVfx.PlayHeavyCleave", "Task damage = DamageCmd.Attack",
+                   '.WithHitFx("vfx/vfx_giant_horizontal_slash")',
+                   "await Task.WhenAll(damage, impactVfx, recovery);", "finally", "sequence?.Close();",
                    "ShinGetterVoiceService.FinishStarSlashPreparation(Owner);"], "Selection/confirmation/exhaust/impact/cleanup")
     before_ui = play[:play.index("await CardSelectCmd.FromCombatPile")]
-    require("await sequence" not in before_ui, "Raise must run concurrently with native selector")
+    has(before_ui, "await sequence.WaitForSelection(preparationVoice);", "Native UI waits for actual raise and preparation audio")
+    require("await ShinGetterCombatVfx.PlayHeavyCleave" not in play,
+            "Do not serialize impact VFX delay before recovery and damage")
     require(play.count("DamageCmd.Attack") == 1 and play.count("PowerCmd.Apply<SGP_HotBlood>") == 1,
             "Single attack and single compatible Getter1 Valor application")
     for token in ("new DamageVar(22m, ValueProp.Move)", "new CardsVar(1)",
@@ -70,16 +75,29 @@ def sequence_contract(source: str) -> None:
                   "sprite.SetMeta(OwnerMeta, sequence.GetInstanceId());", "sprite.AddChild(sequence);",
                   "sequence._prepared = sequence.Phase(0f, data.HoldTime);"):
         has(create, token, "Visible owner-specific creation/fallback boundary")
-    require("await " not in create, "Do not delay native UI for the raise")
+    require("await " not in create, "Creation starts raising immediately; the separate selection gate owns the wait")
+    selection = block(source, "public Task WaitForSelection(")
+    ordered(selection, ["if (_closed) return Task.CompletedTask;", "_preparationVoice = preparationVoice;",
+                        "_selectionReady = new TaskCompletionSource<bool>();", "return _selectionReady.Task;"],
+            "Preparation audio completion belongs to this sequence")
     impact = block(source, "public async Task PlayToImpact()")
     ordered(impact, ["await Task.WhenAny(_prepared, _ended.Task)", "if (_closed) return;", "await _prepared;",
                      "_voiceDuration - (_clock - _confirmedAt)", "0f, 2f", "await Hold(hold)",
-                     "await Phase(_data.HoldTime, _data.ImpactTime)"], "Fast confirmation/remaining voice/bounded hold")
+                     "await Phase(_data.HoldTime, _data.ImpactTime,",
+                     "(_data.ImpactTime - _data.HoldTime) / CleaveSpeed"], "Remaining voice/bounded hold/accelerated cleave")
+    has(impact, "- (_data.ImpactTime - _data.HoldTime) / CleaveSpeed", "Voice hold accounts for accelerated stroke")
+    has(source, "private const float CleaveSpeed = 1.5f;", "Cleave and recovery run 50 percent faster")
+    recovery = block(source, "public async Task Recover()")
+    ordered(recovery, ["if (_closed) return;", "await Phase(_data.ImpactTime, _data.TotalTime,",
+                       "(_data.TotalTime - _data.ImpactTime) / CleaveSpeed", "Close();"],
+            "Recovery closes independently of damage hooks")
     phase = block(source, "private Task Phase(")
     has(phase, "if (_closed || !CanContinue())", "Every phase rechecks visual ownership before mutation")
     process = block(source, "public override void _Process(")
     ordered(process, ["!CanContinue()", "Close(); return;", "if (CombatManager.Instance.IsPaused) return;",
-                      "_clock +=", "SetPose(time)", "_phaseDone.TrySetResult(true)"], "Pause/interrupt/resume clock")
+                      "_clock +=", "SetPose(time)", "_phaseDone.TrySetResult(true)",
+                      "if (_prepared.IsCompleted && _preparationVoice.IsCompleted)",
+                      "_selectionReady?.TrySetResult(true)"], "Pause/interrupt/resume clock and actual audio/raise gate")
     pose = block(source, "private void SetPose(")
     has(pose, "Math.Abs(time - _data.HoldTime) < 0.00001f ? _data.HoldFrame : _data.FrameAt(time)", "Hold uses the actual held frame, not next cleave")
     for token in ("_sprite.GetMeta(OwnerMeta).AsUInt64() == GetInstanceId()",
@@ -90,23 +108,34 @@ def sequence_contract(source: str) -> None:
     end = block(source, "private void End()")
     ordered(end, ["if (_closed) return;", "_closed = true;", "FinishStarSlashPreparation(_player)",
                   "if (OwnsSprite())", "_sprite.RemoveMeta(OwnerMeta);", "!_player.Creature.IsDead",
-                  "PlayIdle", "_phaseDone?.TrySetResult(false)", "_ended.TrySetResult(false)"], "Cleanup is scoped and releases waiters")
+                  "PlayIdle", "_phaseDone?.TrySetResult(false)", "_selectionReady?.TrySetResult(false)",
+                  "_ended.TrySetResult(false)", "_foregroundTexture = null;"], "Cleanup is scoped and releases waiters and cache")
     draw = block(source, "public override void _Draw()")
     ordered(draw, ["NShinGetterStarSlashData.BuildWeapon(frame, _poseTime, _data.HoldTime)",
-                   "frame.WeaponCover", "DrawColoredPolygon", "MergeOutline(opaque)", "frame.Hands", "DrawPolygon"],
+                   "frame.WeaponCover", "DrawTriangulated", "MergeOutline(opaque)", "UpdateForeground(frame)", "DrawTriangles"],
             "Opaque weapon overlay then textured hand foreground")
     has(draw, "new(37f / 255f, 219f / 255f, 103f / 255f, 1f)", "Getter-line opaque green covers source weapon")
     has(draw, "frame.WeaponCover.Concat(geometry.Blades).Append(geometry.Shaft)", "Draw curved blade plus tapered shaft over old weapon")
-    ordered(draw, ["DrawColoredPolygon(polygon, core)", "geometry.BladeLights", "MergeOutline(opaque)",
-                   "frame.BodyForeground.Concat(frame.Hands)"], "Inside-blade energy layer does not obscure restored armor/hands")
+    ordered(draw, ["DrawTriangulated(polygon, core)", "geometry.BladeLights", "MergeOutline(opaque)",
+                   "UpdateForeground(frame)"], "Inside-blade energy layer does not obscure restored armor/hands")
     has(draw, "new Color(128f / 255f, 1f, 183f / 255f, 1f)", "Opaque inner Getter-line energy band, not a flat placeholder")
     require("24f" not in draw and "DrawLine(" not in draw, "Do not restore the rejected constant-width rectangular shaft")
     has(source, "Geometry2D.MergePolygons(outlines[left], outlines[right])", "One union edge preserves concavity, not old/new double heads")
-    has(draw, "frame.BodyForeground.Concat(frame.Hands)", "Restore genuine armor occlusion first, fingers last")
+    foreground = block(source, "private void UpdateForeground(")
+    has(foreground, "frame.BodyForeground.Concat(frame.Hands)", "Restore genuine armor occlusion first, fingers last")
     for token in ("texture is AtlasTexture atlas", "foregroundTexture = atlas.Atlas;", "uvOrigin = atlas.Region.Position;",
                   "Vector2 foregroundSize = foregroundTexture.GetSize();",
                   "NShinGetterStarSlashData.ForegroundUv(", "point, uvOrigin, foregroundSize"):
-        has(draw, token, "Foreground samples the actual frame region of the atlas, not the whole sheet")
+        has(foreground, token, "Foreground samples the actual frame region of the atlas, not the whole sheet")
+    for token in ("_foregroundFrame == _sprite.Frame", "_foregroundFlipH == _sprite.FlipH",
+                  "_foregroundFlipV == _sprite.FlipV", "_foregroundCentered == _sprite.Centered",
+                  "_foregroundOffset == _sprite.Offset", "CleanPolygon(foreground)", "Triangulate(polygon)",
+                  "vertices.AddRange(polygon.Select(Local))", "index + offset", "_foregroundIndices = indices.ToArray();"):
+        has(foreground, token, "Current-frame cache keeps source ordering, transforms and indexed geometry")
+    has(source, "Geometry2D.TriangulatePolygon(polygon)", "Use native triangulation, not repeated CanvasItem polygon failure")
+    has(source, "RenderingServer.CanvasItemAddTriangleArray", "Submit validated indexed triangles")
+    require("DrawPolygon(" not in source and "DrawColoredPolygon(" not in source,
+            "No implicit per-redraw polygon triangulation remains")
     require("ClipChildren" not in source and "SetDeferred" not in source and "CreateTween" not in source,
             "No 720px clip or unmanaged tween completion dependency")
 
@@ -119,17 +148,25 @@ def voice_contract(source: str) -> None:
                   'new("067", ShinGetterVoiceCue.StarSlashOnePreparation, "ryoma_go_shin_getter.wav"',
                   "StarSlashDragonPreparation = 62", "StarSlashOnePreparation = 63"):
         has(source, token, "066/067 independent codes/audio/history bits")
-    prep = block(source, "internal static void TryPlayStarSlashPreparation(")
+    prep = block(source, "internal static Task TryPlayStarSlashPreparation(")
     ordered(prep, ["card is not SGC_StarSlash", "player.Creature.HasPower<SGP_ShinForm>()",
                    "ShinGetterVoiceCue.StarSlashDragonPreparation", "player.Creature.HasPower<SGP_ShinGetterOne>()",
                    "ShinGetterVoiceCue.StarSlashOnePreparation", "TryPlayOneTime"], "Actual form priority, existing three-mode claim policy")
     require("HasForm(" not in prep, "Dragon compatibility must not misroute preparation to one")
+    has(prep, "return state.StarSlashPreparationDone?.Task ?? Task.CompletedTask;", "Real playback task or no-wait fallback")
     finish = block(source, "internal static void FinishStarSlashPreparation(")
     for token in ("PlaybackStates.GetOrCreateValue(player)", "state.StarSlashPreparationPlayer = null;",
                   "state.ActiveVoicePlayers.Remove(audio)", "audio.Stop();", "audio.QueueFree();",
                   "state.CurrentSubtitle == state.StarSlashPreparationSubtitle"):
         has(finish, token, "Stop only this owner's preparation, not another/newer voice")
     require("StopActiveVoiceAudio(" not in finish, "Preparation cleanup must not stop all voices")
+    has(finish, "state.StarSlashPreparationDone?.TrySetResult(false);", "Explicit stop releases audio wait")
+    playback = block(source, "private static bool TryPlayVoiceAudio(")
+    for token in ("audioPlayer.TreeExiting += () =>", "completion.TrySetResult(false);",
+                  "preparationDone?.TrySetResult(true);", "state.StarSlashPreparationDone = preparationDone;"):
+        has(playback, token, "Finished and exit release the scoped preparation task")
+    has(block(source, "private static void StopAllVoiceAudio("), "state.StarSlashPreparationDone?.TrySetResult(false);",
+        "Global stop also releases the preparation task")
     location = block(source, "private static (bool Low, int Bit) GetLocation(")
     for token in ("index is < 0 or >= 64", "62 => (true, int.MinValue)", "63 => (false, int.MinValue)",
                   "< 31 => (true, 1 << index)", "_ => (false, 1 << (index - 31))"):
@@ -213,12 +250,22 @@ def source_checks() -> int:
         gate(sources[path])
     mutants = [
         (card_contract, CARD, "pile.Cards.Count > prefs.MinSelect", "pile.Cards.Count >= prefs.MinSelect"),
-        (card_contract, CARD, "if (willChoose) ShinGetterVoiceService.TryPlayStarSlashPreparation(this);", "ShinGetterVoiceService.TryPlayStarSlashPreparation(this);"),
+        (card_contract, CARD, "if (willChoose && sequence != null)", "if (sequence != null)"),
+        (card_contract, CARD, "await sequence.WaitForSelection(preparationVoice);", "_ = sequence.WaitForSelection(preparationVoice);"),
+        (card_contract, CARD, "recovery = sequence.Recover();", "await sequence.Recover();"),
+        (card_contract, CARD, "await Task.WhenAll(damage, impactVfx, recovery);", "await damage;"),
         (card_contract, CARD, "await CardSelectCmd.FromCombatPile", "CardSelectCmd.FromCombatPile"),
         (card_contract, CARD, "await sequence.PlayToImpact();", "_ = sequence.PlayToImpact();"),
         (card_contract, CARD, '.WithHitFx("vfx/vfx_giant_horizontal_slash")', '.WithHitFx("changed")'),
         (card_contract, CARD, "sequence?.Close();", "// removed close"),
         (sequence_contract, SEQUENCE, "await _prepared;", "// skip raise"),
+        (sequence_contract, SEQUENCE, "private const float CleaveSpeed = 1.5f;", "private const float CleaveSpeed = 1f;"),
+        (sequence_contract, SEQUENCE, "_prepared.IsCompleted && _preparationVoice.IsCompleted", "_prepared.IsCompleted"),
+        (sequence_contract, SEQUENCE, "_selectionReady?.TrySetResult(false);", "// no selection release"),
+        (sequence_contract, SEQUENCE, "_foregroundFrame == _sprite.Frame", "_foregroundFrame >= 0"),
+        (sequence_contract, SEQUENCE, "index + offset", "index"),
+        (sequence_contract, SEQUENCE, "Geometry2D.TriangulatePolygon(polygon)", "Array.Empty<int>()"),
+        (sequence_contract, SEQUENCE, "RenderingServer.CanvasItemAddTriangleArray", "RenderingServer.CanvasItemAddPolygon"),
         (sequence_contract, SEQUENCE, "0f, 2f", "0f, 200f"),
         (sequence_contract, SEQUENCE, "if (CombatManager.Instance.IsPaused) return;", "// paused clock continues"),
         (sequence_contract, SEQUENCE, "_phaseDone?.TrySetResult(false);", "// no phase release"),
@@ -236,6 +283,8 @@ def source_checks() -> int:
         (voice_contract, VOICE, "62 => (true, int.MinValue)", "62 => (false, 1 << 31)"),
         (voice_contract, VOICE, "state.CurrentSubtitle == state.StarSlashPreparationSubtitle", "true"),
         (voice_contract, VOICE, "bool StartAtCardPlay = false", "bool StartAtCardPlay = true"),
+        (voice_contract, VOICE, "completion.TrySetResult(false);", "// no tree release"),
+        (voice_contract, VOICE, "preparationDone?.TrySetResult(true);", "// no audio completion"),
         (data_contract, DATA, "!IsFinite(frame.Grip)", "false"),
         (data_contract, DATA, "!float.IsFinite(ImpactTime)", "false"),
     ]
@@ -302,6 +351,8 @@ def main() -> None:
             require(audio.getnframes() > 0 and audio.getnchannels() in (1, 2), "Nonempty PCM preparation voice")
     for action, (count, hold_source) in FORMS.items():
         document = json.loads(read(f"images/characters/shin_getter/forms/{action}/animation.json"))
+        repaired, _ = repair_document(metadata_baseline(action), action)
+        require(document == repaired, "Only the six native-proven foreground repairs may differ from b5 metadata")
         delivery = json.loads((REPO / f"art_sources/characters/shin_getter/forms/{action}/delivery.json").read_text(encoding="utf-8"))
         delivered_contract(document, delivery, count, hold_source)
         for frame in document["frames"]:

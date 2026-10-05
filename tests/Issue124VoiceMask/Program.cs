@@ -43,6 +43,15 @@ ConstructorInfo dataConstructor = dataType.GetConstructor(BindingFlags.Instance 
 MethodInfo frameAt = dataType.GetMethod("FrameAt")!;
 MethodInfo buildWeapon = dataType.GetMethod("BuildWeapon", BindingFlags.Static | BindingFlags.NonPublic)!;
 MethodInfo foregroundUv = dataType.GetMethod("ForegroundUv", BindingFlags.Static | BindingFlags.NonPublic)!;
+MethodInfo cleanPolygon = dataType.GetMethod("CleanPolygon", BindingFlags.Static | BindingFlags.NonPublic)!;
+Vector2[] Clean(Vector2[] polygon) => (Vector2[])cleanPolygon.Invoke(null, new object[] { polygon })!;
+double Area(Vector2[] polygon) => Math.Abs(Enumerable.Range(0, polygon.Length).Sum(i =>
+    (double)polygon[i].X * polygon[(i + 1) % polygon.Length].Y
+    - (double)polygon[(i + 1) % polygon.Length].X * polygon[i].Y)) / 2;
+Vector2[] rectangle = { new(0, 0), new(0, 0), new(5, 0), new(10, 0), new(10, 10), new(0, 10), new(0, 0) };
+Check(Clean(rectangle).Length == 4 && Area(Clean(rectangle)) == 100, "Duplicate/straight cleanup preserves rectangle");
+Vector2[] notch = { new(0, 0), new(10, 0), new(10, 10), new(5, 5), new(0, 10) };
+Check(Clean(notch).SequenceEqual(notch) && Area(Clean(notch)) == 75, "Cleanup retains genuine concave notch");
 foreach (int index in new[] { 0, 9, 10, 26, 38, 61, 70, 75 })
 {
     Vector2 origin = new(index % 10 * 720, index / 10 * 720);
@@ -130,8 +139,15 @@ foreach ((string name, JsonNode original) in documents)
         {
             if (frame[layer] is not JsonArray polygons) continue;
             for (int polygonIndex = 0; polygonIndex < polygons.Count; polygonIndex++)
-                CheckSimplePolygon(polygons[polygonIndex]!.AsArray().Select(p => Point(p!)).ToArray(),
-                    $"{name} frame{frameIndex} {layer}{polygonIndex}");
+            {
+                Vector2[] original = polygons[polygonIndex]!.AsArray().Select(p => Point(p!)).ToArray();
+                CheckSimplePolygon(original, $"{name} frame{frameIndex} {layer}{polygonIndex}");
+                Vector2[] cleaned = Clean(original);
+                Check(cleaned.Length >= 3 && Area(cleaned) > 0, "Cleaner retains drawable coverage");
+                Check(Math.Abs(Area(original) - Area(cleaned)) <= 0.01, "Cleaner preserves contour area");
+                Check(cleaned.All(original.Contains), "Cleaner never invents hull vertices");
+                CheckSimplePolygon(cleaned, $"{name} frame{frameIndex} {layer}{polygonIndex} cleaned");
+            }
         }
         Vector2[] head = frame!["blade_cover"]!.AsArray().SelectMany(polygon => polygon!.AsArray().Select(p => Point(p!))).ToArray();
         Vector2 grip = Point(frame["grip"]!), axis = (Point(frame["axis"]!) - grip).Normalized();

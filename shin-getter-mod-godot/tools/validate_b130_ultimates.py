@@ -44,7 +44,8 @@ def star_contract(source: str) -> None:
                    "if (HasForm(Owner, ShinGetterForm.Getter1))",
                    "await PowerCmd.Apply<SGP_HotBlood>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);",
                    "await PlayLegacyAnimationToImpact(cardPlay.Target);",
-                   "await DamageCmd.Attack(DynamicVars.Damage.BaseValue + stackedValue)"],
+                   "Task damage = DamageCmd.Attack(DynamicVars.Damage.BaseValue + stackedValue)",
+                   "await Task.WhenAll(damage, impactVfx, recovery);"],
             "Star selection/exhaust hooks/single Valor/impact/attack order")
     require(play.count("PowerCmd.Apply<SGP_HotBlood>") == 1, "Exactly one Valor application site")
     require("Vigor" not in source, "Old per-exhaust Vigor reward must be removed")
@@ -54,7 +55,7 @@ def star_contract(source: str) -> None:
     has(source, "DynamicVars.Cards.UpgradeValueBy(1m)", "Star upgrade selects two")
     has(source, "base(3, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)", "Star cost remains 3")
     for fragment in ("NShinGetterStarSlashSequence.TryCreate(Owner)", "await sequence.PlayToImpact();",
-                     "await sequence.Recover();", "sequence?.Close();"):
+                     "recovery = sequence.Recover();", "sequence?.Close();"):
         require(fragment in source, "Star now has dedicated phases, recovery and cleanup; other forms keep fallback")
 
 

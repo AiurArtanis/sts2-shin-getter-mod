@@ -78,6 +78,34 @@ internal sealed class NShinGetterStarSlashData
     internal static Vector2 ForegroundUv(Vector2 point, Vector2 origin, Vector2 textureSize) =>
         (point + origin) / textureSize;
 
+    internal static Vector2[] CleanPolygon(Vector2[] polygon)
+    {
+        const float epsilon = 0.001f;
+        var points = new List<Vector2>();
+        foreach (Vector2 point in polygon)
+            if (points.Count == 0 || points[^1].DistanceTo(point) > epsilon) points.Add(point);
+        if (points.Count > 1 && points[0].DistanceTo(points[^1]) <= epsilon) points.RemoveAt(points.Count - 1);
+        // Remove only subpixel duplicate/straight vertices, never hull the concave blade or matte.
+        bool removed;
+        do
+        {
+            removed = false;
+            for (int index = 0; index < points.Count && points.Count > 3; index++)
+            {
+                Vector2 a = points[(index + points.Count - 1) % points.Count];
+                Vector2 b = points[index];
+                Vector2 c = points[(index + 1) % points.Count];
+                double cross = ((double)b.X - a.X) * ((double)c.Y - a.Y)
+                    - ((double)b.Y - a.Y) * ((double)c.X - a.X);
+                if (Math.Abs(cross) > epsilon * a.DistanceTo(c) || (b - a).Dot(c - b) < 0f) continue;
+                points.RemoveAt(index);
+                removed = true;
+                break;
+            }
+        } while (removed);
+        return points.ToArray();
+    }
+
     private static bool IsFinite(Vector2 point) => float.IsFinite(point.X) && float.IsFinite(point.Y);
 
     private static Vector2[][] OptionalPolygons(JsonElement frame, string property) =>

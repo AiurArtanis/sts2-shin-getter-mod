@@ -221,17 +221,18 @@ internal static class ShinGetterVoiceService
         TryPlayCardVoice(card, requireCardPlayStart: false);
 
     // Caller has checked the same candidate/manual-choice boundary as CardSelectCmd.
-    internal static void TryPlayStarSlashPreparation(CardModel card)
+    internal static Task TryPlayStarSlashPreparation(CardModel card)
     {
         if (card is not SGC_StarSlash || card.Owner is not { Character: ShinGetter } player)
-            return;
+            return Task.CompletedTask;
         ShinGetterVoiceCue? cue = player.Creature.HasPower<SGP_ShinForm>()
             ? ShinGetterVoiceCue.StarSlashDragonPreparation
             : player.Creature.HasPower<SGP_ShinGetterOne>()
                 ? ShinGetterVoiceCue.StarSlashOnePreparation : null;
-        if (cue is { } value && TryPlayOneTime(player, Lines[value]))
-            PlaybackStates.GetOrCreateValue(player).StarSlashPreparationSubtitle =
-                PlaybackStates.GetOrCreateValue(player).CurrentSubtitle;
+        if (cue is not { } value || !TryPlayOneTime(player, Lines[value])) return Task.CompletedTask;
+        VoicePlaybackState state = PlaybackStates.GetOrCreateValue(player);
+        state.StarSlashPreparationSubtitle = state.CurrentSubtitle;
+        return state.StarSlashPreparationDone?.Task ?? Task.CompletedTask;
     }
 
     internal static void FinishStarSlashPreparation(Player player)
@@ -239,6 +240,8 @@ internal static class ShinGetterVoiceService
         VoicePlaybackState state = PlaybackStates.GetOrCreateValue(player);
         AudioStreamPlayer? audio = state.StarSlashPreparationPlayer;
         state.StarSlashPreparationPlayer = null;
+        state.StarSlashPreparationDone?.TrySetResult(false);
+        state.StarSlashPreparationDone = null;
         if (audio != null)
         {
             state.ActiveVoicePlayers.Remove(audio);
@@ -836,6 +839,10 @@ internal static class ShinGetterVoiceService
         {
             StopAllVoiceAudio(state);
         }
+        else if (category == VoicePlaybackCategory.StarSlashPreparation)
+        {
+            FinishStarSlashPreparation(player);
+        }
 
         var audioPlayer = new AudioStreamPlayer
         {
@@ -844,8 +851,24 @@ internal static class ShinGetterVoiceService
             VolumeDb = Mathf.LinearToDb(volume),
         };
         state.ActiveVoicePlayers.Add(audioPlayer);
+        TaskCompletionSource<bool>? preparationDone = null;
         if (category == VoicePlaybackCategory.StarSlashPreparation)
+        {
             state.StarSlashPreparationPlayer = audioPlayer;
+            var completion = new TaskCompletionSource<bool>();
+            preparationDone = completion;
+            state.StarSlashPreparationDone = preparationDone;
+            audioPlayer.TreeExiting += () =>
+            {
+                state.ActiveVoicePlayers.Remove(audioPlayer);
+                if (state.StarSlashPreparationPlayer == audioPlayer)
+                {
+                    state.StarSlashPreparationPlayer = null;
+                    state.StarSlashPreparationDone = null;
+                }
+                completion.TrySetResult(false);
+            };
+        }
         if (category == VoicePlaybackCategory.DamageResponse)
             state.ActiveDamageResponsePlayer = audioPlayer;
 
@@ -853,7 +876,11 @@ internal static class ShinGetterVoiceService
         {
             state.ActiveVoicePlayers.Remove(audioPlayer);
             if (state.StarSlashPreparationPlayer == audioPlayer)
+            {
                 state.StarSlashPreparationPlayer = null;
+                state.StarSlashPreparationDone = null;
+            }
+            preparationDone?.TrySetResult(true);
             if (state.ActiveDamageResponsePlayer == audioPlayer)
                 state.ActiveDamageResponsePlayer = null;
 
@@ -925,6 +952,8 @@ internal static class ShinGetterVoiceService
             state.ActiveVoicePlayers.Clear();
             state.ActiveDamageResponsePlayer = null;
             state.StarSlashPreparationPlayer = null;
+            state.StarSlashPreparationDone?.TrySetResult(false);
+            state.StarSlashPreparationDone = null;
             state.IsStoppingVoiceAudio = false;
         }
     }
@@ -1163,6 +1192,7 @@ internal static class ShinGetterVoiceService
     private sealed class VoicePlaybackState
     {
         public AudioStreamPlayer? StarSlashPreparationPlayer;
+        public TaskCompletionSource<bool>? StarSlashPreparationDone;
         public NSpeechBubbleVfx? StarSlashPreparationSubtitle;
         public readonly List<AudioStreamPlayer> ActiveVoicePlayers = new();
         public readonly Queue<VoiceLine> PendingKillVoiceLines = new();

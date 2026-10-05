@@ -11,6 +11,7 @@ import math
 from pathlib import Path
 import shutil
 from PIL import Image
+from repair_star_slash_foreground import repair_document
 
 ROOT = Path(__file__).resolve().parents[1]
 ART = ROOT.parent / "art_sources/characters/shin_getter/forms"
@@ -26,7 +27,7 @@ def sha(path):
 
 def write(path, data):
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
 
 def sidecar(path, template):
     relative = "res://" + path.relative_to(ROOT).as_posix()
@@ -131,11 +132,14 @@ def convert_data(annotations):
                 "handle_cover": handle_cover,
                 "body_foreground": anchor.get("body_foreground_polygons_720", []),
                 "hands": anchor["hand_foreground_polygons_720"]})
-        write(OUTPUT / action / "animation.json", {"source": "ART-003 + ART-004",
+        document = {"source": "ART-003 + ART-004",
             "annotation_sha256": sha(annotation_path),
             "annotation_review_sha256": review_sha,
             "hold_frame": next(i for i, f in enumerate(records) if f["source_frame"] == hold_source),
-            "impact_time": 1.4, "frames": records})
+            "impact_time": 1.4, "frames": records}
+        # Retain approved source annotations; replay the six proven native-topology fixes.
+        document, _ = repair_document(document, action)
+        write(OUTPUT / action / "animation.json", document)
 
 def imports():
     texture_template = (OUTPUT / "shin_getter_dragon_shining_spark/sprite_sheet.png.import").read_text(encoding="utf-8")
