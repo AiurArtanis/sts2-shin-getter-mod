@@ -140,12 +140,12 @@ foreach ((string name, JsonNode original) in documents)
             if (frame[layer] is not JsonArray polygons) continue;
             for (int polygonIndex = 0; polygonIndex < polygons.Count; polygonIndex++)
             {
-                Vector2[] original = polygons[polygonIndex]!.AsArray().Select(p => Point(p!)).ToArray();
-                CheckSimplePolygon(original, $"{name} frame{frameIndex} {layer}{polygonIndex}");
-                Vector2[] cleaned = Clean(original);
+                Vector2[] sourcePolygon = polygons[polygonIndex]!.AsArray().Select(p => Point(p!)).ToArray();
+                CheckSimplePolygon(sourcePolygon, $"{name} frame{frameIndex} {layer}{polygonIndex}");
+                Vector2[] cleaned = Clean(sourcePolygon);
                 Check(cleaned.Length >= 3 && Area(cleaned) > 0, "Cleaner retains drawable coverage");
-                Check(Math.Abs(Area(original) - Area(cleaned)) <= 0.01, "Cleaner preserves contour area");
-                Check(cleaned.All(original.Contains), "Cleaner never invents hull vertices");
+                Check(Math.Abs(Area(sourcePolygon) - Area(cleaned)) <= 0.01, "Cleaner preserves contour area");
+                Check(cleaned.All(sourcePolygon.Contains), "Cleaner never invents hull vertices");
                 CheckSimplePolygon(cleaned, $"{name} frame{frameIndex} {layer}{polygonIndex} cleaned");
             }
         }
