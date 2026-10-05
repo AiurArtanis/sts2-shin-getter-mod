@@ -29,7 +29,7 @@ def clean_model(polygon):
             a, c = points[index - 1], points[(index + 1) % len(points)]
             cross = (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])
             dot = sum((b[n] - a[n]) * (c[n] - b[n]) for n in (0, 1))
-            if abs(cross) <= 0.001 * math.dist(a, c) and dot >= 0:
+            if cross == 0 and dot >= 0:
                 points.pop(index)
                 break
         else:
@@ -90,6 +90,33 @@ class FeedbackModels(unittest.TestCase):
         self.assertEqual(clean_model(notch), [tuple(point) for point in notch])
         self.assertEqual(area(clean_model(notch)), 75)
 
+    def test_long_slanted_near_collinear_and_duplicate_points(self):
+        fixture = [[0, 0], [250, 250.0005], [500, 500], [500, 550], [0, 50]]
+        for flip_x, flip_y in ((1, 1), (-1, 1), (1, -1), (-1, -1)):
+            transformed = [tuple(f32(v) for v in (x * flip_x + 360, y * flip_y - 360)) for x, y in fixture]
+            old_removed_middle = transformed[:1] + transformed[2:]
+            self.assertGreater(abs(area(transformed) - area(old_removed_middle)), 0.01)
+            self.assertEqual(clean_model(transformed), transformed)
+            self.assertLessEqual(abs(area(transformed) - area(clean_model(transformed))), 0.01)
+        duplicate = [[0, 0], [.0005, 0], [10, 0], [10, 10], [0, 10]]
+        self.assertEqual(len(clean_model(duplicate)), 4)
+
+    def test_all_metadata_layers_keep_contour_area(self):
+        count, maximum_delta = 0, 0.0
+        for action in FORMS:
+            data = json.loads(read(f"images/characters/shin_getter/forms/{action}/animation.json"))
+            for frame in data["frames"]:
+                for layer in ("weapon_cover", "blade_cover", "handle_cover", "body_foreground", "hands"):
+                    for polygon in frame.get(layer, []):
+                        source = [tuple(f32(value) for value in point) for point in polygon]
+                        cleaned = clean_model(source)
+                        delta = abs(area(source) - area(cleaned))
+                        self.assertLessEqual(delta, 0.01, (action, frame["index"], layer, delta))
+                        self.assertGreaterEqual(len(cleaned), 3)
+                        count += 1
+                        maximum_delta = max(maximum_delta, delta)
+        print(f"All metadata layers float32 model: {count} polygons, max area delta={maximum_delta:.6f}px^2")
+
     def test_delivered_foreground_cleanup(self):
         count, removed, maximum_delta = 0, 0, 0.0
         for action in FORMS:
@@ -138,7 +165,7 @@ def contracts():
     clean = block(data, "internal static Vector2[] CleanPolygon(")
     for token in ("const float epsilon = 0.001f;", "points[^1].DistanceTo(point) > epsilon",
                   "points[0].DistanceTo(points[^1]) <= epsilon", "points.Count > 3",
-                  "Math.Abs(cross) > epsilon * a.DistanceTo(c)", "(b - a).Dot(c - b) < 0f"):
+                  "cross != 0d", "(b - a).Dot(c - b) < 0f"):
         has(clean, token, "Only redundant subpixel/straight vertices are removed")
     require("ConvexHull" not in data, "Cleaning cannot replace a concave matte with a hull")
     sequence = read(SEQUENCE)
@@ -147,6 +174,7 @@ def contracts():
                    "uvs, Array.Empty<int>(), Array.Empty<float>(), texture?.GetRid() ?? default, -1"],
             "Native 2D indexed triangles retain texture and color")
     for before, after in (("const float epsilon = 0.001f;", "const float epsilon = 5f;"),
+                          ("cross != 0d", "Math.Abs(cross) > epsilon * a.DistanceTo(c)"),
                           ("(b - a).Dot(c - b) < 0f", "false")):
         variant = block(data.replace(before, after, 1), "internal static Vector2[] CleanPolygon(")
         try:

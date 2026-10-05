@@ -97,7 +97,8 @@ internal sealed class NShinGetterStarSlashData
                 Vector2 c = points[(index + 1) % points.Count];
                 double cross = ((double)b.X - a.X) * ((double)c.Y - a.Y)
                     - ((double)b.Y - a.Y) * ((double)c.X - a.X);
-                if (Math.Abs(cross) > epsilon * a.DistanceTo(c) || (b - a).Dot(c - b) < 0f) continue;
+                // A distance tolerance on a long edge can remove real contour area.
+                if (cross != 0d || (b - a).Dot(c - b) < 0f) continue;
                 points.RemoveAt(index);
                 removed = true;
                 break;

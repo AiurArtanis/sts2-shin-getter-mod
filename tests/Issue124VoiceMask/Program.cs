@@ -52,6 +52,16 @@ Vector2[] rectangle = { new(0, 0), new(0, 0), new(5, 0), new(10, 0), new(10, 10)
 Check(Clean(rectangle).Length == 4 && Area(Clean(rectangle)) == 100, "Duplicate/straight cleanup preserves rectangle");
 Vector2[] notch = { new(0, 0), new(10, 0), new(10, 10), new(5, 5), new(0, 10) };
 Check(Clean(notch).SequenceEqual(notch) && Area(Clean(notch)) == 75, "Cleanup retains genuine concave notch");
+Vector2[] cleanerNearCollinearFixture = { new(0, 0), new(250, 250.0005f), new(500, 500), new(500, 550), new(0, 50) };
+foreach (Vector2 cleanerMirror in new[] { new Vector2(1, 1), new Vector2(-1, 1), new Vector2(1, -1), new Vector2(-1, -1) })
+{
+    Vector2[] cleanerTransformed = cleanerNearCollinearFixture.Select(p => p * cleanerMirror + new Vector2(360, -360)).ToArray();
+    Vector2[] cleanerResult = Clean(cleanerTransformed);
+    Check(cleanerResult.SequenceEqual(cleanerTransformed), "Long slanted near-collinear vertex must remain, including mirrored offsets");
+    Check(Math.Abs(Area(cleanerTransformed) - Area(cleanerResult)) <= 0.01, "Near-collinear cleanup preserves contour area");
+}
+Vector2[] cleanerNearDuplicateFixture = { new(0, 0), new(0.0005f, 0), new(10, 0), new(10, 10), new(0, 10) };
+Check(Clean(cleanerNearDuplicateFixture).Length == 4, "Keep 0.001px duplicate-point cleanup");
 foreach (int index in new[] { 0, 9, 10, 26, 38, 61, 70, 75 })
 {
     Vector2 origin = new(index % 10 * 720, index / 10 * 720);
