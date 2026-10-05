@@ -13,6 +13,7 @@ internal static class ShinGetterConsoleCommandPatch
     private const string AddAllCardsCommandName = "shin_getter_add_cards";
     private const string ChunibyoCommandName = "chunibyo";
     private const string ShinGetterSoundCommandName = "sgs";
+    private const string ShinGetterDialogueCommandName = "sgd";
     private const string StonerSunshineRateCommandName = "stoner_sunshine_rate";
 
     private static bool Prefix(Player? player, string cmdName, string[] args, ref CmdResult __result)
@@ -32,6 +33,12 @@ internal static class ShinGetterConsoleCommandPatch
         if (cmdName.Equals(ShinGetterSoundCommandName, StringComparison.OrdinalIgnoreCase))
         {
             __result = new ShinGetterSoundConsoleCmd().Process(player, args);
+            return false;
+        }
+
+        if (cmdName.Equals(ShinGetterDialogueCommandName, StringComparison.OrdinalIgnoreCase))
+        {
+            __result = new ShinGetterDialogueConsoleCmd().Process(player, args);
             return false;
         }
 

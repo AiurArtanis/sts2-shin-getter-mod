@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../shin-getter-mod-godot/src/Services/ShinGetterBondConsolePlan.cs" Link="Production/Plan.cs" />
+    <Compile Include="../../shin-getter-mod-godot/src/Services/ShinGetterBondSave.cs" Link="Production/Save.cs" />
+    <Compile Include="../../shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs" Link="Production/Session.cs" />
+    <Compile Include="../../shin-getter-mod-godot/src/Services/ShinGetterDialogueCatalog.cs" Link="Production/Catalog.cs" />
+    <Compile Include="../../shin-getter-mod-godot/src/Diagnostics/ShinGetterDialogueConsoleCmd.cs" Link="Production/Command.cs" />
+    <EmbeddedResource Include="../../shin-getter-mod-godot/data/dialogues/*.json" Link="data/dialogues/%(Filename)%(Extension)" />
+    <Reference Include="0Harmony"><HintPath>../../shin-getter-mod-godot/lib/0Harmony.dll</HintPath></Reference>
+  </ItemGroup>
+</Project>

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
+using RandomNumberGenerator = System.Security.Cryptography.RandomNumberGenerator;
 using System.Text.Json;
 using Godot;
 using HarmonyLib;
@@ -16,38 +16,6 @@ using MegaCrit.Sts2.Core.TestSupport;
 using ShinGetterMod.Models.Characters;
 
 namespace ShinGetterMod.Services;
-
-internal sealed class ShinGetterBondSave
-{
-    public ShinGetterBondSave() { }
-    public int Schema { get; set; } = 1;
-    public long Revision { get; set; }
-    public int LegacyMigrationVersion { get; set; }
-    // Evidence of an old encounter is not completion of a new story segment.
-    public Dictionary<string, long> LegacyAcquaintances { get; set; } = new(StringComparer.Ordinal);
-    public HashSet<string> Completed { get; set; } = new(StringComparer.Ordinal);
-    public Dictionary<string, long> LastMetRun { get; set; } = new(StringComparer.Ordinal);
-    public Dictionary<string, long> RespondedResults { get; set; } = new(StringComparer.Ordinal);
-    public Dictionary<string, ShinGetterBondEncounter> Encounters { get; set; } = new(StringComparer.Ordinal);
-}
-
-internal sealed class ShinGetterBondEncounter
-{
-    public ShinGetterBondEncounter() { }
-    public string Npc { get; set; } = "";
-    public long Run { get; set; }
-    public string DialogueId { get; set; } = "";
-    public string TextVersion { get; set; } = "";
-    public int Line { get; set; }
-    public bool Closed { get; set; }
-    public bool Completed { get; set; }
-    public bool WasShown { get; set; }
-    public long ResultRun { get; set; }
-    public HashSet<int> ConsumedCues { get; set; } = new();
-    // Freeze every translation too: updating the mod during a saved conversation must
-    // not silently change its content or line count on resume/language switch.
-    public Dictionary<string, string[]> LinesByLanguage { get; set; } = new(StringComparer.Ordinal);
-}
 
 /// <summary>
 /// One scene-owned transaction controller, never a static Player/Node reference.
@@ -83,15 +51,42 @@ internal sealed class ShinGetterBondSession
         && !RunManager.Instance.DailyTime.HasValue && !TestMode.IsOn && !NonInteractiveMode.IsActive
         && ShinGetterDialogueCatalog.ContainsNpc(model.Id.Entry);
 
-    internal ShinGetterBondSession(EventModel model)
+    private ShinGetterBondSession()
     {
         _profile = SaveManager.Instance.CurrentProfileId;
         _path = ProjectSettings.GlobalizePath(SaveManager.Instance.GetProfileScopedPath("shin_getter_bonds.json"));
-        _run = StartTime(RunManager.Instance);
+        _run = RunManager.Instance.IsInProgress ? StartTime(RunManager.Instance) : 0;
+        _npc = _key = "";
+    }
+
+    internal ShinGetterBondSession(EventModel model) : this()
+    {
         _npc = model.Id.Entry;
         _key = "";
         try { _key = BuildEncounterKey(model, _run); }
         catch (InvalidDataException ex) { _identityError = ex.Message; }
+    }
+
+    internal static bool TryConsole(ShinGetterBondConsolePlan plan, out string message)
+    {
+        try
+        {
+            var session = new ShinGetterBondSession();
+            // A test reset must never re-import acquaintances from real run history.
+            session._save = session.Read(migrateIfMissing: false);
+            if (!plan.IsReadOnly && !session.Commit(next => plan.Apply(next)))
+            {
+                message = "Progress unchanged: " + session.Error;
+                return false;
+            }
+            message = $"Profile {session._profile}; " + plan.Describe(session._save);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            message = "Progress unchanged: " + ex.Message;
+            return false;
+        }
     }
 
     private static string BuildEncounterKey(EventModel model, long run)
@@ -130,6 +125,7 @@ internal sealed class ShinGetterBondSession
                 foreach (string key in next.Encounters.Where(pair => pair.Value.Run < _run).Select(pair => pair.Key).ToArray())
                     next.Encounters.Remove(key);
                 next.Encounters[_key] = _pendingEncounter!;
+                next.DebugNextDialogues.Remove(_npc);
             });
         }
         catch (Exception ex) { Error = ex.Message; return false; }
@@ -176,6 +172,10 @@ internal sealed class ShinGetterBondSession
     private ShinGetterBondEncounter SelectEncounter()
     {
         var encounter = new ShinGetterBondEncounter { Npc = _npc, Run = _run };
+        // Explicit developer requests bypass acquaintance/bond/theme RNG once.
+        // Begin commits the request consumption together with this frozen snapshot.
+        if (_save!.DebugNextDialogues.TryGetValue(_npc, out string? forced))
+            return forced == ShinGetterBondConsolePlan.ChoicesToken ? encounter : WithDialogue(encounter, forced);
         string first = _npc + "_FIRST_01";
         if (!IsAcquainted(_save!, _npc)) return WithDialogue(encounter, first);
         if (Choices.Count != 0) return encounter;
@@ -322,8 +322,10 @@ internal sealed class ShinGetterBondSession
             ?? throw new InvalidDataException("Empty relationship save; original file retained.");
         if (save.Schema != 1 || save.Completed == null || save.Encounters == null
             || save.LastMetRun == null || save.RespondedResults == null || save.LegacyAcquaintances == null
+            || save.DebugNextDialogues == null
             || save.LegacyMigrationVersion is < 0 or > 1)
             throw new InvalidDataException("Unsupported relationship save; original file retained.");
+        ShinGetterBondConsolePlan.ValidatePending(save);
         if (save.LegacyAcquaintances.Any(pair => !ShinGetterDialogueCatalog.ContainsNpc(pair.Key) || pair.Value <= 0))
             throw new InvalidDataException("Invalid legacy acquaintance evidence; original file retained.");
         // Unreleased roomId-based snapshots cannot be assigned a history slot safely.
