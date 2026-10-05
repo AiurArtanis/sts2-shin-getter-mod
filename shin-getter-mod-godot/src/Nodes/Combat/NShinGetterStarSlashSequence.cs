@@ -255,25 +255,111 @@ internal partial class NShinGetterStarSlashSequence : Node2D
 
     private static Vector2[][] MergeOutline(Vector2[][] polygons)
     {
-        var outlines = polygons.ToList();
+        var outlines = polygons.Select((polygon, index) => (polygon, index))
+            .ToDictionary(item => item.index, item => item.polygon);
+        Rect2[] bounds = polygons.Select(OutlineBounds).ToArray();
+        Rect2[][] edges = polygons.Select(OutlineEdgeBounds).ToArray();
+        bool[] rectangles = polygons.Select(IsAxisAlignedRectangle).ToArray();
+        // -1: provably disjoint; 1: proved intersection; 0: native test needed.
+        var relations = new int[polygons.Length, polygons.Length];
+        var revisions = new int[polygons.Length];
+        var pending = new PriorityQueue<(int Left, int Right, int LeftRevision, int RightRevision),
+            (int Left, int Right)>();
+        void Enqueue(int left, int right)
+        {
+            int relation = relations[left, right];
+            if (relation == 0)
+            {
+                if (!bounds[left].Intersects(bounds[right], includeBorders: true)) relation = -1;
+                else if (rectangles[left]) relation = RectangleRelation(bounds[left], outlines[right], edges[right]);
+                else if (rectangles[right]) relation = RectangleRelation(bounds[right], outlines[left], edges[left]);
+                relations[left, right] = relations[right, left] = relation;
+            }
+            if (relation == -1) return;
+            pending.Enqueue((left, right, revisions[left], revisions[right]), (left, right));
+        }
+        for (int left = 0; left < polygons.Length; left++)
+        for (int right = left + 1; right < polygons.Length; right++) Enqueue(left, right);
         // Godot4.5.1 MergePolygons performs Union, retaining a concave outer boundary.
         // Disjoint regions are kept separate; metadata must not be concealed with a broad hull.
-        bool merged;
-        do
+        // Stable original indices preserve the old left/right order without rescanning unchanged pairs.
+        while (pending.TryDequeue(out var pair, out _))
         {
-            merged = false;
-            for (int left = 0; left < outlines.Count && !merged; left++)
-            for (int right = left + 1; right < outlines.Count; right++)
+            int left = pair.Left, right = pair.Right;
+            if (!outlines.ContainsKey(left) || !outlines.ContainsKey(right)
+                || revisions[left] != pair.LeftRevision || revisions[right] != pair.RightRevision) continue;
+            var union = Geometry2D.MergePolygons(outlines[left], outlines[right]);
+            using var nativeUnion = (Godot.Collections.Array)union;
+            if (union.Count != 1) continue;
+            // Union retains containment, and cannot reach a region separated from both operands.
+            foreach (int other in outlines.Keys)
             {
-                var union = Geometry2D.MergePolygons(outlines[left], outlines[right]);
-                if (union.Count != 1) continue;
-                outlines[left] = union[0];
-                outlines.RemoveAt(right);
-                merged = true;
-                break;
+                if (other == left || other == right) continue;
+                int a = relations[left, other], b = relations[right, other];
+                int relation = a == 1 || b == 1 ? 1 : a == -1 && b == -1 ? -1 : 0;
+                relations[left, other] = relations[other, left] = relation;
             }
-        } while (merged);
-        return outlines.ToArray();
+            Vector2[] contour = union[0];
+            outlines[left] = contour;
+            bounds[left] = OutlineBounds(contour);
+            edges[left] = OutlineEdgeBounds(contour);
+            rectangles[left] = IsAxisAlignedRectangle(contour);
+            revisions[left]++;
+            outlines.Remove(right);
+            foreach (int other in outlines.Keys)
+                if (other != left) Enqueue(Math.Min(left, other), Math.Max(left, other));
+        }
+        return outlines.OrderBy(item => item.Key).Select(item => item.Value).ToArray();
+    }
+
+    private static bool IsAxisAlignedRectangle(Vector2[] polygon)
+    {
+        if (polygon.Length != 4) return false;
+        Rect2 rectangle = PolygonBounds(polygon);
+        Vector2 end = rectangle.End;
+        int corners = 0;
+        foreach (Vector2 point in polygon)
+        {
+            int x = point.X == rectangle.Position.X ? 0 : point.X == end.X ? 1 : -1;
+            int y = point.Y == rectangle.Position.Y ? 0 : point.Y == end.Y ? 1 : -1;
+            if (x < 0 || y < 0) return false;
+            corners |= 1 << (x + y * 2);
+        }
+        return corners == 15;
+    }
+
+    private static Rect2[] OutlineEdgeBounds(Vector2[] polygon)
+    {
+        var edges = new Rect2[polygon.Length];
+        for (int index = 0; index < polygon.Length; index++)
+        {
+            Vector2 a = polygon[index], b = polygon[(index + 1) % polygon.Length];
+            Vector2 minimum = a.Min(b), maximum = a.Max(b);
+            edges[index] = new Rect2(minimum, maximum - minimum).Grow(0.001f);
+        }
+        return edges;
+    }
+
+    private static int RectangleRelation(Rect2 rectangle, Vector2[] polygon, Rect2[] edges)
+    {
+        // No boundary near this rectangle: it is either fully contained or fully disjoint.
+        // Inflated edge boxes are conservative; the native union still handles all contacts.
+        foreach (Rect2 edge in edges)
+            if (rectangle.Intersects(edge, includeBorders: true)) return 0;
+        return Geometry2D.IsPointInPolygon(rectangle.GetCenter(), polygon) ? 1 : -1;
+    }
+
+    private static Rect2 OutlineBounds(Vector2[] polygon) => PolygonBounds(polygon).Grow(0.001f);
+
+    private static Rect2 PolygonBounds(Vector2[] polygon)
+    {
+        Vector2 minimum = polygon[0], maximum = polygon[0];
+        foreach (Vector2 point in polygon)
+        {
+            minimum = minimum.Min(point);
+            maximum = maximum.Max(point);
+        }
+        return new Rect2(minimum, maximum - minimum);
     }
 
     private Vector2 Local(Vector2 point)

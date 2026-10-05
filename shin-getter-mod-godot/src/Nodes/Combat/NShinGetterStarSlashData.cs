@@ -9,6 +9,8 @@ namespace ShinGetterMod.Nodes.Combat;
 
 internal sealed class NShinGetterStarSlashData
 {
+    private static readonly Dictionary<string, NShinGetterStarSlashData> Loaded = new(StringComparer.Ordinal);
+
     internal sealed record Frame(float Duration, Vector2 Grip, Vector2 Axis,
         Vector2[][] WeaponCover, Vector2[][] BladeCover, Vector2[][] HandleCover,
         Vector2[][] BodyForeground, Vector2[][] Hands);
@@ -50,15 +52,22 @@ internal sealed class NShinGetterStarSlashData
     {
         string path = directory + "/animation.json";
         if (!FileAccess.FileExists(path)) return null;
-        try
+        // Parsed metadata is read-only for the process; resource replacement requires a restart.
+        lock (Loaded)
         {
-            using JsonDocument document = JsonDocument.Parse(FileAccess.GetFileAsString(path));
-            return new NShinGetterStarSlashData(document.RootElement);
-        }
-        catch (Exception error)
-        {
-            GD.PushWarning($"Star Slash metadata rejected: {path}: {error.Message}");
-            return null;
+            if (Loaded.TryGetValue(path, out NShinGetterStarSlashData? cached)) return cached;
+            try
+            {
+                using JsonDocument document = JsonDocument.Parse(FileAccess.GetFileAsString(path));
+                var data = new NShinGetterStarSlashData(document.RootElement);
+                Loaded.Add(path, data);
+                return data;
+            }
+            catch (Exception error)
+            {
+                GD.PushWarning($"Star Slash metadata rejected: {path}: {error.Message}");
+                return null;
+            }
         }
     }
 
