@@ -41,7 +41,7 @@ internal static class ShinGetterEncounterMusicService
         StopActiveAndRestore();
         ShinGetterExecutionMusicService.StopImmediatelyAndRestore();
 
-        if (runState is null || NonInteractiveMode.IsActive)
+        if (!ShinGetterChunibyoConfigService.IsBgmEnabled || runState is null || NonInteractiveMode.IsActive)
             return;
         if (!ShouldReplaceForLocalPlayer(runState))
             return;
@@ -134,6 +134,7 @@ internal static class ShinGetterEncounterMusicService
 
         trackPath = (act, category) switch
         {
+            (_, ShinGetterBgmCategory.EventCombat) => GetTrackPath("onslaught"),
             (Overgrowth, ShinGetterBgmCategory.NormalCombat) => GetTrackPath(
                 ShinGetterBgmCatalog.GetterRoboSts2TrackId),
             (Underdocks, ShinGetterBgmCategory.NormalCombat) => GetTrackPath(
@@ -179,7 +180,10 @@ internal static class ShinGetterEncounterMusicService
         state.FadeTween?.Kill();
         state.FadeTween = null;
         if (GodotObject.IsInstanceValid(state.Player))
+        {
+            state.Player.Stop();
             state.Player.QueueFree();
+        }
     }
 
     private sealed class EncounterMusicState(CombatState combatState, AudioStreamPlayer player)

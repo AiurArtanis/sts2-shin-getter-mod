@@ -58,6 +58,10 @@ internal static class NShinGetterSpriteSequence
     public const string ShinDragonDashV2FrameDirectory = "res://images/characters/shin_getter/forms/shin_getter_dragon_dash_v2";
     public const string ShinDragonDrillAttackFrameDirectory = "res://images/characters/shin_getter/forms/shin_getter_dragon_drill_attack";
     public const string ShinDragonStonerSunshineFrameDirectory = "res://images/characters/shin_getter/forms/shin_getter_dragon_stoner_sunshine";
+    public const string ShinDragonShiningSparkFrameDirectory = "res://images/characters/shin_getter/forms/shin_getter_dragon_shining_spark";
+    public const string GetterOneStarSlashFrameDirectory = "res://images/characters/shin_getter/forms/getter_one_star_slash";
+    public const string ShinDragonStarSlashFrameDirectory = "res://images/characters/shin_getter/forms/shin_getter_dragon_star_slash";
+    public const string StarSlashAnimationName = "star_slash";
     public const string IdleAnimationName = "idle";
     public const string AttackAnimationName = "attack";
     public const string HeavyAttackAnimationName = "heavy_attack";
@@ -70,6 +74,8 @@ internal static class NShinGetterSpriteSequence
     public const string CycloneAnimationName = "cyclone";
     public const string DashV2AnimationName = "dash_v2";
     public const string DrillAttackAnimationName = "drill_attack";
+    public const string ShiningSparkAnimationName = "shining_spark";
+    public const int ShiningSparkMaxFrames = 47;
     public const int IdleMaxFrames = 24;
     public const int AttackMaxFrames = 40;
     public const int CastMaxFrames = 32;
@@ -123,6 +129,7 @@ internal static class NShinGetterSpriteSequence
             (AttackAnimationName, AttackFrameDirectory, AttackMaxFrames, AttackFramesPerSecond),
             (CastAnimationName, CastFrameDirectory, CastMaxFrames, ActionFramesPerSecond),
             (StonerSunshineAnimationName, GetterOneStonerSunshineFrameDirectory, StonerSunshineMaxFrames, StonerSunshineFramesPerSecond),
+            (StarSlashAnimationName, GetterOneStarSlashFrameDirectory, 76, ActionFramesPerSecond),
             (BlockAnimationName, GetterOneBlockFrameDirectory, GetterOneBlockMaxFrames, GetterOneBlockFramesPerSecond),
             (DashAnimationName, GetterOneDashFrameDirectory, GetterOneDashMaxFrames, ActionFramesPerSecond),
             (DeathAnimationName, DeathFrameDirectory, DeathMaxFrames, ActionFramesPerSecond));
@@ -135,7 +142,8 @@ internal static class NShinGetterSpriteSequence
         sprite.SpriteFrames = frames;
         LoadPingPongAnimation(frames, IdleAnimationName, IdleFrameDirectory, IdleMaxFrames, IdleFramesPerSecond, loop: true);
 
-        if (!sprite.IsPlaying() && frames.HasAnimation(IdleAnimationName))
+        if (!sprite.IsPlaying() && frames.HasAnimation(IdleAnimationName)
+            && !NShinGetterStarSlashSequence.IsControlling(sprite))
             sprite.Play(IdleAnimationName);
     }
 
@@ -196,6 +204,8 @@ internal static class NShinGetterSpriteSequence
             (CycloneAnimationName, ShinDragonCycloneFrameDirectory, ShinDragonSpecialMaxFrames, ShinDragonSpecialFramesPerSecond),
             (DashV2AnimationName, ShinDragonDashV2FrameDirectory, ShinDragonSpecialMaxFrames, ShinDragonSpecialFramesPerSecond),
             (DrillAttackAnimationName, ShinDragonDrillAttackFrameDirectory, ShinDragonSpecialMaxFrames, ShinDragonSpecialFramesPerSecond),
+            (ShiningSparkAnimationName, ShinDragonShiningSparkFrameDirectory, ShiningSparkMaxFrames, ActionFramesPerSecond),
+            (StarSlashAnimationName, ShinDragonStarSlashFrameDirectory, 71, ActionFramesPerSecond),
             (BlockAnimationName, ShinDragonBlockFrameDirectory, ShinDragonBlockMaxFrames, ShinDragonBlockFramesPerSecond),
             (DashAnimationName, ShinDragonDashFrameDirectory, ShinDragonDashMaxFrames, ActionFramesPerSecond),
             (DeathAnimationName, ShinDragonDeathFrameDirectory, ShinDragonDeathMaxFrames, ActionFramesPerSecond));
@@ -208,7 +218,9 @@ internal static class NShinGetterSpriteSequence
         sprite.SpriteFrames = frames;
         LoadPingPongAnimation(frames, IdleAnimationName, ShinDragonIdleFrameDirectory, ShinDragonIdleMaxFrames, IdleFramesPerSecond, loop: true);
 
-        if (!sprite.IsPlaying() && frames.HasAnimation(IdleAnimationName))
+        if (!sprite.IsPlaying() && frames.HasAnimation(IdleAnimationName)
+            && !NShinGetterShiningSparkSequence.IsControlling(sprite)
+            && !NShinGetterStarSlashSequence.IsControlling(sprite))
             sprite.Play(IdleAnimationName);
     }
 
@@ -267,6 +279,8 @@ internal static class NShinGetterSpriteSequence
         CycloneAnimationName,
         DashV2AnimationName,
         DrillAttackAnimationName,
+        ShiningSparkAnimationName,
+        StarSlashAnimationName,
     };
 
     private static void EnsureRequestedAnimation(
@@ -357,6 +371,17 @@ internal static class NShinGetterSpriteSequence
         frames.SetAnimationLoop(animationKey, loop);
         frames.SetAnimationSpeed(animationKey, framesPerSecond);
         AddLinearFrames(frames, animationKey, textures);
+        if (animationName == StarSlashAnimationName)
+        {
+            NShinGetterStarSlashData? data = NShinGetterStarSlashData.Load(frameDirectory);
+            if (data == null || data.Frames.Length != textures.Length)
+            {
+                frames.RemoveAnimation(animationKey);
+                return;
+            }
+            for (int index = 0; index < textures.Length; index++)
+                frames.SetFrame(animationKey, index, textures[index], (float)(data.Frames[index].Duration * framesPerSecond));
+        }
         stopwatch.Stop();
         ulong memoryAfter = OS.GetStaticMemoryUsage();
         ulong videoMemoryAfter = RenderingServer.GetRenderingInfo(RenderingServer.RenderingInfo.VideoMemUsed);

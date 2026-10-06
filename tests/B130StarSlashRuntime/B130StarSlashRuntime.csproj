@@ -1,0 +1,20 @@
+<Project Sdk="Godot.NET.Sdk/4.5.1">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <AssemblyName>B130StarSlashRuntime</AssemblyName>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <DisableImplicitGodotSharpReferences>true</DisableImplicitGodotSharpReferences>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Runner.cs" />
+    <Compile Include="Trace.cs" />
+    <Compile Include="OutlineRegression.cs" />
+    <Reference Include="sts2"><HintPath>$(GameRoot)/.godot/mono/temp/bin/Debug/sts2.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="GodotSharp"><HintPath>$(GameRoot)/.godot/mono/temp/bin/Debug/GodotSharp.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="ShinGetterMod"><HintPath>$(RuntimeRoot)/engine/mods/ShinGetterMod/ShinGetterMod.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="0Harmony"><HintPath>$(RuntimeRoot)/lib/0Harmony.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+</Project>

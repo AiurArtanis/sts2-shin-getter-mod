@@ -28,7 +28,7 @@ internal static class ShinGetterBgmCatalog
     internal const string HeatsSts2TrackId = "heats_sts2";
     internal const string GetterRoboSts2TrackId = "getter_robo_sts2";
     internal const string DefaultExecutionMusicPath =
-        "res://audio/music/shin_getter/execution_theme.mp3";
+        "res://audio/music/shin_getter/album/heroic.mp3";
 
     private const string AlbumRoot = "res://audio/music/shin_getter/album";
     private const string EncounterRoot = "res://audio/music/shin_getter/encounters";
@@ -38,31 +38,28 @@ internal static class ShinGetterBgmCatalog
         {
             Track(DefaultTrackId, string.Empty, "DEFAULT", "(default)"),
             Track("relief", $"{AlbumRoot}/relief.mp3", "RELIEF", "Relief"),
-            Track("grief", $"{AlbumRoot}/grief.mp3", "GRIEF", "Grief"),
-            Track("morning_on_the_tundra", $"{AlbumRoot}/morning_on_the_tundra.mp3", "MORNING_ON_THE_TUNDRA", "Morning on the Tundra"),
-            Track("brutality", $"{AlbumRoot}/brutality.mp3", "BRUTALITY", "Brutality"),
             Track("rebel_army", $"{EncounterRoot}/boss_overgrowth.mp3", "REBEL_ARMY", "Rebel Army"),
             Track("past", $"{AlbumRoot}/past.mp3", "PAST", "Past"),
-            Track("memory", $"{AlbumRoot}/memory.mp3", "MEMORY", "Memory"),
-            Track("interference", $"{AlbumRoot}/interference.mp3", "INTERFERENCE", "Interference"),
             Track("tension", $"{EncounterRoot}/elite_glory.mp3", "TENSION", "Tension"),
-            Track("cold_bloodedness", $"{AlbumRoot}/cold_bloodedness.mp3", "COLD_BLOODEDNESS", "Cold-Bloodedness"),
             Track("mystery", $"{EncounterRoot}/boss_underdocks.mp3", "MYSTERY", "Mystery"),
             Track("momentum", $"{EncounterRoot}/elite_overgrowth.mp3", "MOMENTUM", "Momentum"),
             Track("majesty", $"{EncounterRoot}/boss_hive.mp3", "MAJESTY", "Majesty"),
             Track("unknown", $"{EncounterRoot}/elite_underdocks.mp3", "UNKNOWN", "Unknown"),
-            Track("onslaught", $"{EncounterRoot}/elite_hive.mp3", "ONSLAUGHT", "Onslaught"),
+            Track("onslaught", $"{AlbumRoot}/onslaught.mp3", "ONSLAUGHT", "Onslaught"),
             Track("bond_of_blood", $"{AlbumRoot}/bond_of_blood.mp3", "BOND_OF_BLOOD", "Bond of Blood"),
-            Track("resolve", $"{AlbumRoot}/resolve.mp3", "RESOLVE", "Resolve"),
-            Track("heroic", $"{AlbumRoot}/heroic.mp3", "HEROIC", "Heroic"),
+            Track("heroic", $"{AlbumRoot}/heroic.mp3", "HEROIC", "Bravery"),
             Track("hymn", $"{AlbumRoot}/hymn.mp3", "HYMN", "Hymn"),
             Track("reminiscence", $"{AlbumRoot}/reminiscence.mp3", "REMINISCENCE", "Reminiscence"),
             Track("final_war", $"{EncounterRoot}/boss_glory.mp3", "FINAL_WAR", "Final War"),
+            Track("creation", $"{AlbumRoot}/creation.mp3", "CREATION", "Creation"),
+            Track("hostility", $"{AlbumRoot}/hostility.mp3", "HOSTILITY", "Hostility"),
+            Track("forward", $"{EncounterRoot}/elite_hive.mp3", "FORWARD", "Forward"),
+            Track("its_time", $"{AlbumRoot}/its_time.mp3", "ITS_TIME", "It's Time(slay the spire 2 ver.)"),
             Track(DragonSts2TrackId, $"{AlbumRoot}/dragon_sts2.mp3", "DRAGON_STS2", "DRAGON(slay the spire 2 ver.)"),
             Track(StormSts2TrackId, $"{AlbumRoot}/storm_sts2.mp3", "STORM_STS2", "STORM(slay the spire 2 ver.)"),
             Track(HeatsSts2TrackId, $"{AlbumRoot}/heats_sts2.mp3", "HEATS_STS2", "HEATS(slay the spire 2 ver.)"),
             Track(GetterRoboSts2TrackId, $"{AlbumRoot}/getter_robo_sts2.mp3", "GETTER_ROBO_STS2", "GETTER ROBO(slay the spire 2 ver.)"),
-            Track("heats_final", $"{AlbumRoot}/heats_final.mp3", "HEATS_FINAL", "HEATS(Final ver.)"),
+            Track("bravery_iron_saga", $"{AlbumRoot}/bravery_iron_saga.mp3", "BRAVERY_IRON_SAGA", "Bravery(Iron Saga Ver.)"),
             Track(RandomTrackId, string.Empty, "RANDOM", "Random"),
         };
 

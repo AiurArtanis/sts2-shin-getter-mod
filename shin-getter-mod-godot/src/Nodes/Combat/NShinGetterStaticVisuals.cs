@@ -4,10 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Godot;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
+using MegaCrit.Sts2.Core.Saves;
+using MegaCrit.Sts2.Core.Settings;
 using ShinGetterMod.Models.Cards;
 
 namespace ShinGetterMod.Nodes.Combat;
@@ -143,6 +147,83 @@ public static class NShinGetterStaticVisuals
             ? (float)(frameCount / framesPerSecond / speedScale)
             : fallbackDuration;
         await Cmd.CustomScaledWait(duration, duration);
+    }
+
+    // Shift Strike waits for the recovery frames before it can transform or attack again.
+    public static async Task PlayCompleteCreatureAttack(Creature creature, Func<Task> onImpact)
+    {
+        var creatureNode = NCombatRoom.Instance?.GetCreatureNode(creature);
+        if (NonInteractiveMode.IsActive || SaveManager.Instance.PrefsSave.FastMode == FastModeType.Instant
+            || creatureNode == null || !TryGetVisibleFormAnimation(creatureNode, out FormAnimation form))
+        {
+            await onImpact();
+            return;
+        }
+
+        AnimatedSprite2D sprite = form.Sprite;
+        if (!await WaitForPreviousSpecialAttack(creature, sprite))
+        {
+            await onImpact();
+            return;
+        }
+        NShinGetterSpriteAnimationStateMachine.QueueNextActionSpeed(sprite, 1f);
+        if (!NShinGetterSpriteAnimationStateMachine.TryStartFreshAttack(sprite, form.EnsureLoaded)
+            || sprite.SpriteFrames is not { } frames)
+        {
+            await onImpact();
+            return;
+        }
+
+        StringName animation = sprite.Animation;
+        double fps = frames.GetAnimationSpeed(animation);
+        double frameUnits = Enumerable.Range(0, frames.GetFrameCount(animation))
+            .Sum(index => frames.GetFrameDuration(animation, index));
+        float duration = fps > 0d ? (float)(frameUnits / fps) : 0.5f;
+        await WaitForAttackPhase(creature, sprite, animation, frames, frameUnits * 0.5d, duration);
+        await onImpact();
+        await WaitForAttackPhase(creature, sprite, animation, frames, frameUnits, duration);
+    }
+
+    private static async Task<bool> WaitForPreviousSpecialAttack(Creature creature, AnimatedSprite2D sprite)
+    {
+        float budget = 6f;
+        while (IsAttackVisualAvailable(creature, sprite)
+            && SaveManager.Instance.PrefsSave.FastMode != FastModeType.Instant)
+        {
+            if (!CombatManager.Instance.IsPaused)
+            {
+                if (!NShinGetterSpriteAnimationStateMachine.IsKeepingAttack(sprite)) return true;
+                if (budget <= 0f) return false;
+            }
+            await Cmd.Wait(0.02f, ignoreCombatEnd: true);
+            if (!CombatManager.Instance.IsPaused) budget -= 0.02f;
+        }
+        return false;
+    }
+
+    private static bool IsAttackVisualAvailable(Creature creature, AnimatedSprite2D sprite) =>
+        GodotObject.IsInstanceValid(sprite) && sprite.IsInsideTree() && sprite.IsVisibleInTree()
+        && sprite.Modulate.A > 0.01f && !creature.IsDead && !CombatManager.Instance.IsOverOrEnding;
+
+    private static async Task WaitForAttackPhase(Creature creature, AnimatedSprite2D sprite,
+        StringName animation, SpriteFrames frames, double phaseUnits, float duration)
+    {
+        // Poll actual frame progress; interruption and a stalled animation have finite exits.
+        float budget = duration + 0.25f;
+        while (GodotObject.IsInstanceValid(sprite) && sprite.IsInsideTree()
+            && sprite.IsVisibleInTree() && sprite.Animation == animation && sprite.IsPlaying()
+            && !creature.IsDead && !CombatManager.Instance.IsOverOrEnding && budget > 0f
+            && SaveManager.Instance.PrefsSave.FastMode != FastModeType.Instant)
+        {
+            await Cmd.Wait(0.02f, ignoreCombatEnd: true);
+            if (CombatManager.Instance.IsPaused) continue;
+            if (!GodotObject.IsInstanceValid(sprite) || sprite.Animation != animation) return;
+            double completed = Enumerable.Range(0, sprite.Frame)
+                .Sum(index => frames.GetFrameDuration(animation, index));
+            completed += frames.GetFrameDuration(animation, sprite.Frame) * sprite.FrameProgress;
+            if (completed >= phaseUnits) return;
+            budget -= 0.02f;
+        }
     }
 
     public static bool TryPlayGetterActionAnimation(NCreature creatureNode, string trigger)
@@ -493,7 +574,8 @@ public static class NShinGetterStaticVisuals
         if (sprites.GetterOne.Node is AnimatedSprite2D getterOneAnimation)
         {
             NShinGetterSpriteSequence.EnsureIdleLoaded(getterOneAnimation);
-            if (getterOneAnimation.Visible && !getterOneAnimation.IsPlaying())
+            if (getterOneAnimation.Visible && !getterOneAnimation.IsPlaying()
+                && !NShinGetterStarSlashSequence.IsControlling(getterOneAnimation))
                 NShinGetterSpriteAnimationStateMachine.PlayIdle(getterOneAnimation);
         }
 
@@ -514,7 +596,9 @@ public static class NShinGetterStaticVisuals
         if (sprites.ShinDragon.Node is AnimatedSprite2D shinDragonAnimation)
         {
             NShinGetterSpriteSequence.EnsureShinDragonIdleLoaded(shinDragonAnimation);
-            if (shinDragonAnimation.Visible && !shinDragonAnimation.IsPlaying())
+            if (shinDragonAnimation.Visible && !shinDragonAnimation.IsPlaying()
+                && !NShinGetterShiningSparkSequence.IsControlling(shinDragonAnimation)
+                && !NShinGetterStarSlashSequence.IsControlling(shinDragonAnimation))
                 NShinGetterSpriteAnimationStateMachine.PlayIdle(shinDragonAnimation, NShinGetterSpriteSequence.EnsureShinDragonIdleLoaded);
         }
 

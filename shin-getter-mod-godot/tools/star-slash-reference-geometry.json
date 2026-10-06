@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "job_id": "ART-004",
+  "status": "revision_3_runtime_code_synced_pending_visual_review",
+  "geometry_revision": 3,
+  "needs_review": true,
+  "reference_path": "D:/Library/Pictures/杀戮尖塔2-素材/参考图/[AYN&DSX][Change!!Getter_Robo_Sekai_Saigo_no_Hi][13][BDRIP][1440x1080][x264_AAC][D503EA6A]-Scene-403-01.jpg",
+  "coordinate_system": "P(x,y)=grip+axis*x+normal*y; axis=normalize(axis_second_point-grip); normal=(-axis.y,axis.x)",
+  "time_model": {
+    "growth": "clamp((poseTime-0.4)/max(0.01,HoldTime-0.4),0,1)",
+    "recovery": "clamp((poseTime-1.55)/0.85,0,1)",
+    "length": "(360+620*growth)*(1-0.65*recovery)",
+    "HoldTime": "sum(duration[0..hold_index],inclusive)"
+  },
+  "blade": {
+    "root": "max(32,min(dot(vertex-grip,axis) for vertex in blade_cover)-8)",
+    "span": "max(140,length-root)",
+    "half_width": "max(clamp(0.22*length,80,210),max(abs(dot(vertex-grip,normal)) for vertex in blade_cover)+12)",
+    "left": {
+      "length_scale": 1.0,
+      "width_scale": 1.0,
+      "normal_sign": -1,
+      "start": [0.0,0.0],
+      "cubic_segments": [
+        [[0.08,1.2],[0.36,1.18],[0.9,0.45]],
+        [[0.975,0.12],[1.03,0.025],[1.05,0.0]],
+        [[0.88,0.12],[0.64,0.47],[0.45,0.50]],
+        [[0.26,0.40],[0.10,0.08],[0.0,0.0]]
+      ]
+    },
+    "right": {
+      "length_scale": 0.8,
+      "width_scale": 0.82,
+      "normal_sign": 1,
+      "start": [0.0,0.0],
+      "cubic_segments": [
+        [[0.08,1.2],[0.36,1.18],[0.9,0.45]],
+        [[0.975,0.12],[1.03,0.025],[1.05,0.0]],
+        [[0.88,0.12],[0.64,0.47],[0.45,0.50]],
+        [[0.26,0.40],[0.10,0.08],[0.0,0.0]]
+      ]
+    },
+    "bezier_point_mapping": "(root+normalized_x*span*length_scale,normalized_y*half_width*width_scale*normal_sign)",
+    "samples_per_cubic": 18,
+    "composition": "Opaque union of each curved lobe and blade_cover polygons; preserve concave silhouette. Do NOT take a convex hull. Geometry2D.MergePolygons or independent opaque draws with one union outline."
+  },
+  "shaft": {
+    "tail": "min(-90,min(dot(vertex-grip,axis) for handle_cover vertices))",
+    "stations": [
+      ["tail",0.0],
+      ["tail+18",2.0],
+      ["tail+55",4.2],
+      [-45.0,5.2],
+      [0.0,5.5],
+      ["root+28",6.3],
+      ["length*0.84",2.8],
+      ["length+10",0.0]
+    ],
+    "station_mapping": "(axis_distance,half_width_px), monotone-sort valid stations; interpolate smoothstep; draw upper/lower sampled silhouette, NOT a constant-width DrawLine rectangle",
+    "tip_and_butt": "pointed/tapered; no square flat caps",
+    "center_highlight_half_width": 1.6
+  },
+  "color_layers": {
+    "opaque_core": [37,219,103,255],
+    "inner_light": [128,255,183,255],
+    "inner_light_geometry": {
+      "basis": "72-point lobe; root=blade[0], pointed tip=blade[36]",
+      "paired_indices": "i=1..35 outer=blade[i]; innerCurve=[blade[0]]+reverse(blade[37..71])+[blade[36]]; interpolate innerPoint at the same dot(point,axis) as outer",
+      "band_edges": [0.28,0.72],
+      "closure": "root, 28-percent edge in forward order, tip, 72-percent edge in reverse order",
+      "note": "Opaque light band only within the curved blade; pairing the same Bezier parameter is invalid for the deep notch. Match axial position, never scale about the centroid or fill the notch."
+    },
+    "center_highlight": [222,255,229,255],
+    "outer_glow": [61,255,144,70],
+    "outer_glow_radius_px": 9.0,
+    "note": "glow is optional soft edge only; the core replacing the old axe must remain opaque"
+  },
+  "draw_order": ["original_sprite","opaque_old_weapon_cover","curved_blade_core_and_tapered_shaft","blade_inner_light_band","union_outer_edge_and_center_highlight","visible_body_foreground","hand_foreground"],
+  "limitations": [
+    "Reference is heavily glowing and partly out of frame; these are interpreted 2D contours, not an exact full silhouette tracing.",
+    "Do not use a more attractive Pillow-only preview as proof the Godot runtime was changed.",
+    "Original cover masks can still produce local protrusions; fix frame metadata rather than hide those errors with excessive glow."
+  ]
+}
