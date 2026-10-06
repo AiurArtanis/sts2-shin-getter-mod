@@ -72,4 +72,3 @@ with tempfile.TemporaryDirectory(prefix="shin-getter-issue237-gate-") as temp:
     negative("obsolete issue#89 expectations", "tools/validate_issue_89.py", replace("!= (2500, 2470)", "!= (2524, 2524)"))
     validate()
     print(f"issue#237 gate tests PASS: positive fixture + {len(rejected)} rejected mutations (no Godot/game)")
-
