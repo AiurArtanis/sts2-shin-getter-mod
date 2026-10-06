@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Godot;
@@ -42,13 +43,24 @@ internal static class ShinGetterBondDialogueBridge
         Control? oldContent = layout is NAncientEventLayout ? layout.GetNodeOrNull<Control>("%ContentContainer") : null;
         bool wasVisible = oldContent?.Visible == true;
         oldContent?.Hide();
+        // Own only the enabled states suspended by this dialogue. EnableButton in
+        // official109 restores MouseFilter only, not NClickableControl.IsEnabled.
+        var enabledOptions = layout.OptionButtons.Where(button => button.IsEnabled).ToArray();
         layout.DisableEventOptions();
         var ui = NShinGetterBondDialogue.Create(state.Session, () =>
         {
             if (state.Returned || !GodotObject.IsInstanceValid(layout) || !layout.IsInsideTree()) return;
+            if (layout.IsQueuedForDeletion()) return;
             state.Returned = true;
             state.Ui = null;
             if (oldContent != null && GodotObject.IsInstanceValid(oldContent)) oldContent.Visible = wasVisible;
+            foreach (var button in enabledOptions)
+            {
+                if (GodotObject.IsInstanceValid(button) && button.IsInsideTree() && !button.IsQueuedForDeletion()
+                    && layout.OptionButtons.Contains(button))
+                    button.Enable();
+            }
+            // Restore before native continuation: its lock/vote/choice state wins.
             resume();
             Callable.From(() =>
             {
