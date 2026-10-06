@@ -26,6 +26,8 @@ internal static class NShinGetterSpriteAnimationStateMachine
             "Cyclone" => NShinGetterSpriteSequence.CycloneAnimationName,
             "DashV2" => NShinGetterSpriteSequence.DashV2AnimationName,
             "DrillAttack" => NShinGetterSpriteSequence.DrillAttackAnimationName,
+            "ShiningSpark" => NShinGetterSpriteSequence.ShiningSparkAnimationName,
+            "StarSlash" => NShinGetterSpriteSequence.StarSlashAnimationName,
             "Dash" => NShinGetterSpriteSequence.DashAnimationName,
             "Hit" => NShinGetterSpriteSequence.BlockAnimationName,
             "Block" => NShinGetterSpriteSequence.BlockAnimationName,
@@ -77,6 +79,23 @@ internal static class NShinGetterSpriteAnimationStateMachine
         return true;
     }
 
+    internal static bool IsKeepingAttack(AnimatedSprite2D sprite) =>
+        ShouldKeepActiveSpecialAnimation(sprite, States.GetOrCreateValue(sprite), "Attack");
+
+    internal static bool TryStartFreshAttack(AnimatedSprite2D sprite,
+        Action<AnimatedSprite2D, string> ensureLoaded)
+    {
+        // TryPlay also returns true when preserving an old special action; that is not a new attack.
+        if (IsKeepingAttack(sprite)
+            || !TryPlay(sprite, "Attack", ensureLoaded)
+            || sprite.Animation != NShinGetterSpriteSequence.AttackAnimationName
+            || !sprite.IsPlaying())
+            return false;
+
+        sprite.SetFrameAndProgress(0, 0f);
+        return sprite.Frame == 0 && sprite.FrameProgress == 0f;
+    }
+
     public static void QueueNextActionSpeed(AnimatedSprite2D sprite, float speedScale)
     {
         State state = States.GetOrCreateValue(sprite);
@@ -122,14 +141,18 @@ internal static class NShinGetterSpriteAnimationStateMachine
         AnimatedSprite2D sprite,
         State state,
         string trigger) =>
-        sprite.IsPlaying()
-        && trigger is "Attack" or "HeavyAttack" or "Cast" or "Dash" or "Hit"
+        (sprite.IsPlaying() || NShinGetterShiningSparkSequence.IsControlling(sprite)
+            || NShinGetterStarSlashSequence.IsControlling(sprite))
+        && (trigger is "Attack" or "HeavyAttack" or "Cast" or "Dash" or "Hit"
+            || NShinGetterStarSlashSequence.IsControlling(sprite) && trigger is "Block" or "Idle")
         && IsSpecialAnimation(state.ActiveOneShotAnimation);
 
     private static bool IsSpecialAnimation(string animationName) =>
         animationName is NShinGetterSpriteSequence.CycloneAnimationName
             or NShinGetterSpriteSequence.DashV2AnimationName
-            or NShinGetterSpriteSequence.DrillAttackAnimationName;
+            or NShinGetterSpriteSequence.DrillAttackAnimationName
+            or NShinGetterSpriteSequence.ShiningSparkAnimationName
+            or NShinGetterSpriteSequence.StarSlashAnimationName;
 
     private static void PlayIdle(AnimatedSprite2D sprite, State state)
     {

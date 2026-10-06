@@ -8,7 +8,7 @@
   "S_G_P_SHIN_FORM.title": "Shin Form",
   "S_G_P_SHIN_FORM.description": "Shin Getter Dragon form. Max Energy +1, draw 1 additional card, Strength and Dexterity -2; whenever you gain Block, gain 1 Plating, and count as Shin Getter 1, Shin Getter 2, and Shin Getter 3.",
   "S_G_P_FIGHTING_SPIRIT.title": "Fighting Spirit",
-  "S_G_P_FIGHTING_SPIRIT.description": "Before being attacked, deal {Amount} damage to the attacker.",
+  "S_G_P_FIGHTING_SPIRIT.description": "Before being attacked, deal {Amount} damage to the attacker. Vigor does not increase this damage.",
   "S_G_P_KI.title": "Ki",
     "S_G_P_KI.description": "At the start of your turn, gain Vigor equal to this amount. Final damage taken is reduced by this amount. Whenever you take damage, lose 1 stack.",
   "S_G_P_SUPER_KI.title": "Super Spirit",

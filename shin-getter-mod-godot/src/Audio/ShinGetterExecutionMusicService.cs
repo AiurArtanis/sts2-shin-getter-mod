@@ -43,6 +43,9 @@ internal static class ShinGetterExecutionMusicService
 
     private static void TryStart(Player owner, CardModel card, bool allowFirstTurn)
     {
+        // Check before the per-combat one-shot is consumed or any random track is drawn.
+        if (!ShinGetterChunibyoConfigService.IsBgmEnabled)
+            return;
         if (!ReferenceEquals(card.Owner, owner)
             || card.Pile?.Type != PileType.Hand
             || card.CombatState is not CombatState combatState
@@ -143,6 +146,8 @@ internal static class ShinGetterExecutionMusicService
 
     private static void StartPlayback(ExecutionMusicState state)
     {
+        if (!ShinGetterChunibyoConfigService.IsBgmEnabled)
+            return;
         ShinGetterBgmTrack configured = ShinGetterBgmCatalog.ResolveOrDefault(
             ShinGetterChunibyoConfigService.GetBgmTrackId(ShinGetterBgmCategory.Execution));
         ShinGetterBgmTrack playbackTrack = ShinGetterBgmCatalog.ResolveForPlayback(configured);
@@ -179,7 +184,7 @@ internal static class ShinGetterExecutionMusicService
         _activeState = state;
         player.Finished += () =>
         {
-            if (state.IsActive && GodotObject.IsInstanceValid(player))
+            if (state.IsActive && ShinGetterChunibyoConfigService.IsBgmEnabled && GodotObject.IsInstanceValid(player))
                 player.Play();
         };
 
@@ -220,7 +225,10 @@ internal static class ShinGetterExecutionMusicService
         state.FadeTween = null;
 
         if (state.Player is { } player && GodotObject.IsInstanceValid(player))
+        {
+            player.Stop();
             player.QueueFree();
+        }
         state.Player = null;
 
         state.StopCompletion?.TrySetResult(true);

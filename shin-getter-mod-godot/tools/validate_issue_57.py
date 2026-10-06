@@ -11,7 +11,8 @@ AUDIO = ROOT / "audio" / "music" / "shin_getter" / "encounters"
 TRACKS = {
     "elite_overgrowth.mp3": (3046268, "00a57d27e3ce439d2f72527ab9ccd5208ba2bbbf0a7c2ab748887afc9e0ebfef"),
     "elite_underdocks.mp3": (2992772, "307b8d828c872bf55ab6c79e2f8262f1005e8665014f686114958770a3a8bc34"),
-    "elite_hive.mp3": (3394010, "2ea32dc98c694043d9d6bd0af9709fce75ac9645c14bacef7a15c14632a57e63"),
+    # issue#214: Forward replaces Onslaught for the Hive elite preset.
+    "elite_hive.mp3": (4242637, "239c69f942a038b9cae5d88e29cceac99ca750acde9ef43d36d5c9e259961a05"),
     "elite_glory.mp3": (3914370, "c904fc1a900b0e6a49cb0f20a1dd0575cc6a053e2cca17b8aabd966e23c41385"),
     "boss_overgrowth.mp3": (3532359, "747fe5dfb9878e5b065e412fff24fc043f054c3406b5b5bddeb1da0d6794ef23"),
     "boss_underdocks.mp3": (3465481, "d0ac4cb0c2b1b5320df10ef0e80dcccc8116b42ffbef05651c6a918d3d7d2cd8"),

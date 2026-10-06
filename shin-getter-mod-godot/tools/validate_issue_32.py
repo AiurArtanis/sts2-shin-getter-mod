@@ -69,7 +69,9 @@ def assert_infinite_evolution_lifecycle_and_weights() -> None:
 
 def assert_fighting_spirit_and_indomitable_contracts() -> None:
     fighting_spirit = read(POWERS / "SGP_FightingSpirit.cs")
-    assert "target == Owner && dealer != null && props.IsPoweredAttack() && Amount > 0" in fighting_spirit
+    assert "target != Owner || dealer == null || dealer.Side == Owner.Side" in fighting_spirit
+    assert "|| dealer.IsDead || Owner.IsDead || !props.IsPoweredAttack() || Amount <= 0" in fighting_spirit
+    assert "ValueProp.Move | ValueProp.SkipHurtAnim | CounterDamage" in fighting_spirit
     assert "CurrentSide" not in fighting_spirit
 
     indomitable = read(CARDS / "SGC_Indomitable.cs")

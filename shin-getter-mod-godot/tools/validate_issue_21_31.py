@@ -80,6 +80,8 @@ EXPECTED_LATER_AUDIO = {
     "063": "ryoma_our_will_getter_power.wav",
     "064": "hayato_unite_hearts.wav",
     "065": "benkei_use_stoner_sunshine.wav",
+    "066": "ryoma_burn_shin_dragon.wav",
+    "067": "ryoma_go_shin_getter.wav",
 }
 ALL_EXPECTED_AUDIO = EXPECTED_AUDIO | EXPECTED_LATER_AUDIO
 
@@ -123,7 +125,7 @@ require(
 actual_imports = {path.name for path in VOICE_DIR.glob("*.wav.import")}
 require(
     actual_imports == {f"{name}.import" for name in ALL_EXPECTED_AUDIO.values()},
-    "voice directory must contain matching import sidecars for 001-047, 049-050, and 052-065",
+    "voice directory must contain matching import sidecars for 001-047, 049-050, and 052-067",
 )
 
 pck_validator = PCK_VALIDATOR_PATH.read_text(encoding="utf-8")
@@ -324,12 +326,12 @@ console_patch = (ROOT / "src" / "Patches" / "ShinGetterConsoleCommandPatch.cs").
 console_cmd = (ROOT / "src" / "Diagnostics" / "ShinGetterChunibyoConsoleCmd.cs").read_text(encoding="utf-8")
 require('ShinGetterSoundCommandName = "sgs"' in console_patch, "sgs command routing is missing")
 require(
-    'Args => "<001-047|049-050|052-065>"' in console_cmd and "TryPlayCode" in console_cmd,
-    "sgs 001-047, 049-050, and 052-065 command is incomplete",
+    'Args => "<001-047|049-050|052-067>"' in console_cmd and "TryPlayCode" in console_cmd,
+    "sgs 001-047, 049-050, and 052-067 command is incomplete",
 )
 
 service_keys = set(re.findall(r'"(SHIN_GETTER\.voice\.[A-Za-z0-9]+)"', service))
-require(len(service_keys) == 62, f"expected 62 subtitle keys, found {len(service_keys)}")
+require(len(service_keys) == 64, f"expected 64 subtitle keys, found {len(service_keys)}")
 language_voice_keys: dict[str, set[str]] = {}
 language_data: dict[str, dict[str, str]] = {}
 for language in ("zhs", "eng", "jpn"):
@@ -388,4 +390,4 @@ require(
     "existing black effects must be removed before the mod black effect is installed",
 )
 
-print("issue#21/#31 static validation PASS: 47 original codes plus issue#169 codes 049-050 and 052-057 plus issue#10 codes 058-065")
+print("issue#21/#31 static validation PASS: 47 original codes, 049-050/052-057, issue#10 058-065 and issue#124 066-067")

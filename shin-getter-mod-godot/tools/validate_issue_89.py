@@ -182,10 +182,10 @@ SELECTION_ROUTES = {
 }
 
 CARD_REGIONS = {
-    "s_g_c_petal_breakthrough": (506, 1346, 250, 190),
-    "s_g_c_reschedule_ticket": (758, 1346, 250, 190),
-    "s_g_c_pressure_breath": (1010, 1346, 250, 190),
-    "s_g_c_wisp_coordinate": (1262, 1346, 250, 190),
+    "s_g_c_petal_breakthrough": (500, 1330, 250, 190),
+    "s_g_c_reschedule_ticket": (750, 1330, 250, 190),
+    "s_g_c_pressure_breath": (1000, 1330, 250, 190),
+    "s_g_c_wisp_coordinate": (1250, 1330, 250, 190),
 }
 
 ITEM_REGIONS = {
@@ -582,7 +582,7 @@ def validate_event_runtime() -> None:
         raise AssertionError("The discarded reverse-refining route must not remain in runtime code.")
 
     citizen = (SRC / "Models/Relics/SGR_GoodCitizenCard.cs").read_text(encoding="utf-8")
-    require(citizen, "[SavedProperty]", "FreePurchaseActIndices", "goldSpent == 0")
+    require(citizen, "[SavedProperty]", "FreePurchaseActIndices", "goldSpent != 0")
     if not re.search(r"FreePurchaseActIndices\.Add\(Owner\.RunState\.CurrentActIndex\)", citizen):
         raise AssertionError("Free purchases must persist their act indices.")
 
@@ -951,7 +951,7 @@ def validate_localization() -> None:
 
 
 def validate_resources() -> None:
-    if read_png_size(ROOT / "images/atlases/card_atlas_shin_getter_01.png") != (2524, 2524):
+    if read_png_size(ROOT / "images/atlases/card_atlas_shin_getter_01.png") != (2500, 2470):
         raise AssertionError("Unexpected card atlas dimensions.")
     for atlas in ("sgr_atlas_shin_getter.png", "sgr_outline_atlas_shin_getter.png"):
         if read_png_size(ROOT / f"images/atlases/{atlas}") != (768, 768):

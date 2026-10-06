@@ -20,6 +20,9 @@ namespace ShinGetterMod.Nodes.Events;
 internal sealed partial class NShinGetterBondDialogue : Control
 {
     public NShinGetterBondDialogue() { }
+    private static int _openCount;
+    private bool _consoleGuard;
+    internal static bool IsOpen => _openCount > 0;
     private ShinGetterBondSession _session = null!;
     private Action? _returnToEvent;
     private VBoxContainer _column = null!;
@@ -50,6 +53,8 @@ internal sealed partial class NShinGetterBondDialogue : Control
     {
         if (_ready) return;
         _ready = true;
+        _consoleGuard = true;
+        _openCount++;
         try { BuildUi(); }
         catch (Exception ex) { ShowFatalError(ex); }
     }
@@ -288,6 +293,7 @@ internal sealed partial class NShinGetterBondDialogue : Control
     {
         if (_closed) return;
         _closed = true;
+        ReleaseConsoleGuard();
         StopVoice();
         Hide();
         var continuation = _returnToEvent;
@@ -299,11 +305,19 @@ internal sealed partial class NShinGetterBondDialogue : Control
     public override void _ExitTree()
     {
         _closed = true;
+        ReleaseConsoleGuard();
         StopVoice();
         _retry = null;
         _returnToEvent = null;
         _buttons.Clear();
         _emergencyFocus = null;
+    }
+
+    private void ReleaseConsoleGuard()
+    {
+        if (!_consoleGuard) return;
+        _consoleGuard = false;
+        _openCount--;
     }
 
     private void AddButton(string text, Action action)
