@@ -16,9 +16,10 @@ public sealed class SGR_GoodCitizenCard : ShinGetterRelicBase
 
     public override RelicRarity Rarity => RelicRarity.Rare;
 
-    public override bool IsUsedUp => IsUsedThisFloor;
+    public override bool IsUsedUp => IsUsedThisAct;
 
-    private bool IsUsedThisFloor => IsMutable && Owner != null && LastFreeFloor == Owner.RunState.TotalFloor;
+    private bool IsUsedThisAct => IsMutable && Owner != null
+        && FreePurchaseActIndices.Contains(Owner.RunState.CurrentActIndex);
 
     [SavedProperty(SerializationCondition.SaveIfNotTypeDefault)]
     public int LastFreeFloor
@@ -28,7 +29,7 @@ public sealed class SGR_GoodCitizenCard : ShinGetterRelicBase
         {
             AssertMutable();
             _lastFreeFloor = value;
-            Status = IsUsedThisFloor ? RelicStatus.Disabled : RelicStatus.Normal;
+            RefreshUsageStatus();
         }
     }
 
@@ -43,6 +44,7 @@ public sealed class SGR_GoodCitizenCard : ShinGetterRelicBase
             AssertMutable();
             _freePurchaseActIndices.Clear();
             _freePurchaseActIndices.AddRange(value);
+            RefreshUsageStatus();
         }
     }
 
@@ -54,7 +56,7 @@ public sealed class SGR_GoodCitizenCard : ShinGetterRelicBase
 
     public override decimal ModifyMerchantPrice(Player player, MerchantEntry entry, decimal originalPrice)
     {
-        if (player != Owner || player.RunState.CurrentRoom is not MerchantRoom || IsUsedThisFloor || originalPrice <= 0m)
+        if (player != Owner || player.RunState.CurrentRoom is not MerchantRoom || IsUsedThisAct || originalPrice <= 0m)
             return originalPrice;
 
         return 0m;
@@ -62,12 +64,11 @@ public sealed class SGR_GoodCitizenCard : ShinGetterRelicBase
 
     public override Task AfterItemPurchased(Player player, MerchantEntry itemPurchased, int goldSpent)
     {
-        if (player != Owner || player.RunState.CurrentRoom is not MerchantRoom || IsUsedThisFloor)
+        if (player != Owner || player.RunState.CurrentRoom is not MerchantRoom || IsUsedThisAct || goldSpent != 0)
             return Task.CompletedTask;
 
         Flash();
-        if (goldSpent == 0)
-            FreePurchaseActIndices.Add(Owner.RunState.CurrentActIndex);
+        FreePurchaseActIndices.Add(Owner.RunState.CurrentActIndex);
         LastFreeFloor = Owner.RunState.TotalFloor;
         ShinGetterMerchantVisuals.RefreshCurrentRoom();
         return Task.CompletedTask;
@@ -75,9 +76,14 @@ public sealed class SGR_GoodCitizenCard : ShinGetterRelicBase
 
     public override Task AfterRoomEntered(AbstractRoom room)
     {
-        if (!IsUsedThisFloor && Status == RelicStatus.Disabled)
-            Status = RelicStatus.Normal;
+        RefreshUsageStatus();
 
         return Task.CompletedTask;
+    }
+
+    private void RefreshUsageStatus()
+    {
+        if (IsMutable && Owner != null)
+            Status = IsUsedThisAct ? RelicStatus.Disabled : RelicStatus.Normal;
     }
 }
