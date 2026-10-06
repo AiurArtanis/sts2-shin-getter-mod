@@ -76,6 +76,24 @@ def catalogue() -> None:
                 check_tags(option, f"{language}/{key}/Option")
 
 
+def encounter_priority(session: str) -> None:
+    start = session.index("private ShinGetterBondEncounter SelectEncounter()")
+    end = session.index("private List<RunHistory> ReadReliableHistories()", start)
+    body = session[start:end]
+    require("using RandomNumberGenerator = System.Security.Cryptography.RandomNumberGenerator;" in session,
+            "Story draws must explicitly use the cryptographic, non-gameplay RNG")
+    tokens = (
+        "ShinGetterBondSave save = _save!;", "if (!IsAcquainted(save, _npc))",
+        "if (Choices.Count != 0)", "bool longAbsence", "if (longAbsence)", "RunHistory? latest",
+    )
+    for token in tokens:
+        require(body.count(token) == 1, f"SelectEncounter contract missing/duplicated: {token}")
+    loaded, first, choices, gap, absence, result = (body.index(token) for token in tokens)
+    require(loaded < first < choices < gap < absence < result,
+            "Loaded save/first/bonds/absence/outcome priority regression")
+    require("Rng.Next" not in body and "Rng.Chaotic" not in body, "Story draws must not use gameplay RNG")
+
+
 def contracts() -> None:
     session = read("src/Services/ShinGetterBondSession.cs")
     ui = read("src/Nodes/Events/NShinGetterBondDialogue.cs")
@@ -94,11 +112,7 @@ def contracts() -> None:
     ):
         require(token in session, f"Missing persistence/mode boundary: {token}")
     require("Rng.Next" not in session and "Rng.Chaotic" not in session, "Story draws must not use gameplay RNG")
-    first = session.index('if (!IsAcquainted(_save!, _npc))')
-    choices = session.index("if (Choices.Count != 0)")
-    absence = session.index("bool longAbsence")
-    result = session.index("RunHistory? latest")
-    require(first < choices < absence < result, "First/bonds/absence/outcome priority regression")
+    encounter_priority(session)
     advance = session[session.index("internal bool Advance()"):session.index("internal bool ConsumeCue")]
     require(advance.index("Encounter.Line + 1 <") < advance.index("next.Completed.Add"), "Must confirm beyond final line")
     require("next.RespondedResults[_npc]" in advance, "Result consumed only after completion")
