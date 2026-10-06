@@ -219,4 +219,43 @@ invalid.DebugNextDialogues["TANX"] = ShinGetterBondConsolePlan.ChoicesToken;
 try { ShinGetterBondConsolePlan.ValidatePending(invalid); Check(false, "invalid choices accepted"); } catch (InvalidDataException) { Check(true, "rejected"); }
 invalid.DebugNextDialogues["TANX"] = "TANX_RYOMA_BOND_03";
 try { ShinGetterBondConsolePlan.ValidatePending(invalid); Check(false, "skipped prerequisites accepted"); } catch (InvalidDataException) { Check(true, "rejected"); }
+// Exercise the actual Harmony prefix, not just the direct command/parser path.
+var prefix = typeof(ShinGetterMod.Patches.ShinGetterConsoleCommandPatch).GetMethod("Prefix", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!;
+(bool Original, MegaCrit.Sts2.Core.DevConsole.CmdResult Result) InvokePrefix(string name, string[] args)
+{
+    object?[] call = { null, name, args, new MegaCrit.Sts2.Core.DevConsole.CmdResult(false, "untouched") };
+    bool original = (bool)prefix.Invoke(null, call)!;
+    return (original, (MegaCrit.Sts2.Core.DevConsole.CmdResult)call[3]!);
+}
+foreach (string input in new[] { "sgd TANX status", "sgd  TANX  status", "  sgd   TANX    status   ", "sgd ALL status   " })
+{
+    string[] nativeTokens = input.Trim().Split(' '); // Official109 public tokenizer boundary, fixture only.
+    var response = InvokePrefix(nativeTokens[0], nativeTokens.Skip(1).ToArray());
+    Check(!response.Original && response.Result.success, "prefix whitespace regression: " + input + ": " + response.Result.msg);
+}
+var padded = InvokePrefix("SGD", new[] { "", " \tTANX\t ", " ", "\u3000status\u3000", "\t" });
+Check(!padded.Original && padded.Result.success, "prefix padded arguments");
+foreach (string[] inputArgs in new[] { new[] { "", "INVALID_NPC", "", "status" }, new[] { "TANX", "bad_operation" }, new[] { "", "", " " } })
+    Check(!InvokePrefix("sgd", inputArgs).Result.success, "normalization accepted invalid command");
+foreach (string name in new[] { "sgs", "chunibyo", "shin_getter_add_cards", "stoner_sunshine_rate" })
+{
+    string[] originalArgs = { "", "\"name with spaces\"", " ", "\targ\t" };
+    var response = InvokePrefix(name, originalArgs);
+    Check(!response.Original && ReferenceEquals(OtherCommandCapture.Args, originalArgs), name + " arguments were rewritten");
+}
+foreach (string name in new[] { "export_cards", "event", "not_a_command" })
+{
+    string[] originalArgs = { "\"C:/target path\"", "", " tail " };
+    var response = InvokePrefix(name, originalArgs);
+    Check(response.Original && response.Result.msg == "untouched" && originalArgs[0] == "\"C:/target path\"", name + " passthrough changed");
+}
+Check(!File.Exists(SaveManager.Instance.GetProfileScopedPath("shin_getter_bonds.json")), "prefix status/error tests wrote a file");
+var spacedUnlock = InvokePrefix("sgd", new[] { "", "TANX", "", "unlock", "", "RYOMA", "", "2", "" });
+Check(!spacedUnlock.Original && spacedUnlock.Result.success, "spaced unlock failed");
+Check(Load().DebugNextDialogues["TANX"] == "TANX_RYOMA_BOND_03", "spaced unlock changed its semantics");
+byte[] beforeBadStage = File.ReadAllBytes(SaveManager.Instance.GetProfileScopedPath("shin_getter_bonds.json"));
+var badStage = InvokePrefix("sgd", new[] { "", "TANX", "unlock", "", "RYOMA", "4", "" });
+Check(!badStage.Result.success && beforeBadStage.SequenceEqual(File.ReadAllBytes(SaveManager.Instance.GetProfileScopedPath("shin_getter_bonds.json"))), "spaced invalid stage changed progress");
+var spacedClear = InvokePrefix("sgd", new[] { "", "TANX", "", "clear", "" });
+Check(!spacedClear.Original && spacedClear.Result.success && !Load().Completed.Any(id => id.StartsWith("TANX_", StringComparison.Ordinal)), "spaced clear failed");
 Console.WriteLine($"PASS: {checks} managed assertions, linked production source; NOT Godot/game acceptance.");

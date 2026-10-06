@@ -74,12 +74,26 @@ sgd OROBAS unlock loss
 sgd OROBAS unlock return
 sgd NEOW unlock chat 6
 sgd THE_ARCHITECT unlock win
-event THE_ARCHITECT
 ```
 
-`ancient`／`event`是原版的进房指令，不是`sgd`自动调用的命令；需要自行处于可进入事件的
+`ancient`是原版进入先古事件的指令，不是`sgd`自动调用的命令；需要自行处于可进入事件的
 普通真盖塔单人局。设置后再用合法地图遭遇或原生进房指令测试。`sgd`不强行在当前页面重开
 已经结束的交谈，不重新发奖，也不改变先古出现概率。
+
+### 建筑师的有效触发路径
+
+`sgd THE_ARCHITECT unlock win`只设置下次对白，不直接进入结局。正式109的原版
+`event THE_ARCHITECT`不可用：`EventConsoleCmd`只在`ModelDb.AllEvents`与`AllAncients`
+中寻找事件，结局建筑师不在该清单，执行会返回Event not found。
+
+普通验收：在菜单或符合资格的普通真盖塔单人局设置请求，再按原版**真实结局流程**推进到
+建筑师场景。进入时消费该请求，播放所指定的first／win／loss／return／chat；在此前普通事件
+或先古处不会消费建筑师请求。不能用`event`或`ancient`指令把该场景当常规事件直接打开。
+
+定向自动化：主开发的隔离控制器可用原版`TheArchitect`模型与`EventRoom`构造场景，并在
+进入前追加相应地图历史，以满足已有对话快照身份边界。这是**TEST-ONLY测试入口**，
+不是本模组交付的控制台命令，也不应当作正常结局、攻击／评分或奖励全流程通过的证据。
+本次修正不新增生产进房命令。测试方案及原5条无效示例失败见主开发隔离环境的TEST／REPORT。
 
 “下次必定触发”指下次**符合羁绊系统资格的新遭遇／新创建对话快照**：请求持久保存到
 本档位`shin_getter_bonds.json`的可选`DebugNextDialogues`字段，先于初见／羁绊／久违／50%

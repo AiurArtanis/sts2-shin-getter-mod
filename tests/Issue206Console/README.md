@@ -19,3 +19,11 @@ Tests cover argument rejection, 7 NPC × 3 pilot × 4 progress levels, aliases, 
 deterministic encounter selection, once-only consumption, same-room resume,
 file-lock failure/retry, profile isolation, old schema-1 compatibility and damaged
 file preservation. Failure is a nonzero exit; assertions do not imply game acceptance.
+
+2026-10-06 corrections additionally link and invoke the actual production Harmony
+prefix via reflection. The public-input tokenizer boundary is a fixture matching
+official109's `Trim().Split(' ')`, **not** a native NDevConsole test. Consecutive spaces,
+leading/trailing input whitespace, padded argument tokens, ordinary inputs, unknown
+NPC/operation and empty inputs are covered. Other mod command stand-ins capture the
+same original array (including quotes); `export_cards`/event/unknown commands must
+pass through untouched. The original native failure must be rerun by the main task.

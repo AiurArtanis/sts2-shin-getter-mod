@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using System.Linq;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.DevConsole;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -38,7 +39,10 @@ internal static class ShinGetterConsoleCommandPatch
 
         if (cmdName.Equals(ShinGetterDialogueCommandName, StringComparison.OrdinalIgnoreCase))
         {
-            __result = new ShinGetterDialogueConsoleCmd().Process(player, args);
+            // This prefix runs before the native blank-token filter. Normalize only
+            // sgd; other commands (notably quoted card export) keep their raw tokens.
+            string[] dialogueArgs = args.Where(arg => !string.IsNullOrWhiteSpace(arg)).Select(arg => arg.Trim()).ToArray();
+            __result = new ShinGetterDialogueConsoleCmd().Process(player, dialogueArgs);
             return false;
         }
 

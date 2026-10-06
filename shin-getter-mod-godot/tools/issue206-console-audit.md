@@ -71,3 +71,39 @@ gameplay RNG, event rewards, character power or voice consumer is written by `sg
 
 The command **changes the current test profile** and is not a nonmutating preview.
 Operational examples and all parameter limits are part of the main-review handoff.
+
+## 2026-10-06 minimal corrections after native test
+
+Tested parent: `73e5bdb28dad9a8fe9aff36261d5d26647d7102e`. Main's official109
+isolated report at `E:/StS2-Automation-Sandboxes/issue206-109-20261006/evidence/REPORT.md`
+records180 native cases/174PASS/6FAIL/8527 assertions, not overall acceptance.
+Five failures were the invalid Architect example; one was consecutive-space input.
+The supplementary TEST-ONLY Architect scene passed its five themes without changing
+those original failure records. This correction does not rerun or relabel them.
+
+1. Production change is confined to the `sgd` branch of the existing prefix:
+   discard whitespace-only tokens and trim surviving tokens before dispatch. The
+   native public console already trims the input, but this prefix executes before
+   native argument filtering. Other mod branches retain their original arrays;
+   export_cards/event/unknown command paths pass through unchanged.
+2. README removes the runnable `event THE_ARCHITECT` example. Official109's event
+   inventory is AllEvents+AllAncients and excludes this ending. Set `sgd`'s request
+   before following the actual ending; explicit native TheArchitect/EventRoom
+   construction belongs only to a TEST-ONLY isolated fixture, not a shipped command.
+   No new production command or scene builder was added.
+
+RED: after correcting a fixture-only top-level C# variable naming collision, the
+linked **production Prefix** failed `sgd  TANX  status` with Unknown NPC, reproducing
+the native finding. GREEN:852 managed assertions, including normal/multiple-space/
+leading-trailing inputs, padded tokens, clear/unlock semantics, unknown NPC/operation/
+bad stages, raw quoted-array preservation for four other commands and export_cards
+passthrough. Game environment/tokenizer are fixtures; this is not native NDevConsole.
+The structural gate locks normalization to the sgd block and prevents the invalid
+Architect example from returning. Original issue206, issue21/31 and issue192 guards,
+44 tracked JSON/BAD0 and diff-check PASS; official109 developer build0 warnings/errors.
+
+Only offline validation here. Main must rerun the failed native inputs and corrected
+Architect test routing. No game/Godot launch, PCK, initialization, shared deployment,
+PR/merge/release/issue closure; no issue124/215/B1.3.0, root or Beta changes. The
+remaining multiplayer, old-history, natural priority, cue-SL, rewards/score and human
+coverage gaps in the original report remain unproven.

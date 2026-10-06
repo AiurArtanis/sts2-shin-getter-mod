@@ -11,6 +11,7 @@
     <Compile Include="../../shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs" Link="Production/Session.cs" />
     <Compile Include="../../shin-getter-mod-godot/src/Services/ShinGetterDialogueCatalog.cs" Link="Production/Catalog.cs" />
     <Compile Include="../../shin-getter-mod-godot/src/Diagnostics/ShinGetterDialogueConsoleCmd.cs" Link="Production/Command.cs" />
+    <Compile Include="../../shin-getter-mod-godot/src/Patches/ShinGetterConsoleCommandPatch.cs" Link="Production/CommandPrefix.cs" />
     <EmbeddedResource Include="../../shin-getter-mod-godot/data/dialogues/*.json" Link="data/dialogues/%(Filename)%(Extension)" />
     <Reference Include="0Harmony"><HintPath>../../shin-getter-mod-godot/lib/0Harmony.dll</HintPath></Reference>
   </ItemGroup>

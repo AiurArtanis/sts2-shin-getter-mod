@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Read-only wiring guards for issue#206 console controls; no Godot/game launch."""
 from pathlib import Path
+import re
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -35,7 +36,17 @@ def check():
     assert "_openCount++" in ui and "_openCount--" in ui
     assert "ReleaseConsoleGuard();" in ui[ui.index("private void Close()"):ui.index("public override void _ExitTree()")]
     assert "ReleaseConsoleGuard();" in ui[ui.index("public override void _ExitTree()"):ui.index("private void ReleaseConsoleGuard()")]
-    assert 'ShinGetterDialogueCommandName = "sgd"' in bridge and "new ShinGetterDialogueConsoleCmd().Process(player, args)" in bridge
+    assert 'ShinGetterDialogueCommandName = "sgd"' in bridge and "new ShinGetterDialogueConsoleCmd().Process(player, dialogueArgs)" in bridge
+    sgd_start = bridge.index("if (cmdName.Equals(ShinGetterDialogueCommandName,")
+    sgd_end = bridge.index("if (cmdName.Equals(StonerSunshineRateCommandName,", sgd_start)
+    scoped = bridge[sgd_start:sgd_end]
+    assert "args.Where(arg => !string.IsNullOrWhiteSpace(arg)).Select(arg => arg.Trim()).ToArray()" in scoped
+    outside = bridge[:sgd_start] + bridge[sgd_end:]
+    assert "IsNullOrWhiteSpace" not in outside and ".Trim()" not in outside
+    assert outside.count(".Process(player, args)") == 4  # other commands preserve quoted/raw arguments
+    readme = (ROOT / "data/dialogues/README.md").read_text(encoding="utf-8-sig")
+    assert not re.search(r"(?m)^\s*event THE_ARCHITECT\s*$", readme), "Invalid Architect command must not be a runnable example"
+    assert "真实结局流程" in readme and "TEST-ONLY" in readme and "不是本模组交付的控制台命令" in readme
     assert "TestNext" not in cmd  # no direct scene enter/reward command
     for bad in ("SaveRun(", "LoadRunHistory(", "EnterRoom(", "WinRun(", "AttackCommand", "PowerCmd"):
         assert bad not in cmd and bad not in plan, bad

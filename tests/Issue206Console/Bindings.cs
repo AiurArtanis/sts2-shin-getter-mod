@@ -74,8 +74,24 @@ namespace MegaCrit.Sts2.Core.Entities.Players { public sealed class Player : Meg
 namespace ShinGetterMod.Nodes.Events { internal static class NShinGetterBondDialogue { internal static bool IsOpen { get; set; } } }
 namespace MegaCrit.Sts2.Core.DevConsole
 {
+    public sealed class DevConsole { }
     public sealed record CmdResult(bool success, string msg);
     public sealed class CompletionResult { public List<string> Candidates { get; init; } = new(); }
+}
+namespace ShinGetterMod.Diagnostics
+{
+    // Non-sgd commands are stand-ins only. Capture original array identity, including
+    // quotes/empty tokens, to prove the production prefix never normalizes them.
+    internal static class OtherCommandCapture { internal static string[]? Args; }
+    internal class OtherCommandFixture
+    {
+        public MegaCrit.Sts2.Core.DevConsole.CmdResult Process(MegaCrit.Sts2.Core.Entities.Players.Player? player, string[] args)
+        { OtherCommandCapture.Args = args; return new(true, "other-command fixture"); }
+    }
+    internal sealed class ShinGetterAddAllCardsConsoleCmd : OtherCommandFixture { }
+    internal sealed class ShinGetterChunibyoConsoleCmd : OtherCommandFixture { }
+    internal sealed class ShinGetterSoundConsoleCmd : OtherCommandFixture { }
+    internal sealed class ShinGetterStonerSunshineRateConsoleCmd : OtherCommandFixture { }
 }
 namespace MegaCrit.Sts2.Core.DevConsole.ConsoleCommands
 {
