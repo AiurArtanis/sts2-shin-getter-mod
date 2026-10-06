@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net9.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../shin-getter-mod-godot/src/Patches/ShinGetterBondDialoguePatch.cs" Link="Production/Bridge.cs" />
+    <Reference Include="0Harmony"><HintPath>../../shin-getter-mod-godot/lib/0Harmony.dll</HintPath></Reference>
+  </ItemGroup>
+</Project>
