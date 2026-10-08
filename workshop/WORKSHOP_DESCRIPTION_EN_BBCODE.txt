@@ -6,6 +6,20 @@ Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter
 
 [hr][/hr]
 
+[h2]v1.3.0 release notes[/h2]
+
+[list]
+[*][b]Ancient bonds:[/b] After a shared first meeting, follow separate Ryoma, Hayato and Benkei conversations. Relationships persist across runs, unlocking familiar themes, Neow dialogue and Architect story callbacks.
+[*][b]Ultimate presentations:[/b] Shin Getter Dragon's Shining Spark and Star-Slashing Axe for Shin Getter 1 and Shin Getter Dragon combine sprite animation with Godot energy, giant-axe and impact VFX. Added Star-Slashing Axe preparation voices and improved selection, pause/resume and post-kill recovery.
+[*][b]Cards and balance:[/b] Adjusted Shining Spark, Star-Slashing Axe, Shift Strike, upgraded Spirit and Fighting Spirit.
+[*][b]Card art:[/b] Replaced eight illustrations and corrected coordinates and sampling boundaries in the compact atlas.
+[*][b]Fixes:[/b] Fixed bond-reward input and event-icon ordering; card-selection hover descriptions now let adjacent-card mouse input pass through. Fixed repeated Good Citizen Card free purchases on the same map and added the sgd progress command.
+[/list]
+
+Bonds progress in standard single-player Shin Getter runs. Reloading the same room restores its current conversation; skipping still leaves the original reward available. Original combat, rewards and scoring remain intact.
+
+This page describes v1.3.0 for stable 109. [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest]Public downloads[/url] are the assets actually listed in Releases. The published 111 Beta build remains v1.2.2 and does not contain these additions.
+
 [h2]🧪 0.111 Beta support[/h2]
 
 [b]Stable 109:[/b] use shin-getter-mod-v1.2.2.zip.
@@ -49,7 +63,7 @@ For 0.111 Beta, use the separate v1.2.1-beta.111 build. Do not mix stable and Be
 
 Existing features include separation/fusion sequences, Dragon actions at 30 fps, 90-frame Stoner Sunshine, 18 event routes, and the rainbow NEW badge. See the README for the full historical notes; these are not new v1.2.1 features.
 
-[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/blob/patch/v1.2.2-bgm-20260921/README_EN.md]README[/url]
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/blob/main/README_EN.md]README[/url]
 
 [hr][/hr]
 
@@ -104,7 +118,7 @@ On your first run, follow the highlighted form-specific cards to establish a rhy
 
 [h2]Current status[/h2]
 
-[b]Current stable version: v1.2.2; 0.111 Beta: v1.2.2-beta.111[/b]
+[b]Page version: v1.3.0 (stable 109); published 0.111 Beta: v1.2.2-beta.111[/b]
 
 The mod will continue to be maintained. Future game updates may affect compatibility. Please report issues on GitHub with the game version, mod version, reproduction steps, and relevant logs.
 

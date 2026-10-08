@@ -8,15 +8,16 @@
 
 Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter 1's explosive offense, Shin Getter 2's high-speed tactics, and Shin Getter 3's iron defense; then awaken Shin Getter Dragon and let the Getter Rays consume the tower. This is a gameplay character mod built around transformations, deckbuilding, and presentation, not a simple reskin.
 
-> Stable build `v1.2.2` (validated on game `0.109`) · dedicated 0.111 Beta build `v1.2.2-beta.111` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> Current source `v1.3.0` (stable game `0.109`) · published 0.111 Beta build `v1.2.2-beta.111` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
-[Download v1.2.2](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2) · [0.111 Beta](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+[Stable downloads](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest) · [Published 0.111 Beta](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
 ## 🧪 0.111 Beta support
 
 - **Stable 109:** use `shin-getter-mod-v1.2.2.zip`.
 - **Slay the Spire 2 0.111 Beta:** use `shin-getter-mod-v1.2.2.111-beta.zip`.
 - Stable: [v1.2.2 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2); 0.111 Beta: [v1.2.2 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2).
+- The v1.3.0 source additions target stable 109; download the version actually listed in Release assets. The currently published 111 Beta package remains v1.2.2 and does not include the v1.3.0 additions below.
 - Do not mix the stable and Beta four-file packages. After switching game branches, replace the DLL, PCK, JSON, and `mod_image.png` together, then restart the game.
 - Known external compatibility issue: old `BaseLib 3.3.7` fails its `CardPileCmd.Add` transpiler on 0.111 Beta and can freeze manual card play. Update BaseLib, or disable BaseLib and dependent mods in the Beta environment.
 
@@ -34,17 +35,33 @@ Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter
 - **Iron retaliation:** Stack Plating and Block in Shin Getter 3, then turn the enemy turn into a chance to counterattack.
 - **Transformation chain:** Build around frequent shifting, movement-triggered transformations, and *Chosen One* so each change becomes resources or defense.
 
-Morale supports several high-impact effects. Evolution and Radiation create additional late-game paths. Choose a primary engine first, then let the remaining mechanics support it.
+Ki supports several high-impact effects. Evolution and Radiation create additional late-game paths. Choose a primary engine first, then let the remaining mechanics support it.
 
 ## 📦 What's included
 
-The content currently registered in `v1.2.2` includes:
+The content currently registered in the `v1.3.0` source includes:
 
 - **77 cards** spanning four forms and several core mechanics
 - **13 relics**, **6 potions**, and **2 enchantments**
 - Multiple **event invasions**, **1 exclusive event**, and dedicated Ancient dialogue
 - Simplified Chinese, English, and Japanese localization
 - A complete character mod loaded through DLL, PCK, and JSON artifacts
+
+## Ancient bonds
+
+In a standard single-player Shin Getter run, complete the shared first meeting, then choose separate conversations with Ryoma, Hayato or Benkei. Their stories progress independently and relationships persist across runs. Reloading the same room restores the current conversation, and skipping it still leaves the original event reward available. Familiar themes unlock as bonds develop, with dedicated Neow and Architect dialogue and story callbacks.
+
+These stories do not replace the original event's combat, rewards or scoring. The `sgd` console command inspects and constructs bond progress; changing progress is a debugging operation.
+
+## v1.3.0 release notes
+
+- **Ancient bonds:** Added team-member conversation routes, persistent relationships and expanded Neow/Architect dialogue.
+- **Ultimate presentations:** Reworked Shin Getter Dragon's Shining Spark and Star-Slashing Axe for Shin Getter 1 and Shin Getter Dragon, combining sprite animation with Godot energy and weapon VFX. Added Star-Slashing Axe preparation voices and improved pause/resume and post-kill recovery.
+- **Cards and balance:** Adjusted Shining Spark, Star-Slashing Axe, Shift Strike, upgraded Spirit and Fighting Spirit for clearer transformation and finishing-attack payoffs.
+- **Card art:** Updated eight illustrations, migrated the compact atlas and corrected card texture coordinates and sampling boundaries.
+- **Fixes and tools:** Fixed bond-reward input, event-icon ordering, hover overlays blocking card-selection input and repeated free purchases on the same map. Added the `sgd` progress command.
+
+These additions target stable 109; updated 111 Beta compatibility is a separate delivery. The fourth event-invasion batch and the unconfirmed fighter-separation animation report are not part of this version.
 
 ## v1.2.2 release notes
 
@@ -129,7 +146,7 @@ Once the Workshop edition is available, enable it as follows:
 
 ### Requirements
 
-- The current stable *Slay the Spire 2* `0.107.0+`, or the `0.111.0` Beta
+- The stable *Slay the Spire 2* `0.107.0+` line; this source targets `0.109`. For `0.111.0` Beta, use its corresponding compatibility branch and published package instead of this stable source.
 - Godot `4.5.1 Mono`
 - .NET SDK `9`
 - A local game project directory that Godot can load for validation
