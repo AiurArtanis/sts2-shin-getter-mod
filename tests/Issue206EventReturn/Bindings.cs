@@ -120,8 +120,30 @@ namespace ShinGetterMod.Nodes.Events
         public static NShinGetterBondDialogue Last { get; private set; } = null!;
         private Action? _return;
         internal Godot.Control? DefaultFocusedControl => this;
-        internal static NShinGetterBondDialogue Create(ShinGetterMod.Services.ShinGetterBondSession session, Action resume)
-            => Last = new() { _return = resume };
-        internal void Return() => _return?.Invoke(); // common completion/skip/recovered-closed callback
+        internal bool IsUpdatingNativeUi { get; set; }
+        internal int AdvanceCalls { get; private set; }
+        internal int LocalChoiceCalls { get; private set; }
+        internal MegaCrit.Sts2.Core.Events.EventOption? LocalOption { get; set; }
+        private List<(MegaCrit.Sts2.Core.Nodes.Events.NEventOptionButton Button, bool Visible)> _hidden = new();
+        internal static NShinGetterBondDialogue Create(ShinGetterMod.Services.ShinGetterBondSession session,
+            MegaCrit.Sts2.Core.Models.EventModel model, MegaCrit.Sts2.Core.Nodes.Events.NEventLayout layout, Action resume)
+        {
+            Last = new() { _return = resume };
+            foreach (var button in layout.Buttons) { Last._hidden.Add((button, button.Visible)); button.Hide(); }
+            return Last;
+        }
+        internal bool TryChooseOption(MegaCrit.Sts2.Core.Events.EventOption option)
+        {
+            if (!ReferenceEquals(LocalOption, option)) return false;
+            LocalChoiceCalls++;
+            return true;
+        }
+        internal void AdvanceFromNativeHitbox() => AdvanceCalls++;
+        internal void Return()
+        {
+            foreach (var snapshot in _hidden) snapshot.Button.Visible = snapshot.Visible;
+            _hidden.Clear();
+            _return?.Invoke();
+        } // environment stand-in; production UI lifecycle is not executed by this fixture
     }
 }

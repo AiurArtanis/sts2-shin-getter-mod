@@ -34,6 +34,8 @@ internal sealed class ShinGetterBondSession
     private readonly long _run;
     private ShinGetterBondSave? _save;
     private ShinGetterBondEncounter? _pendingEncounter;
+    internal const string ReleaseProgressEpoch = "v1.3.0";
+    private bool _needsReleaseReset;
     private bool _locallySkipped;
     internal string Error { get; private set; } = "";
     internal ShinGetterBondEncounter? Encounter => _save?.Encounters.GetValueOrDefault(_key);
@@ -72,10 +74,9 @@ internal sealed class ShinGetterBondSession
         try
         {
             var session = new ShinGetterBondSession();
-            // Status never imports. First creation for an edit preserves other NPCs'
-            // trustworthy old acquaintances; Apply removes the explicitly reset NPC.
-            // Existing sidecars are authoritative and are never re-imported.
-            session._save = plan.IsReadOnly ? session.Read(migrateIfMissing: false) : session.Read(migrateIfMissing: true);
+            // Read-only status can report the fresh release baseline but never writes it.
+            // A mutation/first encounter commits its epoch and change atomically.
+            session._save = session.Read();
             if (!plan.IsReadOnly && !session.Commit(next => plan.Apply(next)))
             {
                 message = "Progress unchanged: " + session.Error;
@@ -118,7 +119,7 @@ internal sealed class ShinGetterBondSession
         try
         {
             if (_identityError.Length != 0) throw new InvalidDataException(_identityError);
-            if (_save == null) _save = Read(migrateIfMissing: true);
+            if (_save == null) _save = Read();
             if (Encounter != null) return ValidateEncounter(Encounter);
             // Keep the draw across a failed write/retry. Never draw on gameplay RNG.
             _pendingEncounter ??= SelectEncounter();
@@ -286,52 +287,39 @@ internal sealed class ShinGetterBondSession
     }
 
     private static bool IsAcquainted(ShinGetterBondSave save, string npc) =>
-        save.Completed.Contains(npc + "_FIRST_01") || save.LegacyAcquaintances.ContainsKey(npc);
+        save.Completed.Contains(npc + "_FIRST_01");
 
-    private ShinGetterBondSave CreateWithLegacyAcquaintances()
+    private static ShinGetterBondSave CreateReleaseSave(long revision = 0) => new()
     {
-        var save = new ShinGetterBondSave { LegacyMigrationVersion = 1 };
-        // Only the first sidecar creation imports prior, successfully read standard
-        // solo Shin Getter runs. Aggregate AncientStats cannot distinguish run modes.
-        // Never import current-run visits, counts, role stages or result responses.
-        try
-        {
-            var known = new Dictionary<string, long>(StringComparer.Ordinal);
-            foreach (var history in ReadReliableHistories())
-            {
-                if (history.MapPointHistory == null || history.MapPointHistory.Any(act => act == null
-                    || act.Any(point => point == null || point.Rooms == null || point.Rooms.Any(room => room == null)))) continue;
-                foreach (var room in history.MapPointHistory.SelectMany(act => act).SelectMany(point => point.Rooms))
-                {
-                    if (room.RoomType != RoomType.Event || room.ModelId is not { } id
-                        || id.Category != ModelId.SlugifyCategory<EventModel>()
-                        || !ShinGetterDialogueCatalog.ContainsNpc(id.Entry)) continue;
-                    known[id.Entry] = Math.Max(known.GetValueOrDefault(id.Entry), history.StartTime);
-                }
-            }
-            save.LegacyAcquaintances = known;
-        }
-        catch (Exception ex)
-        {
-            // No trustworthy evidence: keep initial meetings, do not guess unlocks.
-            GD.PushWarning("Shin Getter legacy acquaintances were not imported: " + ex.Message);
-        }
-        return save;
-    }
+        Revision = revision, ProgressEpoch = ReleaseProgressEpoch, LegacyMigrationVersion = 1,
+    };
 
-    private ShinGetterBondSave Read(bool migrateIfMissing = false)
+    private ShinGetterBondSave Read()
     {
-        if (!File.Exists(_path)) return migrateIfMissing ? CreateWithLegacyAcquaintances() : new();
+        if (!File.Exists(_path)) { _needsReleaseReset = false; return CreateReleaseSave(); }
         var save = JsonSerializer.Deserialize<ShinGetterBondSave>(File.ReadAllText(_path), JsonOptions)
             ?? throw new InvalidDataException("Empty relationship save; original file retained.");
+        if (save.Schema != 1 || save.Revision < 0 || save.ProgressEpoch == null)
+            throw new InvalidDataException("Unsupported relationship save; original file retained.");
+        if (save.ProgressEpoch.Length == 0)
+        {
+            // v1.3.0 ships all NPCs at zero, including test-sidecar/old room snapshots.
+            // Keep the revision for the atomic compare-and-swap, but no prior progress,
+            // acquaintances, outcomes, cue consumption or forced next-scene requests.
+            _needsReleaseReset = true;
+            return CreateReleaseSave(save.Revision);
+        }
+        if (save.ProgressEpoch != ReleaseProgressEpoch)
+            throw new InvalidDataException("Unsupported relationship progress epoch; original file retained.");
+        _needsReleaseReset = false;
         if (save.Schema != 1 || save.Completed == null || save.Encounters == null
             || save.LastMetRun == null || save.RespondedResults == null || save.LegacyAcquaintances == null
             || save.DebugNextDialogues == null
             || save.LegacyMigrationVersion is < 0 or > 1)
             throw new InvalidDataException("Unsupported relationship save; original file retained.");
         ShinGetterBondConsolePlan.ValidatePending(save);
-        if (save.LegacyAcquaintances.Any(pair => !ShinGetterDialogueCatalog.ContainsNpc(pair.Key) || pair.Value <= 0))
-            throw new InvalidDataException("Invalid legacy acquaintance evidence; original file retained.");
+        if (save.LegacyAcquaintances.Count != 0)
+            throw new InvalidDataException("Release progress must not inherit legacy acquaintances; original file retained.");
         // Unreleased roomId-based snapshots cannot be assigned a history slot safely.
         // Keep the original file and allow local skip instead of replaying a new story.
         if (save.Encounters.Any(pair => pair.Value != null && pair.Value.Run == _run
@@ -364,10 +352,14 @@ internal sealed class ShinGetterBondSession
             if (Read().Revision != _save.Revision) throw new IOException("Relationship save changed in another conversation. Re-enter to reload.");
             var next = JsonSerializer.Deserialize<ShinGetterBondSave>(JsonSerializer.Serialize(_save, JsonOptions), JsonOptions)!;
             change(next);
-            // Existing sidecars are already authoritative: never re-import histories
-            // to turn a skipped/incomplete initial meeting into an acquaintance.
+            // This fixed epoch survives later mod versions and language changes.
+            next.ProgressEpoch = ReleaseProgressEpoch;
             next.LegacyMigrationVersion = 1;
             next.Revision++;
+            // Retain the exact pre-release file independently of the rolling .backup.
+            // A failed write leaves its epoch/contents unchanged and can safely retry.
+            if (_needsReleaseReset && File.Exists(_path))
+                File.Copy(_path, _path + ".pre-v1.3.0." + Guid.NewGuid().ToString("N") + ".backup", overwrite: false);
             string temporary = _path + ".pending";
             byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(next, JsonOptions);
             using (var file = new FileStream(temporary, FileMode.Create, System.IO.FileAccess.Write, FileShare.None))
@@ -378,6 +370,7 @@ internal sealed class ShinGetterBondSession
             if (File.Exists(_path)) File.Replace(temporary, _path, _path + ".backup");
             else File.Move(temporary, _path);
             _save = next;
+            _needsReleaseReset = false;
             Error = "";
             return true;
         }

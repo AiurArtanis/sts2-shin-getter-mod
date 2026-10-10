@@ -9,6 +9,8 @@ internal sealed class ShinGetterBondSave
     public ShinGetterBondSave() { }
     public int Schema { get; set; } = 1;
     public long Revision { get; set; }
+    // Empty in pre-release/test saves. Fixed feature epoch, not the mod's current version.
+    public string ProgressEpoch { get; set; } = "";
     public int LegacyMigrationVersion { get; set; }
     public Dictionary<string, long> LegacyAcquaintances { get; set; } = new(StringComparer.Ordinal);
     public HashSet<string> Completed { get; set; } = new(StringComparer.Ordinal);

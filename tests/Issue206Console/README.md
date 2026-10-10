@@ -27,3 +27,12 @@ leading/trailing input whitespace, padded argument tokens, ordinary inputs, unkn
 NPC/operation and empty inputs are covered. Other mod command stand-ins capture the
 same original array (including quotes); `export_cards`/event/unknown commands must
 pass through untouched. The original native failure must be rerun by the main task.
+
+2026-10-10 release baseline: the suite also seeds a full pre-release/test sidecar
+and checks all nine NPCs start at their common first meeting with zero stages and
+no inherited old acquaintance, snapshot/cue, result or debug request. Read-only
+status writes nothing; a transaction-lock failure preserves original bytes; first
+successful initialization records the fixed v1.3.0 epoch and an exact independent
+backup. A new session retains progress earned afterward, other profiles remain
+independent, and an unknown future epoch is not overwritten. This replaces the
+old unpublished acquaintance-import expectation, not the history of that test.

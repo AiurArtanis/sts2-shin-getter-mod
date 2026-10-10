@@ -72,7 +72,7 @@ Check(Parse("Architect", "status").Targets.Single() == "THE_ARCHITECT", "Archite
 Command("TANX", "unlock", "RYOMA", "2");
 var pending = Load();
 Check(pending.DebugNextDialogues["TANX"] == "TANX_RYOMA_BOND_03", "request not persisted");
-Check(pending.LegacyAcquaintances.ContainsKey("PAEL"), "first edit discarded an unrelated legacy acquaintance");
+Check(pending.LegacyAcquaintances.Count == 0 && SaveManager.Instance.HistoryReads == 0, "release imported an old acquaintance");
 string path = SaveManager.Instance.GetProfileScopedPath("shin_getter_bonds.json");
 byte[] unchanged = File.ReadAllBytes(path);
 Command("TANX", "status");
@@ -118,7 +118,7 @@ Check(!cleared.DebugNextDialogues.ContainsKey("TANX") && !cleared.LegacyAcquaint
 Check(orobas == JsonSerializer.Serialize(cleared.Completed.Where(x => x.StartsWith("OROBAS_")).OrderBy(x => x)), "clear touched another NPC");
 var firstAgain = Scene("TANX", 3);
 Check(firstAgain.Begin() && firstAgain.Encounter!.DialogueId == "TANX_FIRST_01", "clear did not restore first meeting");
-Check(Load().LegacyMigrationVersion == 1 && SaveManager.Instance.HistoryReads == 1, "existing sidecar reset re-imported game history");
+Check(Load().LegacyMigrationVersion == 1 && SaveManager.Instance.HistoryReads == 0, "existing sidecar reset re-imported game history");
 
 // File lock failure leaves progress+pending byte exact; retry commits once.
 firstAgain.Skip();
@@ -207,7 +207,7 @@ Check(command.Process(null, new[] { "ALL", "clear" }).success, "main menu profil
 SaveManager.Instance.CurrentProfileId = 2;
 Command("TANX", "clear");
 var firstReset = Load();
-Check(firstReset.LegacyAcquaintances.ContainsKey("PAEL") && !firstReset.LegacyAcquaintances.ContainsKey("TANX"), "first reset changed an unrelated legacy acquaintance");
+Check(firstReset.LegacyAcquaintances.Count == 0 && firstReset.ProgressEpoch == ShinGetterBondSession.ReleaseProgressEpoch, "first release inherited old acquaintances");
 int historyReads = SaveManager.Instance.HistoryReads;
 SaveManager.Instance.CurrentProfileId = 3;
 Check(command.Process(null, new[] { "ALL", "status" }).success, "new profile query failed");
@@ -258,4 +258,63 @@ var badStage = InvokePrefix("sgd", new[] { "", "TANX", "unlock", "", "RYOMA", "4
 Check(!badStage.Result.success && beforeBadStage.SequenceEqual(File.ReadAllBytes(SaveManager.Instance.GetProfileScopedPath("shin_getter_bonds.json"))), "spaced invalid stage changed progress");
 var spacedClear = InvokePrefix("sgd", new[] { "", "TANX", "", "clear", "" });
 Check(!spacedClear.Original && spacedClear.Result.success && !Load().Completed.Any(id => id.StartsWith("TANX_", StringComparison.Ordinal)), "spaced clear failed");
+// v1.3.0 baseline: no published save adopts pre-release progress or old visit history.
+SaveManager.Instance.CurrentProfileId = 4;
+path = SaveManager.Instance.GetProfileScopedPath("shin_getter_bonds.json");
+Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+var preRelease = new ShinGetterBondSave { Revision = 40, LegacyMigrationVersion = 1 };
+Parse("ALL", "unlock", "ALL", "3").Apply(preRelease);
+foreach (string npc in ShinGetterBondConsolePlan.Npcs)
+{
+    preRelease.Completed.Add(npc + "_FIRST_01");
+    preRelease.LegacyAcquaintances[npc] = 50;
+    preRelease.LastMetRun[npc] = 50;
+    preRelease.RespondedResults[npc] = 50;
+}
+preRelease.Encounters["old-room-identity"] = new() { Npc = "TANX", Run = 100, DialogueId = "TANX_RYOMA_BOND_03", Line = 4, Closed = true, ConsumedCues = new() { 4 } };
+byte[] originalTestProgress = JsonSerializer.SerializeToUtf8Bytes(preRelease);
+File.WriteAllBytes(path, originalTestProgress);
+Check(ShinGetterBondSession.TryConsole(planStatus, out string freshStatus), "release status rejected old test save");
+Check(!freshStatus.Contains("first=True") && freshStatus.Contains("RYOMA=0"), "status leaked old familiarity/stages");
+Check(originalTestProgress.SequenceEqual(File.ReadAllBytes(path)), "readonly status wrote initialization");
+Check(Directory.GetFiles(Path.GetDirectoryName(path)!, "*.pre-v1.3.0.*.backup").Length == 0, "readonly status created backups");
+var initialize = Scene("TANX", 30);
+using (new FileStream(path + ".lock", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+    Check(!initialize.Begin(), "release initialization ignored transaction lock");
+Check(originalTestProgress.SequenceEqual(File.ReadAllBytes(path)) && initialize.Encounter == null, "failed release reset changed disk/memory encounter");
+Check(initialize.Begin() && initialize.Encounter!.DialogueId == "TANX_FIRST_01", "release did not start with common first meeting");
+var initialized = Load();
+Check(initialized.ProgressEpoch == ShinGetterBondSession.ReleaseProgressEpoch && initialized.Revision == 41, "epoch/revision not committed once");
+Check(initialized.Completed.Count == 0 && initialized.LegacyAcquaintances.Count == 0 && initialized.DebugNextDialogues.Count == 0, "release retained stages/acquaintances/debug requests");
+Check(initialized.LastMetRun.Count == 0 && initialized.RespondedResults.Count == 0 && !initialized.Encounters.ContainsKey("old-room-identity"), "release retained old encounter/outcome history");
+string[] releaseBackups = Directory.GetFiles(Path.GetDirectoryName(path)!, "*.pre-v1.3.0.*.backup");
+Check(releaseBackups.Length == 1 && originalTestProgress.SequenceEqual(File.ReadAllBytes(releaseBackups[0])), "pre-release backup is not byte-exact");
+int nextRoom = 31;
+foreach (string npc in ShinGetterBondConsolePlan.Npcs)
+{
+    var firstScene = Scene(npc, nextRoom++);
+    Check(firstScene.Begin() && firstScene.Encounter!.DialogueId == npc + "_FIRST_01", "NPC inherited old progress: " + npc);
+    Check(!firstScene.Encounter!.Completed && firstScene.Encounter.ConsumedCues.Count == 0, "NPC inherited completion/cues: " + npc);
+}
+Check(Load().Completed.Count == 0, "viewing first meetings manufactured progress");
+var firstReleaseConversation = Scene("TANX", nextRoom++);
+Check(firstReleaseConversation.Begin(), firstReleaseConversation.Error);
+while (!firstReleaseConversation.Closed) Check(firstReleaseConversation.Advance(), firstReleaseConversation.Error);
+Check(Load().Completed.Contains("TANX_FIRST_01"), "post-release first completion lost");
+Command("TANX", "unlock", "RYOMA", "1");
+var afterRestart = Scene("TANX", nextRoom++);
+Check(afterRestart.Begin() && afterRestart.Encounter!.DialogueId == "TANX_RYOMA_BOND_02", "restart reset legitimately earned release progress");
+Check(Load().Completed.Contains("TANX_RYOMA_BOND_01") && Directory.GetFiles(Path.GetDirectoryName(path)!, "*.pre-v1.3.0.*.backup").Length == 1, "release reset repeated");
+var futureSave = Load();
+futureSave.ProgressEpoch = "future-unsupported-epoch";
+File.WriteAllText(path, JsonSerializer.Serialize(futureSave));
+unchanged = File.ReadAllBytes(path);
+Check(!ShinGetterBondSession.TryConsole(Parse("ALL", "clear"), out _), "unknown future epoch was downgraded/reset");
+Check(unchanged.SequenceEqual(File.ReadAllBytes(path)), "unknown future epoch changed");
+SaveManager.Instance.CurrentProfileId = 5;
+var newReleaseProfile = Scene("NEOW", 0);
+Check(newReleaseProfile.Begin() && newReleaseProfile.Encounter!.DialogueId == "NEOW_FIRST_01", "new profile inherited old visit history");
+Check(Load().ProgressEpoch == ShinGetterBondSession.ReleaseProgressEpoch && Load().Completed.Count == 0, "new profile did not start at zero");
+SaveManager.Instance.CurrentProfileId = 4;
+Check(unchanged.SequenceEqual(File.ReadAllBytes(path)), "other profile initialization touched existing profile");
 Console.WriteLine($"PASS: {checks} managed assertions, linked production source; NOT Godot/game acceptance.");

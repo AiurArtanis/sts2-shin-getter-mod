@@ -129,17 +129,15 @@ def contracts() -> None:
         require(token not in identity_code, f"Reload must not create a new encounter identity: {token}")
     require('!pair.Key.StartsWith("encounter-v2:", StringComparison.Ordinal)' in session,
             "Old unpublished roomId snapshots must fail safely, not replay as new encounters")
-    migration = session[session.index("private ShinGetterBondSave CreateWithLegacyAcquaintances()"):session.index("private ShinGetterBondSave Read(")]
-    for token in ("ReadReliableHistories()", "history.MapPointHistory", "RoomType.Event",
-                  "ModelId.SlugifyCategory<EventModel>()", "ShinGetterDialogueCatalog.ContainsNpc(id.Entry)",
-                  "save.LegacyAcquaintances = known", "LegacyMigrationVersion = 1"):
-        require(token in migration, f"Conservative legacy acquaintance migration: {token}")
-    for token in ("Completed.Add", "LastMetRun[", "RespondedResults[", "GetVisitsAs(", "GetOrCreateAncientStats(", "_BOND_"):
-        require(token not in migration, f"Legacy visits must not manufacture progress or mutate game saves: {token}")
-    require("if (!File.Exists(_path)) return migrateIfMissing ? CreateWithLegacyAcquaintances() : new();" in session,
-            "Only absent sidecars may import; existing saves must never re-import an unfinished first meeting")
-    require("Read(migrateIfMissing: true)" in session and "Read().Revision != _save.Revision" in session,
-            "First import must be committed under the existing atomic revision transaction")
+    # Artanis 2026-10-10 overrides pre-release acquaintance migration: all NPCs
+    # start at zero once for v1.3.0, then keep legitimately earned release progress.
+    require('ReleaseProgressEpoch = "v1.3.0"' in session and "CreateWithLegacyAcquaintances" not in session,
+            "First release must not import prior visits/test progress")
+    loader = session[session.index("private ShinGetterBondSave Read()"):session.index("private bool Commit(")]
+    require("save.ProgressEpoch.Length == 0" in loader and "CreateReleaseSave(save.Revision)" in loader,
+            "Pre-release saves must prepare an empty release epoch, retaining transaction revision")
+    require("ReadReliableHistories" not in loader and "Read().Revision != _save.Revision" in session,
+            "Initialization must not read encounter history and must commit atomically")
     require('history.Players[0].Character != ModelDb.Character<ShinGetter>().Id' in session
             and "history.StartTime <= 0 || history.StartTime >= _run" in session,
             "Do not migrate other characters, current/future runs or invalid timestamps")
