@@ -8,7 +8,7 @@
   "S_G_P_SHIN_FORM.title": "真化形态",
   "S_G_P_SHIN_FORM.description": "真盖塔龙形态。能量上限+1，额外抽1张牌，力量和敏捷-2；获得格挡时，获得1层覆甲，并同时视作一号机、二号机和三号机。",
   "S_G_P_FIGHTING_SPIRIT.title": "斗志",
-  "S_G_P_FIGHTING_SPIRIT.description": "被攻击前，先对攻击者造成{Amount}点伤害。",
+  "S_G_P_FIGHTING_SPIRIT.description": "被攻击前，先对攻击者造成{Amount}点伤害，不受活力加成。",
   "S_G_P_KI.title": "气力",
     "S_G_P_KI.description": "回合开始时获得等同于层数的活力；受到的最终伤害减少等同于层数的数值；每次受到伤害后减少1层。",
   "S_G_P_SUPER_KI.title": "超强气",

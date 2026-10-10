@@ -68,6 +68,14 @@ PROBE_PROJECT = REPO_ROOT / "tools/Issue93CompatibilityProbe/Issue93Compatibilit
 MOD_ASSEMBLY = PROJECT_ROOT / "build/ShinGetterMod.dll"
 
 REVIEW_CONCLUSIONS = {
+    "MegaCrit.Sts2.Core.Combat::CombatManager::WaitForUnpause": (
+        "compatible", "Public zero-argument Task remains; the new private turn-state overload is not called. Shining Spark retains its scene-end race and pause boundary."),
+    "MegaCrit.Sts2.Core.Map::MapCoord": (
+        "compatible", "The primary constructor preserves (int,int) and col/row; bond identity reads these persistent fields without constructing MapCoord."),
+    "MegaCrit.Sts2.Core.Runs::RunRngSet::Seed": (
+        "compatible", "The ulong Beta seed is interpolated without narrowing into the encounter key; it does not consume gameplay RNG."),
+    "MegaCrit.Sts2.Core.Models.Powers::VigorPower::ModifyDamageAdditive": (
+        "compatible", "The unique six-argument Beta override retains the named Harmony subset used by the tagged Fighting Spirit counter."),
     "MegaCrit.Sts2.Core.Entities.Cards::CardPile": (
         "compatible",
         "The mod only receives existing CardPile instances; it never constructs CardPile, so the new primary constructor is not crossed.",
@@ -82,7 +90,7 @@ REVIEW_CONCLUSIONS = {
     ),
     "MegaCrit.Sts2.Core.Commands.Builders::AttackCommand::FromCard": (
         "adapted",
-        "All 63 card-origin attack builders pass the active CardPlay context.",
+        "All 64 card-origin attack builders pass the active CardPlay context, including both Shift Strike hits and special-sequence card settlement.",
     ),
     "MegaCrit.Sts2.Core.Commands::CardCmd::Exhaust": (
         "compatible",
@@ -141,8 +149,8 @@ REVIEW_CONCLUSIONS = {
         "ShinGetter implements GenerateAnimator(MegaSprite, Creature) without changing its custom animator behavior.",
     ),
     "MegaCrit.Sts2.Core.Models::EventModel::EnterCombatWithoutExitingEvent": (
-        "compatible",
-        "Only the first parameter name changes; the reflection lookup pins the unchanged three runtime parameter types.",
+        "adapted",
+        "The signature types remain, but Beta delegates a canonical encounter to EventCombatSynchronizer, which creates its mutable clone. Both legacy event-combat callers retain canonical inputs and compare the live clone through CanonicalInstance; chooser/reward/resume semantics are not removed.",
     ),
     "MegaCrit.Sts2.Core.Models::ModelId::ModelId": (
         "compatible",
@@ -476,8 +484,7 @@ def inventory_mod_source() -> tuple[
             for line_number, line in enumerate(text.splitlines(), 1):
                 for identifier in set(IDENTIFIER_RE.findall(line)):
                     locations = identifier_locations[identifier]
-                    if len(locations) < 12:
-                        locations.append(f"{relative}:{line_number}")
+                    locations.append(f"{relative}:{line_number}")
             target_calls.extend(dynamic_calls(text, relative))
             override_names.update(OVERRIDE_NAME_RE.findall(text))
 
@@ -738,6 +745,51 @@ def build_inventory() -> dict[str, object]:
             "target": target,
         }
 
+    # Complete reference -> source definitions, not only changed-symbol candidates.
+    # Generated constructors/operators can be absent as member nodes; their owning
+    # type declaration is retained and actual CLR token binding is checked separately.
+    owner_indexes = {}
+    for groups in (formal_symbols, beta_symbols):
+        owners = collections.defaultdict(list)
+        for values in groups.values():
+            for symbol in values:
+                owners[re.sub(r"`\d+", "", symbol_binary_owner(symbol) or "")].append(symbol)
+        owner_indexes[id(groups)] = owners
+
+    def definitions(groups, owner, name=None):
+        owner = re.sub(r"`\d+", "", owner.split("<", 1)[0])
+        result = []
+        aliases = {name} if name else set()
+        if name and name.startswith(("get_", "set_")):
+            aliases.add(name[4:])
+        if name == ".ctor":
+            aliases.add(owner.rsplit("+", 1)[-1].rsplit(".", 1)[-1])
+        for symbol in owner_indexes[id(groups)].get(owner, []):
+            if name is None and symbol.kind in TYPE_KINDS or name is not None and symbol.name in aliases:
+                result.append(symbol.as_dict())
+        if not result and name is not None:
+            return definitions(groups, owner)
+        if not result and "+" in owner:
+            # Godot source-generated SignalName/MethodName/PropertyName subclasses
+            # live in the assembly, not the committed source graph. Link the owning
+            # class plus the separately verified exact CLR type/member token.
+            return definitions(groups, owner.rsplit("+", 1)[0])
+        return result
+
+    crossings = []
+    for owner in sorted(binary_types):
+        crossings.append({"kind": "type", "owner": owner,
+            "formal_definitions": definitions(formal_symbols, owner),
+            "beta_definitions": definitions(beta_symbols, owner),
+            "mod_locations": identifier_locations.get(owner.rsplit("+", 1)[-1].rsplit(".", 1)[-1], []),
+            "verification": "compiled Beta type reference; actual CLR token binding required"})
+    for member in binary_inventory["game_member_references"]:
+        crossings.append({"kind": "member", **member,
+            "formal_definitions": definitions(formal_symbols, member["owner"], member["name"]),
+            "beta_definitions": definitions(beta_symbols, member["owner"], member["name"]),
+            "mod_locations": identifier_locations.get(member["name"].removeprefix("get_").removeprefix("set_"), []),
+            "verification": "compiled Beta member signature; actual CLR token binding required"})
+
     return {
         "schema_version": 1,
         "inputs": {
@@ -790,6 +842,7 @@ def build_inventory() -> dict[str, object]:
             "override_names": sorted(override_names),
         },
         "mod_binary_reference_inventory": binary_inventory,
+        "mod_reference_crossings": crossings,
     }
 
 

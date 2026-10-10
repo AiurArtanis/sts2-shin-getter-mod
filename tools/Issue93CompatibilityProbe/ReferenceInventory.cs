@@ -8,6 +8,8 @@ using System.Text.Json;
 internal static class ReferenceInventory
 {
     private const string GameAssemblyName = "sts2";
+    internal static bool IsGameMember(MetadataReader reader, EntityHandle parent) =>
+        new TypeNameProvider(reader).IsGameType(parent);
 
     public static void Write(string assemblyPath)
     {

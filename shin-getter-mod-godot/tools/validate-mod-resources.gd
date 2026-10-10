@@ -4,6 +4,7 @@ const REQUIRED_RESOURCES := {
 	"res://materials/cards/frames/card_frame_shin_getter_mat.tres": false,
 	"res://materials/transitions/shin_getter_transition_mat.tres": false,
 	"res://shaders/shin_getter_hsv.gdshader": false,
+	"res://shaders/shin_getter_shining_shell.gdshader": false,
 	"res://animations/character_select/shin_getter/character_select_shin_getter_bg.png": false,
 	"res://audio/sfx/characters/shin_getter/shin_getter_select.wav": false,
 	"res://audio/sfx/characters/shin_getter/voices/transform.wav": false,
@@ -69,6 +70,8 @@ const REQUIRED_RESOURCES := {
 	"res://audio/sfx/characters/shin_getter/voices/ryoma_our_will_getter_power.wav": false,
 	"res://audio/sfx/characters/shin_getter/voices/hayato_unite_hearts.wav": false,
 	"res://audio/sfx/characters/shin_getter/voices/benkei_use_stoner_sunshine.wav": false,
+	"res://audio/sfx/characters/shin_getter/voices/ryoma_burn_shin_dragon.wav": false,
+	"res://audio/sfx/characters/shin_getter/voices/ryoma_go_shin_getter.wav": false,
 	"res://audio/music/shin_getter/album/relief.mp3": false,
 	"res://audio/music/shin_getter/encounters/boss_overgrowth.mp3": false,
 	"res://audio/music/shin_getter/album/past.mp3": false,
@@ -201,6 +204,9 @@ const REQUIRED_RESOURCES := {
 	"res://images/characters/shin_getter/forms/shin_getter_dragon_dash_v2/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/forms/shin_getter_dragon_drill_attack/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/forms/shin_getter_dragon_stoner_sunshine/sprite_sheet.png": false,
+	"res://images/characters/shin_getter/forms/shin_getter_dragon_shining_spark/sprite_sheet.png": false,
+	"res://images/characters/shin_getter/forms/getter_one_star_slash/sprite_sheet.png": false,
+	"res://images/characters/shin_getter/forms/shin_getter_dragon_star_slash/sprite_sheet.png": false,
 	"res://images/characters/shin_getter/merchant/s_g_o_merchant_ryoma_citizen.png": false,
 	"res://images/characters/shin_getter/merchant/s_g_o_merchant_ryoma_normal.png": false,
 	"res://images/characters/shin_getter/rest/s_g_o_ryoma_rest.png": false,
@@ -220,6 +226,8 @@ const REQUIRED_RESOURCES := {
 }
 
 const EXISTS_ONLY_RESOURCES := [
+	"res://images/characters/shin_getter/forms/getter_one_star_slash/animation.json",
+	"res://images/characters/shin_getter/forms/shin_getter_dragon_star_slash/animation.json",
 	# These scenes reference the mod DLL, which is loaded only during the later game-load validation.
 	"res://scenes/screens/char_select/char_select_bg_shin_getter.tscn",
 	"res://ShinGetterMod.json",
@@ -272,7 +280,7 @@ const FORBIDDEN_RESOURCE_DEPENDENCIES := {
 }
 
 const CHARACTER_FRAME_MANIFEST_PATH := "art_sources/characters/shin_getter/forms/frame_manifest.txt"
-const EXPECTED_CHARACTER_SOURCE_FRAME_COUNT := 1370
+const EXPECTED_CHARACTER_SOURCE_FRAME_COUNT := 1564
 
 
 func _initialize() -> void:

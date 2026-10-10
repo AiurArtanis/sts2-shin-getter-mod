@@ -18,23 +18,23 @@ BETA_SOURCE = Path(
     os.environ.get("SHIN_GETTER_STS2_111_SOURCE", r"E:\Work\SlaytheSpare2-111-beta")
 )
 
-FORMAL_VERSION = "v1.2.2"
-FORMAL_TAG = "mod-v1.2.2"
-FORMAL_ARCHIVE = "shin-getter-mod-v1.2.2.zip"
+FORMAL_VERSION = "v1.3.0"
+FORMAL_TAG = "mod-v1.3.0"
+FORMAL_ARCHIVE = "shin-getter-mod-v1.3.0.zip"
 FORMAL_URL = (
-    "https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2"
+    "https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest"
 )
-BETA_VERSION = "v1.2.2-beta.111"
+BETA_VERSION = "v1.3.0-beta.111"
 # Both channel assets share one release; archive is the local/display name,
 # not GitHub's normalized asset name. Link to the release rather than guessing it.
-BETA_TAG = FORMAL_TAG
-BETA_ARCHIVE = "shin-getter-mod-v1.2.2(111-beta).zip"
-BETA_DOWNLOAD_URL = FORMAL_URL
+BETA_TAG = "mod-v1.3.0-beta.111"  # planned only, not an available download
+BETA_ARCHIVE = "shin-getter-mod-v1.3.0-beta.111.zip"
+BETA_DOWNLOAD_URL = "https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2"  # actual published old Beta
 LEGACY_BETA_RELEASE_URL = (
     "https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/"
     "mod-v1.2.1-beta.111"
 )
-BETA_HISTORY_KEY = "SHIN_GETTER_CHUNIBYO.UPDATE.v1_2_2_beta_111"
+BETA_HISTORY_KEY = "SHIN_GETTER_CHUNIBYO.UPDATE.v1_3_0_beta_111"
 
 RELEASE_FILES = (
     REPO_ROOT / "README.md",
@@ -98,7 +98,7 @@ def validate_version_mapping() -> None:
     history = json.loads(read(history_path))
     expected_latest = {
         "version": BETA_VERSION,
-        "date": "2026-09-21",
+        "date": "2026-10-10",
         "localization_key": BETA_HISTORY_KEY,
     }
     if not history or history[0] != expected_latest:
@@ -133,7 +133,9 @@ def validate_version_mapping() -> None:
             "0.110 Beta",
             "support-110-beta",
             LEGACY_BETA_RELEASE_URL,
+            "releases/tag/mod-v1.3.0",
         )
+        require(text, path, "v1.2.2-beta.111", "BaseLib", "QuickRestart")
 
 
 def validate_mod_api_adaptation() -> None:
@@ -142,7 +144,7 @@ def validate_mod_api_adaptation() -> None:
     all_source = "\n".join(read(path) for path in source_files)
     current = re.findall(r"\.FromCard\(this,\s*cardPlay\)", all_source)
     stale = re.findall(r"\.FromCard\(this\)(?!\s*,)", all_source)
-    if len(current) != 63 or stale:
+    if len(current) != 64 or stale:
         raise AssertionError(
             f"AttackCommand.FromCard migration drifted: current={len(current)}, stale={len(stale)}"
         )
@@ -334,11 +336,10 @@ def validate_resources_and_audit() -> None:
     require(
         audit,
         audit_path,
-        "377 game type references",
-        "698 direct game member signatures",
-        "33 members on constructed generic game types",
-        "Exactly 26 changed symbol groups intersect the mod",
-        "0 warnings and 10 errors",
+        "issue#248",
+        "complete v1.3.0",
+        "actual CLR",
+        "30 changed symbol groups",
         BETA_VERSION,
         BETA_TAG,
         BETA_ARCHIVE,
@@ -361,7 +362,7 @@ def validate_codegraph_mechanical_audit() -> None:
         result.stdout,
         script,
         "issue#93 CodeGraph audit check passed",
-        "26 changed-symbol candidates",
+        "30 changed-symbol candidates",
     )
 
 
@@ -370,7 +371,8 @@ def validate_runtime_targets() -> None:
     environment = os.environ.copy()
     environment["SHIN_GETTER_STS2_111_SOURCE"] = str(BETA_SOURCE)
     result = subprocess.run(
-        ["dotnet", "run", "--project", str(project), "--configuration", "Release"],
+        ["dotnet", "run", "--project", str(project), "--configuration", "Release", "--", "--mod",
+         str(PROJECT_ROOT / "build/ShinGetterMod.dll"), str(REPO_ROOT / ".github/issue-93-109-vs-111-codegraph-diff.json")],
         cwd=REPO_ROOT,
         env=environment,
         text=True,
@@ -384,6 +386,8 @@ def validate_runtime_targets() -> None:
         result.stdout,
         project,
         "issue#93 0.111 Beta runtime reflection/Harmony target probe passed",
+        "issue#248 actual CLR reference token bindings PASS",
+        "issue#248 Harmony named bindings PASS",
     )
 
 

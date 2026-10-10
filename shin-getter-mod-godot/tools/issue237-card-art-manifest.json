@@ -1,0 +1,2718 @@
+{
+  "schema": 1,
+  "layout": "cardface-compact-v1",
+  "approved_base": "b0f76260baba42d33952c28dff5fb66980e2efbc",
+  "handoff_manifest_sha256": "ee519b918b33f4298c3a7ed9cadc65d212b7b2dba38b11cef90a6f9f83843358",
+  "atlas": {
+    "path": "images/atlases/card_atlas_shin_getter_01.png",
+    "sha256": "8fa1bbc0f3f168591664a7bc4a6ba4a11029c5d132c8902e9bfa8e1378f009a2"
+  },
+  "portraits": [
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_getter_claw.png",
+      "sequence": 12,
+      "sha256": "13df6d48656d069150661c9ed89aa0d5bb78980c6ee4544f7687e0e4102061fd"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_getter_rush.png",
+      "sequence": 13,
+      "sha256": "db03ee8babda68f1dfc7348ea52db3a0a33778dfb50eea1eb36f922485850402"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_getter_tomahawk.png",
+      "sequence": 11,
+      "sha256": "c4626dc990b0c9e15cb5b083a53d5e1c2f5cef8468a1d23ef48ee320966c74c2"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_guts.png",
+      "sequence": 57,
+      "sha256": "dc32b6dfb4b1a76b5ecf3422cb87f7fe2d5aaa4265fe0388f74de8f1cefb5899"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_hurricane_strike.png",
+      "sequence": 6,
+      "sha256": "8f56b4ead0c5ef86d507f96c30dcf6bc224dbf2afbc0e6bf1ab7035e26a3ef50"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_liger_assault.png",
+      "sequence": 50,
+      "sha256": "1bba5f41f1e24d465cd241e4f642f1a7756dc2c9ec7f9dcfdb0bdac06f89d359"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_saotome_blueprint.png",
+      "sequence": 43,
+      "sha256": "62ac6a6e34388f6b5af0247c3bea7ed68f24ea36f79d694512b50a6d613a2beb"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_super_ki.png",
+      "sequence": 62,
+      "sha256": "05f9482c7bc939825972d69a912ff8df1e3dabc70443a98e2c92aefb6dac865d"
+    }
+  ],
+  "textures": [
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_strike.tres",
+      "sequence": 1,
+      "role": "live",
+      "region": [
+        0,
+        0,
+        250,
+        190
+      ],
+      "sha256": "df9cc9c15ed788c7c9d05a48efb099e46cd69a8818cca8b363506bc9b595d41a"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_defend.tres",
+      "sequence": 2,
+      "role": "live",
+      "region": [
+        250,
+        0,
+        250,
+        190
+      ],
+      "sha256": "cf3f6620ed34651b4ad850a99b3b59184db9b6fcdd7ab87b9dc5ac85c546c2da"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_getter_beam.tres",
+      "sequence": 3,
+      "role": "live",
+      "region": [
+        500,
+        0,
+        250,
+        190
+      ],
+      "sha256": "bbee399345fa73c4b3a7c34d167aee3071175d0dedad3d08085b1e51ebe6b0db"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_getter_launch.tres",
+      "sequence": 4,
+      "role": "live",
+      "region": [
+        750,
+        0,
+        250,
+        190
+      ],
+      "sha256": "185f47549f444a47536d7237de09e2d395d71ca87d8cdc06c7e2092a6287c128"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_dive_strike.tres",
+      "sequence": 5,
+      "role": "live",
+      "region": [
+        1000,
+        0,
+        250,
+        190
+      ],
+      "sha256": "139e221857daedd13d9561b74bb699cafe49ff2aaf631fef85cb4e76962c5ed8"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_hurricane_strike.tres",
+      "sequence": 6,
+      "role": "live",
+      "region": [
+        1250,
+        0,
+        250,
+        190
+      ],
+      "sha256": "8b5fc164c01a45d535e0d389af05bc41fbc600214adaa3fd0b405c891e61de4a"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_getter_chop.tres",
+      "sequence": 7,
+      "role": "live",
+      "region": [
+        1500,
+        0,
+        250,
+        190
+      ],
+      "sha256": "90fc2e29ade3136736ba872b6cc3771e94498f0865275a7b31137338abd1bb9c"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_getter_elbow.tres",
+      "sequence": 8,
+      "role": "live",
+      "region": [
+        1750,
+        0,
+        250,
+        190
+      ],
+      "sha256": "e72bb2488831040c09937686d1cc432622197813ad2708160e6d850bbd098354"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_shift_strike.tres",
+      "sequence": 9,
+      "role": "live",
+      "region": [
+        2000,
+        0,
+        250,
+        190
+      ],
+      "sha256": "5bc4d6bd406f56901eb960a9f405acef97a13128e6284e06eecc256b805c03c8"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_focus_fire.tres",
+      "sequence": 10,
+      "role": "live",
+      "region": [
+        2250,
+        0,
+        250,
+        190
+      ],
+      "sha256": "4027e2468715d4a92fee67b0cd651776a02c198bffe9f3e82705b446470a9326"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_getter_tomahawk.tres",
+      "sequence": 11,
+      "role": "live",
+      "region": [
+        0,
+        190,
+        250,
+        190
+      ],
+      "sha256": "f8989eea410232e64ea9016b71972f0a7a5b549d5c13011f8932f3b1d12afeb2"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_getter_claw.tres",
+      "sequence": 12,
+      "role": "live",
+      "region": [
+        250,
+        190,
+        250,
+        190
+      ],
+      "sha256": "7a5a3dd2366419ae700c78e743fe78a665e461d9f9df70384fae418ae76ff605"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_getter_rush.tres",
+      "sequence": 13,
+      "role": "live",
+      "region": [
+        500,
+        190,
+        250,
+        190
+      ],
+      "sha256": "580c88fe8c5128f8fec6b686598787b21104acccd783f6fa6a3952191eae63d6"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_meltdown.tres",
+      "sequence": 14,
+      "role": "live",
+      "region": [
+        750,
+        190,
+        250,
+        190
+      ],
+      "sha256": "c1aa574fe1dfe580295434766c9255b24793f84957423855181da95d5f3e5165"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_ki.tres",
+      "sequence": 15,
+      "role": "live",
+      "region": [
+        1000,
+        190,
+        250,
+        190
+      ],
+      "sha256": "bb6f9c6c0880767f91bb1390a3cafcb07176a5ad88acdee8e5c82b10873412a2"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_indomitable.tres",
+      "sequence": 16,
+      "role": "live",
+      "region": [
+        1250,
+        190,
+        250,
+        190
+      ],
+      "sha256": "ab52e75c0b5b397ba42593f190c4335d249233d573e71e3ce81cdbafa3784690"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_tactical_retreat.tres",
+      "sequence": 17,
+      "role": "live",
+      "region": [
+        1500,
+        190,
+        250,
+        190
+      ],
+      "sha256": "5cc25685d97569829c39c0b350d3f42ab46b6ca74cb2ba4e04c18d9545257a9e"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_black_armor.tres",
+      "sequence": 18,
+      "role": "live",
+      "region": [
+        1750,
+        190,
+        250,
+        190
+      ],
+      "sha256": "91f1b7838f67c070d50b8dda69252b8e77a5371da3145bb071c92565092dd735"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_shed_load.tres",
+      "sequence": 19,
+      "role": "live",
+      "region": [
+        2000,
+        190,
+        250,
+        190
+      ],
+      "sha256": "defa9116da583020981daaab3d69b74b440cd40810e9880eebcd93475b19ee77"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_hedgehog_tactic.tres",
+      "sequence": 20,
+      "role": "live",
+      "region": [
+        2250,
+        190,
+        250,
+        190
+      ],
+      "sha256": "a2414511340b97ec29652ec72e18b893d1ca55f6069f3b2b14f5a1cbffbe47b6"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_change_attack.tres",
+      "sequence": 21,
+      "role": "live",
+      "region": [
+        0,
+        380,
+        250,
+        190
+      ],
+      "sha256": "c1fa63a0595c27eaf249ce1309991680ac7aeadb31e464abadcfc7e4a038aec5"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_annihilation.tres",
+      "sequence": 22,
+      "role": "live",
+      "region": [
+        250,
+        380,
+        250,
+        190
+      ],
+      "sha256": "1e974450446af0f8bc185d1e65b53a8c3023e3cba6e561c5b6e99e79d141c76a"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_hot_blood.tres",
+      "sequence": 23,
+      "role": "live",
+      "region": [
+        500,
+        380,
+        250,
+        190
+      ],
+      "sha256": "aa92b7fc137b80bb735f82381309618517ad117789889bfafc9a3079267e171b"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_tomahawk_fury.tres",
+      "sequence": 24,
+      "role": "live",
+      "region": [
+        750,
+        380,
+        250,
+        190
+      ],
+      "sha256": "fb0d43e05b09dc017c311e510e598feded8c1a0402c553d192cad46e58b50af8"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_getter_flash.tres",
+      "sequence": 25,
+      "role": "live",
+      "region": [
+        1000,
+        380,
+        250,
+        190
+      ],
+      "sha256": "fab8902c77722e6cde9fad8a456078e64f237198aa785acb9e48d2a84aa0fd6d"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_tornado_drill.tres",
+      "sequence": 26,
+      "role": "live",
+      "region": [
+        1250,
+        380,
+        250,
+        190
+      ],
+      "sha256": "296f771008d7a9dc71459cda02548a17a78bccc41d345b4f7adda03aa0b7c94e"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_spiral_drill.tres",
+      "sequence": 27,
+      "role": "live",
+      "region": [
+        1500,
+        380,
+        250,
+        190
+      ],
+      "sha256": "6127f1b274ce091b48210863296397eae3e98eb204c96d7bd1d70a9e55033e97"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_expansion_strike.tres",
+      "sequence": 28,
+      "role": "live",
+      "region": [
+        1750,
+        380,
+        250,
+        190
+      ],
+      "sha256": "551774aef3b4d12a4906326f7243a94542344894dc57a7e187a0708413f27f82"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_getter_missile.tres",
+      "sequence": 29,
+      "role": "live",
+      "region": [
+        2000,
+        380,
+        250,
+        190
+      ],
+      "sha256": "dd217f3498407b82f41fec399e1e9ab335a4b586fb0f2ae8a8e3415013080cb6"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_evolution_resonance.tres",
+      "sequence": 30,
+      "role": "live",
+      "region": [
+        2250,
+        380,
+        250,
+        190
+      ],
+      "sha256": "10557c892e29a5dab4a558931cbb245859638f8c2e95423bad3c80fda7de33c6"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_seize_future.tres",
+      "sequence": 31,
+      "role": "live",
+      "region": [
+        0,
+        570,
+        250,
+        190
+      ],
+      "sha256": "27eeee034ba831d5645601d343356d0ec037e2cc15552bba31d91ac569a1fd9e"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_spirit.tres",
+      "sequence": 32,
+      "role": "live",
+      "region": [
+        250,
+        570,
+        250,
+        190
+      ],
+      "sha256": "beb4ca7f2c10034a92f4d7ebdc873a6d2664d56826eb0044a5780d57ed2789e5"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_parts_swap.tres",
+      "sequence": 33,
+      "role": "live",
+      "region": [
+        500,
+        570,
+        250,
+        190
+      ],
+      "sha256": "7fd50d0e3bb8bbdaf0b6268b5935128039c82be423ae19545ef3d5bf5bbd0da0"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_triple_unity.tres",
+      "sequence": 34,
+      "role": "live",
+      "region": [
+        750,
+        570,
+        250,
+        190
+      ],
+      "sha256": "c3ff30f58d8ee7af835ee33a3dc5527efe9bfe1eb97dbe6bb5a61d7220c72f03"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_dark_cape.tres",
+      "sequence": 35,
+      "role": "live",
+      "region": [
+        1000,
+        570,
+        250,
+        190
+      ],
+      "sha256": "754d215054313d7d12411bc5f371bc7232a377d3dd6d2d94e033feed2fb69030"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_backup_plan.tres",
+      "sequence": 36,
+      "role": "live",
+      "region": [
+        1250,
+        570,
+        250,
+        190
+      ],
+      "sha256": "694225213a2b41d603a3de3d14a61ddd0e7bf80b9db897f4bd1249b041a1342c"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_grapple.tres",
+      "sequence": 37,
+      "role": "live",
+      "region": [
+        1500,
+        570,
+        250,
+        190
+      ],
+      "sha256": "b8b606954d584c52d720a8b4d773bd7a3064c086173a841c1ceabb0f5cbd87e6"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_jammer.tres",
+      "sequence": 38,
+      "role": "live",
+      "region": [
+        1750,
+        570,
+        250,
+        190
+      ],
+      "sha256": "cf8c8369f5aca77796a00f8cfd6f287c188757a746648cf9334addf877ac8145"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_overload.tres",
+      "sequence": 39,
+      "role": "live",
+      "region": [
+        2000,
+        570,
+        250,
+        190
+      ],
+      "sha256": "a36621ce9b44a4c6c4cd7a130715453d66cbaf04070f8802cf71d9d05f4956f2"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_acceleration.tres",
+      "sequence": 40,
+      "role": "live",
+      "region": [
+        2250,
+        570,
+        250,
+        190
+      ],
+      "sha256": "14f2d5ffbbad7d12ff74093d44a59f0b62ca296db8a5d34112f3eb9cd0dc5079"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_insight.tres",
+      "sequence": 41,
+      "role": "live",
+      "region": [
+        0,
+        760,
+        250,
+        190
+      ],
+      "sha256": "e562a93eea07b67cf81698aef1d60a80bdeb7c6e13c287a633ecd0d30b486a62"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_chosen_one.tres",
+      "sequence": 42,
+      "role": "live",
+      "region": [
+        250,
+        760,
+        250,
+        190
+      ],
+      "sha256": "9195d85e919e3f9ac0a2af9062b6ecf21ce6380c416c2da70be4baa6a47695cd"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_saotome_blueprint.tres",
+      "sequence": 43,
+      "role": "live",
+      "region": [
+        500,
+        760,
+        250,
+        190
+      ],
+      "sha256": "4abce7bc6bd7540dd776a40e24348cef7aad69c9ab1df7d73aef90c043026b96"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_warrior_medal.tres",
+      "sequence": 44,
+      "role": "live",
+      "region": [
+        750,
+        760,
+        250,
+        190
+      ],
+      "sha256": "1292be277b586323482f986b2744b145faa85fcb4f9c31cdf041767db17bc27b"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_fighting_spirit.tres",
+      "sequence": 45,
+      "role": "live",
+      "region": [
+        1000,
+        760,
+        250,
+        190
+      ],
+      "sha256": "08dafbe45fd6bda9adcb1873e2f83713396d7292f5aa25b7366b9348056e4c8d"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_chain_reaction.tres",
+      "sequence": 46,
+      "role": "live",
+      "region": [
+        1250,
+        760,
+        250,
+        190
+      ],
+      "sha256": "0b7166a4862750e78421d94049fd7e4c7a2529c1d21864a4c7a6ac5fa5914894"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_star_slash.tres",
+      "sequence": 47,
+      "role": "live",
+      "region": [
+        1500,
+        760,
+        250,
+        190
+      ],
+      "sha256": "8ae366337f336d1a65ba27af4ca2941969c80f9f5195522e36da2f4c4fa72214"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_final_getter_beam.tres",
+      "sequence": 48,
+      "role": "live",
+      "region": [
+        1750,
+        760,
+        250,
+        190
+      ],
+      "sha256": "47eed7b3c34c6e2f2a5c7f2a270dacdba610774dda0ccd8aa0951487d5e557af"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_shining_spark.tres",
+      "sequence": 49,
+      "role": "live",
+      "region": [
+        2000,
+        760,
+        250,
+        190
+      ],
+      "sha256": "3d02050f5f779888902b272ddaa45ee7b7436d28990c83ad788b6454b0364a55"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_liger_assault.tres",
+      "sequence": 50,
+      "role": "live",
+      "region": [
+        2250,
+        760,
+        250,
+        190
+      ],
+      "sha256": "41bc0de633493b2f8541e2de9e35571cb45ccf8447551be9daa9e33274ffe341"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_avalanche.tres",
+      "sequence": 51,
+      "role": "live",
+      "region": [
+        0,
+        950,
+        250,
+        190
+      ],
+      "sha256": "6fc21c793ef8060a91258f4b62ef7f95b49140f3920c46368705814af7a8405f"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_poseidon_thunder.tres",
+      "sequence": 52,
+      "role": "live",
+      "region": [
+        250,
+        950,
+        250,
+        190
+      ],
+      "sha256": "54bf412171f95ad3ee91a03e5a5e5b2b70761641cd72094e6ef1c07c951edc6f"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_steel_spirit.tres",
+      "sequence": 53,
+      "role": "live",
+      "region": [
+        500,
+        950,
+        250,
+        190
+      ],
+      "sha256": "89716d4683140ea9031375e6e9762fcd5ede47e997e079a7b000ae257d1836b3"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_getter_will.tres",
+      "sequence": 54,
+      "role": "live",
+      "region": [
+        750,
+        950,
+        250,
+        190
+      ],
+      "sha256": "f8cf46f71e0fb99325d016cab6cbb7a289f86dd134d05f24aa9029331b3c2cc3"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_specialization.tres",
+      "sequence": 55,
+      "role": "live",
+      "region": [
+        1000,
+        950,
+        250,
+        190
+      ],
+      "sha256": "7f50bbba1c37755b49fd9e7404f3a2ded1fb97c19802b06dd95b19077f9d8092"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_iron_wall.tres",
+      "sequence": 56,
+      "role": "live",
+      "region": [
+        1250,
+        950,
+        250,
+        190
+      ],
+      "sha256": "4c9857f4b09e5105af913254dbcea27ee471ed6028c55b0fc3dfd550d85b5e21"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_guts.tres",
+      "sequence": 57,
+      "role": "live",
+      "region": [
+        1500,
+        950,
+        250,
+        190
+      ],
+      "sha256": "a54e9fea4b2bb9edd2b8eb9b4df8b02fff315c140a3effcbd44e9697308cbe7f"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_getter_nova.tres",
+      "sequence": 58,
+      "role": "live",
+      "region": [
+        1750,
+        950,
+        250,
+        190
+      ],
+      "sha256": "ac654ca33696f5eea98849399c481673a0c80e691280cb8cc110f130085b8b53"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_bold_plan.tres",
+      "sequence": 59,
+      "role": "live",
+      "region": [
+        2000,
+        950,
+        250,
+        190
+      ],
+      "sha256": "beac66d1421d0222ef3a66546d6626e1d24db9df097634f458a51ce98b7b2d7b"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_getter_ray_overflow.tres",
+      "sequence": 60,
+      "role": "live",
+      "region": [
+        2250,
+        950,
+        250,
+        190
+      ],
+      "sha256": "977b1c8f040321f00bcf02b06aad74b467e765a316f046bc80568c588038770e"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_awakened_soul.tres",
+      "sequence": 61,
+      "role": "live",
+      "region": [
+        0,
+        1140,
+        250,
+        190
+      ],
+      "sha256": "898d32e1a874c4986412aa0d1ddf1775d93d92a996772add2c03732ed153e6c1"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_super_ki.tres",
+      "sequence": 62,
+      "role": "live",
+      "region": [
+        250,
+        1140,
+        250,
+        190
+      ],
+      "sha256": "bea2f7ebc2daf931aeeb9568038c97a9a56161333841f70c2789cb2fff0054e2"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_evolution_engine.tres",
+      "sequence": 63,
+      "role": "live",
+      "region": [
+        500,
+        1140,
+        250,
+        190
+      ],
+      "sha256": "9018e6bce7e04af26613d5ba4aa9b90e50030801aec1d59acbcd5f5d25ba7813"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_enable.tres",
+      "sequence": 64,
+      "role": "live",
+      "region": [
+        750,
+        1140,
+        250,
+        190
+      ],
+      "sha256": "7129ff2d89d8d524fd21ff5e2ed4e2f304058045ea3d8575c6edf848b0b51d1e"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_anti_evolution.tres",
+      "sequence": 65,
+      "role": "live",
+      "region": [
+        1000,
+        1140,
+        250,
+        190
+      ],
+      "sha256": "1e499d5cbe6a25ab8eb9db0cdf0085af08c115902e1579bdc36606a5c8d80603"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_desperation.tres",
+      "sequence": 66,
+      "role": "live",
+      "region": [
+        1250,
+        1140,
+        250,
+        190
+      ],
+      "sha256": "e0f20fafee63fed25b69461d3684c714a9269f1581492470cee218c309386b38"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_radiated.tres",
+      "sequence": 69,
+      "role": "live",
+      "region": [
+        2000,
+        1140,
+        250,
+        190
+      ],
+      "sha256": "71af01ebfaf5cafd9d55677291dbd03b494871d05f76f9033fef1e4b44f00925"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_insect_virus.tres",
+      "sequence": 70,
+      "role": "live",
+      "region": [
+        2250,
+        1140,
+        250,
+        190
+      ],
+      "sha256": "1614b06b163bcc1de4578b0026f94e6f91f733f7911fb7976790183bc4676cb0"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_infinite_evolution.tres",
+      "sequence": 71,
+      "role": "live",
+      "region": [
+        0,
+        1330,
+        250,
+        190
+      ],
+      "sha256": "8cef80274041069b89faf89c30a984330ce3cf307ef2719d94cde914917729d8"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_petal_breakthrough.tres",
+      "sequence": 73,
+      "role": "live",
+      "region": [
+        500,
+        1330,
+        250,
+        190
+      ],
+      "sha256": "ecc5d28483c0ab4aaafcb663efcdab963e0c0e3768253e2cf7265b56bffe7a00"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_reschedule_ticket.tres",
+      "sequence": 74,
+      "role": "live",
+      "region": [
+        750,
+        1330,
+        250,
+        190
+      ],
+      "sha256": "12c6ef115a0b922424aec526c6b7e8c4637de0530ef48dcc67a9371438fa2ac9"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_pressure_breath.tres",
+      "sequence": 75,
+      "role": "live",
+      "region": [
+        1000,
+        1330,
+        250,
+        190
+      ],
+      "sha256": "b49a72bceb04af0f16080746429e09c76730ae1e53e9ad28e0222c6e4606c2dc"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_wisp_coordinate.tres",
+      "sequence": 76,
+      "role": "live",
+      "region": [
+        1250,
+        1330,
+        250,
+        190
+      ],
+      "sha256": "31a1ae8826508f1e80cc10629d05ce09ff5eb534920bbfaaf53aface8bb39158"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_getter_landing.tres",
+      "sequence": 77,
+      "role": "legacy-unused",
+      "region": [
+        1500,
+        1330,
+        250,
+        190
+      ],
+      "sha256": "238f2cfc6216f9a6508c461e2510c38a28b396f750bcdd19a74105bdcc8844ba"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_shin_form.tres",
+      "sequence": 68,
+      "role": "legacy-unused",
+      "region": [
+        1750,
+        1140,
+        250,
+        190
+      ],
+      "sha256": "53c21ce0e4e81f8807114aec6df81a582b78b5b62c9de2e4c83775cfd239fac8"
+    },
+    {
+      "path": "images/atlases/card_atlas.sprites/shin_getter/s_g_c_stoner_shine.tres",
+      "sequence": 67,
+      "role": "legacy-unused",
+      "region": [
+        1500,
+        1140,
+        250,
+        190
+      ],
+      "sha256": "220d51c2e46d95701d04ca4bd5b49cc99e4a69a300287cae1100cd0d6431cfbb"
+    }
+  ],
+  "cells": [
+    {
+      "sequence": 1,
+      "kind": "ordinary",
+      "region": [
+        0,
+        0,
+        250,
+        190
+      ],
+      "rgb_sha256": "71f435717d48d0bac2c48777c23c9d167b5c50ce3f6a1b6fd0584dd98259e0d7"
+    },
+    {
+      "sequence": 2,
+      "kind": "ordinary",
+      "region": [
+        250,
+        0,
+        250,
+        190
+      ],
+      "rgb_sha256": "c471f9791a1f31dd513b8824342304d6e52dd2970146e3ae76e697b00f209c1e"
+    },
+    {
+      "sequence": 3,
+      "kind": "ordinary",
+      "region": [
+        500,
+        0,
+        250,
+        190
+      ],
+      "rgb_sha256": "536a92bc0d1f878644a3aadaaf77e3fcacb071b2d2c1042f2b4e109c0161dd3a"
+    },
+    {
+      "sequence": 4,
+      "kind": "ordinary",
+      "region": [
+        750,
+        0,
+        250,
+        190
+      ],
+      "rgb_sha256": "ea7f8572625e00809ab0ca8c333ddab9e442a24750535331cc1e80f92144fb83"
+    },
+    {
+      "sequence": 5,
+      "kind": "ordinary",
+      "region": [
+        1000,
+        0,
+        250,
+        190
+      ],
+      "rgb_sha256": "8d64982d1e75a3754a3cfbdeb044c54b63a6b739dd3bae19a496124ce541528e"
+    },
+    {
+      "sequence": 6,
+      "kind": "ordinary",
+      "region": [
+        1250,
+        0,
+        250,
+        190
+      ],
+      "rgb_sha256": "97720446a81c4ee34c7226c5d9d3058d5b35bd946ff6b2c635abca6519e6a996"
+    },
+    {
+      "sequence": 7,
+      "kind": "ordinary",
+      "region": [
+        1500,
+        0,
+        250,
+        190
+      ],
+      "rgb_sha256": "ea4970b870e334a49df6cc5cb8ea4df1d49d821349058f1566c2989354cebf4b"
+    },
+    {
+      "sequence": 8,
+      "kind": "ordinary",
+      "region": [
+        1750,
+        0,
+        250,
+        190
+      ],
+      "rgb_sha256": "db2459915ca0d097ec0ef7113bf87778c326ac998674b30d883c1a8698d2a172"
+    },
+    {
+      "sequence": 9,
+      "kind": "ordinary",
+      "region": [
+        2000,
+        0,
+        250,
+        190
+      ],
+      "rgb_sha256": "1145ca42bd40b148d22fcda1ded40db3600f906fba282c7563396c28de48545d"
+    },
+    {
+      "sequence": 10,
+      "kind": "ordinary",
+      "region": [
+        2250,
+        0,
+        250,
+        190
+      ],
+      "rgb_sha256": "c70cd5bfd92a2697bf07ce6a949412fd8e6b452bf40ca18c92e7af34ba280a98"
+    },
+    {
+      "sequence": 11,
+      "kind": "ordinary",
+      "region": [
+        0,
+        190,
+        250,
+        190
+      ],
+      "rgb_sha256": "b3c8c7aceff316b7e6f428680d25ea54aac555b38f245fd103407386403a3e79"
+    },
+    {
+      "sequence": 12,
+      "kind": "ordinary",
+      "region": [
+        250,
+        190,
+        250,
+        190
+      ],
+      "rgb_sha256": "31b95370703472319bb75971368ea5106164346cffe4534e535700a5920d55ea"
+    },
+    {
+      "sequence": 13,
+      "kind": "ordinary",
+      "region": [
+        500,
+        190,
+        250,
+        190
+      ],
+      "rgb_sha256": "785d67065f4f5962033d9cb56b9e99d29c27d5edd979ff46047e7a210fee2f7c"
+    },
+    {
+      "sequence": 14,
+      "kind": "ordinary",
+      "region": [
+        750,
+        190,
+        250,
+        190
+      ],
+      "rgb_sha256": "f1705d0a934f4ffec55b9b9ec6a927ecd609947638d9992555e50c3387389f9b"
+    },
+    {
+      "sequence": 15,
+      "kind": "ordinary",
+      "region": [
+        1000,
+        190,
+        250,
+        190
+      ],
+      "rgb_sha256": "e13fc4f13fcf09973641eefe00ba738ae06891f6d54580fa6152e6fe385f89c4"
+    },
+    {
+      "sequence": 16,
+      "kind": "ordinary",
+      "region": [
+        1250,
+        190,
+        250,
+        190
+      ],
+      "rgb_sha256": "840c745fba751b9a1f263aec1641e10f9935e6d01a9aed2a058e123a13fbd789"
+    },
+    {
+      "sequence": 17,
+      "kind": "ordinary",
+      "region": [
+        1500,
+        190,
+        250,
+        190
+      ],
+      "rgb_sha256": "556b9a175b6b0e53835484dd88f52b9badbcd8b8700bd0302699fe9b32258610"
+    },
+    {
+      "sequence": 18,
+      "kind": "ordinary",
+      "region": [
+        1750,
+        190,
+        250,
+        190
+      ],
+      "rgb_sha256": "c9f8da4254e348627984d6caf49f525480aea46299e0d0702d052364ba3b4e8c"
+    },
+    {
+      "sequence": 19,
+      "kind": "ordinary",
+      "region": [
+        2000,
+        190,
+        250,
+        190
+      ],
+      "rgb_sha256": "1b69ba22c168dbeb17c99caccaf31a28e950742b21769cdbb337971132888026"
+    },
+    {
+      "sequence": 20,
+      "kind": "ordinary",
+      "region": [
+        2250,
+        190,
+        250,
+        190
+      ],
+      "rgb_sha256": "11000d31e43e973469340419743dbd750721e190b06e3bd7c0130694f3850cb2"
+    },
+    {
+      "sequence": 21,
+      "kind": "ordinary",
+      "region": [
+        0,
+        380,
+        250,
+        190
+      ],
+      "rgb_sha256": "9768fe8b26ec7bb02b2f171a13e09f67dabf47c17c33611e6d604c1cb67757a1"
+    },
+    {
+      "sequence": 22,
+      "kind": "ordinary",
+      "region": [
+        250,
+        380,
+        250,
+        190
+      ],
+      "rgb_sha256": "46f651380c115db4a8731042948d1ef907208e1495c4b5da0a75f31daf7cebd5"
+    },
+    {
+      "sequence": 23,
+      "kind": "ordinary",
+      "region": [
+        500,
+        380,
+        250,
+        190
+      ],
+      "rgb_sha256": "5bdba7ef6007368f2d969045e425e6d6e1fff4bb2591e2afee4cc8e0a8ec9a47"
+    },
+    {
+      "sequence": 24,
+      "kind": "ordinary",
+      "region": [
+        750,
+        380,
+        250,
+        190
+      ],
+      "rgb_sha256": "de2f6501371537521917d32a39081cfe96f7557f0b4f8e1cc9288748d2bb0ab1"
+    },
+    {
+      "sequence": 25,
+      "kind": "ordinary",
+      "region": [
+        1000,
+        380,
+        250,
+        190
+      ],
+      "rgb_sha256": "302022f351f3d6115cd13931f85b3d905d9e447c5ec28c9d2974b84b3161e49a"
+    },
+    {
+      "sequence": 26,
+      "kind": "ordinary",
+      "region": [
+        1250,
+        380,
+        250,
+        190
+      ],
+      "rgb_sha256": "98358dfe5110ef3f256fcfccea9be83001c6bb574e65373830c103403761a816"
+    },
+    {
+      "sequence": 27,
+      "kind": "ordinary",
+      "region": [
+        1500,
+        380,
+        250,
+        190
+      ],
+      "rgb_sha256": "84e2f0764e7b96e27f84678becc2bf90e1d7ff02a1c0418d475a3091ef137b74"
+    },
+    {
+      "sequence": 28,
+      "kind": "ordinary",
+      "region": [
+        1750,
+        380,
+        250,
+        190
+      ],
+      "rgb_sha256": "c0f678debfc549ef8edf9c288eb28d2e23807d3ec857dcf749f7ebece2417ddf"
+    },
+    {
+      "sequence": 29,
+      "kind": "ordinary",
+      "region": [
+        2000,
+        380,
+        250,
+        190
+      ],
+      "rgb_sha256": "7354ad91981101cfa572257c53d86a8beab5fa5842d60e4293b734e660931cf0"
+    },
+    {
+      "sequence": 30,
+      "kind": "ordinary",
+      "region": [
+        2250,
+        380,
+        250,
+        190
+      ],
+      "rgb_sha256": "d66e8aa9abd1e72c33795cde6372a2ad063e585f29c47f2ea069bd7217c46474"
+    },
+    {
+      "sequence": 31,
+      "kind": "ordinary",
+      "region": [
+        0,
+        570,
+        250,
+        190
+      ],
+      "rgb_sha256": "20e0c5d3c7ac7a2be846dbfb43ff0a0d7469fc9cbc1620c40526ad2228d786a3"
+    },
+    {
+      "sequence": 32,
+      "kind": "ordinary",
+      "region": [
+        250,
+        570,
+        250,
+        190
+      ],
+      "rgb_sha256": "0cbfdd1ea1b74aca57e3816bfcd9e6b133a2462eeea9443d075811819529cde6"
+    },
+    {
+      "sequence": 33,
+      "kind": "ordinary",
+      "region": [
+        500,
+        570,
+        250,
+        190
+      ],
+      "rgb_sha256": "9cb847d95a7296fb98ad6bfe983f83e4c6b31d1a8b0259303aef600c3c450a19"
+    },
+    {
+      "sequence": 34,
+      "kind": "ordinary",
+      "region": [
+        750,
+        570,
+        250,
+        190
+      ],
+      "rgb_sha256": "ac3e8a1641cc0c59ae44fd8dc3b90fe176875f749904b524aa3d40981140b31c"
+    },
+    {
+      "sequence": 35,
+      "kind": "ordinary",
+      "region": [
+        1000,
+        570,
+        250,
+        190
+      ],
+      "rgb_sha256": "a387890d342fb79b573ec79913a2d8bade97dc06c69175261ff23e5b63a9fc57"
+    },
+    {
+      "sequence": 36,
+      "kind": "ordinary",
+      "region": [
+        1250,
+        570,
+        250,
+        190
+      ],
+      "rgb_sha256": "a52c11b2776e48f2d2de61e676f0a90459349f8e6d2a903c47075fbfc1f77b78"
+    },
+    {
+      "sequence": 37,
+      "kind": "ordinary",
+      "region": [
+        1500,
+        570,
+        250,
+        190
+      ],
+      "rgb_sha256": "7b2cea5a2e97b4a60d3e664752e5775612722ed41008216978ad20f55b4ee0e2"
+    },
+    {
+      "sequence": 38,
+      "kind": "ordinary",
+      "region": [
+        1750,
+        570,
+        250,
+        190
+      ],
+      "rgb_sha256": "b024165dc189128522cc8568da97bfc6e3a23df2140ee885fe194b98458044da"
+    },
+    {
+      "sequence": 39,
+      "kind": "ordinary",
+      "region": [
+        2000,
+        570,
+        250,
+        190
+      ],
+      "rgb_sha256": "90c67f39c8240c180c40a3d54afc7f831a1559283b907547dc92b621b17dfa34"
+    },
+    {
+      "sequence": 40,
+      "kind": "ordinary",
+      "region": [
+        2250,
+        570,
+        250,
+        190
+      ],
+      "rgb_sha256": "0d406586a32077bf68b0b133360b08771c1033d50bfcb6b4997756c1f608a2cd"
+    },
+    {
+      "sequence": 41,
+      "kind": "ordinary",
+      "region": [
+        0,
+        760,
+        250,
+        190
+      ],
+      "rgb_sha256": "394749177243c516a0d4ff9b83145f3d37751fb6b100283ee77a71b769a60332"
+    },
+    {
+      "sequence": 42,
+      "kind": "ordinary",
+      "region": [
+        250,
+        760,
+        250,
+        190
+      ],
+      "rgb_sha256": "b2e6a8d8b489d955c103ecfe5661c64b13001a611919ae9560d38eb2ed10fc32"
+    },
+    {
+      "sequence": 43,
+      "kind": "ordinary",
+      "region": [
+        500,
+        760,
+        250,
+        190
+      ],
+      "rgb_sha256": "51e9d8103b1a73a8608ca1affa49de2efb1770bb76bdb529c5f4a00a6e9aa2c0"
+    },
+    {
+      "sequence": 44,
+      "kind": "ordinary",
+      "region": [
+        750,
+        760,
+        250,
+        190
+      ],
+      "rgb_sha256": "1de2927d849e652ecc747183cbcc8f825214d0249fbd545b7d97429e8a54291b"
+    },
+    {
+      "sequence": 45,
+      "kind": "ordinary",
+      "region": [
+        1000,
+        760,
+        250,
+        190
+      ],
+      "rgb_sha256": "0d7a4d0c96410c1a366809be62a8e489de45b5190bcbec5a193ede6b7b106c94"
+    },
+    {
+      "sequence": 46,
+      "kind": "ordinary",
+      "region": [
+        1250,
+        760,
+        250,
+        190
+      ],
+      "rgb_sha256": "bcecd2df4156888ac555aea98ade508400de85d3aa2a291f1ab2d28ca5ec080c"
+    },
+    {
+      "sequence": 47,
+      "kind": "ordinary",
+      "region": [
+        1500,
+        760,
+        250,
+        190
+      ],
+      "rgb_sha256": "24b2bfa5870a4a256a610a783e94b65c15f6032771622c7b004bccbf76063fda"
+    },
+    {
+      "sequence": 48,
+      "kind": "ordinary",
+      "region": [
+        1750,
+        760,
+        250,
+        190
+      ],
+      "rgb_sha256": "662fa2474a01957dfd890020cd6d77c864e0717443ddd30b5003a44ff2eb46a6"
+    },
+    {
+      "sequence": 49,
+      "kind": "ordinary",
+      "region": [
+        2000,
+        760,
+        250,
+        190
+      ],
+      "rgb_sha256": "00d4f8f56e828834deb9adb130bd2c600a2e1245086bc9d776edeea6f3a58d7b"
+    },
+    {
+      "sequence": 50,
+      "kind": "ordinary",
+      "region": [
+        2250,
+        760,
+        250,
+        190
+      ],
+      "rgb_sha256": "6ccab6deb1ae0050dd5425ee3a7558a4c49872d83d79d64596b2ab0ee1af2626"
+    },
+    {
+      "sequence": 51,
+      "kind": "ordinary",
+      "region": [
+        0,
+        950,
+        250,
+        190
+      ],
+      "rgb_sha256": "560ee677bf8e420c50545dee91e2800c1429c0b047ec4482c2f47453a4f37475"
+    },
+    {
+      "sequence": 52,
+      "kind": "ordinary",
+      "region": [
+        250,
+        950,
+        250,
+        190
+      ],
+      "rgb_sha256": "77f7cf7f837ce2566c08f3e589676080eb04035ea281b498f4988c5d926a062b"
+    },
+    {
+      "sequence": 53,
+      "kind": "ordinary",
+      "region": [
+        500,
+        950,
+        250,
+        190
+      ],
+      "rgb_sha256": "35616c4812d69ba191614cbc77c49e0b80bb3adcee00d859a694727f8720d7f1"
+    },
+    {
+      "sequence": 54,
+      "kind": "ordinary",
+      "region": [
+        750,
+        950,
+        250,
+        190
+      ],
+      "rgb_sha256": "88f547add37b3608af5faa9d826a5899e04242c51242751d8b641e2c925ba8b2"
+    },
+    {
+      "sequence": 55,
+      "kind": "ordinary",
+      "region": [
+        1000,
+        950,
+        250,
+        190
+      ],
+      "rgb_sha256": "22274d1ed029ba93837c2e2a6b1001357408f367af36050acc2812509b44ca71"
+    },
+    {
+      "sequence": 56,
+      "kind": "ordinary",
+      "region": [
+        1250,
+        950,
+        250,
+        190
+      ],
+      "rgb_sha256": "c73f316dcdf5f7d1f25d789bceef091dd9c78760028b3d11c88f6d9cfa35087a"
+    },
+    {
+      "sequence": 57,
+      "kind": "ordinary",
+      "region": [
+        1500,
+        950,
+        250,
+        190
+      ],
+      "rgb_sha256": "9faed41cf8b2db403bf4b12766543e1b43749eba41717454712276fa9f182ea2"
+    },
+    {
+      "sequence": 58,
+      "kind": "ordinary",
+      "region": [
+        1750,
+        950,
+        250,
+        190
+      ],
+      "rgb_sha256": "fd7390fb56c1288d74ab0b06bccac90803e15cb03d1e0825f34019f71978eace"
+    },
+    {
+      "sequence": 59,
+      "kind": "ordinary",
+      "region": [
+        2000,
+        950,
+        250,
+        190
+      ],
+      "rgb_sha256": "031ace64fafc410a19ad1a5be4590a10de938985e56fca33a41176e7c7bc319e"
+    },
+    {
+      "sequence": 60,
+      "kind": "ordinary",
+      "region": [
+        2250,
+        950,
+        250,
+        190
+      ],
+      "rgb_sha256": "c6fea78a64adbeb4b9926c7da57978274b76ea95f7af80300e491f4aec10a23a"
+    },
+    {
+      "sequence": 61,
+      "kind": "ordinary",
+      "region": [
+        0,
+        1140,
+        250,
+        190
+      ],
+      "rgb_sha256": "e165782c8c15fe3b4a3e05da41f0cdd9af172c9dc12c620c5eade68a93cd9cf0"
+    },
+    {
+      "sequence": 62,
+      "kind": "ordinary",
+      "region": [
+        250,
+        1140,
+        250,
+        190
+      ],
+      "rgb_sha256": "c62672bdf6a619b3c6adde06689d89b1cad8437fd84d963a07238f658dab3288"
+    },
+    {
+      "sequence": 63,
+      "kind": "ordinary",
+      "region": [
+        500,
+        1140,
+        250,
+        190
+      ],
+      "rgb_sha256": "30823449badef10d73aedb52113b8f488823f706d0c98147a5e36a42aea7d2f3"
+    },
+    {
+      "sequence": 64,
+      "kind": "ordinary",
+      "region": [
+        750,
+        1140,
+        250,
+        190
+      ],
+      "rgb_sha256": "0902a9521421f5c80d397a9a2f23ab2b23da85ccafec3ee25dffccf9b1faf70f"
+    },
+    {
+      "sequence": 65,
+      "kind": "ordinary",
+      "region": [
+        1000,
+        1140,
+        250,
+        190
+      ],
+      "rgb_sha256": "413b178a13aad861591045a95055e52367a966cd4c19d432e4e28a1c2677b3c2"
+    },
+    {
+      "sequence": 66,
+      "kind": "ordinary",
+      "region": [
+        1250,
+        1140,
+        250,
+        190
+      ],
+      "rgb_sha256": "d9cd9181db2337786722b39bef43c865e31e7d9f2c6ee4235ba7ce80a6ddefed"
+    },
+    {
+      "sequence": 67,
+      "kind": "ancient-placeholder",
+      "region": [
+        1500,
+        1140,
+        250,
+        190
+      ],
+      "rgb_sha256": "d83aafafacdc82620197233353d4599e4efd71b263b85d128e0876e1dddf1133"
+    },
+    {
+      "sequence": 68,
+      "kind": "ancient-placeholder",
+      "region": [
+        1750,
+        1140,
+        250,
+        190
+      ],
+      "rgb_sha256": "d83aafafacdc82620197233353d4599e4efd71b263b85d128e0876e1dddf1133"
+    },
+    {
+      "sequence": 69,
+      "kind": "ordinary",
+      "region": [
+        2000,
+        1140,
+        250,
+        190
+      ],
+      "rgb_sha256": "ac9988ef3d717f309f4029dd7c88f9ebdc0e809f13d0dc7a1bc1396157920f56"
+    },
+    {
+      "sequence": 70,
+      "kind": "ordinary",
+      "region": [
+        2250,
+        1140,
+        250,
+        190
+      ],
+      "rgb_sha256": "22dc916b1066d1e3029e72b83c73b9cdba322102d763a52a6a13ccfec366dd04"
+    },
+    {
+      "sequence": 71,
+      "kind": "ordinary",
+      "region": [
+        0,
+        1330,
+        250,
+        190
+      ],
+      "rgb_sha256": "95006b301f3ab7e5652f5bd37c08d1da86d54c1177f5c9724f2d25e4070b10b0"
+    },
+    {
+      "sequence": 72,
+      "kind": "ancient-placeholder",
+      "region": [
+        250,
+        1330,
+        250,
+        190
+      ],
+      "rgb_sha256": "d83aafafacdc82620197233353d4599e4efd71b263b85d128e0876e1dddf1133"
+    },
+    {
+      "sequence": 73,
+      "kind": "ordinary",
+      "region": [
+        500,
+        1330,
+        250,
+        190
+      ],
+      "rgb_sha256": "7a64f62932cb75d874cb4ffc7daf40ca9c2d98a1874c567e97cfcbe68320c34d"
+    },
+    {
+      "sequence": 74,
+      "kind": "ordinary",
+      "region": [
+        750,
+        1330,
+        250,
+        190
+      ],
+      "rgb_sha256": "bb2ffd6444b039b57383afef19cc415fcc197545dd0c6cf2449ecd4550484f88"
+    },
+    {
+      "sequence": 75,
+      "kind": "ordinary",
+      "region": [
+        1000,
+        1330,
+        250,
+        190
+      ],
+      "rgb_sha256": "68af7856921a266f48768ed40389b9ac4b441914cd41f142ca9ba4dc82db56b7"
+    },
+    {
+      "sequence": 76,
+      "kind": "ordinary",
+      "region": [
+        1250,
+        1330,
+        250,
+        190
+      ],
+      "rgb_sha256": "890be58f270bca3015b362a32498171fbbdfa831e6089ef6e67196ef39aa58ca"
+    },
+    {
+      "sequence": 77,
+      "kind": "ancient-placeholder",
+      "region": [
+        1500,
+        1330,
+        250,
+        190
+      ],
+      "rgb_sha256": "d83aafafacdc82620197233353d4599e4efd71b263b85d128e0876e1dddf1133"
+    },
+    {
+      "sequence": 78,
+      "kind": "reserved",
+      "region": [
+        1750,
+        1330,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 79,
+      "kind": "reserved",
+      "region": [
+        2000,
+        1330,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 80,
+      "kind": "reserved",
+      "region": [
+        2250,
+        1330,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 81,
+      "kind": "reserved",
+      "region": [
+        0,
+        1520,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 82,
+      "kind": "reserved",
+      "region": [
+        250,
+        1520,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 83,
+      "kind": "reserved",
+      "region": [
+        500,
+        1520,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 84,
+      "kind": "reserved",
+      "region": [
+        750,
+        1520,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 85,
+      "kind": "reserved",
+      "region": [
+        1000,
+        1520,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 86,
+      "kind": "reserved",
+      "region": [
+        1250,
+        1520,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 87,
+      "kind": "reserved",
+      "region": [
+        1500,
+        1520,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 88,
+      "kind": "reserved",
+      "region": [
+        1750,
+        1520,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 89,
+      "kind": "reserved",
+      "region": [
+        2000,
+        1520,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 90,
+      "kind": "reserved",
+      "region": [
+        2250,
+        1520,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 91,
+      "kind": "reserved",
+      "region": [
+        0,
+        1710,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 92,
+      "kind": "reserved",
+      "region": [
+        250,
+        1710,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 93,
+      "kind": "reserved",
+      "region": [
+        500,
+        1710,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 94,
+      "kind": "reserved",
+      "region": [
+        750,
+        1710,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 95,
+      "kind": "reserved",
+      "region": [
+        1000,
+        1710,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 96,
+      "kind": "reserved",
+      "region": [
+        1250,
+        1710,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 97,
+      "kind": "reserved",
+      "region": [
+        1500,
+        1710,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 98,
+      "kind": "reserved",
+      "region": [
+        1750,
+        1710,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 99,
+      "kind": "reserved",
+      "region": [
+        2000,
+        1710,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 100,
+      "kind": "reserved",
+      "region": [
+        2250,
+        1710,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 101,
+      "kind": "reserved",
+      "region": [
+        0,
+        1900,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 102,
+      "kind": "reserved",
+      "region": [
+        250,
+        1900,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 103,
+      "kind": "reserved",
+      "region": [
+        500,
+        1900,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 104,
+      "kind": "reserved",
+      "region": [
+        750,
+        1900,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 105,
+      "kind": "reserved",
+      "region": [
+        1000,
+        1900,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 106,
+      "kind": "reserved",
+      "region": [
+        1250,
+        1900,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 107,
+      "kind": "reserved",
+      "region": [
+        1500,
+        1900,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 108,
+      "kind": "reserved",
+      "region": [
+        1750,
+        1900,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 109,
+      "kind": "reserved",
+      "region": [
+        2000,
+        1900,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 110,
+      "kind": "reserved",
+      "region": [
+        2250,
+        1900,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 111,
+      "kind": "reserved",
+      "region": [
+        0,
+        2090,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 112,
+      "kind": "reserved",
+      "region": [
+        250,
+        2090,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 113,
+      "kind": "reserved",
+      "region": [
+        500,
+        2090,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 114,
+      "kind": "reserved",
+      "region": [
+        750,
+        2090,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 115,
+      "kind": "reserved",
+      "region": [
+        1000,
+        2090,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 116,
+      "kind": "reserved",
+      "region": [
+        1250,
+        2090,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 117,
+      "kind": "reserved",
+      "region": [
+        1500,
+        2090,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 118,
+      "kind": "reserved",
+      "region": [
+        1750,
+        2090,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 119,
+      "kind": "reserved",
+      "region": [
+        2000,
+        2090,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 120,
+      "kind": "reserved",
+      "region": [
+        2250,
+        2090,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 121,
+      "kind": "reserved",
+      "region": [
+        0,
+        2280,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 122,
+      "kind": "reserved",
+      "region": [
+        250,
+        2280,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 123,
+      "kind": "reserved",
+      "region": [
+        500,
+        2280,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 124,
+      "kind": "reserved",
+      "region": [
+        750,
+        2280,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 125,
+      "kind": "reserved",
+      "region": [
+        1000,
+        2280,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 126,
+      "kind": "reserved",
+      "region": [
+        1250,
+        2280,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 127,
+      "kind": "reserved",
+      "region": [
+        1500,
+        2280,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 128,
+      "kind": "reserved",
+      "region": [
+        1750,
+        2280,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 129,
+      "kind": "reserved",
+      "region": [
+        2000,
+        2280,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    },
+    {
+      "sequence": 130,
+      "kind": "reserved",
+      "region": [
+        2250,
+        2280,
+        250,
+        190
+      ],
+      "rgb_sha256": "5ec8ec94b26754d7b0f83a9ff541957126ae12cb48fe22a4f71ae3d309cf4821"
+    }
+  ],
+  "preserved_files": [
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_acceleration.png",
+      "sha256": "f20e5b85f88a489e5cc088574816373d120ef769e1fc74db58f2b64205df82c8"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_annihilation.png",
+      "sha256": "1759116300e6bfc4fabf4165fafc22b44a486601d588975e73c6564139fe2cc6"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_anti_evolution.png",
+      "sha256": "8314345d50674405414bd441b51f42c97875ce9ba41d298a48b01742a22cba41"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_avalanche.png",
+      "sha256": "0904a1b5d6877d04ac13896e6adae75c7fb8adcf0342831d8a210ae1ee7874c8"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_awakened_soul.png",
+      "sha256": "492f57e5a20692f075c202b89f31076c14dba5029eb1334bbce33c67efbd5ebe"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_backup_plan.png",
+      "sha256": "92d30fa4dd95a374eee433ee67918ed790f676c42b15cf1eb9412d96ce3a6f3e"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_black_armor.png",
+      "sha256": "5959865985769c9e8e0f2f375c23c358d61867eb6b2b07b2e2d2b912426d25a9"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_bold_plan.png",
+      "sha256": "1b2fa6c29121c8a4d9434a564dbf83c31acf30f10221a8b4a186b41f3428d928"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_chain_reaction.png",
+      "sha256": "f9daf8f95560166029ee1a3dfb939427175f3f46d1559dab043e17079c4928e3"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_change_attack.png",
+      "sha256": "98ae7b2a508d1e6506eb80ba9e003c06fa8981fd2a5695b097c389cc342055c1"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_chosen_one.png",
+      "sha256": "6fa6faa44dfeac19291ea7d0685381139b03cae50ed9ef880950f7eb1f938ed5"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_dark_cape.png",
+      "sha256": "ba183cefb0ebe4d906ab7e47465017372b9d1eab2d84a61c069e55b495249030"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_defend.png",
+      "sha256": "dcb62b55c463517795a79a9c51a81721a73ce49316ba091942bab81b1fa27e6d"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_desperation.png",
+      "sha256": "52802b10d1f465e5cfd945d34be389a816f1ec03ad89fccb5f1758d3f9372a1e"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_dive_strike.png",
+      "sha256": "51cf89f85844372a2bd6c293621cae951af804530f7d84cdb14f6a22c2647ffa"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_enable.png",
+      "sha256": "5e8d299140edfe08eed4758db93a843a73c8428173d8a926fa85a7c91edc74a0"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_evolution_engine.png",
+      "sha256": "026de48e953511c209224e80ed6f51f8c212365cc8b3108afb72f3cc8f9046ee"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_evolution_resonance.png",
+      "sha256": "ab15043c71661c7b857f10e07724df8bd64828f09bbe128a0402f0b2e4ff3880"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_expansion_strike.png",
+      "sha256": "5782aa7d7236dfa3ec9698e354a1b83366730a1bc0dd64a09b3848481c79fbfc"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_fighting_spirit.png",
+      "sha256": "8034313210ab5594b91cb188420b572c42c95693d4a3bed1974bba432733a1c3"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_final_getter_beam.png",
+      "sha256": "27f5dbe0f85b4ea7b16fb13e97a24a3248ae8a8d00ac7db1edd4549a772dbd17"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_focus_fire.png",
+      "sha256": "d417ce59728bec3eacfc9a3caab1015548b631c03d0a41ebfcdd673efac9b7d3"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_getter_beam.png",
+      "sha256": "1b4c72dab7b59d468e338298348970382b48bd16070cee373ff2f6f4d299a9bb"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_getter_chop.png",
+      "sha256": "30c40272ff07653badca09dd2d578f096e9e26b4de1d5456acfa6857a0c424b3"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_getter_elbow.png",
+      "sha256": "b37638f51231f89fd9737dcb41e3a3db7b05bced624a78419ff1bc3d32571a80"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_getter_flash.png",
+      "sha256": "67635777dc7d406f76bfd78312d41857348e528d5e2b71993bb631f7c078a556"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_getter_landing.png",
+      "sha256": "8d7714c7d29bf73f2af7f8eec80bfe5bbc0342579f805c8ca1d5524835a4c395"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_getter_launch.png",
+      "sha256": "d1c78e07f72fa542d96aa4648ecb0261745c58246e9025f50658280f93a2148d"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_getter_missile.png",
+      "sha256": "b6a450315d24c360626a240d60bbfed06e6447b400c94581b13c75d3015268a2"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_getter_nova.png",
+      "sha256": "adc3ade3627ce47c5c0fe5702bf9100ab7e1f5a2516d6dffb7967da568c2ce00"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_getter_ray_overflow.png",
+      "sha256": "127b44bdf471364fa01cb6ca0c538685f04c8e06bc4eeaccc3ab3bde60514c58"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_getter_will.png",
+      "sha256": "761d92ed6bc043624a261fcf925889fb88b939ba615df77c22081412c59c2322"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_grapple.png",
+      "sha256": "6c407d2fd52cfb0752b182fa71d0a55cca0f51173d887288887679b068076e31"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_hedgehog_tactic.png",
+      "sha256": "1edfb4449893d890d8cc4286fffb656439ae0bb508c79cfe91681f7d1bf495cf"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_hot_blood.png",
+      "sha256": "d333ca0949d48232ebe7b4b5df86459b53a0be0286af48b8f9ed1cda6e740c51"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_indomitable.png",
+      "sha256": "0679dc253d3e24a19c1c20e8c45097ab1f0024d812d54e21ab2de9d50df4d63c"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_infinite_evolution.png",
+      "sha256": "5d144d4995220def6080dc87b5ba589d71e83958ade62cb7d12802995a55b7bb"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_insect_virus.png",
+      "sha256": "5c5320019a0ab0080f433dd51960956addb48f505a0fbb5a1ea7562f407573d4"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_insight.png",
+      "sha256": "2e1573c2406d3c5b7673bafb9142b5cd178a02f301f097099692ac009b743657"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_iron_wall.png",
+      "sha256": "d1a61b302e9c3df86385523f8db3f98f6a00517b5265e608bcadabab2aa40081"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_jammer.png",
+      "sha256": "0417ad150501f7ea6a92b768c5d19fbc5a19372379fe8c254003a502b7ab18bf"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_ki.png",
+      "sha256": "f48e25b09a13fd85b9bf9753623c8ff5c2ef09773a450d102d36edd0972c4e57"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_meltdown.png",
+      "sha256": "256247c7a09c61506c4075bde1a3c0851e6cf373e8f67feb742fda14364c7a08"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_overload.png",
+      "sha256": "5fbc841ef1c45c71ddee50652db0a12528b99f43cda508b3afbf4bbee2868f1e"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_parts_swap.png",
+      "sha256": "0dd31d8314d63b1ec9491dfd03299b8590a12fd3d1a79438ba13e2a6e3584874"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_poseidon_thunder.png",
+      "sha256": "ecc0eaba2ce9cda4c36193c07e305d9d36e5cf17705790aae729eff1288e6b4c"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_radiated.png",
+      "sha256": "a94374db7488b50f9e2cd25b2ae24a7ea9ac3a77cdcf4c3c341289668f98e49c"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_saint_dragon_roar.png",
+      "sha256": "99171fdc1da3504bad5bb2eb172b4388bd14aceb72ea917e4847c397cf14eea1"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_seize_future.png",
+      "sha256": "72319dd3dba8084c6c0382f6fdea45f0466081c604404af8630e1b0f179e4885"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_shed_load.png",
+      "sha256": "b7250d7f5866e86ffaf2f13bca7e99faa2fda644d3007973716590eb243a771f"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_shift_strike.png",
+      "sha256": "4823b451e60d2d25abf6a8d83c520c8fc36e14b72873864f64bdf09911e1ef32"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_shin_form.png",
+      "sha256": "2a5468b83de651746fb58bdf0e0a45f2c02afb97f5294bea5310b732b25a265d"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_shining_spark.png",
+      "sha256": "d2cdee93e4fb8508a61b34373d7de509b3a9a6a6b8bbfa82d1e4b1c26d926df5"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_specialization.png",
+      "sha256": "af4467bef01066ff190f8f7507533c04175746c7083dc5bacda6e1be93de7088"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_spiral_drill.png",
+      "sha256": "1288fe18cebdd9bddbf8232b6c076d8b8338b694a60cadf5312562ed10c9f7f6"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_spirit.png",
+      "sha256": "53666a025f16c7ae671b2b7435ff51c0e131c341a32fc23387684fd6c37b167c"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_star_slash.png",
+      "sha256": "86ead8e27a2a82501ee59246663bc31d675ca080763411880d5157bf65872216"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_steel_spirit.png",
+      "sha256": "672760e785a655b83958a94b930329510153f66b139650af8fb5838951665489"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_stoner_sunshine.png",
+      "sha256": "6b138237f710fbb4472c1b91944bad669adc022ebb71524f44b942e50f04e1df"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_strike.png",
+      "sha256": "acec7fbffbcadb94cf9519d0d58eb7f8403b4c1af0fb616e2936ab307c718e2e"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_tactical_retreat.png",
+      "sha256": "e7ab1e689aec85c2419575ff693e33e3ba17ad812e0d34298cdf327094381b59"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_tomahawk_fury.png",
+      "sha256": "11fb1507c7133574b549416e64ff988092b63780accfa236b51c3593c5078a2e"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_tornado_drill.png",
+      "sha256": "6ce01acf9aca92b21cd68e9caf823821fcae43702482a9d9a4ddf21ed4a483f5"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_triple_unity.png",
+      "sha256": "fa19a24e5e924c41bef00f4fadc2ae4f9a997cd893cd50f2a7ab316988fb2b4f"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_warrior_medal.png",
+      "sha256": "5338286f0fa82362461b5ac86b40213aed11143a6b33549dd11fa7b0c292d3a4"
+    },
+    {
+      "path": "images/packed/card_single/shin_getter/s_g_c_getter_landing_card.png",
+      "sha256": "6390ca0224244848a3ad33e325454d3361217067ed1af298e745e028d30d31ea"
+    },
+    {
+      "path": "images/packed/card_single/shin_getter/s_g_c_saint_dragon_roar_card.png",
+      "sha256": "e6d17a72c71907d52ae865b46a63958ecda2a8538181ef8bb4b340098722f662"
+    },
+    {
+      "path": "images/packed/card_single/shin_getter/s_g_c_shin_form_card.png",
+      "sha256": "8397117930997510c11f28f448186d907d463dca762c456ccc828c383c024680"
+    },
+    {
+      "path": "images/packed/card_single/shin_getter/s_g_c_stoner_sunshine_card.png",
+      "sha256": "f24869c6b96cf7edc4d941196ef62c6996bc33371458303a7c136e3878134a76"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_getter_claw.png.import",
+      "sha256": "4d3010a85cff00c482e1d3e569226f90620d0b12a58f9965b87aa59b6a889758"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_getter_rush.png.import",
+      "sha256": "95ef469225d49033ffe44f465c77a85cc93c6df055147b01abcce016b38a008b"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_getter_tomahawk.png.import",
+      "sha256": "b24dd19ac5c7e44d5e39c7fd21bde665b40cbaa51a567223e4eb11f24de231c7"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_guts.png.import",
+      "sha256": "e0749d00c9e7661da61bdf6ad9c440762e51ba49a5a40baac458bf6fbec241f3"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_hurricane_strike.png.import",
+      "sha256": "5fcb8f0c9f7445d843eab6e6720e6979df7e02dfbd9d4590c6f24bdbe06f8e59"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_liger_assault.png.import",
+      "sha256": "f5341423bebbe3f950d717809446b303d29a87c166df8e788234985ae251b2cd"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_saotome_blueprint.png.import",
+      "sha256": "786fb3a877258a11fb4ecedff210f3d4ccdaa007c19a5fec21f79332cf16e919"
+    },
+    {
+      "path": "images/packed/card_portraits/shin_getter/s_g_c_super_ki.png.import",
+      "sha256": "c41274c4b11756e919e58bb6a2fb3e0292945f235c99c008e5e3f7af7e1c30f3"
+    },
+    {
+      "path": "images/atlases/card_atlas_shin_getter_01.png.import",
+      "sha256": "c1e9233d7c518fc52d356b0d7d325f2dc803e37c7d87c62069a8bb10871ca1ca"
+    }
+  ],
+  "ancient_models": {
+    "stoner_sunshine": "StonerSunshine",
+    "shin_form": "ShinForm",
+    "saint_dragon_roar": "SaintDragonRoar",
+    "getter_landing": "GetterLanding"
+  }
+}
