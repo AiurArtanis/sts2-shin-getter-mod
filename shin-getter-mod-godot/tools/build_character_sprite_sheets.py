@@ -45,9 +45,13 @@ FRAME_COUNTS = {
     "shin_getter_dragon_dash_v2": 60,
     "shin_getter_dragon_drill_attack": 60,
     "shin_getter_dragon_stoner_sunshine": 90,
+    "shin_getter_dragon_shining_spark": 47,
+    "getter_one_star_slash": 76,
+    "shin_getter_dragon_star_slash": 71,
 }
 COLUMNS_BY_FRAME_COUNT = {24: 6, 30: 6, 32: 8, 36: 6, 40: 8, 48: 8, 60: 10, 90: 10}
-COLUMNS_BY_ACTION = {}
+COLUMNS_BY_ACTION = {"shin_getter_dragon_shining_spark": 8,
+                     "getter_one_star_slash": 10, "shin_getter_dragon_star_slash": 10}
 IDLE_RESOURCES = {
     "getter_one_idle": "shin_getter_one_idle_frames.tres",
     "getter_two_idle": "shin_getter_two_idle_frames.tres",
@@ -253,6 +257,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--project-root", type=Path, default=Path(__file__).resolve().parents[1])
     parser.add_argument("--check", action="store_true", help="verify existing sheets without modifying files")
+    parser.add_argument("--action", choices=tuple(FRAME_COUNTS), help="build or verify only one action")
     args = parser.parse_args()
 
     project_root = args.project_root.resolve()
@@ -261,6 +266,8 @@ def main() -> None:
     frame_manifest = load_frame_manifest(source_root / "frame_manifest.txt")
 
     for action, frame_count in FRAME_COUNTS.items():
+        if args.action and args.action != action:
+            continue
         source_dir = source_root / action
         output_dir = output_root / action
         if args.check:
@@ -269,6 +276,8 @@ def main() -> None:
             build_sheet(action, source_dir, output_dir, frame_count, frame_manifest[action])
 
     for action in IDLE_RESOURCES:
+        if args.action and args.action != action:
+            continue
         if args.check:
             verify_idle_resource(project_root, action, FRAME_COUNTS[action])
         else:

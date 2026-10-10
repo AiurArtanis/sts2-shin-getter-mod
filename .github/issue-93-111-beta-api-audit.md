@@ -89,3 +89,47 @@ python shin-getter-mod-godot/tools/audit_issue_93_codegraph.py --check
 - The audit traverses every production and compatibility-probe C# file, records each file SHA-256/line count, then cross-references CodeGraph changes against compiled TypeRef/MemberRef metadata, runtime-resolved override bases, and Harmony/`AccessTools` calls.
 - Exactly 26 changed symbol groups intersect the mod. Each has an explicit `adapted` or `compatible` conclusion; the gate fails if a future changed-symbol candidate lacks a review conclusion or if a recorded conclusion becomes stale.
 - Removed `LobbyPlayer`/`CreateRandomPotion` and their `StartRunLobbyPlayer`/`CreateRandomPotions` replacements are explicitly covered even though the removed symbols are no longer present in the rebuilt Beta assembly.
+# issue#248 complete v1.3.0 / 111 Beta audit update (2026-10-10)
+
+Approved formal source: `aef6a9aebac8cd9bdbbf54f908c9b12af5389dd9`, based on
+`main@40d55ead366c3260c19d15c27ae8b4c49dc4676a`. The native-dialogue/zero-progress
+revision is an approved formal branch, not yet claimed as merged main.
+Beta development starts at `e4dffa1e417c9af7c1269b331d9f768b8b22f023`.
+
+- Candidate: `v1.3.0-beta.111`; planned Tag `mod-v1.3.0-beta.111` and archive
+  `shin-getter-mod-v1.3.0-beta.111.zip`. No Release/Tag/package publication occurred.
+- The two read-only CodeGraph source inventories have 3435/3552 files; every
+  indexed src/addons file matches its stored SHA-256. The exhaustive JSON lists
+  3864 symbol-group changes, file/body-only changes and relation differences.
+- The complete mod traversal now includes all v1.3.0 and approved issue#206 code,
+  not the historical v1.2.2 inventory below. The fresh JSON records every source
+  file hash, every actual compiled type/member/override, every dynamic target and
+  all reference-to-formal/Beta source definition crossings.
+- 397 game types, 796 game member signatures (761 direct, 35 constructed-generic),
+  1024 inherited virtual bindings. Exactly 30 changed symbol groups intersect this
+  Beta mod; all have compatible/adapted conclusions. Generated Godot signal/name
+  classes and generic types link to their source owner and actual CLR token binding.
+- Actual CLR token resolution: 1193 game type/member references PASS. Harmony
+  metadata: 99 targets/199 named parameters PASS (including split class/method declarations); 44 explicitly scoped dynamic
+  members PASS. This is reflection/metadata checking; no patches/game launched.
+- Retained all 64 card-origin CardPlay contexts, 8 damage overrides, LoseBlock
+  chooser/remover, card/enchantment versus power damage contexts, plural potion
+  target, StartRunLobbyPlayer and two-argument GenerateAnimator. The Vigor patch
+  named subset still binds after CardPlay insertion.
+- WaitForUnpause keeps the public zero-argument Task overload; bond Seed uses
+  full ulong; MapCoord retains col/row and persistent history semantics. Native
+  dialogue/Continue/local event options and fixed `ProgressEpoch=v1.3.0` are kept.
+- The 109 SavedPropertiesTypeCache shim is intentionally not imported. Beta
+  essential initialization calls ModelDb.Init -> ModelIdSerializationCache.Init
+  -> ModelDb.InitIds. Native cache Init includes registered mod types, property
+  network IDs/width/hash. It still uses numeric network property IDs. An isolated
+  debug-cache metadata fixture finds 44 properties and verifies 14 actual model
+  property roundtrips; it does NOT prove native Init, packet width or gameplay.
+- Source/DLL evidence: formal109 C2D3E15310259957BA312F9D2362CBA193512EBE9819456A062366E6AF38B9B0;
+  111 Beta 6896BBA91CEDDC661B3F789749E9F0AAC338F5DDBBB92C598FC344DEC822DC19.
+  Both use Godot 4.5.1/.NET9/C#13. Beta-only Sentry/SharpGen additions are not direct mod dependencies.
+- issue#238/243 excluded. No main/Beta target integration, PCK, native init,
+  gameplay automation, shared build/deployment, Tag/Release or issue closure.
+
+The historical issue#93 audit is preserved above for traceability; its version/count pins do
+not replace this fresh issue#248 inventory.

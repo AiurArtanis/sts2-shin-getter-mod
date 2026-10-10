@@ -57,6 +57,7 @@ public abstract class ShinGetterCardBase : CardModel
             ["进化"] = _ => HoverTipFactory.FromPower<SGP_Evolution>(),
             ["辐射"] = _ => HoverTipFactory.FromPower<SGP_Radiation>(),
             ["衰退"] = _ => HoverTipFactory.FromPower<SGP_Wane>(),
+            ["热血"] = _ => HoverTipFactory.FromPower<SGP_HotBlood>(),
             ["延时伤害"] = _ => HoverTipFactory.FromPower<SGP_DelayDamage>(),
             ["封印"] = _ => HoverTipFactory.FromPower<SGP_Seal>(),
             ["分身"] = _ => HoverTipFactory.FromPower<SGP_Shade>(),
@@ -88,7 +89,7 @@ public abstract class ShinGetterCardBase : CardModel
             ["SGC_BoldPlan"] = new[] { "辐射", "气力", "二号机" },
             ["SGC_ChainReaction"] = new[] { "活力", "再生", "覆甲" },
             ["SGC_ChangeAttack"] = new[] { "变形" },
-            ["SGC_ShiftStrike"] = new[] { "变形", "活力", "再生", "覆甲" },
+            ["SGC_ShiftStrike"] = new[] { "变形" },
             ["SGC_ChosenOne"] = new[] { "变形", "气力" },
             ["SGC_DarkCape"] = new[] { "格挡", "一号机", "腾空" },
             ["SGC_Defend"] = new[] { "格挡" },
@@ -100,7 +101,7 @@ public abstract class ShinGetterCardBase : CardModel
             ["SGC_ExpansionStrike"] = new[] { "三号机", "覆甲" },
             ["SGC_FightingSpirit"] = new[] { "精神" },
             ["SGC_FinalGetterBeam"] = new[] { "衰退" },
-            ["SGC_ShiningSpark"] = new[] { "易伤", "脆弱", "气力" },
+            ["SGC_ShiningSpark"] = new[] { "易伤", "脆弱", "气力", "真盖塔龙" },
             ["SGC_GetterBeam"] = new[] { "衰退", "一号机", "活力" },
             ["SGC_GetterChop"] = new[] { "格挡" },
             ["SGC_GetterClaw"] = new[] { "二号机" },
@@ -136,7 +137,7 @@ public abstract class ShinGetterCardBase : CardModel
             ["SGC_Specialization"] = new[] { "专属形态卡", "二号机" },
             ["SGC_SpiralDrill"] = new[] { "二号机", "格挡" },
             ["SGC_Spirit"] = new[] { "精神", "气势" },
-            ["SGC_StarSlash"] = new[] { "叠加", "一号机", "活力" },
+            ["SGC_StarSlash"] = new[] { "叠加", "一号机", "热血" },
             ["SGC_SteelSpirit"] = new[] { "精神指令卡" },
             ["SGC_StonerSunshine"] = new[] { "衰退", "活力" },
             ["SGC_SuperKi"] = new[] { "活力", "气势" },
@@ -173,7 +174,7 @@ public abstract class ShinGetterCardBase : CardModel
             ["SGC_GetterMissile"] = "Cyclone",
             ["SGC_FocusFire"] = "Cyclone",
             ["SGC_Annihilation"] = "Cyclone",
-            ["SGC_ShiningSpark"] = "DashV2",
+            ["SGC_ShiningSpark"] = "ShiningSpark",
             ["SGC_GetterRush"] = "DashV2",
             ["SGC_Acceleration"] = "DashV2",
             ["SGC_GetterFlash"] = "DashV2",
@@ -231,6 +232,7 @@ public abstract class ShinGetterCardBase : CardModel
             "SGC_HotBlood",
             "SGC_HurricaneStrike",
             "SGC_SaintDragonRoar",
+            "SGC_ShiftStrike",
             "SGC_StarSlash",
         };
 
@@ -500,7 +502,7 @@ public abstract class ShinGetterCardBase : CardModel
     }
 
     private static bool IsShinDragonSpecialAnimationTrigger(string? trigger) =>
-        trigger is "Cyclone" or "DashV2" or "DrillAttack";
+        trigger is "Cyclone" or "DashV2" or "DrillAttack" or "ShiningSpark";
 
     private static IHoverTip CustomTip(string key) => new HoverTip(
         new LocString("static_hover_tips", key + ".title"),

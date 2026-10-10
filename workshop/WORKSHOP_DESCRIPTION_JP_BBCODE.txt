@@ -6,16 +6,29 @@
 
 [hr][/hr]
 
+[h2]v1.3.0 更新内容[/h2]
+
+[list]
+[*][b]古の者との絆：[/b]共通の初対面会話から竜馬・隼人・弁慶それぞれの物語へ。関係はランを越えて保存され、顔なじみのテーマ、ネオーとの会話、建築家の物語への言及が広がります。
+[*][b]必殺技の演出：[/b]シャインスパークと対応する二形態の斬星斧を、スプライトとGodotのエネルギー・巨大な斧・命中VFXで刷新。準備ボイス、カード選択、一時停止と再開、撃破後の復帰を改善。
+[*][b]カードとバランス：[/b]シャインスパーク、斬星斧、シフトストライク、強化版の気合、闘志を調整。
+[*][b]カードアート：[/b]イラスト8枚とコンパクトなアトラスを更新し、座標とサンプリング境界を修正。
+[*][b]修正：[/b]絆会話後の報酬入力とイベントアイコンの表示順を修正。カード選択の長いホバー説明が隣のカードへのマウス入力を妨げないよう変更。同一マップの無料購入の重複を修正し、sgdを追加。
+[/list]
+
+絆は通常の真ゲッターのシングルプレイで進みます。同じ部屋の再開時は会話を復元し、スキップしても元の報酬を受け取れます。元の戦闘・報酬・採点は維持します。
+
+本ブランチはv1.3.0-beta.111（0.111 Beta）候補です。承認済み正式v1.3.0の全内容、標準会話UI、初回のみ0から始める絆進行を同期しています。実行検証と公開は未完了です。[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest]公開ダウンロード[/url]は実在する資産をご利用ください。公開済みBetaはv1.2.2-beta.111です。
+
 [h2]🧪 0.111 Beta対応[/h2]
 
-[b]正式109：[/b]shin-getter-mod-v1.2.2.zipを使用してください。
-[b]0.111 Beta：[/b]shin-getter-mod-v1.2.2(111-beta).zipを使用してください。
+[b]予定正式ソース：[/b]shin-getter-mod-v1.3.0.zip / mod-v1.3.0。
+[b]本輪Beta候補：[/b]v1.3.0-beta.111。予定パッケージshin-getter-mod-v1.3.0-beta.111.zip / Tag mod-v1.3.0-beta.111。未公開のため、新版のダウンロード先は案内しません。
 
-[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2]v1.2.2をダウンロード[/url] | [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2]0.111 Beta: shin-getter-mod-v1.2.2(111-beta).zip[/url]
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2]公開済み111 Beta：shin-getter-mod-v1.2.2.111-beta.zip[/url]
 
-Beta版はカード77枚、4形態、イベント、ボイス、アニメーション、中二設定を維持し、v1.2.2のBGMスイッチ、23曲の選曲一覧、3言語の曲名を収録しています。正式版とBeta版の4ファイルを混在させず、ゲームブランチ切替後はDLL、PCK、JSON、mod_imageをまとめて上書きして再起動してください。
-
-[b]既知の外部互換性問題：[/b]旧版BaseLib 3.3.7は0.111 BetaでCardPileCmd.Addのtranspilerに失敗し、カード使用時に停止する場合があります。BaseLibを更新するか、Beta環境ではBaseLibとその依存Modを無効にしてください。
+ゲームブランチ変更時はDLL、PCK、JSON、mod_imageをまとめて置き換え、正式版と混在させないでください。
+[b]外部互換性リスク：[/b]旧BaseLib 3.3.7は111 BetaのCardPileCmd.Add transpilerでカード使用が停止する場合があります。検証前にBaseLib、QuickRestartと依存MODを更新または無効にしてください。BaseLibは本MODの必須依存ではありません。
 
 [h2]v1.2.2 更新内容[/h2]
 
@@ -26,7 +39,8 @@ Beta版はカード77枚、4形態、イベント、ボイス、アニメーシ�
 [*]削除済み・無効な保存済みの選曲は標準設定に戻ります。
 [/list]
 
-正式109はv1.2.2、0.111 Betaはv1.2.2-beta.111を使用してください。両方に今回のBGM更新を収録しています。同じReleaseにshin-getter-mod-v1.2.2.zipとshin-getter-mod-v1.2.2(111-beta).zipを用意しています。4ファイルを混在させないでください。
+v1.2.2には正式109用と0.111 Beta用の別パッケージがあります。Beta版にも今回のBGM更新を収録しています。対応する配布物を使用し、ファイルを混在させないでください。
+
 
 [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2]v1.2.2をダウンロード (shin-getter-mod-v1.2.2.zip)[/url]
 
@@ -49,7 +63,7 @@ Beta版はカード77枚、4形態、イベント、ボイス、アニメーシ�
 
 既存の機能には分離・合体、真ゲッタードラゴンの30fpsアクション、90フレームのストナーサンシャイン、18イベントの分岐、虹色NEW表示があります。完全な履歴はREADMEをご覧ください。これらはv1.2.1の新機能ではありません。
 
-[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/blob/patch/v1.2.2-bgm-20260921/README_JP.md]README[/url]
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/blob/main/README_JP.md]README[/url]
 
 [hr][/hr]
 
@@ -104,7 +118,8 @@ Beta版はカード77枚、4形態、イベント、ボイス、アニメーシ�
 
 [h2]現在の状態[/h2]
 
-[b]現在の正式版：v1.2.2；0.111 Beta：v1.2.2-beta.111[/b]
+[b]本ページ：v1.3.0（正式109）；公開済み0.111 Beta：v1.2.2-beta.111[/b]
+
 
 本MODは継続して保守します。今後のゲーム更新によって互換性に影響が出る場合があります。不具合報告にはゲームバージョン、MODバージョン、再現手順、関連ログを添えてください。
 

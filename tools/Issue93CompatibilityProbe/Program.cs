@@ -171,3 +171,12 @@ foreach ((string typeName, string[] fields) in reflectionFields)
 }
 
 Console.WriteLine("issue#93 0.111 Beta runtime reflection/Harmony target probe passed");
+
+if (args.Length == 3 && args[0] == "--mod")
+{
+    Assembly mod = AssemblyLoadContext.Default.LoadFromAssemblyPath(Path.GetFullPath(args[1]));
+    string output = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(args[2]))!, "issue248-clr-bindings.json");
+    MemberBindingProbe.Check(mod, output);
+    DynamicBindingProbe.Check(mod, game, args[2]);
+    SavedPropertyProbe.Check(mod, game);
+}

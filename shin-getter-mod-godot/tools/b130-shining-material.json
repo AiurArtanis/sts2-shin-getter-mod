@@ -1,0 +1,1190 @@
+{
+  "status": "new_clip_integrated_pending_code_review_and_runtime_acceptance",
+  "issue": "issue#215",
+  "input_video": "D:\\Library\\Pictures\\\u6740\u622e\u5c16\u58542-\u7d20\u6750\\anim-sprite\\\u89c6\u9891\u52a8\u753b\\\u771f\u76d6\u5854\u9f99\\\u771f\u76d6\u5854\u9f99-\u95ea\u5149\u7206\u88c2.mp4",
+  "input_video_sha256": "d56ad4479bccb9b576d6eda73899403f36111b69a250f68a1d43041cd1851c88",
+  "source_delivery": "D:\\Library\\Pictures\\\u6740\u622e\u5c16\u58542-\u7d20\u6750\\anim-sprite\\sprites\\\u771f\u76d6\u5854\u9f99\\\u95ea\u5149\u7206\u88c2",
+  "source_clip_end_exclusive_seconds": 5.4,
+  "frame_count": 47,
+  "minimum_game_seconds": 2.11,
+  "map_delivery_sha256": {
+    "stage_timing_map.json": "ab6dd48aeb39085fc80399729de5f7d20137ba82dd322837f7b8b15ebf4810a2",
+    "sampled_frame_map.json": "66917b60ecb280fe2bd306f72866db85a4b0544c8237cb65084f6a03c5cabc44"
+  },
+  "map_semantic_sha256": {
+    "stage_timing_map.json": "99fc77a5351d69d9fe909d92f4eb388d4baf8f0cbd3996d5207ef61e0881f3c6",
+    "sampled_frame_map.json": "78e85a4ac83e744bfe73d735a068c4d0774534af97469a170615aa5d6196a2ce"
+  },
+  "stages": [
+    {
+      "name": "discard",
+      "first_index_0_based": 0,
+      "last_index_0_based": 11,
+      "frame_count": 12,
+      "budget_seconds": 0.4,
+      "game_start_seconds": 0.0,
+      "source_first_frame_1_based": 1,
+      "source_last_frame_1_based": 27,
+      "source_first_pts_seconds": 0.0,
+      "source_last_pts_seconds": 1.0833333333333333,
+      "source_indices_1_based": [
+        1,
+        3,
+        6,
+        8,
+        10,
+        13,
+        15,
+        18,
+        20,
+        22,
+        25,
+        27
+      ]
+    },
+    {
+      "name": "charge",
+      "first_index_0_based": 12,
+      "last_index_0_based": 35,
+      "frame_count": 24,
+      "budget_seconds": 1.0,
+      "game_start_seconds": 0.4,
+      "source_first_frame_1_based": 28,
+      "source_last_frame_1_based": 85,
+      "source_first_pts_seconds": 1.125,
+      "source_last_pts_seconds": 3.5,
+      "source_indices_1_based": [
+        28,
+        30,
+        33,
+        35,
+        38,
+        40,
+        43,
+        45,
+        48,
+        50,
+        53,
+        55,
+        58,
+        60,
+        63,
+        65,
+        68,
+        70,
+        73,
+        75,
+        78,
+        80,
+        83,
+        85
+      ]
+    },
+    {
+      "name": "rush",
+      "first_index_0_based": 36,
+      "last_index_0_based": 44,
+      "frame_count": 9,
+      "budget_seconds": 0.28,
+      "game_start_seconds": 1.4,
+      "source_first_frame_1_based": 86,
+      "source_last_frame_1_based": 103,
+      "source_first_pts_seconds": 3.5416666666666665,
+      "source_last_pts_seconds": 4.25,
+      "source_indices_1_based": [
+        86,
+        88,
+        90,
+        92,
+        94,
+        97,
+        99,
+        101,
+        103
+      ]
+    },
+    {
+      "name": "impact",
+      "first_index_0_based": 45,
+      "last_index_0_based": 46,
+      "frame_count": 2,
+      "budget_seconds": 0.08,
+      "game_start_seconds": 1.68,
+      "source_first_frame_1_based": 104,
+      "source_last_frame_1_based": 130,
+      "source_first_pts_seconds": 4.291666666666667,
+      "source_last_pts_seconds": 5.375,
+      "source_indices_1_based": [
+        104,
+        130
+      ]
+    },
+    {
+      "name": "recover",
+      "first_index_0_based": 46,
+      "last_index_0_based": 46,
+      "frame_count": 1,
+      "budget_seconds": 0.35,
+      "game_start_seconds": 1.76,
+      "source_first_frame_1_based": 130,
+      "source_last_frame_1_based": 130,
+      "note": "Reuse final PNG; runtime returns visual root. Preview holds pose only; no generated landing or reverse."
+    }
+  ],
+  "frames": [
+    {
+      "index_0_based": 0,
+      "file": "sprite_000001.png",
+      "source_frame_1_based": 1,
+      "source_pts_seconds": 0.0,
+      "stage": "discard",
+      "stage_start_seconds": 0.0,
+      "duration_seconds": 0.03333333333333333,
+      "game_start_seconds": 0.0,
+      "path": "sprite_000001.png",
+      "sha256": "5969935e219ea882285acec5461b3b684fd32a2a01705b1e68ef548723e5c5c1",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 1,
+      "file": "sprite_000002.png",
+      "source_frame_1_based": 3,
+      "source_pts_seconds": 0.083333333,
+      "stage": "discard",
+      "stage_start_seconds": 0.033333333,
+      "duration_seconds": 0.03333333333333333,
+      "game_start_seconds": 0.033333333,
+      "path": "sprite_000002.png",
+      "sha256": "0131aeb831150429d8492e71a521e05b2f2ab36c2607202670c3e51798089223",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 2,
+      "file": "sprite_000003.png",
+      "source_frame_1_based": 6,
+      "source_pts_seconds": 0.208333333,
+      "stage": "discard",
+      "stage_start_seconds": 0.066666667,
+      "duration_seconds": 0.03333333333333333,
+      "game_start_seconds": 0.066666667,
+      "path": "sprite_000003.png",
+      "sha256": "1c94c132eb19786c4692c9a2fe8422dfe0534b4cead8929a0f9f5f25923e83cf",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 3,
+      "file": "sprite_000004.png",
+      "source_frame_1_based": 8,
+      "source_pts_seconds": 0.291666667,
+      "stage": "discard",
+      "stage_start_seconds": 0.1,
+      "duration_seconds": 0.03333333333333333,
+      "game_start_seconds": 0.1,
+      "path": "sprite_000004.png",
+      "sha256": "450be7a16ed418eb04985da9993cb45cc8a259a635524735aa7ff8f96014ecf2",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 4,
+      "file": "sprite_000005.png",
+      "source_frame_1_based": 10,
+      "source_pts_seconds": 0.375,
+      "stage": "discard",
+      "stage_start_seconds": 0.133333333,
+      "duration_seconds": 0.03333333333333333,
+      "game_start_seconds": 0.133333333,
+      "path": "sprite_000005.png",
+      "sha256": "b3f254e98ef40bd708f9fd1458d45b66a099d06b7aa5fecd0fdda08d966ebd19",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 5,
+      "file": "sprite_000006.png",
+      "source_frame_1_based": 13,
+      "source_pts_seconds": 0.5,
+      "stage": "discard",
+      "stage_start_seconds": 0.166666667,
+      "duration_seconds": 0.03333333333333333,
+      "game_start_seconds": 0.166666667,
+      "path": "sprite_000006.png",
+      "sha256": "6bdcb288ae12ed017c4e4996a62b4c74c1cfdd58315b98b2a4e708652d002d74",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 6,
+      "file": "sprite_000007.png",
+      "source_frame_1_based": 15,
+      "source_pts_seconds": 0.583333333,
+      "stage": "discard",
+      "stage_start_seconds": 0.2,
+      "duration_seconds": 0.03333333333333333,
+      "game_start_seconds": 0.2,
+      "path": "sprite_000007.png",
+      "sha256": "236cb2a5bc7f669d61467f10436ccc62ae012832383b23099e5ca400f65dd26c",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 7,
+      "file": "sprite_000008.png",
+      "source_frame_1_based": 18,
+      "source_pts_seconds": 0.708333333,
+      "stage": "discard",
+      "stage_start_seconds": 0.233333333,
+      "duration_seconds": 0.03333333333333333,
+      "game_start_seconds": 0.233333333,
+      "path": "sprite_000008.png",
+      "sha256": "6d45bca92e4796877f9e43d458e07420bb846a70dc3d43ec4b5afa2354b1b940",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 8,
+      "file": "sprite_000009.png",
+      "source_frame_1_based": 20,
+      "source_pts_seconds": 0.791666667,
+      "stage": "discard",
+      "stage_start_seconds": 0.266666667,
+      "duration_seconds": 0.03333333333333333,
+      "game_start_seconds": 0.266666667,
+      "path": "sprite_000009.png",
+      "sha256": "2c6f5b4e9cc5233ccc835c4c6a8d3cd6db67a2d703fb145f110372762198b1ba",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 9,
+      "file": "sprite_000010.png",
+      "source_frame_1_based": 22,
+      "source_pts_seconds": 0.875,
+      "stage": "discard",
+      "stage_start_seconds": 0.3,
+      "duration_seconds": 0.03333333333333333,
+      "game_start_seconds": 0.3,
+      "path": "sprite_000010.png",
+      "sha256": "6c5d7b052c0c9fa73932ded1a1b7cc369ba5f3321c60f816b414e4df25fe4ade",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 10,
+      "file": "sprite_000011.png",
+      "source_frame_1_based": 25,
+      "source_pts_seconds": 1.0,
+      "stage": "discard",
+      "stage_start_seconds": 0.333333333,
+      "duration_seconds": 0.03333333333333333,
+      "game_start_seconds": 0.333333333,
+      "path": "sprite_000011.png",
+      "sha256": "2895d2600ffa47c7d15dc6b9342531a9c7ee2d270b4c92fb5d3f5cfc2707876e",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 11,
+      "file": "sprite_000012.png",
+      "source_frame_1_based": 27,
+      "source_pts_seconds": 1.083333333,
+      "stage": "discard",
+      "stage_start_seconds": 0.366666667,
+      "duration_seconds": 0.03333333333333333,
+      "game_start_seconds": 0.366666667,
+      "path": "sprite_000012.png",
+      "sha256": "137335809467d9b462aa86bc027121c5c01fa4f33d39d91886b257c00b315aba",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 12,
+      "file": "sprite_000013.png",
+      "source_frame_1_based": 28,
+      "source_pts_seconds": 1.125,
+      "stage": "charge",
+      "stage_start_seconds": 0.0,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 0.4,
+      "path": "sprite_000013.png",
+      "sha256": "b90c6a3f86b36d31a4504f3d120d5152d3acee7b2ea91ebda789ef575ad7c335",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 13,
+      "file": "sprite_000014.png",
+      "source_frame_1_based": 30,
+      "source_pts_seconds": 1.208333333,
+      "stage": "charge",
+      "stage_start_seconds": 0.041666667,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 0.441666667,
+      "path": "sprite_000014.png",
+      "sha256": "3d59128c7aafc0740df946e457351d0c234e453d95cee89abeca0c525d4b3715",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 14,
+      "file": "sprite_000015.png",
+      "source_frame_1_based": 33,
+      "source_pts_seconds": 1.333333333,
+      "stage": "charge",
+      "stage_start_seconds": 0.083333333,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 0.483333333,
+      "path": "sprite_000015.png",
+      "sha256": "8141de1d252a8c092efca3053462fd3cbca078d1cc53307960460b4bc5359239",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 15,
+      "file": "sprite_000016.png",
+      "source_frame_1_based": 35,
+      "source_pts_seconds": 1.416666667,
+      "stage": "charge",
+      "stage_start_seconds": 0.125,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 0.525,
+      "path": "sprite_000016.png",
+      "sha256": "6aaeabcdfd6700c8f9d83e9c60a86665c82e48b50c0858943be6a0f7dbb65cc7",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 16,
+      "file": "sprite_000017.png",
+      "source_frame_1_based": 38,
+      "source_pts_seconds": 1.541666667,
+      "stage": "charge",
+      "stage_start_seconds": 0.166666667,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 0.566666667,
+      "path": "sprite_000017.png",
+      "sha256": "5f2761a8013e7e9ac7e2fc9d39e52fbfc910b804bc0db4d2e41ccdbf865f6517",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 17,
+      "file": "sprite_000018.png",
+      "source_frame_1_based": 40,
+      "source_pts_seconds": 1.625,
+      "stage": "charge",
+      "stage_start_seconds": 0.208333333,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 0.608333333,
+      "path": "sprite_000018.png",
+      "sha256": "85819e8e4522b68bab0b712bec20ffc721e0ec2aeb9d633a0270ccde1b515456",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 18,
+      "file": "sprite_000019.png",
+      "source_frame_1_based": 43,
+      "source_pts_seconds": 1.75,
+      "stage": "charge",
+      "stage_start_seconds": 0.25,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 0.65,
+      "path": "sprite_000019.png",
+      "sha256": "bfb6de43c80018be0bdb5990a4b4b7a85e3e7567748a3af702c105e31b71c004",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 19,
+      "file": "sprite_000020.png",
+      "source_frame_1_based": 45,
+      "source_pts_seconds": 1.833333333,
+      "stage": "charge",
+      "stage_start_seconds": 0.291666667,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 0.691666667,
+      "path": "sprite_000020.png",
+      "sha256": "5c8ff986e7aac31ee974d00b956dee013d44b43a40b4000256eaa80dcddd150c",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 20,
+      "file": "sprite_000021.png",
+      "source_frame_1_based": 48,
+      "source_pts_seconds": 1.958333333,
+      "stage": "charge",
+      "stage_start_seconds": 0.333333333,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 0.733333333,
+      "path": "sprite_000021.png",
+      "sha256": "2b6e8e2825028fd55c08a035797b04cbfcee421f22ea5576367704367e0f46af",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 21,
+      "file": "sprite_000022.png",
+      "source_frame_1_based": 50,
+      "source_pts_seconds": 2.041666667,
+      "stage": "charge",
+      "stage_start_seconds": 0.375,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 0.775,
+      "path": "sprite_000022.png",
+      "sha256": "40ad887deed3ff84ee70d2f279edaf3c280de766c155bc7fab53a19229f8d19f",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 22,
+      "file": "sprite_000023.png",
+      "source_frame_1_based": 53,
+      "source_pts_seconds": 2.166666667,
+      "stage": "charge",
+      "stage_start_seconds": 0.416666667,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 0.816666667,
+      "path": "sprite_000023.png",
+      "sha256": "6e6adba0399bff3456f9842a1fbfd3c87f7fa16b5b16756caf520734fe2a539d",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 23,
+      "file": "sprite_000024.png",
+      "source_frame_1_based": 55,
+      "source_pts_seconds": 2.25,
+      "stage": "charge",
+      "stage_start_seconds": 0.458333333,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 0.858333333,
+      "path": "sprite_000024.png",
+      "sha256": "575d91b9c63e3194834d3cedc9383c668615e4756799d2adba6de0d7a0c49cbb",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 24,
+      "file": "sprite_000025.png",
+      "source_frame_1_based": 58,
+      "source_pts_seconds": 2.375,
+      "stage": "charge",
+      "stage_start_seconds": 0.5,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 0.9,
+      "path": "sprite_000025.png",
+      "sha256": "983f2c408125d1d055cbc8a425a4dc0f7b1d94fbbdf5a703d95d6bec3e2e8962",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 25,
+      "file": "sprite_000026.png",
+      "source_frame_1_based": 60,
+      "source_pts_seconds": 2.458333333,
+      "stage": "charge",
+      "stage_start_seconds": 0.541666667,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 0.941666667,
+      "path": "sprite_000026.png",
+      "sha256": "b405593b65842a34c7c8e6d4c916003dec3f3fa3d5ac9127652c65f1a513129a",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 26,
+      "file": "sprite_000027.png",
+      "source_frame_1_based": 63,
+      "source_pts_seconds": 2.583333333,
+      "stage": "charge",
+      "stage_start_seconds": 0.583333333,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 0.983333333,
+      "path": "sprite_000027.png",
+      "sha256": "ecf6a47318a40c769d1002eff381b79b875a9b56e292de34930fb00883a46d04",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 27,
+      "file": "sprite_000028.png",
+      "source_frame_1_based": 65,
+      "source_pts_seconds": 2.666666667,
+      "stage": "charge",
+      "stage_start_seconds": 0.625,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 1.025,
+      "path": "sprite_000028.png",
+      "sha256": "ba0b71ef9d782729cfe9772d2c0cc0abd883a0bc8bcfa20b3b16b1e6b2fdbae0",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 28,
+      "file": "sprite_000029.png",
+      "source_frame_1_based": 68,
+      "source_pts_seconds": 2.791666667,
+      "stage": "charge",
+      "stage_start_seconds": 0.666666667,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 1.066666667,
+      "path": "sprite_000029.png",
+      "sha256": "c52427a1cc2a7ba7db85c96fe8cf75133db9e783983f7933cf260a3254b8859e",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 29,
+      "file": "sprite_000030.png",
+      "source_frame_1_based": 70,
+      "source_pts_seconds": 2.875,
+      "stage": "charge",
+      "stage_start_seconds": 0.708333333,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 1.108333333,
+      "path": "sprite_000030.png",
+      "sha256": "a21ead5aaaec280cf6fd978bcb43e8019cb0d3dea7c64091acdfc7809d27daa6",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 30,
+      "file": "sprite_000031.png",
+      "source_frame_1_based": 73,
+      "source_pts_seconds": 3.0,
+      "stage": "charge",
+      "stage_start_seconds": 0.75,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 1.15,
+      "path": "sprite_000031.png",
+      "sha256": "50ab24b5e08375ca86ee42dc417f7471f6b5fe714eed3830a78424da194c21cf",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 31,
+      "file": "sprite_000032.png",
+      "source_frame_1_based": 75,
+      "source_pts_seconds": 3.083333333,
+      "stage": "charge",
+      "stage_start_seconds": 0.791666667,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 1.191666667,
+      "path": "sprite_000032.png",
+      "sha256": "140d9a539e2cb82913fc6156ed7b97880b456903d496d2d15effd1c04e8f04cf",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 32,
+      "file": "sprite_000033.png",
+      "source_frame_1_based": 78,
+      "source_pts_seconds": 3.208333333,
+      "stage": "charge",
+      "stage_start_seconds": 0.833333333,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 1.233333333,
+      "path": "sprite_000033.png",
+      "sha256": "fcac05c2f782fe834501c015bac7dd8abf5c3a7bbf535368fc853c31b469e3c9",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 33,
+      "file": "sprite_000034.png",
+      "source_frame_1_based": 80,
+      "source_pts_seconds": 3.291666667,
+      "stage": "charge",
+      "stage_start_seconds": 0.875,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 1.275,
+      "path": "sprite_000034.png",
+      "sha256": "4c9388fffec22664bdbb0c1b8ad88ff1f72b48ae6543061b3921cbf8801416bc",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 34,
+      "file": "sprite_000035.png",
+      "source_frame_1_based": 83,
+      "source_pts_seconds": 3.416666667,
+      "stage": "charge",
+      "stage_start_seconds": 0.916666667,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 1.316666667,
+      "path": "sprite_000035.png",
+      "sha256": "48c613b56f1eec6297663000d35214670277fa3acd2e055cb65a7b561518dc53",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 35,
+      "file": "sprite_000036.png",
+      "source_frame_1_based": 85,
+      "source_pts_seconds": 3.5,
+      "stage": "charge",
+      "stage_start_seconds": 0.958333333,
+      "duration_seconds": 0.041666666666666664,
+      "game_start_seconds": 1.358333333,
+      "path": "sprite_000036.png",
+      "sha256": "f729c2479dc96fec38a2e836a6a5d71a5624ec53b3047c29d0f553cf3f046c3b",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 36,
+      "file": "sprite_000037.png",
+      "source_frame_1_based": 86,
+      "source_pts_seconds": 3.541666667,
+      "stage": "rush",
+      "stage_start_seconds": 0.0,
+      "duration_seconds": 0.031111111111111114,
+      "game_start_seconds": 1.4,
+      "path": "sprite_000037.png",
+      "sha256": "b782b51e948f0a2caaad049207aaecd777436ddc2e38ab8c2876df2c49a8d5cd",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 37,
+      "file": "sprite_000038.png",
+      "source_frame_1_based": 88,
+      "source_pts_seconds": 3.625,
+      "stage": "rush",
+      "stage_start_seconds": 0.031111111,
+      "duration_seconds": 0.031111111111111114,
+      "game_start_seconds": 1.431111111,
+      "path": "sprite_000038.png",
+      "sha256": "e9bd1616100429f4d4fac0ac338adad345e9076f0f1dc48b21e164ae61e0c765",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 38,
+      "file": "sprite_000039.png",
+      "source_frame_1_based": 90,
+      "source_pts_seconds": 3.708333333,
+      "stage": "rush",
+      "stage_start_seconds": 0.062222222,
+      "duration_seconds": 0.031111111111111114,
+      "game_start_seconds": 1.462222222,
+      "path": "sprite_000039.png",
+      "sha256": "f275f8758cd75660ddb40cd7d8a7d6de3ee1cc52d9a4a4e6408e8f53088c5bef",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 39,
+      "file": "sprite_000040.png",
+      "source_frame_1_based": 92,
+      "source_pts_seconds": 3.791666667,
+      "stage": "rush",
+      "stage_start_seconds": 0.093333333,
+      "duration_seconds": 0.031111111111111114,
+      "game_start_seconds": 1.493333333,
+      "path": "sprite_000040.png",
+      "sha256": "c20ba9d8b29afba9431f829392103cd66cf8e15159c541799eb231736af3ab34",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 40,
+      "file": "sprite_000041.png",
+      "source_frame_1_based": 94,
+      "source_pts_seconds": 3.875,
+      "stage": "rush",
+      "stage_start_seconds": 0.124444444,
+      "duration_seconds": 0.031111111111111114,
+      "game_start_seconds": 1.524444444,
+      "path": "sprite_000041.png",
+      "sha256": "c83eb9069c60766f1c58eb88d94f1ce53817d84719fd775115551ae36ee031ef",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 41,
+      "file": "sprite_000042.png",
+      "source_frame_1_based": 97,
+      "source_pts_seconds": 4.0,
+      "stage": "rush",
+      "stage_start_seconds": 0.155555556,
+      "duration_seconds": 0.031111111111111114,
+      "game_start_seconds": 1.555555556,
+      "path": "sprite_000042.png",
+      "sha256": "70943c60d1b7c64c6ee79d0c5f0adf62014957d49dc707fbe47163c2bb59270d",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 42,
+      "file": "sprite_000043.png",
+      "source_frame_1_based": 99,
+      "source_pts_seconds": 4.083333333,
+      "stage": "rush",
+      "stage_start_seconds": 0.186666667,
+      "duration_seconds": 0.031111111111111114,
+      "game_start_seconds": 1.586666667,
+      "path": "sprite_000043.png",
+      "sha256": "775037aa465701229e177707e577a9676a96ab55d780f0070f4c28113242f1b5",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 43,
+      "file": "sprite_000044.png",
+      "source_frame_1_based": 101,
+      "source_pts_seconds": 4.166666667,
+      "stage": "rush",
+      "stage_start_seconds": 0.217777778,
+      "duration_seconds": 0.031111111111111114,
+      "game_start_seconds": 1.617777778,
+      "path": "sprite_000044.png",
+      "sha256": "3930a2640ff7c0c9ac21fdd7c348292fe6a972760019feebe9ad44b057e2dcf4",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 44,
+      "file": "sprite_000045.png",
+      "source_frame_1_based": 103,
+      "source_pts_seconds": 4.25,
+      "stage": "rush",
+      "stage_start_seconds": 0.248888889,
+      "duration_seconds": 0.031111111111111114,
+      "game_start_seconds": 1.648888889,
+      "path": "sprite_000045.png",
+      "sha256": "2cf595b679c25cb33ab9cfa675409fda07e544c982e82d2ae11b033fa971a239",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 45,
+      "file": "sprite_000046.png",
+      "source_frame_1_based": 104,
+      "source_pts_seconds": 4.291666667,
+      "stage": "impact",
+      "stage_start_seconds": 0.0,
+      "duration_seconds": 0.04,
+      "game_start_seconds": 1.68,
+      "path": "sprite_000046.png",
+      "sha256": "1dc78b31a6ab9e6b64d0af3a4d586093d345c35f5744399335b779b9bf5ae0bd",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "index_0_based": 46,
+      "file": "sprite_000047.png",
+      "source_frame_1_based": 130,
+      "source_pts_seconds": 5.375,
+      "stage": "impact",
+      "stage_start_seconds": 0.04,
+      "duration_seconds": 0.04,
+      "game_start_seconds": 1.72,
+      "path": "sprite_000047.png",
+      "sha256": "596125efcaf0624bd997085d09a636ccb6a55c94c9617493c85696b4523d4d76",
+      "empty": false,
+      "dimensions": [
+        720,
+        720
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ]
+    }
+  ],
+  "import_method": "byte_exact_copy_of_delivered_sprites_import_no_resize_rekey_or_interpolation",
+  "preview": {
+    "path": "D:\\Library\\Pictures\\\u6740\u622e\u5c16\u58542-\u7d20\u6750\\anim-sprite\\sprites\\\u771f\u76d6\u5854\u9f99\\\u95ea\u5149\u7206\u88c2\\\u95ea\u5149\u7206\u88c2_sampled_dark.gif",
+    "sha256": "6895f9004e6a26225ba8764f822f4e7d354fe95ce860e5751b5784425b99707f",
+    "frames": 47,
+    "duration_ms": 2110
+  },
+  "runtime_notes": [
+    "Charge includes exactly one source jump and screen-facing energy buildup; facing is accepted by user.",
+    "Extend Shining wait at charge final index only; do not slow rush.",
+    "Rush starts at index36; impact starts at index45. Damage events remain gameplay-controlled.",
+    "Recover holds index46 for .35s while runtime returns visual root; no reverse or initial-pose reset.",
+    "The long stable source tail is compressed into impact endpoints, so source green fade becomes quick; review the minimum-tempo preview.",
+    "Keep baked green effects; no re-keying, no interpolation, no invented frames."
+  ],
+  "acceptance": {
+    "screen_facing_charge": "explicitly_accepted_by_user",
+    "runtime": "not_run",
+    "impact_green_fade": "source_104_to_130_in_80ms_requires_gameplay_review"
+  }
+}

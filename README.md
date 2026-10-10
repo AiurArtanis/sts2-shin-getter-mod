@@ -8,17 +8,18 @@
 
 让真盖塔穿越时空登上高塔。切换一号机的爆发、二号机的高速战术与三号机的钢铁防线，最终唤醒真盖塔龙，用盖塔射线吞没高塔。这里不是换一张角色皮肤，而是一套围绕变形、卡组与演出共同运转的玩法型角色 Mod。
 
-> 正式版 `v1.2.2`（验证环境：游戏 `0.109`）· 0.111 Beta 专用版 `v1.2.2-beta.111` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> 当前Beta候选 `v1.3.0-beta.111`（游戏 `0.111 Beta`）· 正式来源 `v1.3.0` · 已公开Beta `v1.2.2-beta.111` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
-[下载 v1.2.2](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2) · [0.111 Beta](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+[正式版下载](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest) · [已发布0.111 Beta](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+
 
 ## 🧪 0.111 Beta 适配
 
-- **正式109：**使用 `shin-getter-mod-v1.2.2.zip`。
-- **Slay the Spire 2 0.111 Beta：**使用 `shin-getter-mod-v1.2.2(111-beta).zip`。
-- 正式版：[v1.2.2 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2)；0.111 Beta：[v1.2.2 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2)。
-- 正式版与 Beta 版四件套不能混用。切换游戏分支后，请完整覆盖 DLL、PCK、JSON 与 `mod_image.png`，然后重启游戏。
-- 已知外部兼容问题：旧版 `BaseLib 3.3.7` 在 0.111 Beta 中会因 `CardPileCmd.Add` transpiler 失败导致出牌卡住。请更新 BaseLib，或在 Beta 环境中禁用 BaseLib 及依赖它的模组。
+- **本支线候选：** `v1.3.0-beta.111`，完整同步已批准正式v1.3.0内容及原生羁绊UI／一次性从0发布起点；仍待本轮Beta原生回归与发布，不是已公开包。
+- **计划包／Tag：** 正式来源 `shin-getter-mod-v1.3.0.zip` / `mod-v1.3.0`；Beta `shin-getter-mod-v1.3.0-beta.111.zip` / `mod-v1.3.0-beta.111`。发布前不提供不存在的新版下载链接。
+- **当前公开下载：** 正式109仍使用Release实际列出的正式包；已公开111 Beta为 `v1.2.2-beta.111`，资产 `shin-getter-mod-v1.2.2.111-beta.zip`，见[v1.2.2 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2)。
+- 不混用正式与Beta四件套。切换游戏分支时完整替换DLL、PCK、JSON与`mod_image.png`，再重启。
+- **外部兼容风险：** 旧 `BaseLib 3.3.7` 在111 Beta的 `CardPileCmd.Add` transpiler可能导致出牌卡住。验收前更新或禁用BaseLib、QuickRestart及依赖模组；这不是本模组的强制依赖。
 
 ## ⚡ 战斗核心
 
@@ -30,7 +31,7 @@
 ## 🧭 新手构筑
 
 - **活力爆发：** 累积活力后，以「热血」「俯冲打击」等牌打出高伤害终结。
-- **消耗循环：** 用带消耗的卡牌触发「盖塔钩爪」的免费伤害；有「部件交换」后可回收关键组件，二号机能进一步放大输出。
+- **消耗循环：** 用带消耗的卡牌触发「盖塔钩爪」的免费伤害；有「部件更换」后可回收关键组件，二号机能进一步放大输出。
 - **钢铁反击：** 三号机叠覆甲、构筑格挡，在敌人回合用防杀反击压低风险。
 - **变形连锁：** 围绕频繁变形、移动变形和「天选之子」组织卡组，让每次切换都转化为资源或防御。
 
@@ -38,13 +39,29 @@
 
 ## 📦 内容一览
 
-`v1.2.2` 当前注册内容包括：
+`v1.3.0` 当前源码注册内容包括：
 
 - **77 张卡牌**，覆盖四种形态与多套核心机制
 - **13 个遗物**、**6 瓶药水**、**2 个附魔**
 - 多项**事件入侵**内容、**1 个专属事件**与专属先古对话
 - 中、英、日三语本地化
 - DLL、PCK 与 JSON 组合加载的完整角色 Mod
+
+## 先古羁绊
+
+在普通真盖塔单人局中，先与先古之民完成共同初见，再分别选择龙马、隼人或弁庆交流。三人的故事各自递进，关系进度会跨局保留；同房读档会恢复本次交谈，跳过交谈后仍可领取原事件奖励。完成羁绊后还会出现熟人主题，涅奥和建筑师也有专属对白与前情回响。
+
+这些故事不替换原事件的战斗、奖励或评分。`sgd`控制台指令用于查看和构造羁绊进度；修改进度属于调试操作。
+
+## v1.3.0 更新说明
+
+- **先古羁绊：**新增三人小队分线交流、跨局关系进度及涅奥、建筑师对白。
+- **大招演出：**重做闪光爆裂与两种形态的斩星斧，主体序列帧搭配Godot能量与武器特效；新增准备语音，改善暂停恢复和击杀后的收势。
+- **卡牌与平衡：**调整闪光爆裂、斩星斧、换挡打击、气势+和斗志，让变形与终结技的收益更清晰。
+- **卡面：**更新8张插画，迁移紧凑图集并修正全量卡牌纹理坐标与采样边界。
+- **修复与工具：**修复羁绊领奖输入、事件图标排序、选牌浮层输入阻挡及同地图重复零元购；新增`sgd`进度调试命令。
+
+本次内容面向正式109；111 Beta新增适配另行交付。第四批事件入侵和战机分离动画疑似问题不属于本版本。
 
 ## v1.2.2 更新说明
 
@@ -53,7 +70,8 @@
 - 事件战默认播放《来袭》，巢穴精英战改为《前进》，处刑曲默认播放OVA版《勇壮》。
 - 已移除或无效的旧选曲自动回退为预设。
 
-正式109使用v1.2.2；0.111 Beta使用v1.2.2-beta.111，两者均包含本次BGM更新。同一Release提供正式包shin-getter-mod-v1.2.2.zip与Beta包shin-getter-mod-v1.2.2(111-beta).zip，四件套不可混用。
+v1.2.2同时提供正式109与0.111 Beta独立四件套；Beta版也包含本次BGM更新，请使用对应资产并勿混搭。
+
 
 [下载 v1.2.2](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2) · `shin-getter-mod-v1.2.2.zip`
 
@@ -98,7 +116,8 @@
 ### 安装 0.111 Beta 专用版
 
 1. 确认游戏已切换到 **Slay the Spire 2 0.111 Beta**。
-2. 从 [v1.2.2 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2) 下载 `shin-getter-mod-v1.2.2(111-beta).zip`。
+2. 从 [v1.2.2 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2) 下载 `shin-getter-mod-v1.2.2.111-beta.zip`。
+
 3. 将 ZIP 内四个文件完整覆盖到同一个 `ShinGetterMod` 目录；不要与正式版的 DLL／PCK 混搭。
 4. 完全退出并重新启动游戏，再启用模组并新开一局。
 
@@ -129,7 +148,7 @@
 
 ### 环境要求
 
-- 《杀戮尖塔 2》当前正式版 `0.107.0+`，或 `0.111.0` Beta
+- 《杀戮尖塔 2》正式 `0.107.0+`线，本源码面向 `0.109`；`0.111.0` Beta须使用对应兼容支线与独立发布包，不直接使用本正式源码。
 - Godot `4.5.1 Mono`
 - .NET SDK `9`
 - 本机可供 Godot 加载验证的游戏工程目录
