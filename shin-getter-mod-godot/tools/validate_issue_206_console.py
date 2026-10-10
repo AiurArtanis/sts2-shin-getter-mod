@@ -18,7 +18,8 @@ def check():
     assert "TryParse" in cmd and "GetArgumentCompletions" in cmd
     assert "IsOpen" in cmd and "GameMode.Standard" in cmd and "Players.Count != 1" in cmd
     assert "TryConsole" in cmd and 'GetProfileScopedPath("shin_getter_bonds.json")' in session
-    assert "Read(migrateIfMissing: false)" in session and "plan.Apply(next)" in session
+    assert "session._save = session.Read();" in session and "plan.Apply(next)" in session
+    assert 'CreateWithLegacyAcquaintances' not in session
     begin = session[session.index("internal bool Begin()"):session.index("internal bool MarkDisplayed()")]
     assert 'next.DebugNextDialogues.Remove(_npc)' in begin
     assert "Encounter != null" in begin and "Commit(next =>" in begin

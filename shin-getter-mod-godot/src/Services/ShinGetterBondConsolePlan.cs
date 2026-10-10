@@ -163,7 +163,7 @@ internal sealed class ShinGetterBondConsolePlan
 
     internal string Describe(ShinGetterBondSave save) => string.Join("\n", Targets.Select(npc =>
     {
-        bool first = save.Completed.Contains(npc + "_FIRST_01") || save.LegacyAcquaintances.ContainsKey(npc);
+        bool first = save.Completed.Contains(npc + "_FIRST_01");
         string stages = ShinGetterDialogueCatalog.BondNpcs.Contains(npc) ? "; " + string.Join(", ", ShinGetterDialogueCatalog.Drivers.Select(driver =>
             driver + "=" + Enumerable.Range(1, 3).Count(n => save.Completed.Contains($"{npc}_{driver}_BOND_{n:00}")))) : "; no pilot bonds";
         return $"{npc}: first={first}{stages}; next={save.DebugNextDialogues.GetValueOrDefault(npc, "normal")}";

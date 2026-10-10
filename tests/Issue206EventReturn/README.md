@@ -17,3 +17,10 @@ Tests preserve pre-disabled/locked states, exclude freed/off-tree/queued/replace
 nodes, protect native post-resume disable, and assert one return only. Real legal
 mouse/controller input, reward choice/count and whole-run continuation must be retested
 by the main task. Original failure evidence is not overwritten.
+
+2026-10-10 native UI revision: original reward nodes remain in-tree and hidden,
+while native content remains visible. This fixture additionally checks exact local
+option routing, original-reward suppression during reading, session-owned native
+hitbox advance, the guarded native SetDialogue refresh, hover guards while replacing
+line nodes, and native routing after return. The UI binding is still an environment
+stand-in: it does not render bubbles or assert physical input/geometry/lifecycle.

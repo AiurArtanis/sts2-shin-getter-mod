@@ -40,20 +40,16 @@ internal static class ShinGetterBondDialogueBridge
         State state = Get(model);
         if (state.Returned) { resume(); return; }
         if (state.Ui != null && state.Ui.TryGetTarget(out var existing) && GodotObject.IsInstanceValid(existing) && existing.IsInsideTree()) return;
-        Control? oldContent = layout is NAncientEventLayout ? layout.GetNodeOrNull<Control>("%ContentContainer") : null;
-        bool wasVisible = oldContent?.Visible == true;
-        oldContent?.Hide();
         // Own only the enabled states suspended by this dialogue. EnableButton in
         // official109 restores MouseFilter only, not NClickableControl.IsEnabled.
         var enabledOptions = layout.OptionButtons.Where(button => button.IsEnabled).ToArray();
         layout.DisableEventOptions();
-        var ui = NShinGetterBondDialogue.Create(state.Session, () =>
+        var ui = NShinGetterBondDialogue.Create(state.Session, model, layout, () =>
         {
             if (state.Returned || !GodotObject.IsInstanceValid(layout) || !layout.IsInsideTree()) return;
             if (layout.IsQueuedForDeletion()) return;
             state.Returned = true;
             state.Ui = null;
-            if (oldContent != null && GodotObject.IsInstanceValid(oldContent)) oldContent.Visible = wasVisible;
             foreach (var button in enabledOptions)
             {
                 if (GodotObject.IsInstanceValid(button) && button.IsInsideTree() && !button.IsQueuedForDeletion()
@@ -81,6 +77,8 @@ internal static class ShinGetterBondReplaceAncientLinesPatch
     {
         EventModel model = ShinGetterBondDialogueBridge.LayoutEvent(__instance);
         if (!ShinGetterBondSession.IsEligible(model)) return true;
+        if (ShinGetterBondDialogueBridge.TryGet(model, out var state) && state.Ui != null
+            && state.Ui.TryGetTarget(out var ui) && ui.IsUpdatingNativeUi) return true;
         ShinGetterBondDialogueBridge.Get(model);
         __instance.ClearDialogue();
         return false;
@@ -102,8 +100,63 @@ internal static class ShinGetterBondAncientSetupPatch
 [HarmonyPatch(typeof(NEventRoom), nameof(NEventRoom.OptionButtonClicked))]
 internal static class ShinGetterBondProtectRewardsPatch
 {
-    private static bool Prefix(NEventRoom __instance) =>
-        !ShinGetterBondDialogueBridge.IsBlocking(ShinGetterBondDialogueBridge.RoomEvent(__instance));
+    private static bool Prefix(NEventRoom __instance, EventOption option)
+    {
+        EventModel model = ShinGetterBondDialogueBridge.RoomEvent(__instance);
+        if (!ShinGetterBondDialogueBridge.IsBlocking(model)) return true;
+        if (ShinGetterBondDialogueBridge.TryGet(model, out var state) && state.Ui != null
+            && state.Ui.TryGetTarget(out var ui) && GodotObject.IsInstanceValid(ui))
+            ui.TryChooseOption(option);
+        // Always block native reward/network routing while the story owns input,
+        // including when a local choice finishes the conversation in this call.
+        return false;
+    }
+}
+
+[HarmonyPatch(typeof(NAncientEventLayout), "OnDialogueHitboxClicked")]
+internal static class ShinGetterBondNativeAdvancePatch
+{
+    private static bool Prefix(NAncientEventLayout __instance)
+    {
+        EventModel model = ShinGetterBondDialogueBridge.LayoutEvent(__instance);
+        if (!ShinGetterBondDialogueBridge.IsBlocking(model)) return true;
+        if (ShinGetterBondDialogueBridge.TryGet(model, out var state) && state.Ui != null
+            && state.Ui.TryGetTarget(out var ui) && GodotObject.IsInstanceValid(ui))
+            ui.AdvanceFromNativeHitbox();
+        // Only the session can advance after its transactional save succeeds.
+        return false;
+    }
+}
+
+[HarmonyPatch(typeof(NAncientEventLayout), nameof(NAncientEventLayout.DefaultFocusedControl), MethodType.Getter)]
+internal static class ShinGetterBondNativeFocusPatch
+{
+    private static bool Prefix(NAncientEventLayout __instance, ref Control? __result)
+    {
+        EventModel model = ShinGetterBondDialogueBridge.LayoutEvent(__instance);
+        if (!ShinGetterBondDialogueBridge.TryGet(model, out var state) || state.Returned) return true;
+        __result = state.Ui != null && state.Ui.TryGetTarget(out var ui) && GodotObject.IsInstanceValid(ui)
+            ? ui.DefaultFocusedControl : null;
+        return false;
+    }
+}
+
+// Native hover callbacks index the current dialogue child. During replacement or
+// cleanup the container is intentionally empty; do not inspect removed children.
+[HarmonyPatch]
+internal static class ShinGetterBondNativeLineFocusPatch
+{
+    private static IEnumerable<System.Reflection.MethodBase> TargetMethods()
+    {
+        yield return AccessTools.Method(typeof(NAncientEventLayout), "OnDialogueLineFocused");
+        yield return AccessTools.Method(typeof(NAncientEventLayout), "OnDialogueLineUnfocused");
+    }
+    private static bool Prefix(NAncientEventLayout __instance)
+    {
+        EventModel model = ShinGetterBondDialogueBridge.LayoutEvent(__instance);
+        if (!ShinGetterBondDialogueBridge.TryGet(model, out var state) || state.Returned) return true;
+        return state.Ui == null || !state.Ui.TryGetTarget(out var ui) || !ui.IsUpdatingNativeUi;
+    }
 }
 
 [HarmonyPatch(typeof(NEventRoom), nameof(NEventRoom.DefaultFocusedControl), MethodType.Getter)]

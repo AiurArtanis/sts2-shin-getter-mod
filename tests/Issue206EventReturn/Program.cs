@@ -21,7 +21,7 @@ foreach (string route in new[] { "completion", "skip", "save-failure local skip"
     var (model, layout) = Scenario();
     ShinGetterBondDialogueBridge.Attach(model, layout, layout.OnSetupComplete);
     Check(ShinGetterBondDialogueBridge.IsBlocking(model), route + ": reward blocked during reading");
-    Check(layout.Buttons.All(b => !b.IsEnabled) && !layout.Content.Visible, route + ": originals suspended");
+    Check(layout.Buttons.All(b => !b.IsEnabled && !b.Visible) && layout.Content.Visible, route + ": originals suspended, native content retained");
     NShinGetterBondDialogue.Last.Return();
     Check(layout.Buttons.All(b => b.IsEnabled), route + ": EnableButton alone left originals disabled");
     Check(layout.Buttons.All(b => LegalFixtureInput(b, model)), route + ": legal-flag fixture conditions not restored");
@@ -81,5 +81,32 @@ foreach (bool valid in new[] { false, true })
     layout.Buttons[0].Disable();
     ShinGetterBondDialogueBridge.Attach(model, layout, layout.OnSetupComplete);
     Check(!layout.Buttons[0].IsEnabled && layout.Buttons[0].EnableCalls == 0, "already-returned path reenables native state");
+}
+{
+    var (model, layout) = Scenario();
+    ShinGetterBondDialogueBridge.Attach(model, layout, layout.OnSetupComplete);
+    var ui = NShinGetterBondDialogue.Last;
+    var room = new MegaCrit.Sts2.Core.Nodes.Rooms.NEventRoom(model);
+    var local = new MegaCrit.Sts2.Core.Events.EventOption();
+    ui.LocalOption = local;
+    var route = HarmonyLib.AccessTools.Method(typeof(ShinGetterBondProtectRewardsPatch), "Prefix");
+    Check(!(bool)route.Invoke(null, new object[] { room, local })!, "local story choice leaked to native reward routing");
+    Check(ui.LocalChoiceCalls == 1, "exact local story choice was not handled");
+    Check(!(bool)route.Invoke(null, new object[] { room, layout.Buttons[0].Option })!, "original reward accepted during story");
+    Check(ui.LocalChoiceCalls == 1, "original reward mistaken for a local story option");
+    var advance = HarmonyLib.AccessTools.Method(typeof(ShinGetterBondNativeAdvancePatch), "Prefix");
+    Check(!(bool)advance.Invoke(null, new object[] { layout })! && ui.AdvanceCalls == 1, "native hitbox bypassed session-owned advance");
+    var replace = HarmonyLib.AccessTools.Method(typeof(ShinGetterBondReplaceAncientLinesPatch), "Prefix");
+    ui.IsUpdatingNativeUi = true;
+    Check((bool)replace.Invoke(null, new object[] { layout })!, "native story refresh suppressed itself");
+    var focus = HarmonyLib.AccessTools.Method(typeof(ShinGetterBondNativeLineFocusPatch), "Prefix");
+    Check(!(bool)focus.Invoke(null, new object[] { layout })!, "native hover inspected an empty replacement container");
+    ui.IsUpdatingNativeUi = false;
+    Check((bool)focus.Invoke(null, new object[] { layout })!, "normal native hover was suppressed");
+    Check(!(bool)replace.Invoke(null, new object[] { layout })!, "original dialogue entered bond flow");
+    ui.Return();
+    Check((bool)route.Invoke(null, new object[] { room, layout.Buttons[0].Option })!, "native reward routing did not resume");
+    Check((bool)advance.Invoke(null, new object[] { layout })! && ui.AdvanceCalls == 1, "native advance intercepted after return");
+    Check((bool)focus.Invoke(null, new object[] { layout })!, "native hover did not resume");
 }
 Console.WriteLine($"PASS: {assertions} production-bridge fixture assertions; NOT native Godot/input/reward proof.");
