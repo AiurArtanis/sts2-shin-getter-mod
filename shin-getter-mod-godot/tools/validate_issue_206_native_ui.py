@@ -13,13 +13,14 @@ def check():
     for forbidden in ('ConversationPanel', 'PanelContainer', 'StyleBoxFlat', 'NShinGetterBondButton', 'NSettingsButton'):
         assert forbidden not in ui, f'RED: custom dialogue panel remains: {forbidden}'
     for token in ('NAncientEventLayout', '_ancient.SetDialogue(', 'SetDialogueLineAndAnimate',
-                  'OnDialogueHitboxClicked', 'NEventOptionButton.Create', 'NBackButton',
+                  'OnDialogueHitboxClicked', 'NEventOptionButton.Create', 'MarginContainer',
                   'TalkCmd.Play', 'VfxDuration.Forever', 'StopSpeechBubble', 'RestoreNativeUi',
                   'FocusModeEnum.All', 'FocusNeighborTop', 'FocusNext', 'TryGrabFocus',
-                  '_renderGeneration', '_optionActions.Clear()', '_skipButton.Disable()',
+                  '_renderGeneration', '_optionActions.Clear()', '_buttonInsets.Clear()',
                   'SHIN_GETTER_BOND_UI_TEXT', 'IsUpdatingNativeUi', 'MarkDisplayed',
                   '_readingHeight', 'OnDialogueLineFocused', 'OnDialogueLineUnfocused'):
         assert token in ui or token in patch, token
+    assert 'NBackButton' not in ui and 'ui_cancel' not in ui, 'No normal skip input after 2026-10-11 feedback'
     assert 'oldContent?.Hide()' not in patch, 'Do not hide the reused native dialogue'
     assert 'ui.TryChooseOption(option)' in patch, 'Temporary options must be intercepted before reward routing'
     choose = ui[ui.index('internal bool TryChooseOption'):ui.index('internal void AdvanceFromNativeHitbox')]
