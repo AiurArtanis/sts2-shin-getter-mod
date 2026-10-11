@@ -265,12 +265,20 @@ internal sealed class ShinGetterBondSession
         return Commit(next =>
         {
             var encounter = next.Encounters[_key];
-            // Only the explicit confirmation after the final visible line reaches here.
+            // The native UI completes after the final line was displayed; writes
+            // still commit atomically before the original reward flow is restored.
             next.Completed.Add(encounter.DialogueId);
             if (encounter.ResultRun > 0) next.RespondedResults[_npc] = encounter.ResultRun;
             encounter.Completed = true;
             encounter.Closed = true;
         });
+    }
+
+    internal bool CompleteDisplayedFinalLine()
+    {
+        if (Encounter is not { WasShown: true, DialogueId.Length: > 0 } encounter
+            || encounter.Line != CurrentLines("zhs").Length - 1) return false;
+        return Advance();
     }
 
     internal bool ConsumeCue(int line)

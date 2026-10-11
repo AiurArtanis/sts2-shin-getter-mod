@@ -317,4 +317,25 @@ Check(newReleaseProfile.Begin() && newReleaseProfile.Encounter!.DialogueId == "N
 Check(Load().ProgressEpoch == ShinGetterBondSession.ReleaseProgressEpoch && Load().Completed.Count == 0, "new profile did not start at zero");
 SaveManager.Instance.CurrentProfileId = 4;
 Check(unchanged.SequenceEqual(File.ReadAllBytes(path)), "other profile initialization touched existing profile");
+// Feedback ②: no console mutation is required to initialize a cold eligible room.
+SaveManager.Instance.CurrentProfileId = 6;
+var automatic = Scene("NEOW", 0);
+Check(automatic.Begin() && automatic.Encounter!.DialogueId == "NEOW_FIRST_01", "cold room needed sgd to activate");
+Check(Load().ProgressEpoch == "v1.3.0" && Load().Completed.Count == 0, "cold first encounter failed to initialize once at zero");
+Check(!automatic.CompleteDisplayedFinalLine() && !automatic.Closed, "unshown line auto-completed");
+Check(automatic.MarkDisplayed(), automatic.Error);
+Check(!automatic.CompleteDisplayedFinalLine(), "intermediate line auto-completed");
+while (automatic.Encounter!.Line < automatic.CurrentLines("zhs").Length - 1)
+    Check(automatic.Advance(), automatic.Error);
+byte[] beforeAutomaticWrite = File.ReadAllBytes(SaveManager.Instance.GetProfileScopedPath("shin_getter_bonds.json"));
+using (new FileStream(SaveManager.Instance.GetProfileScopedPath("shin_getter_bonds.json") + ".lock", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+    Check(!automatic.CompleteDisplayedFinalLine(), "automatic completion ignored write lock");
+Check(!automatic.Closed && beforeAutomaticWrite.SequenceEqual(File.ReadAllBytes(SaveManager.Instance.GetProfileScopedPath("shin_getter_bonds.json"))), "failed auto-completion published progress");
+Check(automatic.CompleteDisplayedFinalLine() && automatic.Closed, "displayed final line required another finish button");
+Check(Load().Completed.Contains("NEOW_FIRST_01"), "automatic completion not persisted");
+long revisionAfterAutomatic = Load().Revision;
+Check(!automatic.CompleteDisplayedFinalLine() && Load().Revision == revisionAfterAutomatic, "duplicate completion committed twice");
+var coldCompleted = Scene("NEOW", 0);
+Check(coldCompleted.Begin() && coldCompleted.Closed, "cold completed encounter reopened");
+Check(Load().ProgressEpoch == "v1.3.0" && Load().Revision == revisionAfterAutomatic, "restart reinitialized valid release progress");
 Console.WriteLine($"PASS: {checks} managed assertions, linked production source; NOT Godot/game acceptance.");

@@ -55,6 +55,10 @@ internal sealed partial class NShinGetterBondDialogue : Control
     private int _renderGeneration;
     private bool _nativeRestored;
     private Action? _retry;
+    private double _completionWait;
+    private bool _completionPending;
+    private bool _finishingDisplayedDialogue;
+    private string? _finalAncientSfx;
     private AudioStreamPlayer? _voice;
     private double _voiceTimeout;
     private bool _closed;
@@ -70,10 +74,10 @@ internal sealed partial class NShinGetterBondDialogue : Control
     private static bool IsEventActive => NEventRoom.Instance != null
         && ActiveScreenContext.Instance.IsCurrent(NEventRoom.Instance);
 
-    internal static NShinGetterBondDialogue Create(ShinGetterBondSession session, EventModel model, NEventLayout layout, Action returnToEvent) => new()
+    internal static NShinGetterBondDialogue Create(ShinGetterBondSession session, EventModel model, NEventLayout layout, Action returnToEvent, string? finalAncientSfx = null) => new()
     {
         Name = "ShinGetterBondDialogue", _session = session, _model = model,
-        _layout = layout, _returnToEvent = returnToEvent,
+        _layout = layout, _returnToEvent = returnToEvent, _finalAncientSfx = finalAncientSfx,
     };
 
     public override void _Ready()
@@ -123,6 +127,15 @@ internal sealed partial class NShinGetterBondDialogue : Control
                 StopVoice();
         }
         if (_language != LocManager.Instance.Language) Render();
+        if (_completionPending && _retry == null && IsEventActive)
+        {
+            _completionWait -= delta;
+            if (_completionWait <= 0 && _voice is not { Playing: true })
+            {
+                _completionPending = false;
+                Attempt(CompleteFinalLine);
+            }
+        }
     }
 
     // Native OnRelease owns input; intercept only our exact scene-local options.
@@ -161,6 +174,7 @@ internal sealed partial class NShinGetterBondDialogue : Control
     {
         if (!_ready || _closed) return;
         int generation = ++_renderGeneration;
+        _completionPending = false;
         _language = LocManager.Instance.Language;
         ClearTemporaryOptions();
         var encounter = _session.Encounter;
@@ -181,10 +195,8 @@ internal sealed partial class NShinGetterBondDialogue : Control
         {
             lines = _session.CurrentLines(_language);
             current = encounter.Line;
-            if (_retry == null && (current == lines.Length - 1 || _ancient == null))
-                AddButton(current == lines.Length - 1
-                    ? ShinGetterDialogueCatalog.Ui("结束交谈", "Finish conversation", "会話を終える")
-                    : ShinGetterDialogueCatalog.Ui("继续", "Continue", "続ける"), Next);
+            if (_retry == null && _ancient == null && current < lines.Length - 1)
+                AddButton(ShinGetterDialogueCatalog.Ui("继续", "Continue", "続ける"), Next);
         }
         if (_retry != null)
         {
@@ -210,6 +222,13 @@ internal sealed partial class NShinGetterBondDialogue : Control
             }
             ConfigureFocus();
             if (_retry == null && encounter is { DialogueId.Length: > 0 }) TryCue(encounter);
+            if (_retry == null && encounter is { DialogueId.Length: > 0 } && current == lines.Length - 1)
+            {
+                // Wait for the native line/scroll reveal and approved story cue,
+                // not another confirmation button. The final lines remain readable.
+                _completionWait = 1.0;
+                _completionPending = true;
+            }
             if (IsEventActive) DefaultFocusedControl?.TryGrabFocus();
         }).CallDeferred();
     }
@@ -245,6 +264,7 @@ internal sealed partial class NShinGetterBondDialogue : Control
                 // must not leave it expanded over the next story's Continue arrow.
                 if (current < lines.Length - 1 && _nativeContent != null)
                     _nativeContent.Size = new Vector2(_nativeContent.Size.X, _readingHeight);
+                RecenterNativeContent(_ancient!);
                 AnimateLine.Invoke(_ancient, new object[] { current });
                 ConfigureFocus();
             }
@@ -274,6 +294,61 @@ internal sealed partial class NShinGetterBondDialogue : Control
         var result = new LocString("ancients", "SHIN_GETTER_BOND_UI_TEXT");
         result.Add("text", text);
         return result;
+    }
+
+    private bool CompleteFinalLine()
+    {
+        if (!_session.CompleteDisplayedFinalLine()) return false;
+        _finishingDisplayedDialogue = true;
+        return true;
+    }
+
+    internal static void RestoreRewardPage(NAncientEventLayout layout, ShinGetterBondSession session)
+    {
+        // Only a completed dialogue has a retained tail. Skips/errors never grant
+        // completion or replay a voice. Keep the original reward button instances.
+        if (session.Encounter is { Completed: true, DialogueId.Length: > 0 })
+        {
+            try
+            {
+                string[] tail = session.CurrentLines(LocManager.Instance.Language).TakeLast(2).ToArray();
+                layout.ClearDialogue();
+                layout.SetDialogue(tail.Select(text => new AncientDialogueLine("")
+                {
+                    LineText = NativeText(text), Speaker = Speaker(text),
+                }).ToArray());
+                foreach (var line in layout.GetNode<VBoxContainer>("%DialogueContainer").GetChildren().OfType<NAncientDialogueLine>())
+                    line.SetSpeakerIconVisible();
+                layout.GetNode<VBoxContainer>("%DialogueContainer").ResetSize();
+            }
+            catch (Exception ex)
+            {
+                GD.PushWarning("Completed dialogue tail unavailable: " + ex.Message);
+                layout.ClearDialogue(); // A damaged old tail must never block legal rewards.
+            }
+        }
+        layout.GetNode<VBoxContainer>("%OptionsContainer").ResetSize();
+        layout.GetNode<VBoxContainer>("%Content").ResetSize();
+        var options = layout.OptionButtons.ToArray();
+        Callable.From(() =>
+        {
+            if (!Valid(layout) || !options.SequenceEqual(layout.OptionButtons)) return;
+            RecenterNativeContent(layout);
+            int last = layout.GetNode<VBoxContainer>("%DialogueContainer").GetChildCount() - 1;
+            AnimateLine.Invoke(layout, new object[] { Math.Max(0, last) });
+        }).CallDeferred();
+    }
+
+    private static void RecenterNativeContent(NAncientEventLayout layout)
+    {
+        var viewport = layout.GetNode<Control>("%ContentContainer");
+        var content = layout.GetNode<VBoxContainer>("%Content");
+        // ResetSize grows minimum widths without recentering old offsets. Correct
+        // the clipping viewport AND the content, including after rewards return.
+        float width = Math.Max(1160, content.Size.X + 64);
+        viewport.OffsetLeft = -width / 2;
+        viewport.OffsetRight = width / 2;
+        content.Position = new Vector2((viewport.Size.X - content.Size.X) / 2, content.Position.Y);
     }
 
     private void AddButton(string text, Action action, bool dialogueOption = false)
@@ -464,8 +539,15 @@ internal sealed partial class NShinGetterBondDialogue : Control
     {
         if (_closed) return;
         _closed = true;
+        _completionPending = false;
         ReleaseConsoleGuard();
         StopVoice();
+        if (_finishingDisplayedDialogue && !string.IsNullOrEmpty(_finalAncientSfx))
+        {
+            try { SfxCmd.Play(_finalAncientSfx); }
+            catch (Exception ex) { GD.PushWarning("Ancient closing voice unavailable: " + ex.Message); }
+        }
+        _finalAncientSfx = null;
         RestoreNativeUi();
         Hide();
         var continuation = _returnToEvent;
