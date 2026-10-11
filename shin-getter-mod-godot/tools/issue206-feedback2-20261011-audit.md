@@ -33,3 +33,11 @@
 - 正式109引用build 0 warning/0 error；生产源码Console/进度919断言、Bridge 63断言PASS。新增覆盖：无sgd冷初始化、未显示/中间句不完成、完成写锁失败回滚、自动完成仅一次、同房已闭合恢复与epoch不重复清零；以及不经SetDialogue的冷接管、排除已结束/不合格事件、复用/缺失NPC音效路径。
 - 临时环境与UI为managed stand-ins，未启动Godot/游戏、未验证物理输入/实际排版/FM​​OD听感，未PCK/初始化/部署/PR/合并/发布。不把静态/算术/夹具PASS当作反馈图中的裁切已人工验收。
 - 不改119套对白、63段三语文本、图像/声音素材、主开发PCK工具、根用户状态及共享部署；完成后交主开发独立审核。
+
+## 第二轮修正：原生旧Tween覆盖居中X
+
+- 主开发对0947b089独立审核指出P1：两处调用虽然先居中，原生SetDialogueLineAndAnimate仍会先Pause/CustomStep旧position Tween，再创建新目标，因此旧X覆盖纠正值。上述首轮算术/managed PASS未覆盖这个行为，不能作消除此P1的依据。
+- 原支线普通追加修正，不改旧提交：两条路径共同在RecenterNativeContent入口先调用生产`ShinGetterContentTweenGuard.Stop(ref ContentTween(layout))`，Kill旧Tween并清空真实FieldRef，然后测量/居中，再调用原生动画。清理对白也使用同一Kill/clear逻辑；不在新动画开始后强写X、不快进旧焦点回调。
+- 新隔离Godot.NET fixture `tests/Issue206NativeTween`直接链接这个仅依赖Godot的生产guard源码。旧顺序三场景均RED（fresh resume 48→80、阅读增宽32→80、阅读缩窄80→16）；正确顺序19条真实Control/Tween断言GREEN，新动画捕获/中途/结束X均正确，旧字段null、Tween失效、旧焦点回调未快进。夹具仅模拟正式109相关动画顺序，不加载游戏/模组/Harmony/资源/玩家存档，不冒称完整原版布局执行或视觉验收。
+- 新生产顺序门禁与6个回退突变PASS；总计8份206 validate、5组mutation（4/9/11/8/6）。919 Console与63 Bridge复跑PASS；正式109产品build与空API probe build各0 warning/0 error，56 tracked JSON/BAD=0、diff-check PASS。实际GIF裁切、输入和FMOD听感仍由Artanis验收。
+- 工单保留96项人工待测原文，不把本轮工程审核/探针放入测试反馈。无PR/合并/PCK/初始化/部署/发布，原支线修正后再次交主开发独立审核。

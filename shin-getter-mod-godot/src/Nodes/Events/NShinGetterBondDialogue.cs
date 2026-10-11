@@ -341,6 +341,7 @@ internal sealed partial class NShinGetterBondDialogue : Control
 
     private static void RecenterNativeContent(NAncientEventLayout layout)
     {
+        ShinGetterContentTweenGuard.Stop(ref ContentTween(layout));
         var viewport = layout.GetNode<Control>("%ContentContainer");
         var content = layout.GetNode<VBoxContainer>("%Content");
         // ResetSize grows minimum widths without recentering old offsets. Correct
@@ -419,7 +420,7 @@ internal sealed partial class NShinGetterBondDialogue : Control
     {
         StopSpeechBubble();
         if (!Valid(_ancient)) return;
-        ContentTween(_ancient!)?.Kill();
+        ShinGetterContentTweenGuard.Stop(ref ContentTween(_ancient!));
         IsUpdatingNativeUi = true;
         try { _ancient!.ClearDialogue(); }
         finally { IsUpdatingNativeUi = false; }
