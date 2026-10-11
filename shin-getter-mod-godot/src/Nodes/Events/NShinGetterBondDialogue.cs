@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Godot;
 using HarmonyLib;
-using MegaCrit.Sts2.Core.Assets;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Ancients;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -16,7 +15,6 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Events;
-using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Nodes.Events;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
@@ -44,13 +42,12 @@ internal sealed partial class NShinGetterBondDialogue : Control
     private Action? _returnToEvent;
     private VBoxContainer _column = null!;
     private readonly List<NEventOptionButton> _buttons = new();
+    private readonly List<MarginContainer> _buttonInsets = new();
     private readonly Dictionary<EventOption, Action> _optionActions = new();
     private readonly List<(NEventOptionButton Button, bool Visible, FocusModeEnum Focus)> _originalOptions = new();
     private NAncientDialogueHitbox? _hitbox;
     private Control? _nativeContent;
     private float _readingHeight;
-    private NBackButton? _skipButton;
-    private Callable _skipReleased;
     private NSpeechBubbleVfx? _speechBubble;
     private Control? _eventDescription;
     private bool _descriptionWasVisible;
@@ -69,7 +66,7 @@ internal sealed partial class NShinGetterBondDialogue : Control
     internal bool IsUpdatingNativeUi { get; private set; }
     internal Control? DefaultFocusedControl => _emergencyFocus
         ?? (Control?)_buttons.FirstOrDefault(b => b.IsEnabled && b.IsVisibleInTree())
-        ?? (_hitbox is { IsEnabled: true } && _hitbox.IsVisibleInTree() ? _hitbox : _skipButton);
+        ?? (_hitbox is { IsEnabled: true } && _hitbox.IsVisibleInTree() ? _hitbox : null);
     private static bool IsEventActive => NEventRoom.Instance != null
         && ActiveScreenContext.Instance.IsCurrent(NEventRoom.Instance);
 
@@ -113,14 +110,6 @@ internal sealed partial class NShinGetterBondDialogue : Control
             _descriptionWasVisible = _eventDescription?.Visible == true;
             _eventDescription?.Hide();
         }
-        _skipButton = PreloadManager.Cache.GetScene(SceneHelper.GetScenePath("ui/back_button")).Instantiate<NBackButton>();
-        _skipButton.Name = "SkipBondConversation";
-        _skipButton.FocusMode = FocusModeEnum.All; // native ConnectSignals captures navigability in _Ready
-        _skipReleased = Callable.From<NClickableControl>(_ => { if (!_closed && IsEventActive) Skip(); });
-        _skipButton.Connect(NClickableControl.SignalName.Released, _skipReleased);
-        AddChild(_skipButton);
-        _skipButton.FocusMode = FocusModeEnum.All;
-        _skipButton.Enable();
         Attempt(() => _session.Begin());
     }
 
@@ -134,15 +123,6 @@ internal sealed partial class NShinGetterBondDialogue : Control
                 StopVoice();
         }
         if (_language != LocManager.Instance.Language) Render();
-    }
-
-    public override void _UnhandledInput(InputEvent input)
-    {
-        if (!_closed && IsEventActive && input.IsActionPressed("ui_cancel"))
-        {
-            Skip();
-            GetViewport().SetInputAsHandled();
-        }
     }
 
     // Native OnRelease owns input; intercept only our exact scene-local options.
@@ -183,8 +163,6 @@ internal sealed partial class NShinGetterBondDialogue : Control
         int generation = ++_renderGeneration;
         _language = LocManager.Instance.Language;
         ClearTemporaryOptions();
-        if (_skipButton != null)
-            _skipButton.TooltipText = ShinGetterDialogueCatalog.Ui("跳过本次交谈", "Skip this conversation", "今回の会話をスキップ");
         var encounter = _session.Encounter;
         string[] lines;
         int current;
@@ -196,7 +174,7 @@ internal sealed partial class NShinGetterBondDialogue : Control
                 foreach (string id in _session.Choices)
                 {
                     string selected = id;
-                    AddButton(ShinGetterDialogueCatalog.Localize(id).Option, () => Attempt(() => _session.Select(selected)));
+                    AddButton(ShinGetterDialogueCatalog.Localize(id).Option, () => Attempt(() => _session.Select(selected)), dialogueOption: true);
                 }
         }
         else
@@ -216,6 +194,8 @@ internal sealed partial class NShinGetterBondDialogue : Control
                 "会話の進行を保存できませんでした。以前の進行は変わりません。再試行するか、今回の会話をスキップしてください。")).ToArray();
             current = lines.Length - 1;
             AddButton(ShinGetterDialogueCatalog.Ui("重试保存", "Retry", "再試行"), () => _retry?.Invoke());
+            // Recovery only: normal story pages have neither a Back button nor a cancel shortcut.
+            AddButton(ShinGetterDialogueCatalog.Ui("跳过本次交谈", "Skip this conversation", "今回の会話をスキップ"), Skip);
         }
         if (_ancient != null) RenderAncient(lines, current, generation);
         else RenderArchitect(lines[current]);
@@ -296,12 +276,24 @@ internal sealed partial class NShinGetterBondDialogue : Control
         return result;
     }
 
-    private void AddButton(string text, Action action)
+    private void AddButton(string text, Action action, bool dialogueOption = false)
     {
-        var option = new EventOption(_model, () => Task.CompletedTask, NativeText(text), NativeText(""),
+        // Native nonempty titles are wrapped in gold/bold. Dialogue choices are
+        // body text instead: only the existing speaker name tags supply color.
+        var option = new EventOption(_model, () => Task.CompletedTask,
+            NativeText(dialogueOption ? "" : text), NativeText(dialogueOption ? text : ""),
             "SHIN_GETTER_BOND_LOCAL", Array.Empty<IHoverTip>()).ThatWontSaveToChoiceHistory();
         var button = NEventOptionButton.Create(_model, option, _buttons.Count);
-        _column.AddChild(button);
+        // Preserve native hover/press visuals, reserving space for the outline
+        // outside the button rect. Never shrink/clip the outline to hide overflow.
+        var inset = new MarginContainer { MouseFilter = MouseFilterEnum.Ignore, FocusMode = FocusModeEnum.None };
+        inset.AddThemeConstantOverride("margin_left", 32);
+        inset.AddThemeConstantOverride("margin_right", 32);
+        inset.AddThemeConstantOverride("margin_top", 24);
+        inset.AddThemeConstantOverride("margin_bottom", 24);
+        _column.AddChild(inset);
+        _buttonInsets.Add(inset);
+        inset.AddChild(button);
         _buttons.Add(button);
         _optionActions.Add(option, action);
         button.FocusMode = FocusModeEnum.All;
@@ -314,7 +306,6 @@ internal sealed partial class NShinGetterBondDialogue : Control
     {
         var controls = _buttons.Where(b => Valid(b) && b.IsVisibleInTree()).Cast<Control>().ToList();
         if (Valid(_hitbox) && _hitbox!.IsEnabled && _hitbox.IsVisibleInTree()) controls.Insert(0, _hitbox);
-        if (Valid(_skipButton)) controls.Add(_skipButton!);
         for (int i = 0; i < controls.Count; i++)
         {
             var control = controls[i];
@@ -338,9 +329,14 @@ internal sealed partial class NShinGetterBondDialogue : Control
         {
             if (!GodotObject.IsInstanceValid(button)) continue;
             button.Disable();
-            button.GetParent()?.RemoveChild(button);
-            button.QueueFree();
         }
+        foreach (var inset in _buttonInsets)
+        {
+            if (!GodotObject.IsInstanceValid(inset)) continue;
+            inset.GetParent()?.RemoveChild(inset);
+            inset.QueueFree(); // Owns its native button and all of that button's signals/tweens.
+        }
+        _buttonInsets.Clear();
         _buttons.Clear();
     }
 
@@ -383,13 +379,6 @@ internal sealed partial class NShinGetterBondDialogue : Control
         ClearNativeDialogue();
         RestoreOptionsVisibility();
         if (Valid(_eventDescription)) _eventDescription!.Visible = _descriptionWasVisible;
-        if (_skipButton != null && GodotObject.IsInstanceValid(_skipButton))
-        {
-            _skipButton.Disable();
-            if (_skipButton.IsConnected(NClickableControl.SignalName.Released, _skipReleased))
-                _skipButton.Disconnect(NClickableControl.SignalName.Released, _skipReleased);
-        }
-        _skipButton = null;
     }
 
     private void ShowFatalError(Exception ex)
@@ -400,7 +389,6 @@ internal sealed partial class NShinGetterBondDialogue : Control
         StopVoice();
         ClearTemporaryOptions();
         ClearNativeDialogue();
-        _skipButton?.Disable();
         // Only asset-failure recovery uses built-ins; normal UI never draws a panel.
         foreach (Node child in GetChildren()) { RemoveChild(child); child.QueueFree(); }
         var box = new VBoxContainer { Position = new Vector2(80, 160), Size = new Vector2(900, 240) };

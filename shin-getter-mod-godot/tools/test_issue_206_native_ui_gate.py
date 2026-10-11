@@ -20,7 +20,8 @@ fixtures = {
     'reward selection instead of local routing': (ui, bridge.replace('ui.TryChooseOption(option)', 'ui.ChooseLocalOption(option)')),
     'native content hidden': (ui, bridge + '\noldContent?.Hide()'),
     'completion does not release native UI': (ui.replace('        RestoreNativeUi();\n        Hide();', '        Hide();'), bridge),
-    'skip hotkeys not disabled': (ui.replace('_skipButton.Disable()', '_skipButton.Hide()'), bridge),
+    'normal skip shortcut returns': (ui + '\nui_cancel', bridge),
+    'temporary inset cleanup missing': (ui.replace('_buttonInsets.Clear()', ''), bridge),
 }
 for name, (bad_ui, bad_bridge) in fixtures.items():
     def read(path, *args, **kwargs):
