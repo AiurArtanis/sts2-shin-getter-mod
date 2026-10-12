@@ -1,1 +1,6 @@
-v1.3.0: Added Ancient bonds and team dialogue routes; reworked Shin Getter Dragon's Shining Spark and Star-Slashing Axe for Shin Getter 1/Dragon, with axe preparation voices; adjusted cards and balance; updated eight illustrations; fixed reward input, icon ordering, hover descriptions blocking input and repeated free purchases. Added sgd. Stable 109; updated 111 Beta compatibility is a separate delivery.
+v1.3.0 2026-10-12
+- Added Ancient bonds: crossover interactions between the three-pilot team and the Ancients.
+- Reworked Shining Spark and Star-Slashing Axe.
+- Adjusted Drive, Shift Strike and Fighting Spirit card effects.
+- Updated eight card illustrations and the compact card atlas, correcting all texture references and sampling boundaries.
+- Fixed repeated Good Citizen Card free purchases on the same map.

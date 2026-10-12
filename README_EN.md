@@ -49,17 +49,17 @@ The content currently registered in the `v1.3.0` source includes:
 
 ## Ancient bonds
 
-In a standard single-player Shin Getter run, complete the shared first meeting, then choose separate conversations with Ryoma, Hayato or Benkei. Their stories progress independently and relationships persist across runs. Reloading the same room restores the current conversation, and skipping it still leaves the original event reward available. Familiar themes unlock as bonds develop, with dedicated Neow and Architect dialogue and story callbacks.
+In a standard single-player Shin Getter run, complete the shared first meeting, then choose separate conversations with Ryoma, Hayato or Benkei. Their stories progress independently and relationships persist across runs. Reloading the same room restores the current conversation. Familiar themes unlock as bonds develop, with dedicated Neow and Architect dialogue and story callbacks.
 
 These stories do not replace the original event's combat, rewards or scoring. The `sgd` console command inspects and constructs bond progress; changing progress is a debugging operation.
 
-## v1.3.0 release notes
+## v1.3.0 2026-10-12
 
-- **Ancient bonds:** Added team-member conversation routes, persistent relationships and expanded Neow/Architect dialogue.
-- **Ultimate presentations:** Reworked Shin Getter Dragon's Shining Spark and Star-Slashing Axe for Shin Getter 1 and Shin Getter Dragon, combining sprite animation with Godot energy and weapon VFX. Added Star-Slashing Axe preparation voices and improved pause/resume and post-kill recovery.
-- **Cards and balance:** Adjusted Shining Spark, Star-Slashing Axe, Shift Strike, upgraded Spirit and Fighting Spirit for clearer transformation and finishing-attack payoffs.
-- **Card art:** Updated eight illustrations, migrated the compact atlas and corrected card texture coordinates and sampling boundaries.
-- **Fixes and tools:** Fixed bond-reward input, event-icon ordering, hover overlays blocking card-selection input and repeated free purchases on the same map. Added the `sgd` progress command.
+- Added Ancient bonds: crossover interactions between the three-pilot team and the Ancients.
+- Reworked Shining Spark and Star-Slashing Axe.
+- Adjusted Drive, Shift Strike and Fighting Spirit card effects.
+- Updated eight card illustrations and the compact card atlas, correcting all texture references and sampling boundaries.
+- Fixed repeated Good Citizen Card free purchases on the same map.
 
 These additions target stable 109; updated 111 Beta compatibility is a separate delivery. The fourth event-invasion batch and the unconfirmed fighter-separation animation report are not part of this version.
 
