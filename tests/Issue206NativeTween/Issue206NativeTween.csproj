@@ -1,0 +1,10 @@
+<Project Sdk="Godot.NET.Sdk/4.5.1">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../shin-getter-mod-godot/src/Nodes/Events/ShinGetterContentTweenGuard.cs" Link="Production/ShinGetterContentTweenGuard.cs" />
+  </ItemGroup>
+</Project>

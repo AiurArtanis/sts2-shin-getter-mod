@@ -26,6 +26,7 @@ internal static class ShinGetterBondDialogueBridge
         internal readonly ShinGetterBondSession Session;
         internal WeakReference<NShinGetterBondDialogue>? Ui;
         internal bool Returned;
+        internal string? FinalAncientSfx;
         internal State(EventModel model) { Session = new(model); }
     }
     private static readonly ConditionalWeakTable<EventModel, State> States = new();
@@ -35,9 +36,18 @@ internal static class ShinGetterBondDialogueBridge
     internal static bool TryGet(EventModel model, out State state) => States.TryGetValue(model, out state!);
     internal static bool IsBlocking(EventModel model) => TryGet(model, out var state) && !state.Returned;
 
+    internal static string? ResolveFinalAncientSfx(EventModel model)
+    {
+        // Reuse declared native sounds, without a new NPC path table or RNG draw.
+        return model is AncientEventModel ancient ? ancient.DialogueSet.GetAllDialogues()
+            .SelectMany(dialogue => dialogue.Lines).Select(line => line.GetSfxOrFallbackPath())
+            .FirstOrDefault(path => path.StartsWith("event:/sfx/npcs/", StringComparison.Ordinal)) : null;
+    }
+
     internal static void Attach(EventModel model, NEventLayout layout, Action resume)
     {
         State state = Get(model);
+        state.FinalAncientSfx ??= ResolveFinalAncientSfx(model);
         if (state.Returned) { resume(); return; }
         if (state.Ui != null && state.Ui.TryGetTarget(out var existing) && GodotObject.IsInstanceValid(existing) && existing.IsInsideTree()) return;
         // Own only the enabled states suspended by this dialogue. EnableButton in
@@ -58,11 +68,12 @@ internal static class ShinGetterBondDialogueBridge
             }
             // Restore before native continuation: its lock/vote/choice state wins.
             resume();
+            if (layout is NAncientEventLayout ancient) NShinGetterBondDialogue.RestoreRewardPage(ancient, state.Session);
             Callable.From(() =>
             {
                 if (GodotObject.IsInstanceValid(layout) && layout.IsInsideTree()) layout.DefaultFocusedControl?.TryGrabFocus();
             }).CallDeferred();
-        });
+        }, state.FinalAncientSfx);
         state.Ui = new(ui);
         layout.AddChild(ui);
     }
@@ -77,6 +88,7 @@ internal static class ShinGetterBondReplaceAncientLinesPatch
     {
         EventModel model = ShinGetterBondDialogueBridge.LayoutEvent(__instance);
         if (!ShinGetterBondSession.IsEligible(model)) return true;
+        if (ShinGetterBondDialogueBridge.TryGet(model, out var returned) && returned.Returned) return true;
         if (ShinGetterBondDialogueBridge.TryGet(model, out var state) && state.Ui != null
             && state.Ui.TryGetTarget(out var ui) && ui.IsUpdatingNativeUi) return true;
         ShinGetterBondDialogueBridge.Get(model);
@@ -91,7 +103,11 @@ internal static class ShinGetterBondAncientSetupPatch
     private static bool Prefix(NAncientEventLayout __instance)
     {
         EventModel model = ShinGetterBondDialogueBridge.LayoutEvent(__instance);
-        if (!ShinGetterBondDialogueBridge.TryGet(model, out var state) || state.Returned) return true;
+        // SetupLayout omits SetDialogue on resumed/pre-finished rooms. Do not use
+        // that optional call as the only feature initialization/attachment gate.
+        if (!ShinGetterBondSession.IsEligible(model) || model.IsFinished) return true;
+        ShinGetterBondDialogueBridge.State state = ShinGetterBondDialogueBridge.Get(model);
+        if (state.Returned) return true;
         ShinGetterBondDialogueBridge.Attach(model, __instance, () => __instance.OnSetupComplete());
         return false;
     }

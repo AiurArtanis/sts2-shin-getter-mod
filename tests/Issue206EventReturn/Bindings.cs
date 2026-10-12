@@ -23,11 +23,23 @@ namespace Godot
         public void CallDeferred() => Deferred.Add(action);
     }
 }
-namespace MegaCrit.Sts2.Core.Entities.Ancients { public enum ArchitectAttackers { Player } }
+namespace MegaCrit.Sts2.Core.Entities.Ancients
+{
+    public enum ArchitectAttackers { Player }
+    public sealed class AncientDialogueLine(string sound)
+    {
+        public string GetSfxOrFallbackPath() => string.IsNullOrEmpty(sound) ? "event:/sfx/ui/enchant_simple" : sound;
+    }
+    public sealed class AncientDialogueSet
+    {
+        public List<MegaCrit.Sts2.Core.Events.AncientDialogue> Dialogues { get; } = new();
+        public IEnumerable<MegaCrit.Sts2.Core.Events.AncientDialogue> GetAllDialogues() => Dialogues;
+    }
+}
 namespace MegaCrit.Sts2.Core.Events
 {
     public sealed class EventOption { public bool IsLocked { get; set; } }
-    public sealed class AncientDialogue(string text) { public string Text { get; } = text; public MegaCrit.Sts2.Core.Entities.Ancients.ArchitectAttackers EndAttackers { get; set; } }
+    public sealed class AncientDialogue(string text) { public string Text { get; } = text; public List<MegaCrit.Sts2.Core.Entities.Ancients.AncientDialogueLine> Lines { get; } = new(); public MegaCrit.Sts2.Core.Entities.Ancients.ArchitectAttackers EndAttackers { get; set; } }
 }
 namespace MegaCrit.Sts2.Core.Localization { public sealed class LocString(string table, string key) { public string Table { get; } = table; public string Key { get; } = key; } }
 namespace MegaCrit.Sts2.Core.Models
@@ -36,7 +48,12 @@ namespace MegaCrit.Sts2.Core.Models
     {
         public Godot.Control? Node { get; set; }
         public bool Eligible { get; set; } = true;
+        public bool IsFinished { get; set; }
         protected void SetEventState(MegaCrit.Sts2.Core.Localization.LocString description, IEnumerable<MegaCrit.Sts2.Core.Events.EventOption> options) { }
+    }
+    public class AncientEventModel : EventModel
+    {
+        public MegaCrit.Sts2.Core.Entities.Ancients.AncientDialogueSet DialogueSet { get; } = new();
     }
 }
 namespace MegaCrit.Sts2.Core.Models.Events
@@ -126,12 +143,15 @@ namespace ShinGetterMod.Nodes.Events
         internal MegaCrit.Sts2.Core.Events.EventOption? LocalOption { get; set; }
         private List<(MegaCrit.Sts2.Core.Nodes.Events.NEventOptionButton Button, bool Visible)> _hidden = new();
         internal static NShinGetterBondDialogue Create(ShinGetterMod.Services.ShinGetterBondSession session,
-            MegaCrit.Sts2.Core.Models.EventModel model, MegaCrit.Sts2.Core.Nodes.Events.NEventLayout layout, Action resume)
+            MegaCrit.Sts2.Core.Models.EventModel model, MegaCrit.Sts2.Core.Nodes.Events.NEventLayout layout, Action resume, string? finalAncientSfx = null)
         {
             Last = new() { _return = resume };
             foreach (var button in layout.Buttons) { Last._hidden.Add((button, button.Visible)); button.Hide(); }
             return Last;
         }
+        internal static int RewardLayoutRestores { get; private set; }
+        internal static void RestoreRewardPage(MegaCrit.Sts2.Core.Nodes.Events.NAncientEventLayout layout, ShinGetterMod.Services.ShinGetterBondSession session)
+            => RewardLayoutRestores++; // Dispatch only, never a rendered/native layout assertion.
         internal bool TryChooseOption(MegaCrit.Sts2.Core.Events.EventOption option)
         {
             if (!ReferenceEquals(LocalOption, option)) return false;

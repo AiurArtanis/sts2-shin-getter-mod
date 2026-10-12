@@ -109,4 +109,32 @@ foreach (bool valid in new[] { false, true })
     Check((bool)advance.Invoke(null, new object[] { layout })! && ui.AdvanceCalls == 1, "native advance intercepted after return");
     Check((bool)focus.Invoke(null, new object[] { layout })!, "native hover did not resume");
 }
+{
+    var (model, layout) = Scenario(); // Cold resume: no SetDialogue/Get call happened.
+    Check(!ShinGetterBondDialogueBridge.TryGet(model, out _), "cold fixture already initialized");
+    var setup = HarmonyLib.AccessTools.Method(typeof(ShinGetterBondAncientSetupPatch), "Prefix");
+    Check(!(bool)setup.Invoke(null, new object[] { layout })!, "cold resume skipped bond attach");
+    Check(ShinGetterBondDialogueBridge.IsBlocking(model) && layout.Buttons.All(b => !b.IsEnabled), "cold resume rewards not suspended");
+    NShinGetterBondDialogue.Last.Return();
+    Check(layout.Resumes == 1 && layout.Buttons.All(b => b.IsEnabled), "cold resume completion did not restore originals");
+}
+foreach (string blocked in new[] { "ineligible", "finished" })
+{
+    var (model, layout) = Scenario();
+    if (blocked == "ineligible") model.Eligible = false;
+    else model.IsFinished = true;
+    var setup = HarmonyLib.AccessTools.Method(typeof(ShinGetterBondAncientSetupPatch), "Prefix");
+    Check((bool)setup.Invoke(null, new object[] { layout })!, blocked + ": injected story into excluded/claimed event");
+    Check(!ShinGetterBondDialogueBridge.TryGet(model, out _), blocked + ": created relationship controller");
+}
+{
+    var npc = new AncientEventModel();
+    var dialogue = new MegaCrit.Sts2.Core.Events.AncientDialogue("");
+    dialogue.Lines.Add(new(""));
+    dialogue.Lines.Add(new("event:/sfx/npcs/neow/neow_welcome"));
+    npc.DialogueSet.Dialogues.Add(dialogue);
+    Check(ShinGetterBondDialogueBridge.ResolveFinalAncientSfx(npc) == "event:/sfx/npcs/neow/neow_welcome", "declared NPC sound not reused");
+    Check(ShinGetterBondDialogueBridge.ResolveFinalAncientSfx(new EventModel()) == null, "non-ancient invented NPC sound");
+    Check(ShinGetterBondDialogueBridge.ResolveFinalAncientSfx(new AncientEventModel()) == null, "empty native sound set invented sound");
+}
 Console.WriteLine($"PASS: {assertions} production-bridge fixture assertions; NOT native Godot/input/reward proof.");
