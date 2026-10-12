@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net9.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../shin-getter-mod-godot/src/Services/ShinGetterControllerMappingPolicy.cs" Link="Production/Policy.cs" />
+    <Compile Include="../../shin-getter-mod-godot/src/Patches/ShinGetterControllerMappingCompatibilityPatch.cs" Link="Production/Patch.cs" />
+    <Reference Include="0Harmony"><HintPath>../../shin-getter-mod-godot/lib/0Harmony.dll</HintPath></Reference>
+  </ItemGroup>
+</Project>
