@@ -20,6 +20,9 @@ namespace ShinGetterMod.Services;
 /// </summary>
 internal static class ShinGetterCombatRenderPreparation
 {
+    // Shared by all stages/draws, not a fresh timeout per draw. Normal measured
+    // preparation is about 3.3s; 10s allows cold-driver variation without infinity.
+    private static readonly TimeSpan PreparationBudget = TimeSpan.FromSeconds(10);
     private static readonly string[] ScenePaths =
     {
         "res://scenes/combat/energy_counters/shin_getter_energy_counter.tscn",
@@ -38,7 +41,7 @@ internal static class ShinGetterCombatRenderPreparation
 
     public static Task PrepareAsync(IRunState runState)
     {
-        if (TestMode.IsOn || DisplayServer.GetName() == "headless"
+        if (TestMode.IsOn || DisplayServer.GetName() == "headless" || !RenderingServer.RenderLoopEnabled
             || !runState.Players.Any(p => p.Character is ShinGetter)
             || NGame.Instance is not { } game || !game.IsInsideTree())
             return Task.CompletedTask;
@@ -58,6 +61,8 @@ internal static class ShinGetterCombatRenderPreparation
         SubViewport? host = null;
         try
         {
+            if (!RenderingServer.RenderLoopEnabled || !GodotObject.IsInstanceValid(game) || !game.IsInsideTree())
+                return;
             Viewport mainViewport = game.GetViewport();
             host = new SubViewport
             {
@@ -74,6 +79,8 @@ internal static class ShinGetterCombatRenderPreparation
             game.AddChild(host);
             foreach (string path in ScenePaths)
             {
+                if (!RenderingServer.RenderLoopEnabled || total.Elapsed >= PreparationBudget)
+                    return;
                 var stage = Stopwatch.StartNew();
                 PackedScene scene = PreloadManager.Cache.GetScene(path);
                 state.Resources.Add(scene);
@@ -98,7 +105,7 @@ internal static class ShinGetterCombatRenderPreparation
                         particle.Restart();
                     }
                     // Resource loading alone is insufficient. Wait for actual draws.
-                    if (!await AwaitDrawAsync(host) || !await AwaitDrawAsync(host))
+                    if (!await AwaitDrawWithinBudgetAsync(host, total) || !await AwaitDrawWithinBudgetAsync(host, total))
                         return;
                     GD.Print($"Shin Getter render preparation: {path}, particles={particles.Count}, ms={stage.Elapsed.TotalMilliseconds:F1}");
                 }
@@ -109,7 +116,7 @@ internal static class ShinGetterCombatRenderPreparation
                         if (GodotObject.IsInstanceValid(particle))
                             particle.QueueFree();
                 }
-                if (!await AwaitDrawAsync(host))
+                if (!await AwaitDrawWithinBudgetAsync(host, total))
                     return; // Flush stage-node disposal before the next scene.
             }
             state.Completed = true;
@@ -139,19 +146,39 @@ internal static class ShinGetterCombatRenderPreparation
                 yield return nested;
     }
 
-    private static async Task<bool> AwaitDrawAsync(SubViewport host)
+    // Kept as a single-wait lifecycle probe; production stages pass one shared clock.
+    private static Task<bool> AwaitDrawAsync(SubViewport host) =>
+        AwaitDrawWithinBudgetAsync(host, Stopwatch.StartNew());
+
+    private static async Task<bool> AwaitDrawWithinBudgetAsync(SubViewport host, Stopwatch preparationClock)
     {
-        if (!GodotObject.IsInstanceValid(host) || !host.IsInsideTree() || host.IsQueuedForDeletion())
+        if (!RenderingServer.RenderLoopEnabled || preparationClock.Elapsed >= PreparationBudget
+            || !GodotObject.IsInstanceValid(host) || !host.IsInsideTree() || host.IsQueuedForDeletion())
             return false;
+        SceneTree tree = host.GetTree();
         var completed = new TaskCompletionSource<bool>();
-        void OnDraw() => completed.TrySetResult(true);
+        bool CanContinue() => RenderingServer.RenderLoopEnabled
+            && preparationClock.Elapsed < PreparationBudget
+            && GodotObject.IsInstanceValid(host) && host.IsInsideTree() && !host.IsQueuedForDeletion();
+        void OnDraw() => completed.TrySetResult(CanContinue());
         void OnExit() => completed.TrySetResult(false);
+        // ProcessFrame is emitted by engine logic even when rendering is disabled.
+        // All Godot checks/cleanup therefore stay on the main thread; no abandoned
+        // WhenAny task or worker-thread timer can retain callbacks/temporary nodes.
+        void OnProcess()
+        {
+            if (!CanContinue())
+                completed.TrySetResult(false);
+        }
         RenderingServer.FramePostDraw += OnDraw;
         host.TreeExiting += OnExit;
+        tree.ProcessFrame += OnProcess;
         try { return await completed.Task; }
         finally
         {
             RenderingServer.FramePostDraw -= OnDraw;
+            if (GodotObject.IsInstanceValid(tree))
+                tree.ProcessFrame -= OnProcess;
             if (GodotObject.IsInstanceValid(host))
                 host.TreeExiting -= OnExit;
         }
