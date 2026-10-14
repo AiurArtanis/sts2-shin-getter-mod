@@ -123,9 +123,28 @@ JsonNode SyntheticData(int count)
 var documents = new List<(string Name, JsonNode Document)>
     { ("synthetic76", SyntheticData(76)), ("synthetic71", SyntheticData(71)) };
 documents.AddRange(args.Select(path => (Path.GetFileName(Path.GetDirectoryName(path)) ?? path, JsonNode.Parse(File.ReadAllText(path))!)));
-foreach ((string name, JsonNode original) in documents)
+JsonNode DiagnosticContours(JsonNode runtime)
 {
-    object data = LoadData(original);
+    if (runtime["schema_version"] is null) return runtime;
+    Check(runtime["schema_version"]!.GetValue<int>() == 2, "Known pooled runtime schema");
+    JsonNode expanded = runtime.DeepClone();
+    JsonArray pool = runtime["polygon_pool"]!.AsArray();
+    foreach (JsonNode? frame in expanded["frames"]!.AsArray())
+    foreach (string layer in new[] { "weapon_cover", "blade_cover", "handle_cover", "body_foreground", "hands" })
+    {
+        var polygons = new JsonArray();
+        foreach (JsonNode? reference in frame![layer]!.AsArray())
+            polygons.Add(pool[reference!.GetValue<int>()]!.DeepClone());
+        frame[layer] = polygons;
+    }
+    expanded.AsObject().Remove("schema_version");
+    expanded.AsObject().Remove("polygon_pool");
+    return expanded;
+}
+foreach ((string name, JsonNode runtimeDocument) in documents)
+{
+    object data = LoadData(runtimeDocument); // The production constructor reads the actual v2 JSON.
+    JsonNode original = DiagnosticContours(runtimeDocument); // Expanded only for existing contour diagnostics/mutants.
     JsonArray frames = original["frames"]!.AsArray();
     Check(frames.Count is 76 or 71, "Delivered frame count");
     float total = FloatProperty(data, "TotalTime");

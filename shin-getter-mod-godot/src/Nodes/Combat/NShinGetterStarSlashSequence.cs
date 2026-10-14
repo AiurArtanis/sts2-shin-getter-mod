@@ -47,6 +47,20 @@ internal partial class NShinGetterStarSlashSequence : Node2D
     private Vector2[] _foregroundVertices = Array.Empty<Vector2>();
     private Vector2[] _foregroundUvs = Array.Empty<Vector2>();
     private int[] _foregroundIndices = Array.Empty<int>();
+    private sealed record PolygonMesh(Vector2[] Source, Vector2[] Vertices, int[] Indices);
+    // Metadata polygons are interned/read-only. Cache source triangulation only for
+    // this sequence's current local transform, preserving native cleanup after Local.
+    private readonly Dictionary<Vector2[], PolygonMesh> _staticMeshes = new();
+    private readonly Dictionary<Vector2[], PolygonMesh> _foregroundMeshes = new();
+    private bool _meshTransformSet;
+    private bool _meshFlipH, _meshFlipV, _meshCentered;
+    private Vector2 _meshOffset;
+    private int _weaponFrame = -1;
+    private float _weaponPoseTime;
+    private PolygonMesh[] _weaponCore = Array.Empty<PolygonMesh>();
+    private PolygonMesh[] _weaponLight = Array.Empty<PolygonMesh>();
+    private Vector2[][] _weaponOutline = Array.Empty<Vector2[]>();
+    private Vector2[] _weaponCenterline = Array.Empty<Vector2>();
 
     public static NShinGetterStarSlashSequence? TryCreate(Player player)
     {
@@ -165,23 +179,81 @@ internal partial class NShinGetterStarSlashSequence : Node2D
     {
         if (_closed || !OwnsSprite()) return;
         var frame = _data.Frames[_sprite.Frame];
+        EnsureMeshTransform();
+        UpdateWeapon(frame);
         // Opaque normal blending covers the original weapon; additive-only light cannot replace it.
         Color core = new(37f / 255f, 219f / 255f, 103f / 255f, 1f);
-        NShinGetterStarSlashData.WeaponGeometry geometry =
-            NShinGetterStarSlashData.BuildWeapon(frame, _poseTime, _data.HoldTime);
-        Vector2[][] opaque = frame.WeaponCover.Concat(geometry.Blades).Append(geometry.Shaft)
-            .Select(polygon => polygon.Select(Local).ToArray()).ToArray();
-        foreach (Vector2[] polygon in opaque) DrawTriangulated(polygon, core);
-        foreach (Vector2[] light in geometry.BladeLights)
-            DrawTriangulated(light.Select(Local).ToArray(), new Color(128f / 255f, 1f, 183f / 255f, 1f));
-        // Union is only for the outer edge; concave crescent cores stay opaque and are not convex-hulled.
-        foreach (Vector2[] outline in MergeOutline(opaque))
-            DrawPolyline(outline.Append(outline[0]).ToArray(), new Color(61f / 255f, 1f, 144f / 255f, 70f / 255f), 9f, true);
-        DrawPolyline(geometry.Centerline.Select(Local).ToArray(),
-            new Color(222f / 255f, 1f, 229f / 255f, 1f), 3.2f, true);
+        foreach (PolygonMesh polygon in _weaponCore) DrawMesh(polygon, core);
+        foreach (PolygonMesh light in _weaponLight)
+            DrawMesh(light, new Color(128f / 255f, 1f, 183f / 255f, 1f));
+        foreach (Vector2[] outline in _weaponOutline)
+            DrawPolyline(outline, new Color(61f / 255f, 1f, 144f / 255f, 70f / 255f), 9f, true);
+        DrawPolyline(_weaponCenterline, new Color(222f / 255f, 1f, 229f / 255f, 1f), 3.2f, true);
         UpdateForeground(frame);
         if (_foregroundTexture != null && _foregroundIndices.Length > 0)
             DrawTriangles(_foregroundVertices, _foregroundIndices, Colors.White, _foregroundUvs, _foregroundTexture);
+    }
+
+    private void EnsureMeshTransform()
+    {
+        if (_meshTransformSet && _meshFlipH == _sprite.FlipH && _meshFlipV == _sprite.FlipV
+            && _meshCentered == _sprite.Centered && _meshOffset == _sprite.Offset) return;
+        _meshTransformSet = true;
+        _meshFlipH = _sprite.FlipH;
+        _meshFlipV = _sprite.FlipV;
+        _meshCentered = _sprite.Centered;
+        _meshOffset = _sprite.Offset;
+        _staticMeshes.Clear();
+        _foregroundMeshes.Clear();
+        _weaponFrame = -1;
+        _foregroundFrame = -1;
+    }
+
+    private PolygonMesh StaticMesh(Vector2[] source)
+    {
+        if (_staticMeshes.TryGetValue(source, out PolygonMesh? mesh)) return mesh;
+        Vector2[] local = source.Select(Local).ToArray();
+        Vector2[] vertices = NShinGetterStarSlashData.CleanPolygon(local);
+        mesh = new PolygonMesh(local, vertices, Triangulate(vertices));
+        _staticMeshes.Add(source, mesh);
+        return mesh;
+    }
+
+    private PolygonMesh DynamicMesh(Vector2[] source)
+    {
+        Vector2[] local = source.Select(Local).ToArray();
+        Vector2[] vertices = NShinGetterStarSlashData.CleanPolygon(local);
+        return new PolygonMesh(local, vertices, Triangulate(vertices));
+    }
+
+    private PolygonMesh ForegroundMesh(Vector2[] source)
+    {
+        if (_foregroundMeshes.TryGetValue(source, out PolygonMesh? mesh)) return mesh;
+        // Preserve the old foreground path exactly: clean/triangulate source pixels
+        // before Local, whereas opaque weapon polygons are cleaned after Local.
+        Vector2[] polygon = NShinGetterStarSlashData.CleanPolygon(source);
+        mesh = new PolygonMesh(polygon, polygon.Select(Local).ToArray(), Triangulate(polygon));
+        _foregroundMeshes.Add(source, mesh);
+        return mesh;
+    }
+
+    private void UpdateWeapon(NShinGetterStarSlashData.Frame frame)
+    {
+        // Exact time AND frame: never freeze continuous growth/recovery within a PNG frame.
+        if (_weaponFrame == _sprite.Frame && _weaponPoseTime == _poseTime) return;
+        NShinGetterStarSlashData.WeaponGeometry geometry =
+            NShinGetterStarSlashData.BuildWeapon(frame, _poseTime, _data.HoldTime);
+        _weaponCore = frame.WeaponCover.Select(StaticMesh)
+            .Concat(geometry.Blades.Select(DynamicMesh)).Append(DynamicMesh(geometry.Shaft)).ToArray();
+        _weaponLight = geometry.BladeLights.Select(DynamicMesh).ToArray();
+        // Source arrays preserve the previous native union order and inputs, including
+        // vertices the triangle cleaner removes. Do not pre-union or hull cover pieces.
+        Vector2[][] opaque = _weaponCore.Select(mesh => mesh.Source).ToArray();
+        // Union is only for the outer edge; concave crescent cores stay opaque and are not convex-hulled.
+        _weaponOutline = MergeOutline(opaque).Select(outline => outline.Append(outline[0]).ToArray()).ToArray();
+        _weaponCenterline = geometry.Centerline.Select(Local).ToArray();
+        _weaponFrame = _sprite.Frame;
+        _weaponPoseTime = _poseTime;
     }
 
     private void UpdateForeground(NShinGetterStarSlashData.Frame frame)
@@ -214,12 +286,13 @@ internal partial class NShinGetterStarSlashSequence : Node2D
         // Armor that was in front of the source handle stays in front; fingers are last.
         foreach (Vector2[] foreground in frame.BodyForeground.Concat(frame.Hands))
         {
-            Vector2[] polygon = NShinGetterStarSlashData.CleanPolygon(foreground);
-            int[] triangles = Triangulate(polygon);
+            PolygonMesh mesh = ForegroundMesh(foreground);
+            Vector2[] polygon = mesh.Vertices;
+            int[] triangles = mesh.Indices;
             if (triangles.Length == 0) continue;
             int offset = vertices.Count;
-            vertices.AddRange(polygon.Select(Local));
-            uvs.AddRange(polygon.Select(point => NShinGetterStarSlashData.ForegroundUv(
+            vertices.AddRange(polygon);
+            uvs.AddRange(mesh.Source.Select(point => NShinGetterStarSlashData.ForegroundUv(
                 point, uvOrigin, foregroundSize)));
             indices.AddRange(triangles.Select(index => index + offset));
         }
@@ -240,11 +313,10 @@ internal partial class NShinGetterStarSlashSequence : Node2D
         return indices;
     }
 
-    private void DrawTriangulated(Vector2[] polygon, Color color)
+    private void DrawMesh(PolygonMesh mesh, Color color)
     {
-        Vector2[] vertices = NShinGetterStarSlashData.CleanPolygon(polygon);
-        int[] indices = Triangulate(vertices);
-        if (indices.Length > 0) DrawTriangles(vertices, indices, color, Array.Empty<Vector2>(), null);
+        if (mesh.Indices.Length > 0)
+            DrawTriangles(mesh.Vertices, mesh.Indices, color, Array.Empty<Vector2>(), null);
     }
 
     private void DrawTriangles(Vector2[] vertices, int[] indices, Color color, Vector2[] uvs, Texture2D? texture)
@@ -406,5 +478,11 @@ internal partial class NShinGetterStarSlashSequence : Node2D
         _foregroundVertices = Array.Empty<Vector2>();
         _foregroundUvs = Array.Empty<Vector2>();
         _foregroundIndices = Array.Empty<int>();
+        _staticMeshes.Clear();
+        _foregroundMeshes.Clear();
+        _weaponCore = Array.Empty<PolygonMesh>();
+        _weaponLight = Array.Empty<PolygonMesh>();
+        _weaponOutline = Array.Empty<Vector2[]>();
+        _weaponCenterline = Array.Empty<Vector2>();
     }
 }

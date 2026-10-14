@@ -14,6 +14,7 @@ from pathlib import Path
 import subprocess
 
 from PIL import Image, ImageDraw
+from star_slash_runtime_metadata import encoded, expand_document, pack_document
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = "b5e03af385389dadaa7630218040a088b932aafe"
@@ -99,12 +100,16 @@ def main():
         original = baseline(action)
         expected, details = repair_document(original, action)
         path = ROOT / f"images/characters/shin_getter/forms/{action}/animation.json"
+        delivery = json.loads((ROOT.parent / f"art_sources/characters/shin_getter/forms/{action}/delivery.json").read_text(encoding="utf-8"))
+        current = json.loads(path.read_text(encoding="utf-8"))
         if args.apply:
-            assert json.loads(path.read_text(encoding="utf-8")) in (original, expected), "Refusing to overwrite unrelated metadata changes"
-            path.write_text(json.dumps(expected, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
-        assert json.loads(path.read_text(encoding="utf-8")) == expected, "Runtime JSON differs outside mechanical repair"
+            assert expand_document(current, delivery) in (original, expected), "Refusing to overwrite unrelated metadata changes"
+            current = pack_document(expected, delivery)
+            path.write_text(encoded(current), encoding="utf-8", newline="\n")
+        assert expand_document(current, delivery) == expected, "Expanded runtime JSON differs outside mechanical repair"
         report["actions"][action] = {"baseline_metadata_sha256": BASE_HASHES[action],
-                                     "runtime_metadata_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                                     # Keep the historical six-repair evidence/hash unchanged.
+                                     "runtime_metadata_sha256": hashlib.sha256((json.dumps(expected, ensure_ascii=False, indent=2) + "\n").encode()).hexdigest(),
                                      "targets": details}
     if args.apply:
         REPORT.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
