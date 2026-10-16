@@ -68,12 +68,15 @@ internal static partial class ShinGetterCombatVfx
         await Cmd.Wait(0.21f);
     }
 
-    public static async Task PlayExpansionRush(Creature owner, Creature target)
+    public static async Task PlayExpansionRush(Creature owner, Creature target, Func<Task> impact)
     {
         NCreature? ownerNode = NCombatRoom.Instance?.GetCreatureNode(owner);
         NCreature? targetNode = NCombatRoom.Instance?.GetCreatureNode(target);
         if (ownerNode == null || targetNode == null)
+        {
+            await impact();
             return;
+        }
 
         Vector2 origin = ownerNode.GlobalPosition;
         Vector2 ownerCenter = ownerNode.VfxSpawnPosition;
@@ -83,9 +86,13 @@ internal static partial class ShinGetterCombatVfx
 
         Vector2 originalScale = ownerNode.Scale;
         Vector2 enlargedScale = originalScale * 1.55f;
-
+        Tween? growTween = null;
+        Tween? tween = null;
+        Tween? shrinkTween = null;
+        try
+        {
         AddFlash(ownerCenter, GetterRay, 150f, 0.22f);
-        Tween growTween = ownerNode.CreateTween();
+        growTween = ownerNode.CreateTween();
         growTween.TweenProperty(ownerNode, "scale", enlargedScale, 0.22f)
             .SetEase(Tween.EaseType.Out)
             .SetTrans(Tween.TransitionType.Back);
@@ -94,19 +101,34 @@ internal static partial class ShinGetterCombatVfx
         owner.GetVfxContainer()?.AddChildSafely(NHorizontalLinesVfx.Create(new Color("F0F0E8AA"), 1.15, movingRightwards: !owner.IsEnemy));
         AddSpeedLines(ownerCenter, targetCenter, RushLine);
 
-        Tween tween = ownerNode.CreateTween();
+        tween = ownerNode.CreateTween();
         tween.TweenProperty(ownerNode, "global_position", origin + lunge, 0.13f).SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Cubic);
-        tween.TweenProperty(ownerNode, "global_position", origin, 0.16f).SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Back);
-        await Cmd.Wait(0.14f);
+        await Cmd.Wait(0.13f);
         target.GetVfxContainer()?.AddChildSafely(NLineBurstVfx.Create(target));
         NGame.Instance?.ScreenShake(ShakeStrength.Strong, ShakeDuration.Short);
+        await impact();
+        if (!GodotObject.IsInstanceValid(ownerNode) || !ownerNode.IsInsideTree()) return;
+        tween = ownerNode.CreateTween();
+        tween.TweenProperty(ownerNode, "global_position", origin, 0.16f).SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Back);
         await Cmd.Wait(0.18f);
 
-        Tween shrinkTween = ownerNode.CreateTween();
+        shrinkTween = ownerNode.CreateTween();
         shrinkTween.TweenProperty(ownerNode, "scale", originalScale, 0.14f)
             .SetEase(Tween.EaseType.Out)
             .SetTrans(Tween.TransitionType.Cubic);
         await Cmd.Wait(0.14f);
+        }
+        finally
+        {
+            if (GodotObject.IsInstanceValid(growTween)) growTween.Kill();
+            if (GodotObject.IsInstanceValid(tween)) tween.Kill();
+            if (GodotObject.IsInstanceValid(shrinkTween)) shrinkTween.Kill();
+            if (GodotObject.IsInstanceValid(ownerNode))
+            {
+                ownerNode.GlobalPosition = origin;
+                ownerNode.Scale = originalScale;
+            }
+        }
     }
 
     public static async Task PlayAvalanche(Creature target)

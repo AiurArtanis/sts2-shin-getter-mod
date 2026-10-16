@@ -22,7 +22,9 @@ def shining_contract(source: str) -> None:
                    "await PowerCmd.Apply<SGP_Ki>(choiceContext, Owner.Creature, 3m, Owner.Creature, this);",
                    "PowerCmd.Apply<VulnerablePower>", "PowerCmd.Apply<FrailPower>",
                    "NShinGetterShiningSparkSequence.TryCreate(Owner.Creature, cardPlay.Target)",
-                   "await sequence.PlayToImpact(", "await DamageCmd.Attack(DynamicVars.Damage.BaseValue)",
+                   "await sequence.PlayToImpact(", "Task impactVisual = sequence?.PlayImpact() ?? Task.CompletedTask;",
+                   "Task initialHit = DamageCmd.Attack(DynamicVars.Damage.BaseValue)",
+                   "await Task.WhenAll(impactVisual, initialHit);",
                    'if (ki > 0 && Owner.Creature.CombatState is { } combatState)',
                    '.TargetingRandomOpponents(combatState)',
                    "await sequence.Recover();", "finally", "sequence?.Close();"],
@@ -64,6 +66,7 @@ def negative_contracts(shining: str, star: str) -> None:
         (shining_contract, shining.replace("if (Owner.Creature.HasPower<SGP_ShinForm>())", "if (true)", 1)),
         (shining_contract, shining.replace("Owner.Creature, 3m, Owner.Creature, this", "Owner.Creature, 6m, Owner.Creature, this", 1)),
         (shining_contract, shining.replace("await sequence.PlayToImpact(", "_ = sequence.PlayToImpact(", 1)),
+        (shining_contract, shining.replace("await Task.WhenAll(impactVisual, initialHit);", "await impactVisual;", 1)),
         (star_contract, star.replace("Math.Min(selected.Sum(SumOriginalCardValues), 50m)",
                                     "selected.Sum(SumOriginalCardValues)", 1)),
         (star_contract, star.replace("if (HasForm(Owner, ShinGetterForm.Getter1))", "if (true)", 1)),
@@ -99,8 +102,11 @@ def stage_clock_contract(clock: str) -> None:
     ordered(play, ["await Stage(0.4f, u => SetFrame(0, DiscardComplete, u));", "Task voice = intro();",
                    "await Stage(1f,", "SetFrame(ChargeStart, ChargeHold, u);", "await voice;",
                    "CombatManager.Instance.WaitForUnpause()", "_ = release();", "await Stage(0.28f,",
-                   "SetFrame(RushStart, DashPeak, u);", "await Stage(0.08f,",
-                   "SetFrame(ImpactStart, EndHold, u);"], "Dedicated timing/charge hold/Spark launch")
+                   "SetFrame(RushStart, DashPeak, u);", "SetFrame(ImpactStart, ImpactStart, 0f);"],
+            "Dedicated timing/charge hold/Spark launch ends at contact")
+    require("Stage(0.08f" not in play, "Impact hold must not delay native damage after contact")
+    has(clock, "public Task PlayImpact() => Stage(0.08f,", "Impact stage runs alongside the native hit")
+    has(clock, "SetFrame(ImpactStart, EndHold, u);", "Keep the two impact frames")
     recover = block(clock, "public async Task Recover()")
     ordered(recover, ["await Stage(0.35f,", "SetFrame(EndHold, EndHold, 0f);",
                       "_sprite.Position = start.Lerp(_origin, smooth);"], "Recover holds final airborne frame")
