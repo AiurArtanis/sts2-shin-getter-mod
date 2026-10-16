@@ -155,14 +155,17 @@ internal partial class NShinGetterShiningSparkSequence : Node2D
             SetFrame(RushStart, DashPeak, u);
             _sprite.Position = (_origin + _recoil).Lerp(_origin + _lunge, u * u * u);
         });
+        if (_closed || !OwnsSprite()) return;
         _rushing = false;
         _energyStrength = 0.95f;
-        await Stage(0.08f, u =>
+        SetFrame(ImpactStart, ImpactStart, 0f);
+    }
+
+    public Task PlayImpact() => Stage(0.08f, u =>
         {
             SetFrame(ImpactStart, EndHold, u);
             _impactPulse = Mathf.Sin(u * Mathf.Pi);
         });
-    }
 
     public async Task Recover()
     {
