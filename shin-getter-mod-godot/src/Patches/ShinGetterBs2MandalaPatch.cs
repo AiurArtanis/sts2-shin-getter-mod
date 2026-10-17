@@ -11,12 +11,12 @@ using ShinGetterMod.Models.Events;
 
 namespace ShinGetterMod.Patches;
 
-[HarmonyPatch(typeof(RunManager), nameof(RunManager.SetActInternal))]
+[HarmonyPatch(typeof(RunManager), "InitializeRunLobby")]
 internal static class ShinGetterBs2MandalaPatch
 {
-    private static void Prefix()
+    private static void Postfix()
     {
-        // Mods initialize one at a time. Wait until a run starts so BS2 can load in either order.
+        // New runs and cold-start save loads both initialize the lobby after all mods have loaded.
         ShinGetterBs2MandalaCompatibility.TryInstall();
     }
 }
