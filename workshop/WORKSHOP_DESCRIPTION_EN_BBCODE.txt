@@ -8,12 +8,23 @@ Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter
 
 [h2]v1.3.0 2026-10-12[/h2]
 
+[b]Gameplay[/b]
 [list]
 [*]Added Ancient bonds: crossover interactions between the three-pilot team and the Ancients.
-[*]Reworked Shining Spark and Star-Slashing Axe.
-[*]Adjusted Drive, Shift Strike and Fighting Spirit card effects.
-[*]Updated eight card illustrations and the compact card atlas, correcting all texture references and sampling boundaries.
+[/list]
+
+[b]Bug Fixes[/b]
+[list]
 [*]Fixed repeated Good Citizen Card free purchases on the same map.
+[/list]
+
+[b]QoL / Balance[/b]
+[list]
+[*]Reworked Shining Spark and Star-Slashing Axe.
+[*]Improved Expansion Strike and Tactical Retreat animations, and Shining Spark's hit timing.
+[*]Optimized animation loading and reduced animation data and package size.
+[*]Adjusted Drive, Shift Strike and Fighting Spirit card effects.
+[*]Updated eight card illustrations and the compact card atlas, correcting texture references and sampling boundaries.
 [/list]
 
 Bonds progress in standard single-player Shin Getter runs. Original combat, rewards and scoring remain intact.
