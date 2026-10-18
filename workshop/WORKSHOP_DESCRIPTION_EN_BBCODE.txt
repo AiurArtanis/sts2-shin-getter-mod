@@ -6,19 +6,31 @@ Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter
 
 [hr][/hr]
 
-[h2]v1.3.0 release notes[/h2]
+[h2]v1.3.0-beta.111 2026-10-12[/h2]
 
+[b]Gameplay[/b]
 [list]
-[*][b]Ancient bonds:[/b] After a shared first meeting, follow separate Ryoma, Hayato and Benkei conversations. Relationships persist across runs, unlocking familiar themes, Neow dialogue and Architect story callbacks.
-[*][b]Ultimate presentations:[/b] Shin Getter Dragon's Shining Spark and Star-Slashing Axe for Shin Getter 1 and Shin Getter Dragon combine sprite animation with Godot energy, giant-axe and impact VFX. Added Star-Slashing Axe preparation voices and improved selection, pause/resume and post-kill recovery.
-[*][b]Cards and balance:[/b] Adjusted Shining Spark, Star-Slashing Axe, Shift Strike, upgraded Spirit and Fighting Spirit.
-[*][b]Card art:[/b] Replaced eight illustrations and corrected coordinates and sampling boundaries in the compact atlas.
-[*][b]Fixes:[/b] Fixed bond-reward input and event-icon ordering; card-selection hover descriptions now let adjacent-card mouse input pass through. Fixed repeated Good Citizen Card free purchases on the same map and added the sgd progress command.
+[*]Added Ancient bonds: crossover interactions between the three-pilot team and the Ancients.
+[/list]
+
+[b]Bug Fixes[/b]
+[list]
+[*]Fixed repeated Good Citizen Card free purchases on the same map.
+[/list]
+
+[b]QoL / Balance[/b]
+[list]
+[*]Reworked Shining Spark and Star-Slashing Axe.
+[*]Improved Expansion Strike and Tactical Retreat animations, and Shining Spark's hit timing.
+[*]Optimized animation loading and reduced animation data and package size.
+[*]Adjusted Drive, Shift Strike and Fighting Spirit card effects.
+[*]Updated eight card illustrations and the compact card atlas, correcting texture references and sampling boundaries.
+[*]Added blacksouls2 mod compatibility for the Getter Mandala event.
 [/list]
 
 Bonds progress in standard single-player Shin Getter runs. Reloading the same room restores its current conversation; skipping still leaves the original reward available. Original combat, rewards and scoring remain intact.
 
-This branch is the v1.3.0-beta.111 (0.111 Beta) candidate, synchronizing complete approved stable v1.3.0 content, the native dialogue UI and one-time zero-progress baseline. Native regression and publication are still pending. [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest]Public downloads[/url] mean assets actually listed; the published Beta remains v1.2.2-beta.111.
+Targets 0.111 Beta. Do not mix stable and Beta four-file packages. The published Beta package remains v1.2.2-beta.111; download only assets actually listed in the Release.
 
 [h2]🧪 0.111 Beta support[/h2]
 
