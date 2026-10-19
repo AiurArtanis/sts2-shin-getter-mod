@@ -29,7 +29,13 @@ def check(ui, bridge, session):
     assert "state.Returned = true" in bridge and "state.LegacyFallback = true" in bridge
     assert "legacy.SetDialogue(lines)" in bridge
     assert "LoadDialogue.Invoke(model, null)" in bridge and "await (Task)PlayCurrentLine.Invoke(model, null)!" in bridge
-    assert "if (model.CurrentOptions.Count == 0) RestoreProceed(model)" in bridge
+    assert "if (model.CurrentOptions.Count == 0 || previousOptions.SequenceEqual(model.CurrentOptions)) RestoreProceed(model)" in bridge
+    restore = bridge[bridge.index("private static async Task RestoreLegacy"):bridge.index("private static void Postfix(NEventLayout")]
+    assert "Array.Empty<EventOption>()" not in restore and "_isFinished" not in bridge
+    assert "state.LegacyLoading = true" in restore and "finally { state.LegacyLoading = false; }" in restore
+    assert "(!state.Returned || state.LegacyLoading)" in bridge
+    proceed = bridge[bridge.index("private static void RestoreProceed"):bridge.index("private static async Task RestoreLegacy")]
+    assert 'Dialogue(model) = new AncientDialogue("") { EndAttackers = ArchitectAttackers.Player }' in proceed
     assert "RestoreProceed(model)" in bridge and "finally { QueueFree(); }" in ui
     assert "SetLocalPlayerReady" not in bridge and '"WinRun"' not in bridge
 
@@ -45,7 +51,11 @@ cases = {
     "fallback writes skip": (UI + "\n_session.Skip();", BRIDGE, SESSION),
     "legacy recovery disabled": (UI.replace("_useLegacyDialogue = true", "_useLegacyDialogue = false"), BRIDGE, SESSION),
     "original lines not restored": (UI, BRIDGE.replace("legacy.SetDialogue(lines)", "legacy.ClearDialogue()"), SESSION),
-    "native early return leaves no options": (UI, BRIDGE.replace("if (model.CurrentOptions.Count == 0) RestoreProceed(model)", "if (false) RestoreProceed(model)"), SESSION),
+    "native early return leaves no options": (UI, BRIDGE.replace("if (model.CurrentOptions.Count == 0 || previousOptions.SequenceEqual(model.CurrentOptions)) RestoreProceed(model)", "if (false) RestoreProceed(model)"), SESSION),
+    "empty model intro finishes event": (UI, BRIDGE.replace("state.LegacyLoading = true;", 'state.LegacyLoading = true; SetState.Invoke(model, new object[] { null!, Array.Empty<EventOption>() });'), SESSION),
+    "null dialogue payload unguarded": (UI, BRIDGE.replace('Dialogue(model) = new AncientDialogue("") { EndAttackers = ArchitectAttackers.Player };\n        var option', 'Dialogue(model) = null;\n        var option'), SESSION),
+    "intro input not guarded": (UI, BRIDGE.replace("(!state.Returned || state.LegacyLoading)", "!state.Returned"), SESSION),
+    "intro input never released": (UI, BRIDGE.replace("finally { state.LegacyLoading = false; }", "finally { }"), SESSION),
 }
 for name, sources in cases.items():
     try:

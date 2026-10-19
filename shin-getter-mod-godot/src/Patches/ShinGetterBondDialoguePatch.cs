@@ -34,6 +34,7 @@ internal static class ShinGetterBondDialogueBridge
         internal WeakReference<NShinGetterBondDialogue>? Ui;
         internal bool Returned;
         internal bool LegacyFallback;
+        internal bool LegacyLoading;
         internal AncientDialogueLine[] LegacyLines = Array.Empty<AncientDialogueLine>();
         internal string? FinalAncientSfx;
         internal State(EventModel model) { _model = model; }
@@ -43,7 +44,7 @@ internal static class ShinGetterBondDialogueBridge
     internal static readonly AccessTools.FieldRef<NEventRoom, EventModel> RoomEvent = AccessTools.FieldRefAccess<NEventRoom, EventModel>("_event");
     internal static State Get(EventModel model) => States.GetValue(model, m => new State(m));
     internal static bool TryGet(EventModel model, out State state) => States.TryGetValue(model, out state!);
-    internal static bool IsBlocking(EventModel model) => TryGet(model, out var state) && !state.Returned;
+    internal static bool IsBlocking(EventModel model) => TryGet(model, out var state) && (!state.Returned || state.LegacyLoading);
     internal static bool IsEligible(EventModel model)
     {
         try { return ShinGetterBondSession.IsEligible(model); }
@@ -285,17 +286,21 @@ internal static class ShinGetterBondArchitectSetupPatch
     private static readonly AccessTools.FieldRef<TheArchitect, AncientDialogue?> Dialogue = AccessTools.FieldRefAccess<TheArchitect, AncientDialogue?>("_dialogue");
     private static void RestoreProceed(TheArchitect model)
     {
+        // WinRun dereferences Dialogue.EndAttackers. Null/empty legacy data must
+        // still supply the native ending's safe payload before exposing Proceed.
+        if (Dialogue(model) is not { Lines.Count: > 0 })
+            Dialogue(model) = new AncientDialogue("") { EndAttackers = ArchitectAttackers.Player };
         var option = (EventOption)Proceed.Invoke(model, null)!;
         SetState.Invoke(model, new object[] { new LocString("ancients", "PROCEED.description"), new[] { option } });
     }
 
-    private static async Task RestoreLegacy(TheArchitect model)
+    private static async Task RestoreLegacy(TheArchitect model, ShinGetterBondDialogueBridge.State state)
     {
+        state.LegacyLoading = true;
         try
         {
-            // Match native OnRoomEnter: no clickable old Proceed while the first
-            // legacy line is waiting for its intro animation to finish.
-            SetState.Invoke(model, new object[] { new LocString("ancients", "PROCEED.description"), Array.Empty<EventOption>() });
+            // Never clear MODEL options: SetEventState(empty) permanently ends
+            // an event. Suspend input through the scene-local bridge instead.
             LoadDialogue.Invoke(model, null); // Existing pre-bond character pool.
             CurrentLine(model) = 0;
             if (Dialogue(model) is not { Lines.Count: > 0 })
@@ -303,11 +308,12 @@ internal static class ShinGetterBondArchitectSetupPatch
                 RestoreProceed(model);
                 return;
             }
+            var previousOptions = model.CurrentOptions.ToArray();
             await (Task)PlayCurrentLine.Invoke(model, null)!;
             // Native PlayCurrentLine can return successfully without setting an
             // option when its text or speaker is unavailable. Do not leave the
             // empty intro state behind in that case.
-            if (model.CurrentOptions.Count == 0) RestoreProceed(model);
+            if (model.CurrentOptions.Count == 0 || previousOptions.SequenceEqual(model.CurrentOptions)) RestoreProceed(model);
         }
         catch (Exception ex)
         {
@@ -315,6 +321,7 @@ internal static class ShinGetterBondArchitectSetupPatch
             Dialogue(model) = new AncientDialogue("") { EndAttackers = ArchitectAttackers.Player };
             RestoreProceed(model);
         }
+        finally { state.LegacyLoading = false; }
     }
     private static void Postfix(NEventLayout __instance)
     {
@@ -324,7 +331,7 @@ internal static class ShinGetterBondArchitectSetupPatch
         {
             if (state.LegacyFallback)
             {
-                TaskHelper.RunSafely(RestoreLegacy(model));
+                TaskHelper.RunSafely(RestoreLegacy(model, state));
                 return;
             }
             RestoreProceed(model);

@@ -26,7 +26,7 @@ namespace Godot
 }
 namespace MegaCrit.Sts2.Core.Entities.Ancients
 {
-    public enum ArchitectAttackers { Player }
+    public enum ArchitectAttackers { None, Player }
     public sealed class AncientDialogueLine(string sound)
     {
         public string GetSfxOrFallbackPath() => string.IsNullOrEmpty(sound) ? "event:/sfx/ui/enchant_simple" : sound;
@@ -40,21 +40,35 @@ namespace MegaCrit.Sts2.Core.Entities.Ancients
 }
 namespace MegaCrit.Sts2.Core.Events
 {
-    public sealed class EventOption { public bool IsLocked { get; set; } }
+    public sealed class EventOption
+    {
+        public EventOption() { }
+        public EventOption(MegaCrit.Sts2.Core.Models.EventModel model, Func<Task> chosen, string key, bool locked, bool proceed)
+        { _chosen = chosen; IsLocked = locked; IsProceed = proceed; }
+        private readonly Func<Task>? _chosen;
+        public bool IsLocked { get; set; }
+        public bool IsProceed { get; }
+        public event Func<EventOption, Task>? BeforeChosen;
+        public Task Chosen() { _ = BeforeChosen; return _chosen?.Invoke() ?? Task.CompletedTask; }
+    }
     public sealed class AncientDialogue(string text) { public string Text { get; } = text; public List<MegaCrit.Sts2.Core.Entities.Ancients.AncientDialogueLine> Lines { get; } = new(); public MegaCrit.Sts2.Core.Entities.Ancients.ArchitectAttackers EndAttackers { get; set; } }
 }
 namespace MegaCrit.Sts2.Core.Localization { public sealed class LocString(string table, string key) { public string Table { get; } = table; public string Key { get; } = key; } }
 namespace MegaCrit.Sts2.Core.Models
 {
-    public class EventModel
+    public partial class EventModel
     {
         public object Id { get; } = new();
         public Player Owner { get; } = new();
         public Godot.Control? Node { get; set; }
         public bool Eligible { get; set; } = true;
-        public bool IsFinished { get; set; }
-        public IReadOnlyList<MegaCrit.Sts2.Core.Events.EventOption> CurrentOptions { get; private set; } = Array.Empty<MegaCrit.Sts2.Core.Events.EventOption>();
-        protected void SetEventState(MegaCrit.Sts2.Core.Localization.LocString description, IEnumerable<MegaCrit.Sts2.Core.Events.EventOption> options) { CurrentOptions = options.ToArray(); }
+        private bool _isFinished;
+        private List<MegaCrit.Sts2.Core.Events.EventOption>? _currentOptions;
+        public bool IsFinished { get => _isFinished; set => _isFinished = value; }
+        public IReadOnlyList<MegaCrit.Sts2.Core.Events.EventOption> CurrentOptions => _currentOptions ?? new();
+        public MegaCrit.Sts2.Core.Localization.LocString? Description { get; private set; }
+        public event Action<EventModel>? StateChanged;
+        private void AssertMutable() { }
     }
     public class AncientEventModel : EventModel
     {
@@ -74,7 +88,11 @@ namespace MegaCrit.Sts2.Core.Random
 }
 namespace MegaCrit.Sts2.Core.Helpers
 {
-    public static class TaskHelper { public static void RunSafely(Task task) => task.GetAwaiter().GetResult(); }
+    public static class TaskHelper
+    {
+        public static List<Task> Tasks { get; } = new();
+        public static void RunSafely(Task task) { Tasks.Add(task); if (task.IsCompleted) task.GetAwaiter().GetResult(); }
+    }
 }
 namespace MegaCrit.Sts2.Core.Saves
 {
@@ -94,10 +112,28 @@ namespace MegaCrit.Sts2.Core.Models.Events
         private int _currentLineIndex = 0;
         public int NativeLines { get; private set; }
         public bool FailLegacyLoad { get; set; }
+        public bool NullLegacy { get; set; }
+        public bool EmptyLegacy { get; set; }
+        public TaskCompletionSource? PlayGate { get; set; }
+        public int EndingCalls { get; private set; }
+        public bool PublishLegacyOption { get; set; }
+        public MegaCrit.Sts2.Core.Events.EventOption? LegacyOption { get; private set; }
         public MegaCrit.Sts2.Core.Events.AncientDialogue? StoredDialogue => _dialogue;
-        public void LoadDialogue() { if (FailLegacyLoad) throw new IOException("injected legacy failure"); _dialogue = new("legacy"); _dialogue.Lines.Add(new("legacy")); }
-        public Task PlayCurrentLine() { NativeLines++; _ = _currentLineIndex; return Task.CompletedTask; }
-        private MegaCrit.Sts2.Core.Events.EventOption CreateProceedOption() => new();
+        public void LoadDialogue() { if (FailLegacyLoad) throw new IOException("injected legacy failure"); _dialogue = NullLegacy ? null : new("legacy") { EndAttackers = MegaCrit.Sts2.Core.Entities.Ancients.ArchitectAttackers.Player }; if (!EmptyLegacy) _dialogue?.Lines.Add(new("legacy")); }
+        public async Task PlayCurrentLine()
+        {
+            NativeLines++; _ = _currentLineIndex;
+            if (PlayGate != null) await PlayGate.Task;
+            if (PublishLegacyOption)
+            {
+                LegacyOption = new();
+                SetEventState(new("ancients", "CONTINUE"), new[] { LegacyOption });
+            }
+        }
+        public TheArchitect() { SeedProceed(); }
+        public void SeedProceed() { _dialogue = new(""); SetEventState(new("ancients", "PROCEED.description"), new[] { CreateProceedOption() }); }
+        private Task WinRun() { _ = _dialogue!.EndAttackers; EndingCalls++; return Task.CompletedTask; }
+        private MegaCrit.Sts2.Core.Events.EventOption CreateProceedOption() => new(this, WinRun, "PROCEED", false, false);
     }
 }
 namespace MegaCrit.Sts2.Core.Nodes.GodotExtensions
@@ -111,7 +147,7 @@ namespace MegaCrit.Sts2.Core.Nodes.Events
 {
     public class NEventOptionButton : Godot.Control
     {
-        public MegaCrit.Sts2.Core.Events.EventOption Option { get; } = new();
+        public MegaCrit.Sts2.Core.Events.EventOption Option { get; init; } = new();
         public bool IsEnabled { get; private set; } = true;
         public int EnableCalls { get; private set; }
         public bool MouseStops { get; set; }
@@ -132,6 +168,9 @@ namespace MegaCrit.Sts2.Core.Nodes.Events
         public T? GetNodeOrNull<T>(string name) where T : Godot.Control => Content as T;
         public void DisableEventOptions() { foreach (var button in Buttons) button.Disable(); }
         public void AddChild(Godot.Control child) { }
+        public void ClearOptions() => Buttons.Clear();
+        public void AddOptions(IEnumerable<MegaCrit.Sts2.Core.Events.EventOption> options)
+        { foreach (var option in options) Buttons.Add(new() { Option = option, MouseStops = true }); }
         public virtual void OnSetupComplete()
         {
             Resumes++;
@@ -148,10 +187,17 @@ namespace MegaCrit.Sts2.Core.Nodes.Events
 }
 namespace MegaCrit.Sts2.Core.Nodes.Rooms
 {
-    public sealed class NEventRoom : Godot.Control
+    public sealed partial class NEventRoom : Godot.Control
     {
         private MegaCrit.Sts2.Core.Models.EventModel _event;
-        public NEventRoom(MegaCrit.Sts2.Core.Models.EventModel model) => _event = model;
+        public NEventRoom(MegaCrit.Sts2.Core.Models.EventModel model, MegaCrit.Sts2.Core.Nodes.Events.NEventLayout? layout = null)
+        { _event = model; Layout = layout ?? new(model); }
+        public MegaCrit.Sts2.Core.Nodes.Events.NEventLayout Layout { get; }
+        private readonly List<MegaCrit.Sts2.Core.Events.EventOption> _connectedOptions = new();
+        public void RefreshOptions() => SetOptions(_event);
+        private Task BeforeOptionChosen(MegaCrit.Sts2.Core.Events.EventOption option) => Task.CompletedTask;
+        public static int MapOpens { get; private set; }
+        private static Task Proceed() { MapOpens++; return Task.CompletedTask; }
         public Godot.Control? DefaultFocusedControl { get; set; }
         public void OptionButtonClicked(MegaCrit.Sts2.Core.Events.EventOption option, int index) { }
     }
