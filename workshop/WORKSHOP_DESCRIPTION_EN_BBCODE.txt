@@ -1,140 +1,28 @@
 [h1]Slay the Spire 2 - Shin Getter Mod[/h1]
 
-[i]Three hearts. One Getter. Endless evolution.[/i]
+Pilot Shin Getter up the Spire. Switch between four forms and make transformation part of each turn's offense and defense.
 
-Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter 1's explosive offense, Shin Getter 2's high-speed tactics, and Shin Getter 3's iron defense; then awaken Shin Getter Dragon and let the Getter Rays consume the tower.
-
-[hr][/hr]
-
-[h2]v1.3.0 2026-10-12[/h2]
-
-[b]Gameplay[/b]
+[h2]Four forms, one deck[/h2]
 [list]
-[*]Added Ancient bonds: crossover interactions between the three-pilot team and the Ancients.
+[*][b]Shin Getter 1:[/b] Build Vigor for powerful bursts of damage.
+[*][b]Shin Getter 2:[/b] Gain extra Energy and card draw at the cost of halved Block.
+[*][b]Shin Getter 3:[/b] Hold the line with Plating, Block, and defensive retaliation.
+[*][b]Shin Getter Dragon:[/b] Accept rewards from all three forms and combine their strengths.
 [/list]
 
-[b]Bug Fixes[/b]
+[h2]Choose your build[/h2]
 [list]
-[*]Fixed repeated Good Citizen Card free purchases on the same map.
+[*][b]Vigor burst:[/b] Build Vigor, then finish with a powerful attack.
+[*][b]Exhaust loop:[/b] Exhaust cards to trigger Getter Claw, and use Parts Swap to recover key cards.
+[*][b]Iron retaliation:[/b] Stack Plating and Block to turn enemy attacks into counterattack opportunities.
+[*][b]Transformation chain:[/b] Build around transformation cards and related relics to turn form changes into resources or defense.
 [/list]
 
-[b]QoL / Balance[/b]
+[h2]Beyond combat[/h2]
 [list]
-[*]Reworked Shining Spark and Star-Slashing Axe.
-[*]Improved Expansion Strike and Tactical Retreat animations, and Shining Spark's hit timing.
-[*]Optimized animation loading and reduced animation data and package size.
-[*]Adjusted Drive, Shift Strike and Fighting Spirit card effects.
-[*]Updated eight card illustrations and the compact card atlas, correcting texture references and sampling boundaries.
+[*][b]Event invasions:[/b] Discover Getter-team branches in familiar Spire events, plus the Getter Mandala event.
+[*][b]Ancient bonds:[/b] Progress through dialogue and bonds between the three-pilot team and the Ancients in standard single-player Shin Getter runs, without changing the original events' combat, rewards, or scoring.
+[*][b]Battle presentation:[/b] Form animations, attack effects, character voices, and selectable BGM bring Getter's combat style to life.
 [/list]
 
-Bonds progress in standard single-player Shin Getter runs. Original combat, rewards and scoring remain intact.
-
-This page describes v1.3.0 for stable 109. [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest]Public downloads[/url] are the assets actually listed in Releases. The published 111 Beta build remains v1.2.2 and does not contain these additions.
-
-[h2]🧪 0.111 Beta support[/h2]
-
-[b]Stable 109:[/b] use shin-getter-mod-v1.2.2.zip.
-[b]0.111 Beta:[/b] use shin-getter-mod-v1.2.2.111-beta.zip.
-
-[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2]Download v1.2.2[/url] | [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2]0.111 Beta: shin-getter-mod-v1.2.2.111-beta.zip[/url]
-
-The Beta package retains v1.2.2's 77 cards, four forms, events, voices, animations, BGM, and Chunibyo Config features. Do not mix the stable and Beta four-file packages; after switching game branches, replace the DLL, PCK, JSON, and mod_image together, then restart the game.
-
-[b]Known external compatibility issue:[/b] old BaseLib 3.3.7 fails its CardPileCmd.Add transpiler on 0.111 Beta and can freeze manual card play. Update BaseLib, or disable BaseLib and dependent mods in the Beta environment.
-
-[h2]v1.2.2 release notes[/h2]
-
-[list]
-[*]Added a master switch for mod battle BGM, execution themes, and previews; track choices are retained when disabled.
-[*]Refreshed the 23-track BGM selection, adding Creation, Hostility, Forward, It's Time, and Bravery (Iron Saga Ver.).
-[*]Default event combat music is now Onslaught, Hive elite music is Forward, and the execution theme is the OVA version of Bravery.
-[*]Removed or invalid saved track choices now fall back to the default preset.
-[/list]
-
-v1.2.2 provides separate stable-109 and 0.111-Beta packages. The Beta package also includes these BGM changes; use the matching asset and do not mix files.
-
-[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2]Download v1.2.2 (shin-getter-mod-v1.2.2.zip)[/url]
-
-[h2]v1.2.1 release notes[/h2]
-
-[list]
-[*]Fixed multiplayer crashes.
-[*]Fixed Shin Getter 1 disappearing after Triple Wood Carving transformations.
-[*]Fixed character visuals in the Fake Merchant and Architect events.
-[*]Fixed Hedgehog Tactic's form-condition highlighting.
-[*]Corrected Saint Dragon Roar's description.
-[*]Fixed status-icon display errors.
-[/list]
-
-For 0.111 Beta, use the separate v1.2.1-beta.111 build. Do not mix stable and Beta packages.
-
-[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.1]Download v1.2.1 (shin-getter-mod-v1.2.1.zip)[/url]
-
-[h2]v1.2.0 history[/h2]
-
-Existing features include separation/fusion sequences, Dragon actions at 30 fps, 90-frame Stoner Sunshine, 18 event routes, and the rainbow NEW badge. See the README for the full historical notes; these are not new v1.2.1 features.
-
-[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/blob/main/README_EN.md]README[/url]
-
-[hr][/hr]
-
-[h2]⚡ Combat at a glance[/h2]
-
-[list]
-[*][b]Four forms, one character.[/b] Shin Getter 1 focuses on Vigor bursts. Shin Getter 2 gains extra Energy and draw while its Block is halved. Shin Getter 3 holds the line with Plating and defensive retaliation. Shin Getter Dragon accepts rewards from all three forms.
-[*][b]Transformation is a decision.[/b] Form-specific cards highlight the strongest actions available now. Movement, transformation cards, and related relics let you make shifting part of an attacking turn.
-[*][b]A complete character experience.[/b] Custom card frames, character animation, VFX, voices, finishing music, an exclusive event, and Ancient dialogue are all included.
-[/list]
-
-[h2]🧭 Starter routes[/h2]
-
-[list]
-[*][b]Vigor burst:[/b] Build Vigor, then finish with cards such as [i]Valor[/i] and [i]Dive Strike[/i].
-[*][b]Exhaust loop:[/b] Use exhausting cards to trigger [i]Getter Claw[/i]'s free damage. [i]Parts Swap[/i] recovers key pieces, while Shin Getter 2 can further amplify the payoff.
-[*][b]Iron retaliation:[/b] Stack Plating and Block in Shin Getter 3, then turn the enemy turn into a chance to counterattack.
-[*][b]Transformation chain:[/b] Build around frequent shifting, movement-triggered transformations, and [i]Chosen One[/i] so each change becomes resources or defense.
-[/list]
-
-[h2]📦 What's included[/h2]
-
-[list]
-[*]77 cards
-[*]13 relics, 6 potions, and 2 enchantments
-[*]Multiple event invasions, 1 exclusive event, and dedicated Ancient dialogue
-[*]Simplified Chinese, English, and Japanese localization
-[/list]
-
-[h2]🚀 How to play[/h2]
-
-[list]
-[*]After subscribing, start the game and open [b]Settings → Mod Settings[/b] from the main menu.
-[*]Find “真盖塔模组” (Shin Getter Mod) under [b]Installed Mods[/b], enable it, and accept the load prompt after confirming the source is trusted.
-[*]Fully quit and relaunch the game. Enabling or disabling a mod takes effect after a restart.
-[*]Start a new run and select [b]Shin Getter[/b].
-[/list]
-
-On your first run, follow the highlighted form-specific cards to establish a rhythm, then branch into one of the routes above.
-
-[h2]🗺 Roadmap[/h2]
-
-[list]
-[*]More events
-[*]More elements inspired by [i]Super Robot Wars[/i]
-[*]Enemies from the Getter Robo universe
-[*]A new [i]Destiny[/i] deck archetype
-[*]Improved animation presentation
-[*]Dedicated card frames for Spirit Command cards
-[*]Multiplayer support
-[/list]
-
-[h2]Current status[/h2]
-
-[b]Page version: v1.3.0 (stable 109); published 0.111 Beta: v1.2.2-beta.111[/b]
-
-The mod will continue to be maintained. Future game updates may affect compatibility. Please report issues on GitHub with the game version, mod version, reproduction steps, and relevant logs.
-
-[url=https://github.com/AiurArtanis/sts2-shin-getter-mod]GitHub repository and issue tracker[/url]
-
-[hr][/hr]
-
-[i]This is an unofficial fan-made mod. Names, characters, and original assets related to Slay the Spire 2 and Getter Robo belong to their respective rights holders.[/i]
+Includes 77 cards, 13 relics, 6 potions, and 2 enchantments. Available in Simplified Chinese, English, and Japanese.
