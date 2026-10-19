@@ -13,13 +13,13 @@
 - 77项文件例外（含格式／using差异和109缓存补丁的明确缺省）逐文件SHA／归一指纹与理由见`.github/issue248-refresh-semantic-whitelist.json`。
 - API例外：FromCard继续传当前CardPlay；伤害override／Damage／LoseBlock保留111上下文；StartRunLobbyPlayer；GenerateAnimator第二个Creature参数；SignalPlayerChoiceBegun的Player；plural PotionFactory及IEnumerable；事件战canonical输入及CanonicalInstance比较。
 - 109专属SavedPropertiesTypeCache补丁不复制；111原生ModelIdSerializationCache负责注册模型属性、numeric IDs／width／hash。这不是删除保存功能。
-- 新跨越InitializeRunLobby：111多出players参数；无参数Postfix不匹配实参，仍可按唯一方法名绑定。新局／单人冷读档／多人冷读档6项源码接线检查通过。
+- 新跨越InitializeRunLobby：111多出players参数；无参数Postfix不声明或消费原方法实参，仍可按唯一方法名绑定。新局／单人冷读档／多人冷读档6项源码接线检查通过。
 - 资源仅5个渠道文件例外：manifest、update_history、三语settings_ui。manifest只允许version/min_game_version变更；共同settings键及正式history记录严格等于Tag，只保留额外Beta记录。所有其他tracked工程资源与Tag字节一致。
 - README／Workshop三语保留未发布Beta身份及真实旧Beta下载入口；以af93材料为参考，Workshop玩法正文沿用正式Tag最新精简版并加Beta说明。旧记录不改成已发布。
 
 ## 官方111输入与只读兼容核对
 
-- 只读官方输入：`E:/StS2-Automation-Sandboxes/v130-259-two-stage-20261017/beta-release111/data_sts2_windows_x86_64`。
+- 只读官方输入：官方111导出包的`data_sts2_windows_x86_64`目录，由`SHIN_GETTER_STS2_111_BIN`指定；实际私有路径记录在外部回执。
 - 官方sts2.dll SHA256 `0861BFA1DF347538D932F22D580E75420F08082792EB914E53B4882764ACDBE9`；MVID `73b63ee0-6c0a-47bb-b0d1-b21f6d94222e`。产品按ExportRelease配置、该官方DLL编译，不把反编译Debug当运行环境。
 - 109／111现有CodeGraph定位后回读实际源码；机械审计31个changed-symbol交叉全部reviewed，无未知项。原审计历史保留。
 - 实际CLR1209引用、102 Harmony目标／203命名参数、48 scoped动态成员通过；不应用补丁或启动游戏。44属性发现／14往返仅隔离CPU metadata夹具，不证明原生初始化、网络包或玩家存档。
@@ -34,13 +34,13 @@
 
 ## 审核交接
 
-最终提交及四件套大小／SHA／ProductVersion在外部`E:/Work/StS2 Mods/_issue-evidence/issue248-refresh-20261019/candidate-receipt.json`冻结；产品在`E:/Work/StS2 Mods/_build/v130-beta111-candidate-20261019`。
+最终提交及四件套大小／SHA／ProductVersion在外部`candidate-receipt.json`冻结；产品实际交接路径通过主开发会话和私有工单提供，不放入公开材料。
 主开发先审核该身份及差异，之后自动化会话才可使用新候选进行官方111隔离回归。没有启动游戏、整局、GPU、Steam/Godot共享部署或公开发布，不能继承旧75层／旧Debug回归结论。
 
 ```powershell
-$env:SHIN_GETTER_STS2_111_BIN='E:/StS2-Automation-Sandboxes/v130-259-two-stage-20261017/beta-release111/data_sts2_windows_x86_64'
+$env:SHIN_GETTER_STS2_111_BIN='<official111-data_sts2_windows_x86_64>'
 python shin-getter-mod-godot/tools/validate_issue_93.py
 python shin-getter-mod-godot/tools/validate_issue_248.py
 python shin-getter-mod-godot/tools/audit_issue248_refresh.py
-dotnet run --project tests/Issue206EventReturn/Issue206EventReturn.csproj -p:NativeSourceRoot=E:/Work/SlaytheSpare2-111-beta
+dotnet run --project tests/Issue206EventReturn/Issue206EventReturn.csproj -p:NativeSourceRoot='<read-only-111-source>'
 ```
