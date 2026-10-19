@@ -12,10 +12,12 @@ UI = ROOT / 'src/Nodes/Events/NShinGetterBondDialogue.cs'
 def no_normal_skip(ui):
     for token in ('NBackButton', '_skipButton', '_skipReleased', '_UnhandledInput', 'ui_cancel'):
         assert token not in ui, f'Normal skip input remains: {token}'
-    retry = ui[ui.index('        if (_retry != null)'):ui.index('        if (_ancient != null) RenderAncient')]
-    assert 'AddButton(' in retry and ', Skip);' in retry, 'Save failure must retain explicit recovery'
-    assert 'skip.Pressed += Skip;' in ui, 'Fatal asset failure must remain escapable'
-    assert '_session.Skip();' in ui and 'RestoreNativeUi();' in ui
+    # Artanis 2026-10-19 replaces retry/skip pages with automatic legacy fallback.
+    attempt = ui[ui.index('    private void Attempt('):ui.index('    private void Render()')]
+    fatal = ui[ui.index('    private void ShowFatalError('):ui.index('    private void Next()')]
+    assert 'if (!operation())' in attempt and 'ShowFatalError(' in attempt, 'Save failure must automatically recover'
+    assert '_useLegacyDialogue = true;' in fatal and 'Close();' in fatal, 'Fatal failure must return to the original event'
+    assert '_session.Skip();' not in ui and 'RestoreNativeUi();' in ui, 'Recovery must not write skipped/completed progress'
 
 
 def name_only_color(ui):

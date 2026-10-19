@@ -9,6 +9,7 @@ using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Events;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves;
@@ -96,10 +97,16 @@ internal sealed class ShinGetterBondSession
     {
         var state = model.Owner!.RunState;
         int act = state.CurrentActIndex;
-        if (run <= 0 || act < 0 || act >= state.MapPointHistory.Count)
+        if (run <= 0 || state.CurrentRoom is not EventRoom current || current.ModelId != model.Id)
+            throw new InvalidDataException("Conversation does not match the active event.");
+        // EnterNextAct enters the terminal Architect directly, without appending a
+        // map-history slot. It is unique per run; never borrow the last boss slot.
+        if (model is TheArchitect)
+            return $"encounter-v2:{run}:{state.Rng.Seed}:terminal:{model.Id}";
+        if (act < 0 || act >= state.MapPointHistory.Count)
             throw new InvalidDataException("No persistent map history for this conversation. Skip to continue.");
         var points = state.MapPointHistory[act];
-        if (points.Count == 0 || state.CurrentRoom is not EventRoom current || current.ModelId != model.Id)
+        if (points.Count == 0)
             throw new InvalidDataException("Conversation does not match the active event. Skip to continue.");
         var rooms = points[points.Count - 1].Rooms;
         // ToSave/FromSerializable preserve map history, including ordered Rooms.

@@ -2,6 +2,7 @@
 // unchanged, with actual Harmony FieldRef. This is not native Godot/input proof.
 namespace Godot
 {
+    public static class GD { public static void PushWarning(string message) { } }
     public class GodotObject
     {
         public bool Valid { get; set; } = true;
@@ -34,6 +35,7 @@ namespace MegaCrit.Sts2.Core.Entities.Ancients
     {
         public List<MegaCrit.Sts2.Core.Events.AncientDialogue> Dialogues { get; } = new();
         public IEnumerable<MegaCrit.Sts2.Core.Events.AncientDialogue> GetAllDialogues() => Dialogues;
+        public IEnumerable<MegaCrit.Sts2.Core.Events.AncientDialogue> GetValidDialogues(object character, int visits, int total, bool any) => Dialogues;
     }
 }
 namespace MegaCrit.Sts2.Core.Events
@@ -46,24 +48,55 @@ namespace MegaCrit.Sts2.Core.Models
 {
     public class EventModel
     {
+        public object Id { get; } = new();
+        public Player Owner { get; } = new();
         public Godot.Control? Node { get; set; }
         public bool Eligible { get; set; } = true;
         public bool IsFinished { get; set; }
-        protected void SetEventState(MegaCrit.Sts2.Core.Localization.LocString description, IEnumerable<MegaCrit.Sts2.Core.Events.EventOption> options) { }
+        public MegaCrit.Sts2.Core.Events.EventOption[] CurrentOptions { get; private set; } = Array.Empty<MegaCrit.Sts2.Core.Events.EventOption>();
+        protected void SetEventState(MegaCrit.Sts2.Core.Localization.LocString description, IEnumerable<MegaCrit.Sts2.Core.Events.EventOption> options) { CurrentOptions = options.ToArray(); }
     }
     public class AncientEventModel : EventModel
     {
+        public IEnumerable<object> AnyCharacterDialogueBlacklist => Array.Empty<object>();
         public MegaCrit.Sts2.Core.Entities.Ancients.AncientDialogueSet DialogueSet { get; } = new();
     }
+    public sealed class Player { public Character Character { get; } = new(); }
+    public sealed class Character { public object Id { get; } = new(); }
+}
+namespace MegaCrit.Sts2.Core.Random
+{
+    public sealed class Rng
+    {
+        public static Rng Chaotic { get; } = new();
+        public T NextItem<T>(IEnumerable<T> items) => items.First();
+    }
+}
+namespace MegaCrit.Sts2.Core.Helpers
+{
+    public static class TaskHelper { public static void RunSafely(Task task) => task.GetAwaiter().GetResult(); }
+}
+namespace MegaCrit.Sts2.Core.Saves
+{
+    public sealed class SaveManager
+    {
+        public static SaveManager Instance { get; } = new();
+        public Progress Progress { get; } = new();
+    }
+    public sealed class Progress { public Stats? GetStatsForAncient(object id) => null; }
+    public sealed class Stats { public int GetVisitsAs(object id) => 0; public int TotalVisits => 0; }
 }
 namespace MegaCrit.Sts2.Core.Models.Events
 {
     public sealed class TheArchitect : MegaCrit.Sts2.Core.Models.EventModel
     {
         private MegaCrit.Sts2.Core.Events.AncientDialogue? _dialogue;
+        private int _currentLineIndex = 0;
+        public int NativeLines { get; private set; }
+        public bool FailLegacyLoad { get; set; }
         public MegaCrit.Sts2.Core.Events.AncientDialogue? StoredDialogue => _dialogue;
-        public void LoadDialogue() => _dialogue = null;
-        public Task PlayCurrentLine() => Task.CompletedTask;
+        public void LoadDialogue() { if (FailLegacyLoad) throw new IOException("injected legacy failure"); _dialogue = new("legacy"); _dialogue.Lines.Add(new("legacy")); }
+        public Task PlayCurrentLine() { NativeLines++; _ = _currentLineIndex; return Task.CompletedTask; }
         private MegaCrit.Sts2.Core.Events.EventOption CreateProceedOption() => new();
     }
 }
@@ -108,7 +141,8 @@ namespace MegaCrit.Sts2.Core.Nodes.Events
     }
     public sealed class NAncientEventLayout(MegaCrit.Sts2.Core.Models.EventModel model) : NEventLayout(model)
     {
-        public void SetDialogue() { }
+        public IReadOnlyList<MegaCrit.Sts2.Core.Entities.Ancients.AncientDialogueLine> Lines { get; private set; } = Array.Empty<MegaCrit.Sts2.Core.Entities.Ancients.AncientDialogueLine>();
+        public void SetDialogue(IReadOnlyList<MegaCrit.Sts2.Core.Entities.Ancients.AncientDialogueLine> lines) { Lines = lines; }
         public void ClearDialogue() { }
     }
 }
@@ -124,10 +158,18 @@ namespace MegaCrit.Sts2.Core.Nodes.Rooms
 }
 namespace ShinGetterMod.Services
 {
-    internal sealed class ShinGetterBondSession(MegaCrit.Sts2.Core.Models.EventModel model)
+    internal sealed class ShinGetterBondSession
     {
-        internal MegaCrit.Sts2.Core.Models.EventModel Model { get; } = model;
-        internal static bool IsEligible(MegaCrit.Sts2.Core.Models.EventModel model) => model.Eligible;
+        internal static bool FailConstruction;
+        internal static bool FailEligibility;
+        internal ShinGetterBondSession(MegaCrit.Sts2.Core.Models.EventModel model)
+        {
+            if (FailConstruction) throw new IOException("injected session construction failure");
+            Model = model;
+        }
+        internal MegaCrit.Sts2.Core.Models.EventModel Model { get; }
+        internal static bool IsEligible(MegaCrit.Sts2.Core.Models.EventModel model) => FailEligibility
+            ? throw new InvalidDataException("injected catalogue failure") : model.Eligible;
     }
 }
 namespace ShinGetterMod.Nodes.Events
@@ -136,6 +178,7 @@ namespace ShinGetterMod.Nodes.Events
     {
         public static NShinGetterBondDialogue Last { get; private set; } = null!;
         private Action? _return;
+        private Action? _fallback;
         internal Godot.Control? DefaultFocusedControl => this;
         internal bool IsUpdatingNativeUi { get; set; }
         internal int AdvanceCalls { get; private set; }
@@ -143,9 +186,9 @@ namespace ShinGetterMod.Nodes.Events
         internal MegaCrit.Sts2.Core.Events.EventOption? LocalOption { get; set; }
         private List<(MegaCrit.Sts2.Core.Nodes.Events.NEventOptionButton Button, bool Visible)> _hidden = new();
         internal static NShinGetterBondDialogue Create(ShinGetterMod.Services.ShinGetterBondSession session,
-            MegaCrit.Sts2.Core.Models.EventModel model, MegaCrit.Sts2.Core.Nodes.Events.NEventLayout layout, Action resume, string? finalAncientSfx = null)
+            MegaCrit.Sts2.Core.Models.EventModel model, MegaCrit.Sts2.Core.Nodes.Events.NEventLayout layout, Action resume, string? finalAncientSfx = null, Action? fallbackToLegacy = null)
         {
-            Last = new() { _return = resume };
+            Last = new() { _return = resume, _fallback = fallbackToLegacy };
             foreach (var button in layout.Buttons) { Last._hidden.Add((button, button.Visible)); button.Hide(); }
             return Last;
         }
@@ -165,5 +208,11 @@ namespace ShinGetterMod.Nodes.Events
             _hidden.Clear();
             _return?.Invoke();
         } // environment stand-in; production UI lifecycle is not executed by this fixture
+        internal void Fail()
+        {
+            foreach (var snapshot in _hidden) snapshot.Button.Visible = snapshot.Visible;
+            _hidden.Clear();
+            _fallback?.Invoke();
+        }
     }
 }

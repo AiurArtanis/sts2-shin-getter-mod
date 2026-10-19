@@ -98,12 +98,13 @@ foreach (bool valid in new[] { false, true })
     Check(!(bool)advance.Invoke(null, new object[] { layout })! && ui.AdvanceCalls == 1, "native hitbox bypassed session-owned advance");
     var replace = HarmonyLib.AccessTools.Method(typeof(ShinGetterBondReplaceAncientLinesPatch), "Prefix");
     ui.IsUpdatingNativeUi = true;
-    Check((bool)replace.Invoke(null, new object[] { layout })!, "native story refresh suppressed itself");
+    var legacyLines = new[] { new MegaCrit.Sts2.Core.Entities.Ancients.AncientDialogueLine("legacy") };
+    Check((bool)replace.Invoke(null, new object[] { layout, legacyLines })!, "native story refresh suppressed itself");
     var focus = HarmonyLib.AccessTools.Method(typeof(ShinGetterBondNativeLineFocusPatch), "Prefix");
     Check(!(bool)focus.Invoke(null, new object[] { layout })!, "native hover inspected an empty replacement container");
     ui.IsUpdatingNativeUi = false;
     Check((bool)focus.Invoke(null, new object[] { layout })!, "normal native hover was suppressed");
-    Check(!(bool)replace.Invoke(null, new object[] { layout })!, "original dialogue entered bond flow");
+    Check(!(bool)replace.Invoke(null, new object[] { layout, legacyLines })!, "original dialogue entered bond flow");
     ui.Return();
     Check((bool)route.Invoke(null, new object[] { room, layout.Buttons[0].Option })!, "native reward routing did not resume");
     Check((bool)advance.Invoke(null, new object[] { layout })! && ui.AdvanceCalls == 1, "native advance intercepted after return");
@@ -136,5 +137,71 @@ foreach (string blocked in new[] { "ineligible", "finished" })
     Check(ShinGetterBondDialogueBridge.ResolveFinalAncientSfx(npc) == "event:/sfx/npcs/neow/neow_welcome", "declared NPC sound not reused");
     Check(ShinGetterBondDialogueBridge.ResolveFinalAncientSfx(new EventModel()) == null, "non-ancient invented NPC sound");
     Check(ShinGetterBondDialogueBridge.ResolveFinalAncientSfx(new AncientEventModel()) == null, "empty native sound set invented sound");
+}
+{
+    var (model, layout) = Scenario();
+    var original = layout.Buttons.ToArray();
+    var lines = new[] { new MegaCrit.Sts2.Core.Entities.Ancients.AncientDialogueLine("legacy") };
+    ShinGetterBondDialogueBridge.Get(model).LegacyLines = lines;
+    ShinGetterBondDialogueBridge.Attach(model, layout, layout.OnSetupComplete);
+    var ui = NShinGetterBondDialogue.Last;
+    ui.Fail();
+    ui.Fail();
+    Check(layout.Lines.SequenceEqual(lines), "fallback failed to restore pre-bond lines");
+    Check(layout.Buttons.SequenceEqual(original) && original.All(b => LegalFixtureInput(b, model)), "fallback changed native rewards or left click routing blocked");
+    Check(layout.Resumes == 1 && ShinGetterBondDialogueBridge.Get(model).LegacyFallback, "fallback resumed more than once");
+}
+{
+    var (model, layout) = Scenario();
+    ShinGetterMod.Services.ShinGetterBondSession.FailConstruction = true;
+    try
+    {
+        ShinGetterBondDialogueBridge.Get(model); // Must not construct a session yet.
+        ShinGetterBondDialogueBridge.Attach(model, layout, layout.OnSetupComplete);
+        Check(layout.Resumes == 1 && layout.Buttons.All(b => b.IsEnabled), "construction error left event disabled");
+        Check(!ShinGetterBondDialogueBridge.IsBlocking(model), "construction error left bond interception active");
+    }
+    finally { ShinGetterMod.Services.ShinGetterBondSession.FailConstruction = false; }
+}
+{
+    var model = new MegaCrit.Sts2.Core.Models.Events.TheArchitect();
+    var layout = new NEventLayout(model);
+    layout.Buttons.Add(new() { MouseStops = true }); // Native AnimateButtonsIn has enabled pointer routing.
+    var state = ShinGetterBondDialogueBridge.Get(model);
+    var play = HarmonyLib.AccessTools.Method(typeof(ShinGetterBondArchitectPlayPatch), "Prefix");
+    Check(!(bool)play.Invoke(null, new object?[] { model, null })!, "early native PlayCurrentLine not suspended");
+    Check(state.Ui == null && layout.Buttons[0].Visible, "Architect attached before native SetupLayout.SetOptions");
+    var setup = HarmonyLib.AccessTools.Method(typeof(ShinGetterBondArchitectSetupPatch), "Postfix");
+    setup.Invoke(null, new object[] { layout });
+    Check(state.Ui != null && !layout.Buttons[0].Visible, "Architect did not attach after native setup");
+    var ui = NShinGetterBondDialogue.Last;
+    ui.Fail();
+    ui.Fail();
+    Check(state.LegacyFallback && state.Returned && model.StoredDialogue?.Text == "legacy" && model.NativeLines == 1,
+        "Architect did not load/play pre-bond dialogue exactly once");
+    Check((bool)play.Invoke(null, new object?[] { model, null })!, "Architect fallback blocked native Next line");
+    Check(LegalFixtureInput(layout.Buttons[0], model), "Architect fallback left native clicks disabled");
+}
+foreach (bool failure in new[] { false, true })
+{
+    var model = new MegaCrit.Sts2.Core.Models.Events.TheArchitect { FailLegacyLoad = failure };
+    var layout = new NEventLayout(model);
+    var state = ShinGetterBondDialogueBridge.Get(model);
+    HarmonyLib.AccessTools.Method(typeof(ShinGetterBondArchitectSetupPatch), "Postfix").Invoke(null, new object[] { layout });
+    if (failure) NShinGetterBondDialogue.Last.Fail();
+    else NShinGetterBondDialogue.Last.Return();
+    Check(model.CurrentOptions.Length == 1 && state.Returned, "Architect did not retain native Proceed");
+    Check(model.NativeLines == 0, "normal completion or damaged legacy replayed dialogue");
+    Check(state.LegacyFallback == failure, "normal completion incorrectly used legacy fallback");
+}
+{
+    var (model, layout) = Scenario();
+    ShinGetterMod.Services.ShinGetterBondSession.FailEligibility = true;
+    try
+    {
+        Check(ShinGetterBondDialogueBridge.IsEligible(model) == false, "catalogue exception escaped");
+        Check(!ShinGetterBondDialogueBridge.TryGet(model, out _), "catalogue failure started bond interception");
+    }
+    finally { ShinGetterMod.Services.ShinGetterBondSession.FailEligibility = false; }
 }
 Console.WriteLine($"PASS: {assertions} production-bridge fixture assertions; NOT native Godot/input/reward proof.");

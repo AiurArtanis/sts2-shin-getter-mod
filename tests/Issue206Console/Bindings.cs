@@ -27,8 +27,12 @@ namespace MegaCrit.Sts2.Core.Models
         public static string SlugifyCategory<T>() => "EVENT";
     }
     public static class ModelDb { public static T Character<T>() where T : new() => new(); }
-    public sealed class EventModel { public ModelId Id { get; init; } = ModelId.none; public Player? Owner { get; init; } }
+    public class EventModel { public ModelId Id { get; init; } = ModelId.none; public Player? Owner { get; init; } }
     public class Player { public object Character { get; set; } = new ShinGetterMod.Models.Characters.ShinGetter(); public RunState RunState { get; set; } = new(); }
+}
+namespace MegaCrit.Sts2.Core.Models.Events
+{
+    public sealed class TheArchitect : EventModel { }
 }
 namespace MegaCrit.Sts2.Core.Rooms
 {

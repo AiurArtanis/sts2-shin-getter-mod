@@ -9,8 +9,8 @@ gate.check(ui)
 mutations = {
     'normal back returns': ui + '\nNBackButton',
     'hidden cancel skip returns': ui + '\nui_cancel',
-    'save-failure escape removed': ui.replace(', Skip);', ', Next);'),
-    'fatal escape removed': ui.replace('skip.Pressed += Skip;', 'skip.Pressed += Next;'),
+    'save-failure escape removed': ui.replace('if (!operation())', 'if (false)'),
+    'fatal escape removed': ui.replace('_useLegacyDialogue = true;', '_useLegacyDialogue = false;'),
     'personal choice uses gold title': ui.replace('NativeText(dialogueOption ? "" : text)', 'NativeText(text)'),
     'personal choice body lost': ui.replace('NativeText(dialogueOption ? text : "")', 'NativeText("")'),
     'personal choice flag lost': ui.replace('dialogueOption: true', 'dialogueOption: false'),
