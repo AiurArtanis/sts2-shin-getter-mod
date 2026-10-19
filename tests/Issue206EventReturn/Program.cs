@@ -179,6 +179,7 @@ foreach (string blocked in new[] { "ineligible", "finished" })
     ui.Fail();
     Check(state.LegacyFallback && state.Returned && model.StoredDialogue?.Text == "legacy" && model.NativeLines == 1,
         "Architect did not load/play pre-bond dialogue exactly once");
+    Check(model.CurrentOptions.Count == 1, "native legacy PlayCurrentLine returned without text/speaker/options and stranded intro");
     Check((bool)play.Invoke(null, new object?[] { model, null })!, "Architect fallback blocked native Next line");
     Check(LegalFixtureInput(layout.Buttons[0], model), "Architect fallback left native clicks disabled");
 }
@@ -190,7 +191,7 @@ foreach (bool failure in new[] { false, true })
     HarmonyLib.AccessTools.Method(typeof(ShinGetterBondArchitectSetupPatch), "Postfix").Invoke(null, new object[] { layout });
     if (failure) NShinGetterBondDialogue.Last.Fail();
     else NShinGetterBondDialogue.Last.Return();
-    Check(model.CurrentOptions.Length == 1 && state.Returned, "Architect did not retain native Proceed");
+    Check(model.CurrentOptions.Count == 1 && state.Returned, "Architect did not retain native Proceed");
     Check(model.NativeLines == 0, "normal completion or damaged legacy replayed dialogue");
     Check(state.LegacyFallback == failure, "normal completion incorrectly used legacy fallback");
 }

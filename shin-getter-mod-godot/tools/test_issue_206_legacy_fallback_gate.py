@@ -29,6 +29,7 @@ def check(ui, bridge, session):
     assert "state.Returned = true" in bridge and "state.LegacyFallback = true" in bridge
     assert "legacy.SetDialogue(lines)" in bridge
     assert "LoadDialogue.Invoke(model, null)" in bridge and "await (Task)PlayCurrentLine.Invoke(model, null)!" in bridge
+    assert "if (model.CurrentOptions.Count == 0) RestoreProceed(model)" in bridge
     assert "RestoreProceed(model)" in bridge and "finally { QueueFree(); }" in ui
     assert "SetLocalPlayerReady" not in bridge and '"WinRun"' not in bridge
 
@@ -44,6 +45,7 @@ cases = {
     "fallback writes skip": (UI + "\n_session.Skip();", BRIDGE, SESSION),
     "legacy recovery disabled": (UI.replace("_useLegacyDialogue = true", "_useLegacyDialogue = false"), BRIDGE, SESSION),
     "original lines not restored": (UI, BRIDGE.replace("legacy.SetDialogue(lines)", "legacy.ClearDialogue()"), SESSION),
+    "native early return leaves no options": (UI, BRIDGE.replace("if (model.CurrentOptions.Count == 0) RestoreProceed(model)", "if (false) RestoreProceed(model)"), SESSION),
 }
 for name, sources in cases.items():
     try:

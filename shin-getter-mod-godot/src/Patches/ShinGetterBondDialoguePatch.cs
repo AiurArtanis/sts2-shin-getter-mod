@@ -304,6 +304,10 @@ internal static class ShinGetterBondArchitectSetupPatch
                 return;
             }
             await (Task)PlayCurrentLine.Invoke(model, null)!;
+            // Native PlayCurrentLine can return successfully without setting an
+            // option when its text or speaker is unavailable. Do not leave the
+            // empty intro state behind in that case.
+            if (model.CurrentOptions.Count == 0) RestoreProceed(model);
         }
         catch (Exception ex)
         {

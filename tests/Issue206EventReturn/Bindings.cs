@@ -53,7 +53,7 @@ namespace MegaCrit.Sts2.Core.Models
         public Godot.Control? Node { get; set; }
         public bool Eligible { get; set; } = true;
         public bool IsFinished { get; set; }
-        public MegaCrit.Sts2.Core.Events.EventOption[] CurrentOptions { get; private set; } = Array.Empty<MegaCrit.Sts2.Core.Events.EventOption>();
+        public IReadOnlyList<MegaCrit.Sts2.Core.Events.EventOption> CurrentOptions { get; private set; } = Array.Empty<MegaCrit.Sts2.Core.Events.EventOption>();
         protected void SetEventState(MegaCrit.Sts2.Core.Localization.LocString description, IEnumerable<MegaCrit.Sts2.Core.Events.EventOption> options) { CurrentOptions = options.ToArray(); }
     }
     public class AncientEventModel : EventModel
