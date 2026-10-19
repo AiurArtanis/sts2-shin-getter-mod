@@ -21,11 +21,11 @@
   },
   {
     "kind": "type",
-    "target": "MegaCrit.Sts2.Core.Runs.History.MapPointHistoryEntry"
+    "target": "MegaCrit.Sts2.Core.Rooms.EventRoom"
   },
   {
     "kind": "type",
-    "target": "MegaCrit.Sts2.Core.Rooms.EventRoom"
+    "target": "MegaCrit.Sts2.Core.Runs.History.MapPointHistoryEntry"
   },
   {
     "kind": "type",
@@ -42,6 +42,10 @@
   {
     "kind": "type",
     "target": "MegaCrit.Sts2.Core.Saves.ReadSaveResult\u00601"
+  },
+  {
+    "kind": "type",
+    "target": "MegaCrit.Sts2.Core.Nodes.NGame"
   },
   {
     "kind": "type",
@@ -70,10 +74,6 @@
   {
     "kind": "type",
     "target": "MegaCrit.Sts2.Core.Entities.Creatures.DamageResult"
-  },
-  {
-    "kind": "type",
-    "target": "MegaCrit.Sts2.Core.Combat.ICombatState"
   },
   {
     "kind": "type",
@@ -205,11 +205,27 @@
   },
   {
     "kind": "type",
+    "target": "MegaCrit.Sts2.Core.Entities.Ancients.AncientDialogueLine"
+  },
+  {
+    "kind": "type",
     "target": "MegaCrit.Sts2.Core.Nodes.Events.NEventOptionButton"
   },
   {
     "kind": "type",
     "target": "MegaCrit.Sts2.Core.Nodes.Events.NAncientEventLayout"
+  },
+  {
+    "kind": "type",
+    "target": "MegaCrit.Sts2.Core.Saves.AncientStats"
+  },
+  {
+    "kind": "type",
+    "target": "MegaCrit.Sts2.Core.Models.ActModel"
+  },
+  {
+    "kind": "type",
+    "target": "MegaCrit.Sts2.Core.Runs.RunState"
   },
   {
     "kind": "type",
@@ -234,6 +250,10 @@
   {
     "kind": "type",
     "target": "MegaCrit.Sts2.Core.Nodes.Rooms.NCombatRoom"
+  },
+  {
+    "kind": "type",
+    "target": "MegaCrit.Sts2.Core.Combat.ICombatState"
   },
   {
     "kind": "type",
@@ -313,6 +333,14 @@
   },
   {
     "kind": "type",
+    "target": "MegaCrit.Sts2.Core.Assets.PreloadManager"
+  },
+  {
+    "kind": "type",
+    "target": "MegaCrit.Sts2.Core.Models.EncounterModel"
+  },
+  {
+    "kind": "type",
     "target": "MegaCrit.Sts2.Core.Commands.CreatureCmd"
   },
   {
@@ -338,10 +366,6 @@
   {
     "kind": "type",
     "target": "MegaCrit.Sts2.Core.Models.Events.ByrdonisNest"
-  },
-  {
-    "kind": "type",
-    "target": "MegaCrit.Sts2.Core.Runs.RunState"
   },
   {
     "kind": "type",
@@ -469,10 +493,6 @@
   },
   {
     "kind": "type",
-    "target": "MegaCrit.Sts2.Core.Nodes.NGame"
-  },
-  {
-    "kind": "type",
     "target": "MegaCrit.Sts2.Core.Nodes.Vfx.NVineShamblerVinesVfx"
   },
   {
@@ -497,23 +517,15 @@
   },
   {
     "kind": "type",
-    "target": "MegaCrit.Sts2.Core.Nodes.CommonUi.NBackButton"
-  },
-  {
-    "kind": "type",
     "target": "MegaCrit.Sts2.Core.Entities.Ancients.AncientDialogueSpeaker"
   },
   {
     "kind": "type",
-    "target": "MegaCrit.Sts2.Core.Nodes.GodotExtensions.NClickableControl"
+    "target": "MegaCrit.Sts2.Core.Nodes.Events.NAncientDialogueLine"
   },
   {
     "kind": "type",
-    "target": "MegaCrit.Sts2.Core.Entities.Ancients.AncientDialogueLine"
-  },
-  {
-    "kind": "type",
-    "target": "MegaCrit.Sts2.addons.mega_text.MegaLabel"
+    "target": "MegaCrit.Sts2.Core.Nodes.CommonUi.NBackButton"
   },
   {
     "kind": "type",
@@ -570,6 +582,10 @@
   {
     "kind": "type",
     "target": "MegaCrit.Sts2.Core.Nodes.Screens.Settings.NSettingsButton"
+  },
+  {
+    "kind": "type",
+    "target": "MegaCrit.Sts2.addons.mega_text.MegaLabel"
   },
   {
     "kind": "type",
@@ -809,10 +825,6 @@
   },
   {
     "kind": "type",
-    "target": "MegaCrit.Sts2.Core.Models.EncounterModel"
-  },
-  {
-    "kind": "type",
     "target": "MegaCrit.Sts2.Core.Models.Events.TeaMaster"
   },
   {
@@ -945,10 +957,6 @@
   },
   {
     "kind": "type",
-    "target": "MegaCrit.Sts2.Core.Saves.Runs.SerializableRelicGrabBag"
-  },
-  {
-    "kind": "type",
     "target": "MegaCrit.Sts2.Core.Entities.Cards.CardCreationResult"
   },
   {
@@ -974,10 +982,6 @@
   {
     "kind": "type",
     "target": "MegaCrit.Sts2.Core.DevConsole.ConsoleCommands.AbstractConsoleCmd"
-  },
-  {
-    "kind": "type",
-    "target": "MegaCrit.Sts2.Core.Models.ActModel"
   },
   {
     "kind": "type",
@@ -1081,15 +1085,15 @@
   },
   {
     "kind": "type",
+    "target": "MegaCrit.Sts2.Core.Nodes.GodotExtensions.NClickableControl"
+  },
+  {
+    "kind": "type",
     "target": "MegaCrit.Sts2.Core.Nodes.GodotExtensions.NClickableControl\u002BSignalName"
   },
   {
     "kind": "type",
     "target": "MegaCrit.Sts2.Core.Helpers.TaskHelper"
-  },
-  {
-    "kind": "type",
-    "target": "MegaCrit.Sts2.Core.Assets.PreloadManager"
   },
   {
     "kind": "type",
@@ -1137,15 +1141,15 @@
   },
   {
     "kind": "type",
-    "target": "MegaCrit.Sts2.Core.Helpers.SceneHelper"
-  },
-  {
-    "kind": "type",
     "target": "MegaCrit.Sts2.Core.Commands.TalkCmd"
   },
   {
     "kind": "type",
     "target": "MegaCrit.Sts2.Core.Nodes.Vfx.VfxDuration"
+  },
+  {
+    "kind": "type",
+    "target": "MegaCrit.Sts2.Core.Helpers.SceneHelper"
   },
   {
     "kind": "type",
@@ -1318,6 +1322,10 @@
   {
     "kind": "type",
     "target": "MegaCrit.Sts2.Core.Runs.RelicGrabBag"
+  },
+  {
+    "kind": "type",
+    "target": "MegaCrit.Sts2.Core.Saves.Runs.SerializableRelicGrabBag"
   },
   {
     "kind": "type",
@@ -1722,12 +1730,6 @@
   {
     "kind": "Method",
     "owner": "MegaCrit.Sts2.Core.Runs.IRunState",
-    "name": "get_MapPointHistory",
-    "signature": "System.Collections.Generic.IReadOnlyList\u00601[System.Collections.Generic.IReadOnlyList\u00601[MegaCrit.Sts2.Core.Runs.History.MapPointHistoryEntry]] get_MapPointHistory()"
-  },
-  {
-    "kind": "Method",
-    "owner": "MegaCrit.Sts2.Core.Runs.IRunState",
     "name": "get_CurrentRoom",
     "signature": "MegaCrit.Sts2.Core.Rooms.AbstractRoom get_CurrentRoom()"
   },
@@ -1742,6 +1744,24 @@
     "owner": "MegaCrit.Sts2.Core.Models.ModelId",
     "name": "op_Inequality",
     "signature": "Boolean op_Inequality(MegaCrit.Sts2.Core.Models.ModelId, MegaCrit.Sts2.Core.Models.ModelId)"
+  },
+  {
+    "kind": "Method",
+    "owner": "MegaCrit.Sts2.Core.Runs.IRunState",
+    "name": "get_Rng",
+    "signature": "MegaCrit.Sts2.Core.Runs.RunRngSet get_Rng()"
+  },
+  {
+    "kind": "Method",
+    "owner": "MegaCrit.Sts2.Core.Runs.RunRngSet",
+    "name": "get_Seed",
+    "signature": "UInt64 get_Seed()"
+  },
+  {
+    "kind": "Method",
+    "owner": "MegaCrit.Sts2.Core.Runs.IRunState",
+    "name": "get_MapPointHistory",
+    "signature": "System.Collections.Generic.IReadOnlyList\u00601[System.Collections.Generic.IReadOnlyList\u00601[MegaCrit.Sts2.Core.Runs.History.MapPointHistoryEntry]] get_MapPointHistory()"
   },
   {
     "kind": "Method",
@@ -1784,18 +1804,6 @@
     "owner": "MegaCrit.Sts2.Core.Map.MapCoord",
     "name": "row",
     "signature": "Int32 row"
-  },
-  {
-    "kind": "Method",
-    "owner": "MegaCrit.Sts2.Core.Runs.IRunState",
-    "name": "get_Rng",
-    "signature": "MegaCrit.Sts2.Core.Runs.RunRngSet get_Rng()"
-  },
-  {
-    "kind": "Method",
-    "owner": "MegaCrit.Sts2.Core.Runs.RunRngSet",
-    "name": "get_Seed",
-    "signature": "UInt64 get_Seed()"
   },
   {
     "kind": "Method",
@@ -1847,13 +1855,13 @@
   },
   {
     "kind": "Method",
-    "owner": "MegaCrit.Sts2.Core.Saves.ReadSaveResult\u00601[[MegaCrit.Sts2.Core.Runs.RunHistory, sts2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+    "owner": "MegaCrit.Sts2.Core.Saves.ReadSaveResult\u00601[[MegaCrit.Sts2.Core.Runs.RunHistory, sts2, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null]]",
     "name": "get_Status",
     "signature": "MegaCrit.Sts2.Core.Saves.ReadSaveStatus get_Status()"
   },
   {
     "kind": "Method",
-    "owner": "MegaCrit.Sts2.Core.Saves.ReadSaveResult\u00601[[MegaCrit.Sts2.Core.Runs.RunHistory, sts2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+    "owner": "MegaCrit.Sts2.Core.Saves.ReadSaveResult\u00601[[MegaCrit.Sts2.Core.Runs.RunHistory, sts2, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null]]",
     "name": "get_SaveData",
     "signature": "MegaCrit.Sts2.Core.Runs.RunHistory get_SaveData()"
   },
@@ -1886,6 +1894,12 @@
     "owner": "MegaCrit.Sts2.Core.Models.ModelDb",
     "name": "Character",
     "signature": "T Character[T]()"
+  },
+  {
+    "kind": "Method",
+    "owner": "MegaCrit.Sts2.Core.Nodes.NGame",
+    "name": "get_Instance",
+    "signature": "MegaCrit.Sts2.Core.Nodes.NGame get_Instance()"
   },
   {
     "kind": "Method",
@@ -2273,6 +2287,18 @@
   },
   {
     "kind": "Method",
+    "owner": "MegaCrit.Sts2.Core.Models.AncientEventModel",
+    "name": "get_DialogueSet",
+    "signature": "MegaCrit.Sts2.Core.Entities.Ancients.AncientDialogueSet get_DialogueSet()"
+  },
+  {
+    "kind": "Method",
+    "owner": "MegaCrit.Sts2.Core.Entities.Ancients.AncientDialogueSet",
+    "name": "GetAllDialogues",
+    "signature": "System.Collections.Generic.IEnumerable\u00601[MegaCrit.Sts2.Core.Entities.Ancients.AncientDialogue] GetAllDialogues()"
+  },
+  {
+    "kind": "Method",
     "owner": "MegaCrit.Sts2.Core.Nodes.Events.NEventLayout",
     "name": "get_OptionButtons",
     "signature": "System.Collections.Generic.IEnumerable\u00601[MegaCrit.Sts2.Core.Nodes.Events.NEventOptionButton] get_OptionButtons()"
@@ -2292,8 +2318,44 @@
   {
     "kind": "Method",
     "owner": "MegaCrit.Sts2.Core.Models.EventModel",
-    "name": "get_Node",
-    "signature": "Godot.Control get_Node()"
+    "name": "get_IsFinished",
+    "signature": "Boolean get_IsFinished()"
+  },
+  {
+    "kind": "Method",
+    "owner": "MegaCrit.Sts2.Core.Entities.Ancients.AncientDialogue",
+    "name": "get_Lines",
+    "signature": "System.Collections.Generic.IReadOnlyList\u00601[MegaCrit.Sts2.Core.Entities.Ancients.AncientDialogueLine] get_Lines()"
+  },
+  {
+    "kind": "Constructor",
+    "owner": "MegaCrit.Sts2.Core.Localization.LocString",
+    "name": ".ctor",
+    "signature": "Void .ctor(System.String, System.String)"
+  },
+  {
+    "kind": "Method",
+    "owner": "MegaCrit.Sts2.Core.Logging.Log",
+    "name": "Warn",
+    "signature": "Void Warn(System.String, Int32)"
+  },
+  {
+    "kind": "Method",
+    "owner": "MegaCrit.Sts2.Core.Runs.RunManager",
+    "name": "DebugOnlyGetState",
+    "signature": "MegaCrit.Sts2.Core.Runs.RunState DebugOnlyGetState()"
+  },
+  {
+    "kind": "Method",
+    "owner": "MegaCrit.Sts2.Core.Runs.RunState",
+    "name": "get_Act",
+    "signature": "MegaCrit.Sts2.Core.Models.ActModel get_Act()"
+  },
+  {
+    "kind": "Method",
+    "owner": "MegaCrit.Sts2.Core.Models.EventModel",
+    "name": "IsAllowed",
+    "signature": "Boolean IsAllowed(MegaCrit.Sts2.Core.Runs.IRunState)"
   },
   {
     "kind": "Method",
@@ -2402,12 +2464,6 @@
     "owner": "MegaCrit.Sts2.Core.Nodes.Cards.Holders.NHandCardHolder",
     "name": "UpdateCard",
     "signature": "Void UpdateCard()"
-  },
-  {
-    "kind": "Constructor",
-    "owner": "MegaCrit.Sts2.Core.Localization.LocString",
-    "name": ".ctor",
-    "signature": "Void .ctor(System.String, System.String)"
   },
   {
     "kind": "Method",
@@ -3005,12 +3061,6 @@
   },
   {
     "kind": "Method",
-    "owner": "MegaCrit.Sts2.Core.Nodes.NGame",
-    "name": "get_Instance",
-    "signature": "MegaCrit.Sts2.Core.Nodes.NGame get_Instance()"
-  },
-  {
-    "kind": "Method",
     "owner": "MegaCrit.Sts2.Core.Commands.VfxCmd",
     "name": "PlayOnCreatureCenter",
     "signature": "Void PlayOnCreatureCenter(MegaCrit.Sts2.Core.Entities.Creatures.Creature, System.String)"
@@ -3026,12 +3076,6 @@
     "owner": "MegaCrit.Sts2.Core.Nodes.Rooms.NMerchantRoom",
     "name": "get_PlayerVisuals",
     "signature": "System.Collections.Generic.IReadOnlyList\u00601[MegaCrit.Sts2.Core.Nodes.Screens.Shops.NMerchantCharacter] get_PlayerVisuals()"
-  },
-  {
-    "kind": "Method",
-    "owner": "MegaCrit.Sts2.Core.Runs.RunManager",
-    "name": "DebugOnlyGetState",
-    "signature": "MegaCrit.Sts2.Core.Runs.RunState DebugOnlyGetState()"
   },
   {
     "kind": "Method",
@@ -3083,24 +3127,6 @@
   },
   {
     "kind": "Method",
-    "owner": "MegaCrit.Sts2.Core.Helpers.SceneHelper",
-    "name": "GetScenePath",
-    "signature": "System.String GetScenePath(System.String)"
-  },
-  {
-    "kind": "Method",
-    "owner": "MegaCrit.Sts2.Core.Assets.AssetCache",
-    "name": "GetScene",
-    "signature": "Godot.PackedScene GetScene(System.String)"
-  },
-  {
-    "kind": "Method",
-    "owner": "MegaCrit.Sts2.Core.Nodes.GodotExtensions.NClickableControl",
-    "name": "Enable",
-    "signature": "Void Enable()"
-  },
-  {
-    "kind": "Method",
     "owner": "MegaCrit.Sts2.Core.Nodes.Events.NAncientEventLayout",
     "name": "SetDialogue",
     "signature": "Void SetDialogue(System.Collections.Generic.IReadOnlyList\u00601[MegaCrit.Sts2.Core.Entities.Ancients.AncientDialogueLine])"
@@ -3124,6 +3150,12 @@
     "signature": "Void Add(System.String, System.String)"
   },
   {
+    "kind": "Method",
+    "owner": "MegaCrit.Sts2.Core.Nodes.Events.NAncientDialogueLine",
+    "name": "SetSpeakerIconVisible",
+    "signature": "Void SetSpeakerIconVisible()"
+  },
+  {
     "kind": "Constructor",
     "owner": "MegaCrit.Sts2.Core.Events.EventOption",
     "name": ".ctor",
@@ -3143,15 +3175,39 @@
   },
   {
     "kind": "Method",
+    "owner": "MegaCrit.Sts2.Core.Nodes.GodotExtensions.NClickableControl",
+    "name": "Enable",
+    "signature": "Void Enable()"
+  },
+  {
+    "kind": "Method",
     "owner": "MegaCrit.Sts2.Core.Nodes.Events.NEventOptionButton",
     "name": "EnableButton",
     "signature": "Void EnableButton()"
   },
   {
     "kind": "Method",
+    "owner": "MegaCrit.Sts2.Core.Commands.SfxCmd",
+    "name": "Play",
+    "signature": "Void Play(System.String, Single)"
+  },
+  {
+    "kind": "Method",
     "owner": "MegaCrit.Sts2.Core.Nodes.Screens.MainMenu.NSubmenu",
     "name": "OnSubmenuOpened",
     "signature": "Void OnSubmenuOpened()"
+  },
+  {
+    "kind": "Method",
+    "owner": "MegaCrit.Sts2.Core.Helpers.SceneHelper",
+    "name": "GetScenePath",
+    "signature": "System.String GetScenePath(System.String)"
+  },
+  {
+    "kind": "Method",
+    "owner": "MegaCrit.Sts2.Core.Assets.AssetCache",
+    "name": "GetScene",
+    "signature": "Godot.PackedScene GetScene(System.String)"
   },
   {
     "kind": "Method",
@@ -3707,7 +3763,7 @@
   },
   {
     "kind": "Constructor",
-    "owner": "MegaCrit.Sts2.Core.Localization.DynamicVars.PowerVar\u00601[[MegaCrit.Sts2.Core.Models.Powers.VigorPower, sts2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+    "owner": "MegaCrit.Sts2.Core.Localization.DynamicVars.PowerVar\u00601[[MegaCrit.Sts2.Core.Models.Powers.VigorPower, sts2, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null]]",
     "name": ".ctor",
     "signature": "Void .ctor(System.Decimal)"
   },
@@ -3929,7 +3985,7 @@
   },
   {
     "kind": "Constructor",
-    "owner": "MegaCrit.Sts2.Core.Localization.DynamicVars.PowerVar\u00601[[MegaCrit.Sts2.Core.Models.Powers.RegenPower, sts2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+    "owner": "MegaCrit.Sts2.Core.Localization.DynamicVars.PowerVar\u00601[[MegaCrit.Sts2.Core.Models.Powers.RegenPower, sts2, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null]]",
     "name": ".ctor",
     "signature": "Void .ctor(System.Decimal)"
   },
@@ -3941,13 +3997,13 @@
   },
   {
     "kind": "Constructor",
-    "owner": "MegaCrit.Sts2.Core.Localization.DynamicVars.PowerVar\u00601[[MegaCrit.Sts2.Core.Models.Powers.WeakPower, sts2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+    "owner": "MegaCrit.Sts2.Core.Localization.DynamicVars.PowerVar\u00601[[MegaCrit.Sts2.Core.Models.Powers.WeakPower, sts2, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null]]",
     "name": ".ctor",
     "signature": "Void .ctor(System.Decimal)"
   },
   {
     "kind": "Constructor",
-    "owner": "MegaCrit.Sts2.Core.Localization.DynamicVars.PowerVar\u00601[[MegaCrit.Sts2.Core.Models.Powers.VulnerablePower, sts2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+    "owner": "MegaCrit.Sts2.Core.Localization.DynamicVars.PowerVar\u00601[[MegaCrit.Sts2.Core.Models.Powers.VulnerablePower, sts2, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null]]",
     "name": ".ctor",
     "signature": "Void .ctor(System.Decimal)"
   },
@@ -4259,19 +4315,19 @@
   },
   {
     "kind": "Constructor",
-    "owner": "MegaCrit.Sts2.Core.Localization.DynamicVars.PowerVar\u00601[[MegaCrit.Sts2.Core.Models.Powers.StrengthPower, sts2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+    "owner": "MegaCrit.Sts2.Core.Localization.DynamicVars.PowerVar\u00601[[MegaCrit.Sts2.Core.Models.Powers.StrengthPower, sts2, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null]]",
     "name": ".ctor",
     "signature": "Void .ctor(System.Decimal)"
   },
   {
     "kind": "Constructor",
-    "owner": "MegaCrit.Sts2.Core.Localization.DynamicVars.PowerVar\u00601[[MegaCrit.Sts2.Core.Models.Powers.BufferPower, sts2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+    "owner": "MegaCrit.Sts2.Core.Localization.DynamicVars.PowerVar\u00601[[MegaCrit.Sts2.Core.Models.Powers.BufferPower, sts2, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null]]",
     "name": ".ctor",
     "signature": "Void .ctor(System.Decimal)"
   },
   {
     "kind": "Constructor",
-    "owner": "MegaCrit.Sts2.Core.Localization.DynamicVars.PowerVar\u00601[[MegaCrit.Sts2.Core.Models.Powers.ArtifactPower, sts2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+    "owner": "MegaCrit.Sts2.Core.Localization.DynamicVars.PowerVar\u00601[[MegaCrit.Sts2.Core.Models.Powers.ArtifactPower, sts2, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null]]",
     "name": ".ctor",
     "signature": "Void .ctor(System.Decimal)"
   },
@@ -4355,7 +4411,7 @@
   },
   {
     "kind": "Constructor",
-    "owner": "MegaCrit.Sts2.Core.Localization.DynamicVars.PowerVar\u00601[[MegaCrit.Sts2.Core.Models.Powers.ThornsPower, sts2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+    "owner": "MegaCrit.Sts2.Core.Localization.DynamicVars.PowerVar\u00601[[MegaCrit.Sts2.Core.Models.Powers.ThornsPower, sts2, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null]]",
     "name": ".ctor",
     "signature": "Void .ctor(System.Decimal)"
   },
@@ -4409,7 +4465,7 @@
   },
   {
     "kind": "Constructor",
-    "owner": "MegaCrit.Sts2.Core.Localization.DynamicVars.PowerVar\u00601[[MegaCrit.Sts2.Core.Models.Powers.DexterityPower, sts2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+    "owner": "MegaCrit.Sts2.Core.Localization.DynamicVars.PowerVar\u00601[[MegaCrit.Sts2.Core.Models.Powers.DexterityPower, sts2, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null]]",
     "name": ".ctor",
     "signature": "Void .ctor(System.Decimal)"
   },
@@ -4457,13 +4513,13 @@
   },
   {
     "kind": "Constructor",
-    "owner": "MegaCrit.Sts2.Core.Localization.DynamicVars.PowerVar\u00601[[MegaCrit.Sts2.Core.Models.Powers.FrailPower, sts2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+    "owner": "MegaCrit.Sts2.Core.Localization.DynamicVars.PowerVar\u00601[[MegaCrit.Sts2.Core.Models.Powers.FrailPower, sts2, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null]]",
     "name": ".ctor",
     "signature": "Void .ctor(System.Decimal)"
   },
   {
     "kind": "Constructor",
-    "owner": "MegaCrit.Sts2.Core.Localization.DynamicVars.PowerVar\u00601[[MegaCrit.Sts2.Core.Models.Powers.PlatingPower, sts2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+    "owner": "MegaCrit.Sts2.Core.Localization.DynamicVars.PowerVar\u00601[[MegaCrit.Sts2.Core.Models.Powers.PlatingPower, sts2, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null]]",
     "name": ".ctor",
     "signature": "Void .ctor(System.Decimal)"
   },
@@ -4902,12 +4958,6 @@
   {
     "kind": "Method",
     "owner": "MegaCrit.Sts2.Core.Logging.Log",
-    "name": "Warn",
-    "signature": "Void Warn(System.String, Int32)"
-  },
-  {
-    "kind": "Method",
-    "owner": "MegaCrit.Sts2.Core.Logging.Log",
     "name": "Error",
     "signature": "Void Error(System.String, Int32)"
   },
@@ -5123,6 +5173,42 @@
   },
   {
     "kind": "Method",
+    "owner": "MegaCrit.Sts2.Core.Entities.Ancients.AncientDialogueLine",
+    "name": "GetSfxOrFallbackPath",
+    "signature": "System.String GetSfxOrFallbackPath()"
+  },
+  {
+    "kind": "Method",
+    "owner": "MegaCrit.Sts2.Core.Saves.ProgressState",
+    "name": "GetStatsForAncient",
+    "signature": "MegaCrit.Sts2.Core.Saves.AncientStats GetStatsForAncient(MegaCrit.Sts2.Core.Models.ModelId)"
+  },
+  {
+    "kind": "Method",
+    "owner": "MegaCrit.Sts2.Core.Saves.AncientStats",
+    "name": "GetVisitsAs",
+    "signature": "Int32 GetVisitsAs(MegaCrit.Sts2.Core.Models.ModelId)"
+  },
+  {
+    "kind": "Method",
+    "owner": "MegaCrit.Sts2.Core.Saves.AncientStats",
+    "name": "get_TotalVisits",
+    "signature": "Int32 get_TotalVisits()"
+  },
+  {
+    "kind": "Method",
+    "owner": "MegaCrit.Sts2.Core.Models.AncientEventModel",
+    "name": "get_AnyCharacterDialogueBlacklist",
+    "signature": "System.Collections.Generic.IEnumerable\u00601[MegaCrit.Sts2.Core.Models.CharacterModel] get_AnyCharacterDialogueBlacklist()"
+  },
+  {
+    "kind": "Method",
+    "owner": "MegaCrit.Sts2.Core.Entities.Ancients.AncientDialogueSet",
+    "name": "GetValidDialogues",
+    "signature": "System.Collections.Generic.IEnumerable\u00601[MegaCrit.Sts2.Core.Entities.Ancients.AncientDialogue] GetValidDialogues(MegaCrit.Sts2.Core.Models.ModelId, Int32, Int32, Boolean)"
+  },
+  {
+    "kind": "Method",
     "owner": "MegaCrit.Sts2.Core.Nodes.Events.NEventLayout",
     "name": "get_DefaultFocusedControl",
     "signature": "Godot.Control get_DefaultFocusedControl()"
@@ -5132,6 +5218,12 @@
     "owner": "MegaCrit.Sts2.Core.Nodes.Events.NEventLayout",
     "name": "OnSetupComplete",
     "signature": "Void OnSetupComplete()"
+  },
+  {
+    "kind": "Method",
+    "owner": "MegaCrit.Sts2.Core.Models.EventModel",
+    "name": "get_CurrentOptions",
+    "signature": "System.Collections.Generic.IReadOnlyList\u00601[MegaCrit.Sts2.Core.Events.EventOption] get_CurrentOptions()"
   },
   {
     "kind": "Method",

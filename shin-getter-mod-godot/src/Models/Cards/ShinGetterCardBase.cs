@@ -283,6 +283,7 @@ public abstract class ShinGetterCardBase : CardModel
         new HashSet<string>(StringComparer.Ordinal)
         {
             "SGC_StarSlash",
+            "SGC_ExpansionStrike",
         };
 
     private static readonly IReadOnlySet<string> FormTransformCards =

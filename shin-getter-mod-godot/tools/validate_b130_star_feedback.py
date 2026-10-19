@@ -8,7 +8,7 @@ import struct
 import unittest
 
 from validate_b130_core import block, has, ordered, require
-from validate_issue_124 import DATA, FORMS, ROOT, SEQUENCE, read, source_checks
+from validate_issue_124 import DATA, FORMS, ROOT, SEQUENCE, read, read_metadata, source_checks
 from repair_star_slash_foreground import REPORT, TARGETS, baseline, mask_of, repair_document
 
 
@@ -56,7 +56,7 @@ class FeedbackModels(unittest.TestCase):
 
     def test_cleave_speed_and_weight_ratios(self):
         for action in FORMS:
-            data = json.loads(read(f"images/characters/shin_getter/forms/{action}/animation.json"))
+            data = read_metadata(action)
             hold = sum(frame["duration_seconds"] for frame in data["frames"][:data["hold_frame"] + 1])
             impact = data["impact_time"]
             total = sum(frame["duration_seconds"] for frame in data["frames"])
@@ -104,7 +104,7 @@ class FeedbackModels(unittest.TestCase):
     def test_all_metadata_layers_keep_contour_area(self):
         count, maximum_delta = 0, 0.0
         for action in FORMS:
-            data = json.loads(read(f"images/characters/shin_getter/forms/{action}/animation.json"))
+            data = read_metadata(action)
             for frame in data["frames"]:
                 for layer in ("weapon_cover", "blade_cover", "handle_cover", "body_foreground", "hands"):
                     for polygon in frame.get(layer, []):
@@ -120,7 +120,7 @@ class FeedbackModels(unittest.TestCase):
     def test_delivered_foreground_cleanup(self):
         count, removed, maximum_delta = 0, 0, 0.0
         for action in FORMS:
-            data = json.loads(read(f"images/characters/shin_getter/forms/{action}/animation.json"))
+            data = read_metadata(action)
             for frame in data["frames"]:
                 for layer in ("body_foreground", "hands"):
                     for polygon in frame.get(layer, []):
@@ -143,7 +143,7 @@ class FeedbackModels(unittest.TestCase):
         for action in TARGETS:
             original = baseline(action)
             repaired, details = repair_document(original, action)
-            current = json.loads(read(f"images/characters/shin_getter/forms/{action}/animation.json"))
+            current = read_metadata(action)
             self.assertEqual(current, repaired)
             self.assertEqual(len(details), 3)
             for index, (before, after) in enumerate(zip(original["frames"], repaired["frames"])):

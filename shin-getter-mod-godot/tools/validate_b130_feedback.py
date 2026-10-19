@@ -13,7 +13,9 @@ def clock_contract(text: str) -> None:
     ordered(play, ["Task voice = intro();", "_sprite.Position = _origin + _recoil * retreat * retreat;",
                    "await voice;", "_ = release();", "_rushing = true;", "await Stage(0.28f,",
                    "(_origin + _recoil).Lerp(_origin + _lunge, u * u * u)", "_rushing = false;",
-                   "await Stage(0.08f,"], "Recoil/voice/accelerating dash/impact share the same stage clock")
+                   "SetFrame(ImpactStart, ImpactStart, 0f);"], "Return at contact; impact visuals must not delay damage")
+    require("Stage(0.08f" not in play, "Contact must not wait through the impact hold")
+    has(text, "public Task PlayImpact() => Stage(0.08f,", "Impact visuals still use the shared stage clock")
     process = block(text, "public override void _Process(")
     ordered(process, ["if (CombatManager.Instance.IsPaused) return;", "_stageTime += (float)delta;",
                       "UpdateTailHistory((float)delta);", "UpdateEnergyShell();", "QueueRedraw();"],

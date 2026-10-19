@@ -1,0 +1,62 @@
+{
+  "baseline_ref": "02d97982c90d9741f7a98ec5ee16fdf9bb0c2bc9",
+  "schema_version": 2,
+  "method": "exact coordinate/order interning; editing fields reversible from unchanged delivery",
+  "native_gpu_acceptance": false,
+  "actions": {
+    "getter_one_star_slash": {
+      "legacy_bytes": 2107619,
+      "format_only_bytes": 497673,
+      "runtime_bytes": 445490,
+      "runtime_sha256": "66b3563c49dd6cc3e0fde7e8b09671b2a5e6c05734c97c4477a7c187f34081ca",
+      "frame_count": 76,
+      "polygon_references": 4909,
+      "point_references": 31384,
+      "unique_polygons": 4269,
+      "stored_points": 27355,
+      "unique_by_role": {
+        "weapon_cover": 166,
+        "blade_cover": 75,
+        "handle_cover": 90,
+        "body_foreground": 3831,
+        "hands": 272
+      },
+      "adjacent_identical_pose_frames": 0,
+      "adjacent_identical_png_frames": 0,
+      "polygon_points_removed": 0,
+      "frames_removed": 0,
+      "exact_expanded_document_equal": true,
+      "diagnostic_masks_checked": 380,
+      "raster_xor_pixels": 0,
+      "contour_error_px": 0,
+      "total_time": 2.4
+    },
+    "shin_getter_dragon_star_slash": {
+      "legacy_bytes": 4146361,
+      "format_only_bytes": 941038,
+      "runtime_bytes": 742719,
+      "runtime_sha256": "9cf722c07ffd492866dd89734daa9111414ca3efb529ac964d5b33c7b7bf1657",
+      "frame_count": 71,
+      "polygon_references": 10471,
+      "point_references": 62556,
+      "unique_polygons": 7937,
+      "stored_points": 46517,
+      "unique_by_role": {
+        "weapon_cover": 506,
+        "blade_cover": 457,
+        "handle_cover": 48,
+        "body_foreground": 7063,
+        "hands": 368
+      },
+      "adjacent_identical_pose_frames": 0,
+      "adjacent_identical_png_frames": 0,
+      "polygon_points_removed": 0,
+      "frames_removed": 0,
+      "exact_expanded_document_equal": true,
+      "diagnostic_masks_checked": 355,
+      "raster_xor_pixels": 0,
+      "contour_error_px": 0,
+      "total_time": 2.4
+    }
+  }
+}

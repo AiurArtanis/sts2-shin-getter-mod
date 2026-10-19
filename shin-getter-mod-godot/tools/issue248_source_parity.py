@@ -2,8 +2,9 @@
 from pathlib import Path
 import re
 import subprocess
+import json
 
-FORMAL = 'aef6a9aebac8cd9bdbbf54f908c9b12af5389dd9'
+FORMAL = '26c8da9a907fd9e12d41bf5bf17d24ca5975bfa8'
 SHIM = 'shin-getter-mod-godot/src/Patches/ShinGetterSavedPropertiesPatch.cs'
 
 
@@ -78,4 +79,17 @@ def check(repo):
     differences = subprocess.check_output(['git', 'diff', '--name-only', FORMAL, '--', 'shin-getter-mod-godot'], cwd=repo, text=True).splitlines()
     non_source = [p for p in differences if '/src/' not in p and '/tools/' not in p and p not in allowed and not re.search(r'/localization/(zhs|eng|jpn)/settings_ui\.json$', p)]
     assert not non_source, 'Resource/localization loss or unrelated changes: ' + ', '.join(non_source)
+    manifest_path = 'shin-getter-mod-godot/ShinGetterMod.json'
+    formal_manifest = json.loads(subprocess.check_output(['git', 'show', FORMAL + ':' + manifest_path], cwd=repo))
+    beta_manifest = json.loads((repo / manifest_path).read_text(encoding='utf-8-sig'))
+    assert {k: v for k, v in formal_manifest.items() if k not in ('version', 'min_game_version')} == {k: v for k, v in beta_manifest.items() if k not in ('version', 'min_game_version')}
+    for language in ('zhs', 'eng', 'jpn'):
+        path = f'shin-getter-mod-godot/ShinGetterMod/localization/{language}/settings_ui.json'
+        formal = json.loads(subprocess.check_output(['git', 'show', FORMAL + ':' + path], cwd=repo))
+        beta = json.loads((repo / path).read_text(encoding='utf-8-sig'))
+        assert {k: v for k, v in formal.items() if '_beta_' not in k} == {k: v for k, v in beta.items() if '_beta_' not in k}, f'Non-channel localization divergence: {language}'
+    path = 'shin-getter-mod-godot/ShinGetterMod/update_history.json'
+    formal = json.loads(subprocess.check_output(['git', 'show', FORMAL + ':' + path], cwd=repo))
+    beta = json.loads((repo / path).read_text(encoding='utf-8-sig'))
+    assert [entry for entry in beta if '-beta.' not in entry['version']] == formal, 'Formal update history must remain exact'
     print(f'issue#248 approved source parity PASS: {len(expected)} C# files; API-only differences; resources/texts exact (except explicit channel metadata)')
