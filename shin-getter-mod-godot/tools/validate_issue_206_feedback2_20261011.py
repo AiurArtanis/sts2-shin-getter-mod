@@ -15,7 +15,7 @@ def check(ui=None, bridge=None, session=None):
         'retained_two_line_tail': lambda: 'RestoreRewardPage' in ui and '.TakeLast(2)' in ui and 'RestoreRewardPage(ancient, state.Session)' in bridge,
         'recenter_reading_and_rewards': lambda: 'RecenterNativeContent(_ancient' in ui and 'RecenterNativeContent(layout)' in ui and 'viewport.OffsetLeft = -width / 2' in ui and '(viewport.Size.X - content.Size.X) / 2' in ui,
         'late_native_sound': lambda: 'ResolveFinalAncientSfx' in bridge and '_finishingDisplayedDialogue' in ui and 'SfxCmd.Play(_finalAncientSfx)' in ui,
-        'cold_resume_attach': lambda: 'if (!ShinGetterBondSession.IsEligible(model) || model.IsFinished) return true;' in bridge and 'State state = ShinGetterBondDialogueBridge.Get(model);' in bridge,
+        'cold_resume_attach': lambda: 'if (!ShinGetterBondDialogueBridge.IsEligible(model) || model.IsFinished) return true;' in bridge and 'State state = ShinGetterBondDialogueBridge.Get(model);' in bridge,
     }
     failed = []
     for name, probe in checks.items():
@@ -26,7 +26,7 @@ def check(ui=None, bridge=None, session=None):
     assert not failed, ', '.join(failed)
     completion = session[session.index('internal bool CompleteDisplayedFinalLine()'):session.index('internal bool ConsumeCue')]
     assert 'WasShown: true' in completion and 'return Advance();' in completion
-    assert 'current == lines.Length - 1' in ui and '_retry == null' in ui and 'IsEventActive' in ui
+    assert 'current == lines.Length - 1' in ui and 'if (_closed) return;' in ui and 'IsEventActive' in ui
     assert ui.index('_session.CompleteDisplayedFinalLine()') < ui.index('_finishingDisplayedDialogue = true')
     assert 'SfxCmd.Play(_finalAncientSfx)' in ui[ui.index('private void Close()'):ui.index('public override void _ExitTree()')]
     assert 'new MarginContainer' in ui and 'NBackButton' not in ui and 'ui_cancel' not in ui

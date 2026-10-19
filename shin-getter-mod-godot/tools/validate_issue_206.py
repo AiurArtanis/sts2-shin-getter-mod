@@ -150,7 +150,7 @@ def contracts() -> None:
         require(f'("{source}", "{echo}")' in session, f"Architect echo source: {echo}")
     for token in ("FocusMode = FocusModeEnum.All", "FocusNeighborTop", "FocusNeighborBottom",
                   "FocusNext", "TryGrabFocus", "base._ExitTree()", "IsEventActive", "_returnToEvent = null",
-                  "ShowFatalError", "skip.Pressed += Skip", "StopVoice", "ResourceLoader.Exists"):
+                  "ShowFatalError", "_fallbackToLegacy", "StopVoice", "ResourceLoader.Exists"):
         require(token in ui, f"Missing UI lifecycle/input boundary: {token}")
     require("NModalContainer" not in ui and "NErrorPopup" not in ui, "Errors must not contend for a modal slot")
     require('("TANX_RYOMA_BOND_03", 4)' in ui and '("TANX_BENKEI_BOND_02", 3)' in ui, "Voice cue binding drift")

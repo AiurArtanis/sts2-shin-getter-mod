@@ -40,6 +40,8 @@ internal sealed partial class NShinGetterBondDialogue : Control
     private NEventLayout _layout = null!;
     private NAncientEventLayout? _ancient;
     private Action? _returnToEvent;
+    private Action? _fallbackToLegacy;
+    private bool _useLegacyDialogue;
     private VBoxContainer _column = null!;
     private readonly List<NEventOptionButton> _buttons = new();
     private readonly List<MarginContainer> _buttonInsets = new();
@@ -54,7 +56,6 @@ internal sealed partial class NShinGetterBondDialogue : Control
     private string _dialogueLayoutKey = "";
     private int _renderGeneration;
     private bool _nativeRestored;
-    private Action? _retry;
     private double _completionWait;
     private bool _completionPending;
     private bool _finishingDisplayedDialogue;
@@ -66,18 +67,17 @@ internal sealed partial class NShinGetterBondDialogue : Control
     private bool _fatal;
     private string _language = "";
     private int _lastCueLine = -1;
-    private Control? _emergencyFocus;
     internal bool IsUpdatingNativeUi { get; private set; }
-    internal Control? DefaultFocusedControl => _emergencyFocus
-        ?? (Control?)_buttons.FirstOrDefault(b => b.IsEnabled && b.IsVisibleInTree())
+    internal Control? DefaultFocusedControl => (Control?)_buttons.FirstOrDefault(b => b.IsEnabled && b.IsVisibleInTree())
         ?? (_hitbox is { IsEnabled: true } && _hitbox.IsVisibleInTree() ? _hitbox : null);
     private static bool IsEventActive => NEventRoom.Instance != null
         && ActiveScreenContext.Instance.IsCurrent(NEventRoom.Instance);
 
-    internal static NShinGetterBondDialogue Create(ShinGetterBondSession session, EventModel model, NEventLayout layout, Action returnToEvent, string? finalAncientSfx = null) => new()
+    internal static NShinGetterBondDialogue Create(ShinGetterBondSession session, EventModel model, NEventLayout layout, Action returnToEvent, string? finalAncientSfx, Action fallbackToLegacy) => new()
     {
         Name = "ShinGetterBondDialogue", _session = session, _model = model,
         _layout = layout, _returnToEvent = returnToEvent, _finalAncientSfx = finalAncientSfx,
+        _fallbackToLegacy = fallbackToLegacy,
     };
 
     public override void _Ready()
@@ -119,6 +119,12 @@ internal sealed partial class NShinGetterBondDialogue : Control
 
     public override void _Process(double delta)
     {
+        try { ProcessDialogue(delta); }
+        catch (Exception ex) { ShowFatalError(ex); }
+    }
+
+    private void ProcessDialogue(double delta)
+    {
         if (_closed || _fatal) return;
         if (_voice != null)
         {
@@ -127,7 +133,7 @@ internal sealed partial class NShinGetterBondDialogue : Control
                 StopVoice();
         }
         if (_language != LocManager.Instance.Language) Render();
-        if (_completionPending && _retry == null && IsEventActive)
+        if (_completionPending && IsEventActive)
         {
             _completionWait -= delta;
             if (_completionWait <= 0 && _voice is not { Playing: true })
@@ -145,22 +151,28 @@ internal sealed partial class NShinGetterBondDialogue : Control
         var button = _buttons.FirstOrDefault(b => ReferenceEquals(b.Option, option));
         if (button == null || !GodotObject.IsInstanceValid(button) || !button.IsEnabled
             || !button.IsVisibleInTree() || !button.IsInsideTree() || button.IsQueuedForDeletion()) return false;
-        action();
+        try { action(); }
+        catch (Exception ex) { ShowFatalError(ex); }
         return true;
     }
 
-    internal void AdvanceFromNativeHitbox() { if (!_fatal && _retry == null) Next(); }
+    internal void AdvanceFromNativeHitbox() { if (!_fatal) Next(); }
 
     private void Attempt(Func<bool> operation)
     {
         if (_closed) return;
-        if (operation())
+        try
         {
-            _retry = null;
+            if (!operation())
+            {
+                ShowFatalError(new InvalidOperationException(_session.Error.Length == 0
+                    ? "Conversation transaction could not advance." : _session.Error));
+                return;
+            }
             if (_session.Closed) { Close(); return; }
             Render();
         }
-        else { _retry = () => Attempt(operation); Render(); }
+        catch (Exception ex) { ShowFatalError(ex); }
     }
 
     private void Render()
@@ -184,52 +196,44 @@ internal sealed partial class NShinGetterBondDialogue : Control
         {
             lines = new[] { ShinGetterDialogueCatalog.Ui("这一次，由谁来开口？", "Who will speak this time?", "今度は、誰が話す？") };
             current = 0;
-            if (_retry == null)
-                foreach (string id in _session.Choices)
-                {
-                    string selected = id;
-                    AddButton(ShinGetterDialogueCatalog.Localize(id).Option, () => Attempt(() => _session.Select(selected)), dialogueOption: true);
-                }
+            foreach (string id in _session.Choices)
+            {
+                string selected = id;
+                AddButton(ShinGetterDialogueCatalog.Localize(id).Option, () => Attempt(() => _session.Select(selected)), dialogueOption: true);
+            }
         }
         else
         {
             lines = _session.CurrentLines(_language);
             current = encounter.Line;
-            if (_retry == null && _ancient == null && current < lines.Length - 1)
+            if (_ancient == null && current < lines.Length - 1)
                 AddButton(ShinGetterDialogueCatalog.Ui("继续", "Continue", "続ける"), Next);
-        }
-        if (_retry != null)
-        {
-            lines = lines.Take(current + 1).Append(ShinGetterDialogueCatalog.Ui(
-                "交谈进度未能保存。原有进度没有改变。可重试，或跳过本次交谈。",
-                "Conversation progress could not be saved. Your previous progress is unchanged. Retry, or skip this conversation.",
-                "会話の進行を保存できませんでした。以前の進行は変わりません。再試行するか、今回の会話をスキップしてください。")).ToArray();
-            current = lines.Length - 1;
-            AddButton(ShinGetterDialogueCatalog.Ui("重试保存", "Retry", "再試行"), () => _retry?.Invoke());
-            // Recovery only: normal story pages have neither a Back button nor a cancel shortcut.
-            AddButton(ShinGetterDialogueCatalog.Ui("跳过本次交谈", "Skip this conversation", "今回の会話をスキップ"), Skip);
         }
         if (_ancient != null) RenderAncient(lines, current, generation);
         else RenderArchitect(lines[current]);
         Callable.From(() =>
         {
             if (_closed || _fatal || generation != _renderGeneration || !IsInsideTree() || !IsVisibleInTree()) return;
-            if (_retry == null && !_session.MarkDisplayed())
+            try
             {
-                _retry = () => Attempt(() => _session.MarkDisplayed());
-                Render();
-                return;
+                if (!_session.MarkDisplayed())
+                {
+                    ShowFatalError(new InvalidOperationException(_session.Error));
+                    return;
+                }
+                ConfigureFocus();
+                if (encounter is { DialogueId.Length: > 0 }) TryCue(encounter);
+                if (_closed) return;
+                if (encounter is { DialogueId.Length: > 0 } && current == lines.Length - 1)
+                {
+                    // Wait for the native line/scroll reveal and approved story cue,
+                    // not another confirmation button. The final lines remain readable.
+                    _completionWait = 1.0;
+                    _completionPending = true;
+                }
+                if (IsEventActive) DefaultFocusedControl?.TryGrabFocus();
             }
-            ConfigureFocus();
-            if (_retry == null && encounter is { DialogueId.Length: > 0 }) TryCue(encounter);
-            if (_retry == null && encounter is { DialogueId.Length: > 0 } && current == lines.Length - 1)
-            {
-                // Wait for the native line/scroll reveal and approved story cue,
-                // not another confirmation button. The final lines remain readable.
-                _completionWait = 1.0;
-                _completionPending = true;
-            }
-            if (IsEventActive) DefaultFocusedControl?.TryGrabFocus();
+            catch (Exception ex) { ShowFatalError(ex); }
         }).CallDeferred();
     }
 
@@ -438,11 +442,17 @@ internal sealed partial class NShinGetterBondDialogue : Control
     private void RestoreOptionsVisibility()
     {
         foreach (var snapshot in _originalOptions)
-            if (Valid(snapshot.Button) && snapshot.Button.GetParent() == _column)
+        {
+            try
             {
-                snapshot.Button.Visible = snapshot.Visible;
-                snapshot.Button.FocusMode = snapshot.Focus;
+                if (Valid(snapshot.Button) && snapshot.Button.GetParent() == _column)
+                {
+                    snapshot.Button.Visible = snapshot.Visible;
+                    snapshot.Button.FocusMode = snapshot.Focus;
+                }
             }
+            catch (Exception ex) { GD.PushWarning("Dialogue original option restore: " + ex); }
+        }
         _originalOptions.Clear();
     }
 
@@ -451,40 +461,26 @@ internal sealed partial class NShinGetterBondDialogue : Control
         if (_nativeRestored) return;
         _nativeRestored = true;
         ++_renderGeneration;
-        ClearTemporaryOptions();
-        ClearNativeDialogue();
+        // A broken story node must not prevent restoring the still-valid native
+        // options, nor prevent the continuation from handing input back.
+        try { ClearTemporaryOptions(); }
+        catch (Exception ex) { GD.PushWarning("Dialogue option cleanup: " + ex); }
+        try { ClearNativeDialogue(); }
+        catch (Exception ex) { GD.PushWarning("Dialogue bubble cleanup: " + ex); }
         RestoreOptionsVisibility();
         if (Valid(_eventDescription)) _eventDescription!.Visible = _descriptionWasVisible;
     }
 
     private void ShowFatalError(Exception ex)
     {
-        GD.PushWarning("Shin Getter conversation unavailable: " + ex.Message);
+        if (_closed || _fatal) return;
+        GD.PushWarning("Shin Getter conversation unavailable; restoring legacy dialogue: " + ex);
         _fatal = true;
-        ++_renderGeneration;
-        StopVoice();
-        ClearTemporaryOptions();
-        ClearNativeDialogue();
-        // Only asset-failure recovery uses built-ins; normal UI never draws a panel.
-        foreach (Node child in GetChildren()) { RemoveChild(child); child.QueueFree(); }
-        var box = new VBoxContainer { Position = new Vector2(80, 160), Size = new Vector2(900, 240) };
-        AddChild(box);
-        box.AddChild(new Label
-        {
-            Text = ShinGetterDialogueCatalog.Ui("交谈暂时无法显示，已有羁绊进度不变。可跳过并继续原事件。",
-                "Conversation unavailable. Existing bond progress is unchanged. Skip to continue the event.",
-                "会話を表示できません。以前の絆の進行は変わりません。スキップしてイベントを続けられます。"),
-            AutowrapMode = TextServer.AutowrapMode.WordSmart,
-        });
-        var skip = new Button
-        {
-            Text = ShinGetterDialogueCatalog.Ui("跳过本次交谈", "Skip this conversation", "今回の会話をスキップ"),
-            FocusMode = FocusModeEnum.All, CustomMinimumSize = new Vector2(0, 80),
-        };
-        skip.Pressed += Skip;
-        box.AddChild(skip);
-        _emergencyFocus = skip;
-        Callable.From(() => { if (!_closed && IsInsideTree() && IsEventActive) skip.TryGrabFocus(); }).CallDeferred();
+        _useLegacyDialogue = true;
+        _finishingDisplayedDialogue = false;
+        // No Skip/Commit: preserve the last successful progress revision, including
+        // unreadable or write-protected sidecars. Recovery never marks completion.
+        Close();
     }
 
     private void Next()
@@ -504,7 +500,12 @@ internal sealed partial class NShinGetterBondDialogue : Control
         };
         if (filename == null || _lastCueLine == encounter.Line) return;
         _lastCueLine = encounter.Line;
-        if (!_session.ConsumeCue(encounter.Line)) return;
+        if (encounter.ConsumedCues.Contains(encounter.Line)) return;
+        if (!_session.ConsumeCue(encounter.Line))
+        {
+            ShowFatalError(new InvalidOperationException(_session.Error));
+            return;
+        }
         ShinGetterChunibyoConfigService.Load();
         if (ShinGetterChunibyoConfigService.Current.VoiceMode == ShinGetterVoiceMode.Silent) return;
         try
@@ -528,44 +529,40 @@ internal sealed partial class NShinGetterBondDialogue : Control
         _voice = null;
     }
 
-    private void Skip()
-    {
-        if (_closed) return;
-        StopVoice();
-        _session.Skip();
-        Close();
-    }
-
     private void Close()
     {
         if (_closed) return;
         _closed = true;
         _completionPending = false;
         ReleaseConsoleGuard();
-        StopVoice();
+        try { StopVoice(); }
+        catch (Exception ex) { GD.PushWarning("Dialogue voice cleanup: " + ex); }
         if (_finishingDisplayedDialogue && !string.IsNullOrEmpty(_finalAncientSfx))
         {
             try { SfxCmd.Play(_finalAncientSfx); }
             catch (Exception ex) { GD.PushWarning("Ancient closing voice unavailable: " + ex.Message); }
         }
         _finalAncientSfx = null;
-        RestoreNativeUi();
+        try { RestoreNativeUi(); }
+        catch (Exception ex) { GD.PushWarning("Dialogue UI cleanup: " + ex); }
         Hide();
-        var continuation = _returnToEvent;
+        var continuation = _useLegacyDialogue ? _fallbackToLegacy : _returnToEvent;
         _returnToEvent = null;
-        continuation?.Invoke();
-        QueueFree();
+        _fallbackToLegacy = null;
+        try { continuation?.Invoke(); }
+        finally { QueueFree(); }
     }
 
     public override void _ExitTree()
     {
         _closed = true;
         ReleaseConsoleGuard();
-        StopVoice();
-        RestoreNativeUi();
-        _retry = null;
+        try { StopVoice(); }
+        catch (Exception ex) { GD.PushWarning("Dialogue exit voice cleanup: " + ex); }
+        try { RestoreNativeUi(); }
+        catch (Exception ex) { GD.PushWarning("Dialogue exit UI cleanup: " + ex); }
         _returnToEvent = null;
-        _emergencyFocus = null;
+        _fallbackToLegacy = null;
         base._ExitTree();
     }
 

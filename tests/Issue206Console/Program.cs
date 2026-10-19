@@ -69,6 +69,27 @@ var aliases = Parse("坦克斯", "解锁", "龙马", "2");
 Check(aliases.Targets.SequenceEqual(new[] { "TANX" }), "Chinese alias");
 Check(Parse("Architect", "status").Targets.Single() == "THE_ARCHITECT", "Architect alias");
 
+// Native EnterNextAct does not append an Architect map-history slot. Its last
+// persistent point still describes the boss, and this is not a normal map event.
+{
+    var id = new ModelId("EVENT", "THE_ARCHITECT");
+    var player = new Player();
+    player.RunState.Players.Add(player);
+    player.RunState.MapPointHistory.Add(new() { new() { Rooms = new() {
+        new() { RoomType = RoomType.Combat, ModelId = new("ENCOUNTER", "BOSS") } } } });
+    player.RunState.CurrentRoom = player.RunState.BaseRoom = new EventRoom { ModelId = id };
+    var model = new MegaCrit.Sts2.Core.Models.Events.TheArchitect { Id = id, Owner = player };
+    var terminal = new ShinGetterBondSession(model);
+    Check(terminal.Begin(), "terminal Architect rejected boss history: " + terminal.Error);
+    Check(terminal.MarkDisplayed(), terminal.Error);
+    Check(terminal.Advance(), terminal.Error);
+    var restored = new ShinGetterBondSession(model);
+    Check(restored.Begin() && restored.Encounter!.Line == 1, "terminal Architect did not resume stable identity");
+    Check(Load().Encounters.Keys.Any(key => key.Contains(":terminal:")), "terminal borrowed boss history identity");
+    player.RunState.CurrentRoom = new EventRoom { ModelId = new("EVENT", "NEOW") };
+    Check(!new ShinGetterBondSession(model).Begin(), "terminal accepted mismatched active event");
+}
+
 Command("TANX", "unlock", "RYOMA", "2");
 var pending = Load();
 Check(pending.DebugNextDialogues["TANX"] == "TANX_RYOMA_BOND_03", "request not persisted");
