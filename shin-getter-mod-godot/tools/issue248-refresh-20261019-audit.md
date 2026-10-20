@@ -1,5 +1,13 @@
 # issue#248 v1.3.0正式Tag → 官方111 Beta候选
 
+## 2026-10-20 issue#206 BS2统计标记兼容增量
+
+- 以下原同步记录属于冻结823。新增量只处理运行证据确认的资格误拦：BS2 v2.3.0无条件在CreateForNewRun附加`GirlsNightmareEndStatsModifier`，其11个保存计数供结尾统计显示，不是玩家选择的挑战。原生标准局和冷续均携带它，不能靠关闭语音或移除标记来冒充兼容。
+- 新产品共348份C#。增加`ShinGetterBondRunCompatibility`，在Session资格、可靠历史过滤、sgd原有资格守卫三处共用；只接受一个完整St2bs程序集／sealed完整类型／完整模型ID且当前ModelDb已登记为同一类型的被动标记。任意混合、未知或解析失败均拒绝；不主动加载可选程序集，不缓存注册前失败。角色、单人、Standard、保存、daily、Test／NonInteractive及清档守卫不变。正式分支未改。
+- 独立语义例外列在白名单`betaBehaviorCompatibilityDifferences`，不伪装成API变换；helper指纹及三处精确替换由parity门禁锁定，其余API／资源规则沿用823。没有改结局消费者、ready、随机、visited、旧823产物或测试driver。
+- 测试先以原`Modifiers.Count == 0`语义出现`BS2 passive standard marker blocked`，再通过链接生产源码的961项CPU断言（含36项精确兼容边界）与115项Bridge／111原方法体CPU断言。官方111 ExportRelease编译0警告0错误。测试里的动态类型仅模拟程序集／类型身份，不代表原生BS2加载、冷续或UI验收。
+- 运行旧823的补证已证明原生3行对白可点击并进入唯一有效胜利；它不覆盖羁绊自定义故事。新候选仍须独立审核后，才能由唯一自动化执行会话验证正常羁绊和故障回退；不继承旧75层或正式版结论。
+
 ## 来源与范围
 
 - 正式唯一来源：已发布`mod-v1.3.0`，解引用提交`26c8da9a907fd9e12d41bf5bf17d24ca5975bfa8`。

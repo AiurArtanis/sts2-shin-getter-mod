@@ -36,3 +36,12 @@ successful initialization records the fixed v1.3.0 epoch and an exact independen
 backup. A new session retains progress earned afterward, other profiles remain
 independent, and an unknown future epoch is not overwritten. This replaces the
 old unpublished acquaintance-import expectation, not the history of that test.
+
+2026-10-20 Beta BS2 compatibility: the linked production helper accepts only one
+registered `St2bs.St2bsCode.Modifiers.GirlsNightmareEndStatsModifier` from assembly
+`St2bs`, with its full model ID and exact canonical type. Dynamic type fixtures
+cover absent/late registration, saved mutable copies, failed registry lookups,
+spoofed IDs/types/assemblies, unknown/mixed/duplicate modifiers, live eligibility,
+console guards and serialized history filtering. All other solo/Standard/save/
+daily/test/replay boundaries remain active. These are CPU fixtures, not native BS2
+new-run or Continue acceptance; the historical 823 failure remains unchanged.

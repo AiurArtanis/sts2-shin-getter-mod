@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 import re
 import subprocess
-from issue248_source_parity import FORMAL, SHIM, check, normalize
+from issue248_source_parity import FORMAL, SHIM, COMPAT, COMPAT_REPLACEMENTS, before_compatibility, check, normalize
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / '.github/issue248-refresh-semantic-whitelist.json'
@@ -21,6 +21,7 @@ def cosmetic(text):
 
 check(ROOT)
 rows = []
+compatibility = []
 paths = git('ls-tree', '-r', '--name-only', FORMAL, 'shin-getter-mod-godot/src').decode().splitlines()
 for path in paths:
     if not path.endswith('.cs'):
@@ -35,6 +36,12 @@ for path in paths:
     if a == b:
         continue
     ta, tb = a.decode('utf-8-sig'), b.decode('utf-8-sig')
+    if path in COMPAT_REPLACEMENTS:
+        compatibility.append({'path': path, 'reason': 'Exact registered BS2 passive-stat modifier accepted consistently for dialogue/console/history; other eligibility unchanged',
+                              'formalSha256': hashlib.sha256(a).hexdigest(), 'betaSha256': hashlib.sha256(b).hexdigest()})
+        tb = before_compatibility(path, tb)
+        if ta == tb:
+            continue
     assert normalize(ta) == normalize(tb, beta=True), path
     if cosmetic(ta) == cosmetic(tb):
         reason = 'format/import/comment only'
@@ -62,9 +69,12 @@ resources = [p for p in git('diff', '--name-only', FORMAL, '--', 'shin-getter-mo
 expected = ['shin-getter-mod-godot/ShinGetterMod.json', 'shin-getter-mod-godot/ShinGetterMod/update_history.json']
 expected += [f'shin-getter-mod-godot/ShinGetterMod/localization/{lang}/settings_ui.json' for lang in ('zhs', 'eng', 'jpn')]
 assert set(resources) == set(expected), resources
+compatibility.append({'path': COMPAT, 'reason': 'Optional exact St2bs assembly/sealed full type + full ID + current ModelDb registration; fail closed, no cached misses or assembly loading',
+                      'betaSha256': hashlib.sha256((ROOT / COMPAT).read_bytes()).hexdigest()})
 record = {'formalTag': 'mod-v1.3.0', 'formalCommit': FORMAL,
-          'betaBase': 'dce78bf472ca678b8bac042e878489d48014e83c', 'productCSharpFiles': 347,
+          'betaBase': 'dce78bf472ca678b8bac042e878489d48014e83c', 'productCSharpFiles': 348,
           'apiOnlyOrNativeReplacementDifferences': rows,
+          'betaBehaviorCompatibilityDifferences': compatibility,
           'resourceChannelWhitelist': sorted(resources),
           'resourceRule': 'All other tracked project resources byte-identical to formal Tag. Common settings/history entries exact; only beta history/localization keys and manifest version/min_game_version differ.',
           'metadataInput': {'kind': 'official111 ExportRelease', 'sha256': '0861BFA1DF347538D932F22D580E75420F08082792EB914E53B4882764ACDBE9', 'mvid': '73b63ee0-6c0a-47bb-b0d1-b21f6d94222e'},

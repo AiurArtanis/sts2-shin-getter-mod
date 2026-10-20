@@ -5,6 +5,18 @@
   },
   {
     "kind": "type",
+    "target": "MegaCrit.Sts2.Core.Models.ModifierModel"
+  },
+  {
+    "kind": "type",
+    "target": "MegaCrit.Sts2.Core.Saves.Runs.SerializableModifier"
+  },
+  {
+    "kind": "type",
+    "target": "MegaCrit.Sts2.Core.Models.ModelId"
+  },
+  {
+    "kind": "type",
     "target": "MegaCrit.Sts2.Core.Runs.RunManager"
   },
   {
@@ -138,10 +150,6 @@
   {
     "kind": "type",
     "target": "MegaCrit.Sts2.Core.Entities.Ancients.AncientDialogue"
-  },
-  {
-    "kind": "type",
-    "target": "MegaCrit.Sts2.Core.Models.ModelId"
   },
   {
     "kind": "type",
@@ -1001,10 +1009,6 @@
   },
   {
     "kind": "type",
-    "target": "MegaCrit.Sts2.Core.Models.ModifierModel"
-  },
-  {
-    "kind": "type",
     "target": "MegaCrit.Sts2.Core.TestSupport.TestMode"
   },
   {
@@ -1022,10 +1026,6 @@
   {
     "kind": "type",
     "target": "MegaCrit.Sts2.Core.Saves.ReadSaveStatus"
-  },
-  {
-    "kind": "type",
-    "target": "MegaCrit.Sts2.Core.Saves.Runs.SerializableModifier"
   },
   {
     "kind": "type",
@@ -1621,6 +1621,42 @@
   },
   {
     "kind": "Method",
+    "owner": "MegaCrit.Sts2.Core.Models.AbstractModel",
+    "name": "get_Id",
+    "signature": "MegaCrit.Sts2.Core.Models.ModelId get_Id()"
+  },
+  {
+    "kind": "Method",
+    "owner": "MegaCrit.Sts2.Core.Saves.Runs.SerializableModifier",
+    "name": "get_Id",
+    "signature": "MegaCrit.Sts2.Core.Models.ModelId get_Id()"
+  },
+  {
+    "kind": "Method",
+    "owner": "MegaCrit.Sts2.Core.Models.ModelId",
+    "name": "get_Category",
+    "signature": "System.String get_Category()"
+  },
+  {
+    "kind": "Method",
+    "owner": "MegaCrit.Sts2.Core.Models.ModelId",
+    "name": "get_Entry",
+    "signature": "System.String get_Entry()"
+  },
+  {
+    "kind": "Method",
+    "owner": "MegaCrit.Sts2.Core.Models.ModelDb",
+    "name": "GetByIdOrNull",
+    "signature": "T GetByIdOrNull[T](MegaCrit.Sts2.Core.Models.ModelId)"
+  },
+  {
+    "kind": "Method",
+    "owner": "MegaCrit.Sts2.Core.Models.ModelId",
+    "name": "op_Equality",
+    "signature": "Boolean op_Equality(MegaCrit.Sts2.Core.Models.ModelId, MegaCrit.Sts2.Core.Models.ModelId)"
+  },
+  {
+    "kind": "Method",
     "owner": "MegaCrit.Sts2.Core.Models.EventModel",
     "name": "get_Owner",
     "signature": "MegaCrit.Sts2.Core.Entities.Players.Player get_Owner()"
@@ -1690,18 +1726,6 @@
     "owner": "MegaCrit.Sts2.Core.Helpers.NonInteractiveMode",
     "name": "get_IsActive",
     "signature": "Boolean get_IsActive()"
-  },
-  {
-    "kind": "Method",
-    "owner": "MegaCrit.Sts2.Core.Models.AbstractModel",
-    "name": "get_Id",
-    "signature": "MegaCrit.Sts2.Core.Models.ModelId get_Id()"
-  },
-  {
-    "kind": "Method",
-    "owner": "MegaCrit.Sts2.Core.Models.ModelId",
-    "name": "get_Entry",
-    "signature": "System.String get_Entry()"
   },
   {
     "kind": "Method",
@@ -2098,12 +2122,6 @@
     "owner": "MegaCrit.Sts2.Core.Models.ModelDb",
     "name": "GetId",
     "signature": "MegaCrit.Sts2.Core.Models.ModelId GetId(System.Type)"
-  },
-  {
-    "kind": "Method",
-    "owner": "MegaCrit.Sts2.Core.Models.ModelDb",
-    "name": "GetByIdOrNull",
-    "signature": "T GetByIdOrNull[T](MegaCrit.Sts2.Core.Models.ModelId)"
   },
   {
     "kind": "Constructor",
@@ -2932,12 +2950,6 @@
     "owner": "MegaCrit.Sts2.Core.Saves.CardStats",
     "name": "set_TimesLost",
     "signature": "Void set_TimesLost(Int64)"
-  },
-  {
-    "kind": "Method",
-    "owner": "MegaCrit.Sts2.Core.Models.ModelId",
-    "name": "op_Equality",
-    "signature": "Boolean op_Equality(MegaCrit.Sts2.Core.Models.ModelId, MegaCrit.Sts2.Core.Models.ModelId)"
   },
   {
     "kind": "Constructor",

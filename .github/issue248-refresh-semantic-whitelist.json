@@ -2,7 +2,7 @@
   "formalTag": "mod-v1.3.0",
   "formalCommit": "26c8da9a907fd9e12d41bf5bf17d24ca5975bfa8",
   "betaBase": "dce78bf472ca678b8bac042e878489d48014e83c",
-  "productCSharpFiles": 347,
+  "productCSharpFiles": 348,
   "apiOnlyOrNativeReplacementDifferences": [
     {
       "path": "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs",
@@ -539,6 +539,25 @@
       "formalSha256": "a76fec19da1e342687b5b998ac101162577ee1f0ecf961e0f3d33691202b3d7e",
       "betaSha256": "f9a836dc7bb09c0e2be1ce0719f844599740e1b50a99a69e0edf81cdb498258a",
       "normalizedSha256": "86bd43bb82be46ed15cff3c747b1e748bcd7f3080d7a12ea6b2aff5cb01bd110"
+    }
+  ],
+  "betaBehaviorCompatibilityDifferences": [
+    {
+      "path": "shin-getter-mod-godot/src/Diagnostics/ShinGetterDialogueConsoleCmd.cs",
+      "reason": "Exact registered BS2 passive-stat modifier accepted consistently for dialogue/console/history; other eligibility unchanged",
+      "formalSha256": "8561846560fce5493c28ac4d063913e4ec64ccc52c73792ed6108edf9b89ec9e",
+      "betaSha256": "db6758cb0bf79a81e4d8b4db9800f03024d910dff280d25bedf43de3b0383d7b"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs",
+      "reason": "Exact registered BS2 passive-stat modifier accepted consistently for dialogue/console/history; other eligibility unchanged",
+      "formalSha256": "8eca415f765e37ec286be6c611aedc7b55d603145f4a685da2ea8a8c8b5c20b4",
+      "betaSha256": "b266fd540e01877bd299c4ff07d4be0c74ef3b575fa23b3c1430ec23eb71980a"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs",
+      "reason": "Optional exact St2bs assembly/sealed full type + full ID + current ModelDb registration; fail closed, no cached misses or assembly loading",
+      "betaSha256": "0243b5cc748509252cf2f807a1ff5cf4553792c81c61b102b0fdc044e4933c13"
     }
   ],
   "resourceChannelWhitelist": [

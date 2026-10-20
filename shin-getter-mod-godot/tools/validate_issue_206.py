@@ -101,7 +101,7 @@ def contracts() -> None:
     catalog = read("src/Services/ShinGetterDialogueCatalog.cs")
     for token in (
         'GetProfileScopedPath("shin_getter_bonds.json")', "owner.RunState.Players.Count == 1",
-        "GameMode.Standard", "Modifiers.Count == 0", "RunManager.Instance.ShouldSave",
+        "GameMode.Standard", "ShinGetterBondRunCompatibility.IsStandardModifiers(owner.RunState.Modifiers)", "RunManager.Instance.ShouldSave",
         "!TestMode.IsOn", "!NonInteractiveMode.IsActive", "!RunManager.Instance.DailyTime.HasValue",
         "ReadSaveStatus.Success", "!latest.WasAbandoned", "latest.KilledByEncounter", "latest.KilledByEvent",
         "h.StartTime > lastMet && h.StartTime < _run", ">= 5", "lastMet != _run", '_npc != "NEOW"',

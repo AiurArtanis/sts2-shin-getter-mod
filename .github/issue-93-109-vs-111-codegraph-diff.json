@@ -3459,8 +3459,8 @@
   },
   "mod_binary_reference_inventory": {
     "assembly": "shin-getter-mod-godot/build/ShinGetterMod.dll",
-    "direct_game_member_reference_count": 775,
-    "game_member_reference_count": 810,
+    "direct_game_member_reference_count": 777,
+    "game_member_reference_count": 812,
     "game_member_references": [
       {
         "name": ".ctor",
@@ -6109,6 +6109,12 @@
         "signature": "Void (String, String)"
       },
       {
+        "name": "get_Category",
+        "owner": "MegaCrit.Sts2.Core.Models.ModelId",
+        "owner_kind": "type-reference",
+        "signature": "String ()"
+      },
+      {
         "name": "get_Entry",
         "owner": "MegaCrit.Sts2.Core.Models.ModelId",
         "owner_kind": "type-reference",
@@ -8087,6 +8093,12 @@
         "owner": "MegaCrit.Sts2.Core.Saves.Runs.SavedPropertyAttribute",
         "owner_kind": "type-reference",
         "signature": "Void (MegaCrit.Sts2.Core.Saves.Runs.SerializationCondition)"
+      },
+      {
+        "name": "get_Id",
+        "owner": "MegaCrit.Sts2.Core.Saves.Runs.SerializableModifier",
+        "owner_kind": "type-reference",
+        "signature": "MegaCrit.Sts2.Core.Models.ModelId ()"
       },
       {
         "name": "get_RelicIdLists",
@@ -15897,7 +15909,7 @@
       "MegaCrit.Sts2.addons.mega_text.MegaRichTextLabel+SignalName"
     ],
     "generic_game_member_reference_count": 35,
-    "semantic_reference_sha256": "198349AA4613105038A15230CF989F8635CD55974B5FD1BCF598157E0427EDB8"
+    "semantic_reference_sha256": "D1450CA05F22E8F9F91861E37B63B133EAA6C980F59C7FE82E27BE930A6CB397"
   },
   "mod_reference_crossings": [
     {
@@ -27676,6 +27688,8 @@
         "shin-getter-mod-godot/src/Patches/ShinGetterGetterMandalaPatch.cs:25",
         "shin-getter-mod-godot/src/Patches/ShinGetterProgressCompatibilityPatch.cs:15",
         "shin-getter-mod-godot/src/Patches/ShinGetterTezcataraPatch.cs:19",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:45",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:46",
         "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:239"
       ],
       "owner": "MegaCrit.Sts2.Core.Models.ModelDb",
@@ -27725,6 +27739,7 @@
         "shin-getter-mod-godot/src/Patches/ShinGetterProgressCompatibilityPatch.cs:97",
         "shin-getter-mod-godot/src/Patches/ShinGetterSaintDragonMigrationPatch.cs:28",
         "shin-getter-mod-godot/src/Patches/ShinGetterSaintDragonMigrationPatch.cs:29",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:41",
         "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:100",
         "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:117",
         "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:118",
@@ -27765,7 +27780,12 @@
         }
       ],
       "kind": "type",
-      "mod_locations": [],
+      "mod_locations": [
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:16",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:35",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:41",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:46"
+      ],
       "owner": "MegaCrit.Sts2.Core.Models.ModifierModel",
       "verification": "compiled Beta type reference; actual CLR token binding required"
     },
@@ -35870,7 +35890,9 @@
         }
       ],
       "kind": "type",
-      "mod_locations": [],
+      "mod_locations": [
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:27"
+      ],
       "owner": "MegaCrit.Sts2.Core.Saves.Runs.SerializableModifier",
       "verification": "compiled Beta type reference; actual CLR token binding required"
     },
@@ -50168,6 +50190,7 @@
         "shin-getter-mod-godot/src/Patches/ShinGetterChunibyoMenuPatch.cs:17",
         "shin-getter-mod-godot/src/Patches/ShinGetterChunibyoMenuPatch.cs:22",
         "shin-getter-mod-godot/src/Patches/ShinGetterConsoleCommandPatch.cs:11",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:37",
         "tools/Issue93CompatibilityProbe/DynamicBindingProbe.cs:7",
         "tools/Issue93CompatibilityProbe/DynamicBindingProbe.cs:12",
         "tools/Issue93CompatibilityProbe/DynamicBindingProbe.cs:21",
@@ -59163,6 +59186,7 @@
         "shin-getter-mod-godot/src/Patches/ShinGetterPowerUiPatch.cs:74",
         "shin-getter-mod-godot/src/Patches/SpiritRequirementCardUiPatch.cs:51",
         "shin-getter-mod-godot/src/Patches/SpiritRequirementCardUiPatch.cs:85",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:38",
         "shin-getter-mod-godot/src/Services/ShinGetterCombatRenderPreparation.cs:69",
         "tools/Issue93CompatibilityProbe/DynamicBindingProbe.cs:7",
         "tools/Issue93CompatibilityProbe/DynamicBindingProbe.cs:22",
@@ -65980,6 +66004,9 @@
         "shin-getter-mod-godot/src/Services/ShinGetterBondConsolePlan.cs:77",
         "shin-getter-mod-godot/src/Services/ShinGetterBondConsolePlan.cs:100",
         "shin-getter-mod-godot/src/Services/ShinGetterBondConsolePlan.cs:155",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:22",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:30",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:47",
         "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:55",
         "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:67",
         "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:100",
@@ -69227,6 +69254,7 @@
         "shin-getter-mod-godot/src/Patches/ShinGetterChunibyoMenuPatch.cs:17",
         "shin-getter-mod-godot/src/Patches/ShinGetterChunibyoMenuPatch.cs:22",
         "shin-getter-mod-godot/src/Patches/ShinGetterConsoleCommandPatch.cs:11",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:37",
         "tools/Issue93CompatibilityProbe/DynamicBindingProbe.cs:7",
         "tools/Issue93CompatibilityProbe/DynamicBindingProbe.cs:12",
         "tools/Issue93CompatibilityProbe/DynamicBindingProbe.cs:21",
@@ -73051,7 +73079,8 @@
       "kind": "member",
       "mod_locations": [
         "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue89.cs:846",
-        "shin-getter-mod-godot/src/Patches/CharacterListPatch.cs:14"
+        "shin-getter-mod-godot/src/Patches/CharacterListPatch.cs:14",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:46"
       ],
       "name": "GetByIdOrNull",
       "owner": "MegaCrit.Sts2.Core.Models.ModelDb",
@@ -73658,6 +73687,55 @@
     {
       "beta_definitions": [
         {
+          "declaration": "public string Category",
+          "decorators": null,
+          "is_abstract": false,
+          "is_async": false,
+          "is_static": false,
+          "kind": "property",
+          "name": "Category",
+          "qualified_name": "MegaCrit.Sts2.Core.Models::ModelId::Category",
+          "source": "src/Core/Models/ModelId.cs:9",
+          "type_parameters": null,
+          "visibility": "public"
+        }
+      ],
+      "formal_definitions": [
+        {
+          "declaration": "public string Category",
+          "decorators": null,
+          "is_abstract": false,
+          "is_async": false,
+          "is_static": false,
+          "kind": "property",
+          "name": "Category",
+          "qualified_name": "MegaCrit.Sts2.Core.Models::ModelId::Category",
+          "source": "src/Core/Models/ModelId.cs:10",
+          "type_parameters": null,
+          "visibility": "public"
+        }
+      ],
+      "kind": "member",
+      "mod_locations": [
+        "shin-getter-mod-godot/src/Audio/ShinGetterVoiceService.cs:120",
+        "shin-getter-mod-godot/src/Audio/ShinGetterVoiceService.cs:126",
+        "shin-getter-mod-godot/src/Audio/ShinGetterVoiceService.cs:127",
+        "shin-getter-mod-godot/src/Audio/ShinGetterVoiceService.cs:188",
+        "shin-getter-mod-godot/src/Audio/ShinGetterVoiceService.cs:189",
+        "shin-getter-mod-godot/src/Audio/ShinGetterVoiceService.cs:713",
+        "shin-getter-mod-godot/src/Audio/ShinGetterVoiceService.cs:804",
+        "shin-getter-mod-godot/src/Audio/ShinGetterVoiceService.cs:807",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:43"
+      ],
+      "name": "get_Category",
+      "owner": "MegaCrit.Sts2.Core.Models.ModelId",
+      "owner_kind": "type-reference",
+      "signature": "String ()",
+      "verification": "compiled Beta member signature; actual CLR token binding required"
+    },
+    {
+      "beta_definitions": [
+        {
           "declaration": "public string Entry",
           "decorators": null,
           "is_abstract": false,
@@ -73697,6 +73775,7 @@
         "shin-getter-mod-godot/src/Models/Events/SGE_GetterMandala.cs:220",
         "shin-getter-mod-godot/src/Patches/EventConsoleAliasPatch.cs:58",
         "shin-getter-mod-godot/src/Patches/ShinGetterAncientDialogueReplayPatch.cs:12",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:43",
         "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:55",
         "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:67"
       ],
@@ -77539,6 +77618,7 @@
         "shin-getter-mod-godot/src/Patches/ShinGetterChunibyoMenuPatch.cs:17",
         "shin-getter-mod-godot/src/Patches/ShinGetterChunibyoMenuPatch.cs:22",
         "shin-getter-mod-godot/src/Patches/ShinGetterConsoleCommandPatch.cs:11",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:37",
         "tools/Issue93CompatibilityProbe/DynamicBindingProbe.cs:7",
         "tools/Issue93CompatibilityProbe/DynamicBindingProbe.cs:12",
         "tools/Issue93CompatibilityProbe/DynamicBindingProbe.cs:21",
@@ -80183,6 +80263,7 @@
         "shin-getter-mod-godot/src/Patches/ShinGetterChunibyoMenuPatch.cs:17",
         "shin-getter-mod-godot/src/Patches/ShinGetterChunibyoMenuPatch.cs:22",
         "shin-getter-mod-godot/src/Patches/ShinGetterConsoleCommandPatch.cs:11",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:37",
         "tools/Issue93CompatibilityProbe/DynamicBindingProbe.cs:7",
         "tools/Issue93CompatibilityProbe/DynamicBindingProbe.cs:12",
         "tools/Issue93CompatibilityProbe/DynamicBindingProbe.cs:21",
@@ -92041,6 +92122,7 @@
         "shin-getter-mod-godot/src/Patches/ShinGetterProgressCompatibilityPatch.cs:97",
         "shin-getter-mod-godot/src/Patches/ShinGetterSaintDragonMigrationPatch.cs:28",
         "shin-getter-mod-godot/src/Patches/ShinGetterSaintDragonMigrationPatch.cs:29",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:41",
         "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:100",
         "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:117",
         "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:118",
@@ -92888,6 +92970,7 @@
         "shin-getter-mod-godot/src/Patches/ShinGetterProgressCompatibilityPatch.cs:97",
         "shin-getter-mod-godot/src/Patches/ShinGetterSaintDragonMigrationPatch.cs:28",
         "shin-getter-mod-godot/src/Patches/ShinGetterSaintDragonMigrationPatch.cs:29",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:41",
         "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:100",
         "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:117",
         "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:118",
@@ -93774,6 +93857,7 @@
       "kind": "member",
       "mod_locations": [
         "shin-getter-mod-godot/src/Diagnostics/ShinGetterDialogueConsoleCmd.cs:36",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:11",
         "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:52",
         "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:238"
       ],
@@ -94131,6 +94215,7 @@
       "kind": "member",
       "mod_locations": [
         "shin-getter-mod-godot/src/Diagnostics/ShinGetterDialogueConsoleCmd.cs:36",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:11",
         "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:52",
         "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:238"
       ],
@@ -95381,6 +95466,7 @@
       "kind": "member",
       "mod_locations": [
         "shin-getter-mod-godot/src/Diagnostics/ShinGetterDialogueConsoleCmd.cs:36",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:11",
         "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:52",
         "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:238"
       ],
@@ -95753,6 +95839,9 @@
         "shin-getter-mod-godot/src/Services/ShinGetterBondConsolePlan.cs:77",
         "shin-getter-mod-godot/src/Services/ShinGetterBondConsolePlan.cs:100",
         "shin-getter-mod-godot/src/Services/ShinGetterBondConsolePlan.cs:155",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:22",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:30",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:47",
         "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:55",
         "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:67",
         "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:100",
@@ -96040,6 +96129,9 @@
         "shin-getter-mod-godot/src/Services/ShinGetterBondConsolePlan.cs:77",
         "shin-getter-mod-godot/src/Services/ShinGetterBondConsolePlan.cs:100",
         "shin-getter-mod-godot/src/Services/ShinGetterBondConsolePlan.cs:155",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:22",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:30",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:47",
         "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:55",
         "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:67",
         "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:100",
@@ -96687,6 +96779,128 @@
       "owner": "MegaCrit.Sts2.Core.Saves.Runs.SavedPropertyAttribute",
       "owner_kind": "type-reference",
       "signature": "Void (MegaCrit.Sts2.Core.Saves.Runs.SerializationCondition)",
+      "verification": "compiled Beta member signature; actual CLR token binding required"
+    },
+    {
+      "beta_definitions": [
+        {
+          "declaration": "[JsonPropertyName(\"id\")] public ModelId? Id",
+          "decorators": null,
+          "is_abstract": false,
+          "is_async": false,
+          "is_static": false,
+          "kind": "property",
+          "name": "Id",
+          "qualified_name": "MegaCrit.Sts2.Core.Saves.Runs::SerializableModifier::Id",
+          "source": "src/Core/Saves/Runs/SerializableModifier.cs:9",
+          "type_parameters": null,
+          "visibility": "public"
+        }
+      ],
+      "formal_definitions": [
+        {
+          "declaration": "[JsonPropertyName(\"id\")] public ModelId? Id",
+          "decorators": null,
+          "is_abstract": false,
+          "is_async": false,
+          "is_static": false,
+          "kind": "property",
+          "name": "Id",
+          "qualified_name": "MegaCrit.Sts2.Core.Saves.Runs::SerializableModifier::Id",
+          "source": "src/Core/Saves/Runs/SerializableModifier.cs:9",
+          "type_parameters": null,
+          "visibility": "public"
+        }
+      ],
+      "kind": "member",
+      "mod_locations": [
+        "shin-getter-mod-godot/src/Audio/ShinGetterBgmCatalog.cs:17",
+        "shin-getter-mod-godot/src/Audio/ShinGetterBgmCatalog.cs:70",
+        "shin-getter-mod-godot/src/Audio/ShinGetterBgmCatalog.cs:79",
+        "shin-getter-mod-godot/src/Audio/ShinGetterBgmCatalog.cs:87",
+        "shin-getter-mod-godot/src/Audio/ShinGetterBgmCatalog.cs:88",
+        "shin-getter-mod-godot/src/Audio/ShinGetterBgmPreviewService.cs:42",
+        "shin-getter-mod-godot/src/Audio/ShinGetterBgmPreviewService.cs:47",
+        "shin-getter-mod-godot/src/Audio/ShinGetterBgmPreviewService.cs:70",
+        "shin-getter-mod-godot/src/Audio/ShinGetterBgmPreviewService.cs:84",
+        "shin-getter-mod-godot/src/Audio/ShinGetterBgmPreviewService.cs:107",
+        "shin-getter-mod-godot/src/Audio/ShinGetterBgmPreviewService.cs:124",
+        "shin-getter-mod-godot/src/Audio/ShinGetterEncounterMusicService.cs:129",
+        "shin-getter-mod-godot/src/Audio/ShinGetterExecutionMusicService.cs:154",
+        "shin-getter-mod-godot/src/Config/ShinGetterChunibyoConfigService.cs:101",
+        "shin-getter-mod-godot/src/Config/ShinGetterChunibyoConfigService.cs:102",
+        "shin-getter-mod-godot/src/Config/ShinGetterChunibyoConfigService.cs:103",
+        "shin-getter-mod-godot/src/Config/ShinGetterChunibyoConfigService.cs:104",
+        "shin-getter-mod-godot/src/Config/ShinGetterChunibyoConfigService.cs:105",
+        "shin-getter-mod-godot/src/Config/ShinGetterChunibyoConfigService.cs:213",
+        "shin-getter-mod-godot/src/Diagnostics/CardExport/ShinGetterCardPngExporter.cs:193",
+        "shin-getter-mod-godot/src/Diagnostics/CardExport/ShinGetterCardPngExporter.cs:195",
+        "shin-getter-mod-godot/src/Diagnostics/CardExport/ShinGetterCardPngExporter.cs:276",
+        "shin-getter-mod-godot/src/Diagnostics/CardExport/ShinGetterCardPngExporter.cs:277",
+        "shin-getter-mod-godot/src/Diagnostics/CardExport/ShinGetterCardPngExporter.cs:315",
+        "shin-getter-mod-godot/src/Diagnostics/CardExport/ShinGetterCardPngExporter.cs:354",
+        "shin-getter-mod-godot/src/Diagnostics/CardExport/ShinGetterCardPngExporter.cs:357",
+        "shin-getter-mod-godot/src/Diagnostics/ShinGetterAddAllCardsConsoleCmd.cs:51",
+        "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:230",
+        "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:679",
+        "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:684",
+        "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:841",
+        "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:912",
+        "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue89.cs:844",
+        "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue89.cs:850",
+        "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue89.cs:852",
+        "shin-getter-mod-godot/src/Models/Events/SGE_GetterMandala.cs:53",
+        "shin-getter-mod-godot/src/Models/Events/SGE_GetterMandala.cs:214",
+        "shin-getter-mod-godot/src/Models/Events/SGE_GetterMandala.cs:220",
+        "shin-getter-mod-godot/src/Models/Powers/SGP_Seal.cs:43",
+        "shin-getter-mod-godot/src/Nodes/Config/NChunibyoConfigSubmenu.cs:583",
+        "shin-getter-mod-godot/src/Nodes/Config/NShinGetterBgmPreviewControls.cs:60",
+        "shin-getter-mod-godot/src/Nodes/Config/NShinGetterBgmPreviewControls.cs:82",
+        "shin-getter-mod-godot/src/Nodes/Config/NShinGetterBgmPreviewControls.cs:95",
+        "shin-getter-mod-godot/src/Patches/EventConsoleAliasPatch.cs:56",
+        "shin-getter-mod-godot/src/Patches/EventConsoleAliasPatch.cs:58",
+        "shin-getter-mod-godot/src/Patches/ShinGetterAncientRewardPatch.cs:21",
+        "shin-getter-mod-godot/src/Patches/ShinGetterAncientRewardPatch.cs:40",
+        "shin-getter-mod-godot/src/Patches/ShinGetterAncientRewardPatch.cs:41",
+        "shin-getter-mod-godot/src/Patches/ShinGetterAncientRewardPatch.cs:115",
+        "shin-getter-mod-godot/src/Patches/ShinGetterBondDialoguePatch.cs:98",
+        "shin-getter-mod-godot/src/Patches/ShinGetterBondDialoguePatch.cs:99",
+        "shin-getter-mod-godot/src/Patches/ShinGetterBondDialoguePatch.cs:100",
+        "shin-getter-mod-godot/src/Patches/ShinGetterBs2MandalaPatch.cs:78",
+        "shin-getter-mod-godot/src/Patches/ShinGetterCardLibraryPatch.cs:92",
+        "shin-getter-mod-godot/src/Patches/ShinGetterGetterMandalaPatch.cs:27",
+        "shin-getter-mod-godot/src/Patches/ShinGetterPotionFactoryWeightPatch.cs:39",
+        "shin-getter-mod-godot/src/Patches/ShinGetterProgressCompatibilityPatch.cs:41",
+        "shin-getter-mod-godot/src/Patches/ShinGetterProgressCompatibilityPatch.cs:61",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondConsolePlan.cs:45",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondConsolePlan.cs:76",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondConsolePlan.cs:77",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondConsolePlan.cs:100",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondConsolePlan.cs:155",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:22",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:30",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:47",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:55",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:67",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:100",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:105",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:115",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:117",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:118",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:121",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:158",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:213",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:216",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:239",
+        "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:345",
+        "shin-getter-mod-godot/src/Services/ShinGetterDialogueCatalog.cs:14",
+        "shin-getter-mod-godot/src/Services/ShinGetterDialogueCatalog.cs:52",
+        "shin-getter-mod-godot/src/Services/ShinGetterDialogueCatalog.cs:55"
+      ],
+      "name": "get_Id",
+      "owner": "MegaCrit.Sts2.Core.Saves.Runs.SerializableModifier",
+      "owner_kind": "type-reference",
+      "signature": "MegaCrit.Sts2.Core.Models.ModelId ()",
       "verification": "compiled Beta member signature; actual CLR token binding required"
     },
     {
@@ -100415,7 +100629,7 @@
       "get_IsShared",
       "get_ShouldRetainThisTurn"
     ],
-    "file_count": 352,
+    "file_count": 353,
     "files": [
       {
         "line_count": 103,
@@ -100475,7 +100689,7 @@
       {
         "line_count": 59,
         "path": "shin-getter-mod-godot/src/Diagnostics/ShinGetterDialogueConsoleCmd.cs",
-        "sha256": "8561846560FCE5493C28AC4D063913E4EC64CCC52C73792ED6108EDF9B89EC9E"
+        "sha256": "DB6758CB0BF79A81E4D8B4DB9800F03024D910DFF280D25BEDF43DE3B0383D7B"
       },
       {
         "line_count": 35,
@@ -102128,6 +102342,11 @@
         "sha256": "E5D34E049CA1C1ADA0A5DC4AB4B3D07BBDABB7A80F0B298370A4AC01DCF49A2F"
       },
       {
+        "line_count": 49,
+        "path": "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs",
+        "sha256": "0243B5CC748509252CF2F807A1FF5CF4553792C81C61B102B0FDC044E4933C13"
+      },
+      {
         "line_count": 40,
         "path": "shin-getter-mod-godot/src/Services/ShinGetterBondSave.cs",
         "sha256": "BAE895D0F19E796FAF9939243027FE17C8C1D0708A4A3C8C8DAFEFBF4C0E737F"
@@ -102135,7 +102354,7 @@
       {
         "line_count": 399,
         "path": "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs",
-        "sha256": "8ECA415F765E37EC286BE6C611AEDC7B55D603145F4A685DA2EA8A8C8B5C20B4"
+        "sha256": "B266FD540E01877BD299C4FF07D4BE0C74EF3B575FA23B3C1430EC23EB71980A"
       },
       {
         "line_count": 186,
@@ -102178,8 +102397,8 @@
         "sha256": "1683C0BB67020C319383DA87826029A5E1EC45CD3D6C2B1A955003CEC3B6C0FC"
       }
     ],
-    "identifier_count": 7654,
-    "line_count": 33268,
+    "identifier_count": 7676,
+    "line_count": 33317,
     "override_names": [
       "AfterApplied",
       "AfterAttack",
@@ -235421,6 +235640,7 @@
           "shin-getter-mod-godot/src/Patches/ShinGetterProgressCompatibilityPatch.cs:97",
           "shin-getter-mod-godot/src/Patches/ShinGetterSaintDragonMigrationPatch.cs:28",
           "shin-getter-mod-godot/src/Patches/ShinGetterSaintDragonMigrationPatch.cs:29",
+          "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs:41",
           "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:100",
           "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:117",
           "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs:118",

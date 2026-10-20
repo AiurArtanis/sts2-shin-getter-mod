@@ -9,6 +9,7 @@
     <Compile Include="../../shin-getter-mod-godot/src/Services/ShinGetterBondConsolePlan.cs" Link="Production/Plan.cs" />
     <Compile Include="../../shin-getter-mod-godot/src/Services/ShinGetterBondSave.cs" Link="Production/Save.cs" />
     <Compile Include="../../shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs" Link="Production/Session.cs" />
+    <Compile Include="../../shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs" Link="Production/RunCompatibility.cs" />
     <Compile Include="../../shin-getter-mod-godot/src/Services/ShinGetterDialogueCatalog.cs" Link="Production/Catalog.cs" />
     <Compile Include="../../shin-getter-mod-godot/src/Diagnostics/ShinGetterDialogueConsoleCmd.cs" Link="Production/Command.cs" />
     <Compile Include="../../shin-getter-mod-godot/src/Patches/ShinGetterConsoleCommandPatch.cs" Link="Production/CommandPrefix.cs" />

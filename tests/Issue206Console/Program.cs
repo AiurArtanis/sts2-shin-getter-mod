@@ -198,7 +198,7 @@ local.RunState.Players.RemoveAt(1);
 local.RunState.GameMode = GameMode.Daily;
 Check(!command.Process(local, new[] { "ALL", "clear" }).success, "daily mode edit");
 local.RunState.GameMode = GameMode.Standard;
-local.RunState.Modifiers.Add("custom");
+local.RunState.Modifiers.Add(new() { Id = new("MODIFIER", "CUSTOM") });
 Check(!command.Process(local, new[] { "ALL", "clear" }).success, "custom mode edit");
 local.RunState.Modifiers.Clear();
 local.Character = new object();
@@ -359,4 +359,5 @@ Check(!automatic.CompleteDisplayedFinalLine() && Load().Revision == revisionAfte
 var coldCompleted = Scene("NEOW", 0);
 Check(coldCompleted.Begin() && coldCompleted.Closed, "cold completed encounter reopened");
 Check(Load().ProgressEpoch == "v1.3.0" && Load().Revision == revisionAfterAutomatic, "restart reinitialized valid release progress");
+checks += Bs2CompatibilityChecks.Run();
 Console.WriteLine($"PASS: {checks} managed assertions, linked production source; NOT Godot/game acceptance.");
