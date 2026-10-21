@@ -1,1 +1,15 @@
-v1.3.0: Added Ancient bonds and team dialogue routes; reworked Shin Getter Dragon's Shining Spark and Star-Slashing Axe for Shin Getter 1/Dragon, with axe preparation voices; adjusted cards and balance; updated eight illustrations; fixed reward input, icon ordering, hover descriptions blocking input and repeated free purchases. Added sgd. Stable 109; updated 111 Beta compatibility is a separate delivery.
+v1.3.0-beta.111 2026-10-21
+
+Gameplay:
+- Added Ancient bonds: crossover interactions between the three-pilot team and the Ancients.
+
+Bug Fixes:
+- Fixed repeated Good Citizen Card free purchases on the same map.
+
+QoL / Balance:
+- Reworked Shining Spark and Star-Slashing Axe.
+- Improved Expansion Strike and Tactical Retreat animations, and Shining Spark's hit timing.
+- Optimized animation loading and reduced animation data and package size.
+- Adjusted Drive, Shift Strike and Fighting Spirit card effects.
+- Updated eight card illustrations and the compact card atlas, correcting texture references and sampling boundaries.
+- Added blacksouls2 compatibility: Getter Mandala joins the SmokeForest event pool, and Ancient bonds support its statistics modifier.

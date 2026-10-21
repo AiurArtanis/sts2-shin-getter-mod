@@ -26,9 +26,21 @@ namespace MegaCrit.Sts2.Core.Models
         public static ModelId none { get; } = new("", "");
         public static string SlugifyCategory<T>() => "EVENT";
     }
-    public static class ModelDb { public static T Character<T>() where T : new() => new(); }
-    public sealed class EventModel { public ModelId Id { get; init; } = ModelId.none; public Player? Owner { get; init; } }
+    public static class ModelDb
+    {
+        public static T Character<T>() where T : new() => new();
+        public static Dictionary<ModelId, ModifierModel> Modifiers { get; } = new();
+        public static bool FailModifierLookup { get; set; }
+        public static T? GetByIdOrNull<T>(ModelId id) where T : class => FailModifierLookup
+            ? throw new InvalidOperationException("fixture registry unavailable") : Modifiers.GetValueOrDefault(id) as T;
+    }
+    public class ModifierModel { public ModelId Id { get; set; } = ModelId.none; }
+    public class EventModel { public ModelId Id { get; init; } = ModelId.none; public Player? Owner { get; init; } }
     public class Player { public object Character { get; set; } = new ShinGetterMod.Models.Characters.ShinGetter(); public RunState RunState { get; set; } = new(); }
+}
+namespace MegaCrit.Sts2.Core.Models.Events
+{
+    public sealed class TheArchitect : EventModel { }
 }
 namespace MegaCrit.Sts2.Core.Rooms
 {
@@ -46,7 +58,7 @@ namespace MegaCrit.Sts2.Core.Runs
     public sealed class RunState
     {
         public List<Player> Players { get; } = new(); public GameMode GameMode { get; set; }
-        public List<string> Modifiers { get; } = new(); public int CurrentActIndex { get; set; }
+        public List<ModifierModel> Modifiers { get; } = new(); public int CurrentActIndex { get; set; }
         public List<List<MapPoint>> MapPointHistory { get; } = new(); public AbstractRoom? CurrentRoom { get; set; }
         public AbstractRoom? BaseRoom { get; set; } public MapCoord? CurrentMapCoord { get; set; } = new(0, 0);
         public RunRng Rng { get; } = new();
@@ -54,7 +66,7 @@ namespace MegaCrit.Sts2.Core.Runs
     public sealed class HistoryPlayer { public ModelId Character { get; set; } = new("CHARACTER", "SHIN_GETTER"); }
     public sealed class RunHistory
     {
-        public long StartTime { get; set; } public GameMode GameMode { get; set; } public List<string> Modifiers { get; } = new();
+        public long StartTime { get; set; } public GameMode GameMode { get; set; } public List<MegaCrit.Sts2.Core.Saves.Runs.SerializableModifier> Modifiers { get; } = new();
         public List<HistoryPlayer> Players { get; } = new() { new() }; public bool Win { get; set; } public bool WasAbandoned { get; set; }
         public ModelId KilledByEncounter { get; set; } = ModelId.none; public ModelId KilledByEvent { get; set; } = ModelId.none;
         public List<List<MapPoint>> MapPointHistory { get; } = new();
@@ -118,4 +130,8 @@ namespace MegaCrit.Sts2.Core.Saves
         public IEnumerable<string> GetAllRunHistoryNames() { HistoryReads++; return Enumerable.Range(0, Histories.Count).Select(i => i.ToString()); }
         public HistoryResult LoadRunHistory(string file) => new(ReadSaveStatus.Success, Histories[int.Parse(file)]);
     }
+}
+namespace MegaCrit.Sts2.Core.Saves.Runs
+{
+    public sealed class SerializableModifier { public ModelId? Id { get; set; } }
 }

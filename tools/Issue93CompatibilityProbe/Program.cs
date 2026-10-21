@@ -3,7 +3,8 @@ using System.Runtime.Loader;
 
 string sourceRoot = Environment.GetEnvironmentVariable("SHIN_GETTER_STS2_111_SOURCE")
     ?? @"E:\Work\SlaytheSpare2-111-beta";
-string betaBin = Path.GetFullPath(Path.Combine(sourceRoot, ".godot", "mono", "temp", "bin", "Debug"));
+string betaBin = Path.GetFullPath(Environment.GetEnvironmentVariable("SHIN_GETTER_STS2_111_BIN")
+    ?? Path.Combine(sourceRoot, ".godot", "mono", "temp", "bin", "Debug"));
 AssemblyLoadContext.Default.Resolving += (_, name) =>
 {
     string dependency = Path.Combine(betaBin, $"{name.Name}.dll");
@@ -24,6 +25,28 @@ if (!File.Exists(gamePath))
     throw new InvalidOperationException($"0.111 Beta sts2.dll was not found: {gamePath}");
 
 Assembly game = AssemblyLoadContext.Default.LoadFromAssemblyPath(gamePath);
+Console.WriteLine($"111 metadata input: {gamePath}; MVID={game.ManifestModule.ModuleVersionId}");
+
+if (args.Length == 2 && args[0] == "--bs2")
+{
+    Assembly bs2 = AssemblyLoadContext.Default.LoadFromAssemblyPath(Path.GetFullPath(args[1]));
+    Type act = game.GetType("MegaCrit.Sts2.Core.Models.ActModel", true)!;
+    Type eventModel = game.GetType("MegaCrit.Sts2.Core.Models.EventModel", true)!;
+    Type run = game.GetType("MegaCrit.Sts2.Core.Runs.RunState", true)!;
+    Type smoke = bs2.GetType("St2bs.St2bsCode.Acts.SmokeForest", true)!;
+    PropertyInfo pool = smoke.GetProperty("ExploreEvents", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+        ?? throw new InvalidOperationException("BS2 ExploreEvents missing");
+    MethodInfo getter = pool.GetMethod ?? throw new InvalidOperationException("BS2 getter missing");
+    if (bs2.GetName().Name != "St2bs" || !act.IsAssignableFrom(smoke) || getter.IsStatic
+        || getter.GetParameters().Length != 0 || getter.ReturnType != typeof(IReadOnlyList<>).MakeGenericType(eventModel))
+        throw new InvalidOperationException("BS2 ExploreEvents contract changed");
+    Type ui = bs2.GetType("St2bs.St2bsCode.Patches.RedCityMapUiPatch", true)!;
+    MethodInfo pick = ui.GetMethod("PickExploreEvent", BindingFlags.Public | BindingFlags.Static, new[] { run })
+        ?? throw new InvalidOperationException("BS2 exploration caller missing");
+    if (pick.ReturnType != eventModel) throw new InvalidOperationException("BS2 PickExploreEvent return changed");
+    Console.WriteLine("BS2 optional adapter CLR signature PASS; no constructors, patches or gameplay executed");
+    return;
+}
 
 Type RequireType(string fullName) =>
     game.GetType(fullName, throwOnError: true, ignoreCase: false)

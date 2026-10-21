@@ -17,6 +17,11 @@ geometry at frame start/midpoint/end/hold, and invalid metadata rejection. The t
 are needed to cover actual147-frame data; omitting them tests only synthetic
 fixtures and must not be reported as delivered-data validation.
 
+For pooled runtime schema2, the actual file is passed unchanged to the production
+constructor first. Only the existing contour diagnostics and legacy invalid-polygon
+mutants use an expanded diagnostic view. Production v2 malformed-index/schema checks and
+exact old/new inverse/cache equivalence are covered by Issue255StarSlashMetadata.
+
 No Godot scene, native rendering, audio playback, game initialization, PCK or
 deployment is started. The signed-mask assertions validate integer values,
 not a native `SavedProperties` save/load roundtrip. Real selection controls,

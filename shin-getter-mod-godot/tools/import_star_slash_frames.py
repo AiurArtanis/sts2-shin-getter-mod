@@ -12,12 +12,19 @@ from pathlib import Path
 import shutil
 from PIL import Image
 from repair_star_slash_foreground import repair_document
+from star_slash_runtime_metadata import encoded, pack_document
 
 ROOT = Path(__file__).resolve().parents[1]
 ART = ROOT.parent / "art_sources/characters/shin_getter/forms"
 OUTPUT = ROOT / "images/characters/shin_getter/forms"
 FORMS = {"一号机": ("getter_one_star_slash", 76, 133),
          "真盖塔龙": ("shin_getter_dragon_star_slash", 71, 130)}
+# Fingerprints recorded by the retained approved ART-004 diagnostic, before later
+# engineering changes. This validates historical provenance, not approval of new C#.
+APPROVED_DIAGNOSTIC_SOURCES = {
+    "NShinGetterStarSlashData.cs": "637e750aff25fb15180248b4104087e9fb33c74f20260dbe99fe44af2aa7af8b",
+    "NShinGetterStarSlashSequence.cs": "b7fcb90d7f2cc25408900a552f55225dfa9ad973629b31c1949523a79a3afbee",
+}
 
 def read(path):
     return json.loads(path.read_text(encoding="utf-8-sig"))
@@ -92,8 +99,10 @@ def reviewed_metadata(annotations, form):
     assert diagnostic["metadata_sha256"].lower() == sha(annotation_path), \
         "The diagnostic images were generated from an older calibration"
     for filename in ("NShinGetterStarSlashData.cs", "NShinGetterStarSlashSequence.cs"):
-        assert diagnostic["runtime_source_sha256"][filename].lower() == sha(ROOT / "src/Nodes/Combat" / filename), \
-            "The diagnostic geometry predates the actual runtime implementation"
+        assert diagnostic["runtime_source_sha256"][filename].lower() == APPROVED_DIAGNOSTIC_SOURCES[filename], \
+            "The diagnostic's retained historical runtime fingerprint changed"
+        # This is provenance of the historical art review, not approval of new code.
+        # Current source equivalence is checked by Issue255StarSlashMetadata separately.
     assert sha(annotations / "reference_weapon_geometry.json") == sha(ROOT / "tools/star-slash-reference-geometry.json"), \
         "The retained reference profile is not the diagnostic's current profile"
     return annotation_path, sha(control / "review.json")
@@ -139,7 +148,8 @@ def convert_data(annotations):
             "impact_time": 1.4, "frames": records}
         # Retain approved source annotations; replay the six proven native-topology fixes.
         document, _ = repair_document(document, action)
-        write(OUTPUT / action / "animation.json", document)
+        path = OUTPUT / action / "animation.json"
+        path.write_text(encoded(pack_document(document, delivery)), encoding="utf-8", newline="\n")
 
 def imports():
     texture_template = (OUTPUT / "shin_getter_dragon_shining_spark/sprite_sheet.png.import").read_text(encoding="utf-8")

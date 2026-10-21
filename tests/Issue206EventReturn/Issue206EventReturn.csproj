@@ -1,7 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net9.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable></PropertyGroup>
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net9.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable>
+    <NativeSourceRoot Condition="'$(NativeSourceRoot)' == ''">$(STS2_SOURCE_ROOT)</NativeSourceRoot>
+    <BondBridgeSource Condition="'$(BondBridgeSource)' == ''">../../shin-getter-mod-godot/src/Patches/ShinGetterBondDialoguePatch.cs</BondBridgeSource>
+  </PropertyGroup>
   <ItemGroup>
-    <Compile Include="../../shin-getter-mod-godot/src/Patches/ShinGetterBondDialoguePatch.cs" Link="Production/Bridge.cs" />
+    <Compile Include="$(BondBridgeSource)" Link="Production/Bridge.cs" />
     <Reference Include="0Harmony"><HintPath>../../shin-getter-mod-godot/lib/0Harmony.dll</HintPath></Reference>
   </ItemGroup>
+  <Target Name="LinkNativeEventSemantics" BeforeTargets="BeforeCompile">
+    <Error Condition="'$(NativeSourceRoot)' == ''" Text="Pass -p:NativeSourceRoot=path-to-read-only-formal109-source (or STS2_SOURCE_ROOT)." />
+    <Exec Command="python &quot;$(MSBuildProjectDirectory)/link_native_semantics.py&quot; &quot;$(NativeSourceRoot)&quot; &quot;$(IntermediateOutputPath)NativeEventSemantics.g.cs&quot;" />
+    <ItemGroup><Compile Include="$(IntermediateOutputPath)NativeEventSemantics.g.cs" /></ItemGroup>
+  </Target>
 </Project>

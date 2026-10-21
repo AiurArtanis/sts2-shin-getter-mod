@@ -1,0 +1,11 @@
+config_version=5
+
+[application]
+config/name="issue206-native-tween-api-probe"
+run/main_scene="res://probe.tscn"
+
+[dotnet]
+project/assembly_name="Issue206NativeTween"
+
+[rendering]
+renderer/rendering_method="gl_compatibility"

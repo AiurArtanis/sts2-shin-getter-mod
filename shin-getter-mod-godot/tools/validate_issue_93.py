@@ -287,10 +287,11 @@ def validate_beta_source_contract() -> None:
         path = BETA_SOURCE / relative
         require(read(path), path, *markers)
 
-    beta_dll = BETA_SOURCE / ".godot/mono/temp/bin/Debug/sts2.dll"
-    harmony_dll = BETA_SOURCE / ".godot/mono/temp/bin/Debug/0Harmony.dll"
+    beta_bin = Path(os.environ["SHIN_GETTER_STS2_111_BIN"])
+    beta_dll = beta_bin / "sts2.dll"
+    harmony_dll = beta_bin / "0Harmony.dll"
     expected_hashes = {
-        beta_dll: "6896BBA91CEDDC661B3F789749E9F0AAC338F5DDBBB92C598FC344DEC822DC19",
+        beta_dll: "0861BFA1DF347538D932F22D580E75420F08082792EB914E53B4882764ACDBE9",
         harmony_dll: "EF1898322C9F5C86DC1B0758B272A9C440823B4A41CA9A0B82A3AA6B3D206387",
     }
     for path, expected_hash in expected_hashes.items():
@@ -339,7 +340,7 @@ def validate_resources_and_audit() -> None:
         "issue#248",
         "complete v1.3.0",
         "actual CLR",
-        "30 changed symbol groups",
+        "31 changed symbol groups",
         BETA_VERSION,
         BETA_TAG,
         BETA_ARCHIVE,
@@ -362,7 +363,7 @@ def validate_codegraph_mechanical_audit() -> None:
         result.stdout,
         script,
         "issue#93 CodeGraph audit check passed",
-        "30 changed-symbol candidates",
+        "31 changed-symbol candidates",
     )
 
 

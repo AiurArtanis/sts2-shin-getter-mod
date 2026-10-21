@@ -98,15 +98,188 @@ foreach (bool valid in new[] { false, true })
     Check(!(bool)advance.Invoke(null, new object[] { layout })! && ui.AdvanceCalls == 1, "native hitbox bypassed session-owned advance");
     var replace = HarmonyLib.AccessTools.Method(typeof(ShinGetterBondReplaceAncientLinesPatch), "Prefix");
     ui.IsUpdatingNativeUi = true;
-    Check((bool)replace.Invoke(null, new object[] { layout })!, "native story refresh suppressed itself");
+    var legacyLines = new[] { new MegaCrit.Sts2.Core.Entities.Ancients.AncientDialogueLine("legacy") };
+    Check((bool)replace.Invoke(null, new object[] { layout, legacyLines })!, "native story refresh suppressed itself");
     var focus = HarmonyLib.AccessTools.Method(typeof(ShinGetterBondNativeLineFocusPatch), "Prefix");
     Check(!(bool)focus.Invoke(null, new object[] { layout })!, "native hover inspected an empty replacement container");
     ui.IsUpdatingNativeUi = false;
     Check((bool)focus.Invoke(null, new object[] { layout })!, "normal native hover was suppressed");
-    Check(!(bool)replace.Invoke(null, new object[] { layout })!, "original dialogue entered bond flow");
+    Check(!(bool)replace.Invoke(null, new object[] { layout, legacyLines })!, "original dialogue entered bond flow");
     ui.Return();
     Check((bool)route.Invoke(null, new object[] { room, layout.Buttons[0].Option })!, "native reward routing did not resume");
     Check((bool)advance.Invoke(null, new object[] { layout })! && ui.AdvanceCalls == 1, "native advance intercepted after return");
     Check((bool)focus.Invoke(null, new object[] { layout })!, "native hover did not resume");
 }
-Console.WriteLine($"PASS: {assertions} production-bridge fixture assertions; NOT native Godot/input/reward proof.");
+{
+    var (model, layout) = Scenario(); // Cold resume: no SetDialogue/Get call happened.
+    Check(!ShinGetterBondDialogueBridge.TryGet(model, out _), "cold fixture already initialized");
+    var setup = HarmonyLib.AccessTools.Method(typeof(ShinGetterBondAncientSetupPatch), "Prefix");
+    Check(!(bool)setup.Invoke(null, new object[] { layout })!, "cold resume skipped bond attach");
+    Check(ShinGetterBondDialogueBridge.IsBlocking(model) && layout.Buttons.All(b => !b.IsEnabled), "cold resume rewards not suspended");
+    NShinGetterBondDialogue.Last.Return();
+    Check(layout.Resumes == 1 && layout.Buttons.All(b => b.IsEnabled), "cold resume completion did not restore originals");
+}
+foreach (string blocked in new[] { "ineligible", "finished" })
+{
+    var (model, layout) = Scenario();
+    if (blocked == "ineligible") model.Eligible = false;
+    else model.IsFinished = true;
+    var setup = HarmonyLib.AccessTools.Method(typeof(ShinGetterBondAncientSetupPatch), "Prefix");
+    Check((bool)setup.Invoke(null, new object[] { layout })!, blocked + ": injected story into excluded/claimed event");
+    Check(!ShinGetterBondDialogueBridge.TryGet(model, out _), blocked + ": created relationship controller");
+}
+{
+    var npc = new AncientEventModel();
+    var dialogue = new MegaCrit.Sts2.Core.Events.AncientDialogue("");
+    dialogue.Lines.Add(new(""));
+    dialogue.Lines.Add(new("event:/sfx/npcs/neow/neow_welcome"));
+    npc.DialogueSet.Dialogues.Add(dialogue);
+    Check(ShinGetterBondDialogueBridge.ResolveFinalAncientSfx(npc) == "event:/sfx/npcs/neow/neow_welcome", "declared NPC sound not reused");
+    Check(ShinGetterBondDialogueBridge.ResolveFinalAncientSfx(new EventModel()) == null, "non-ancient invented NPC sound");
+    Check(ShinGetterBondDialogueBridge.ResolveFinalAncientSfx(new AncientEventModel()) == null, "empty native sound set invented sound");
+}
+{
+    var (model, layout) = Scenario();
+    var original = layout.Buttons.ToArray();
+    var lines = new[] { new MegaCrit.Sts2.Core.Entities.Ancients.AncientDialogueLine("legacy") };
+    ShinGetterBondDialogueBridge.Get(model).LegacyLines = lines;
+    ShinGetterBondDialogueBridge.Attach(model, layout, layout.OnSetupComplete);
+    var ui = NShinGetterBondDialogue.Last;
+    ui.Fail();
+    ui.Fail();
+    Check(!model.IsFinished, "P1: legacy intro permanently finished model; native SetOptions would substitute map Proceed");
+    Check(layout.Lines.SequenceEqual(lines), "fallback failed to restore pre-bond lines");
+    Check(layout.Buttons.SequenceEqual(original) && original.All(b => LegalFixtureInput(b, model)), "fallback changed native rewards or left click routing blocked");
+    Check(layout.Resumes == 1 && ShinGetterBondDialogueBridge.Get(model).LegacyFallback, "fallback resumed more than once");
+}
+{
+    var (model, layout) = Scenario();
+    ShinGetterMod.Services.ShinGetterBondSession.FailConstruction = true;
+    try
+    {
+        ShinGetterBondDialogueBridge.Get(model); // Must not construct a session yet.
+        ShinGetterBondDialogueBridge.Attach(model, layout, layout.OnSetupComplete);
+        Check(layout.Resumes == 1 && layout.Buttons.All(b => b.IsEnabled), "construction error left event disabled");
+        Check(!ShinGetterBondDialogueBridge.IsBlocking(model), "construction error left bond interception active");
+    }
+    finally { ShinGetterMod.Services.ShinGetterBondSession.FailConstruction = false; }
+}
+{
+    var model = new MegaCrit.Sts2.Core.Models.Events.TheArchitect();
+    var layout = new NEventLayout(model);
+    layout.Buttons.Add(new() { MouseStops = true }); // Native AnimateButtonsIn has enabled pointer routing.
+    var state = ShinGetterBondDialogueBridge.Get(model);
+    var play = HarmonyLib.AccessTools.Method(typeof(ShinGetterBondArchitectPlayPatch), "Prefix");
+    Check(!(bool)play.Invoke(null, new object?[] { model, null })!, "early native PlayCurrentLine not suspended");
+    Check(state.Ui == null && layout.Buttons[0].Visible, "Architect attached before native SetupLayout.SetOptions");
+    var setup = HarmonyLib.AccessTools.Method(typeof(ShinGetterBondArchitectSetupPatch), "Postfix");
+    setup.Invoke(null, new object[] { layout });
+    Check(state.Ui != null && !layout.Buttons[0].Visible, "Architect did not attach after native setup");
+    var ui = NShinGetterBondDialogue.Last;
+    ui.Fail();
+    ui.Fail();
+    Check(state.LegacyFallback && state.Returned && model.StoredDialogue?.Text == "legacy" && model.NativeLines == 1,
+        "Architect did not load/play pre-bond dialogue exactly once");
+    var nativeRoom = new MegaCrit.Sts2.Core.Nodes.Rooms.NEventRoom(model);
+    nativeRoom.RefreshOptions();
+    Check(!model.IsFinished && !nativeRoom.Layout.Buttons.Single().Option.IsProceed,
+        "P1: Architect legacy intro permanently finished model; native SetOptions substituted map Proceed");
+    Check(model.CurrentOptions.Count == 1, "native legacy PlayCurrentLine returned without text/speaker/options and stranded intro");
+    Check((bool)play.Invoke(null, new object?[] { model, null })!, "Architect fallback blocked native Next line");
+    Check(LegalFixtureInput(layout.Buttons[0], model), "Architect fallback left native clicks disabled");
+}
+foreach (bool failure in new[] { false, true })
+{
+    var model = new MegaCrit.Sts2.Core.Models.Events.TheArchitect { FailLegacyLoad = failure };
+    var layout = new NEventLayout(model);
+    var state = ShinGetterBondDialogueBridge.Get(model);
+    HarmonyLib.AccessTools.Method(typeof(ShinGetterBondArchitectSetupPatch), "Postfix").Invoke(null, new object[] { layout });
+    if (failure) NShinGetterBondDialogue.Last.Fail();
+    else NShinGetterBondDialogue.Last.Return();
+    Check(model.CurrentOptions.Count == 1 && state.Returned, "Architect did not retain native Proceed");
+    Check(model.NativeLines == 0, "normal completion or damaged legacy replayed dialogue");
+    Check(state.LegacyFallback == failure, "normal completion incorrectly used legacy fallback");
+}
+{
+    var (model, layout) = Scenario();
+    ShinGetterMod.Services.ShinGetterBondSession.FailEligibility = true;
+    try
+    {
+        Check(ShinGetterBondDialogueBridge.IsEligible(model) == false, "catalogue exception escaped");
+        Check(!ShinGetterBondDialogueBridge.TryGet(model, out _), "catalogue failure started bond interception");
+    }
+    finally { ShinGetterMod.Services.ShinGetterBondSession.FailEligibility = false; }
+}
+// Negative control executes the extracted native bodies: empty options finish
+// permanently, and a later nonempty list still becomes the map-return option.
+{
+    var model = new MegaCrit.Sts2.Core.Models.Events.TheArchitect();
+    var nativeState = HarmonyLib.AccessTools.Method(typeof(EventModel), "SetEventState");
+    nativeState.Invoke(model, new object[] { new MegaCrit.Sts2.Core.Localization.LocString("ancients", "empty"), Array.Empty<MegaCrit.Sts2.Core.Events.EventOption>() });
+    model.SeedProceed();
+    var room = new MegaCrit.Sts2.Core.Nodes.Rooms.NEventRoom(model);
+    room.RefreshOptions();
+    Check(model.IsFinished, "native negative control did not preserve permanent finished flag");
+    Check(room.Layout.Buttons.Single().Option.IsProceed, "native negative control did not replace ending with map Proceed");
+    int maps = MegaCrit.Sts2.Core.Nodes.Rooms.NEventRoom.MapOpens;
+    room.Layout.Buttons.Single().Option.Chosen().GetAwaiter().GetResult();
+    Check(MegaCrit.Sts2.Core.Nodes.Rooms.NEventRoom.MapOpens == maps + 1 && model.EndingCalls == 0,
+        "native map replacement negative control failed");
+}
+foreach (string fault in new[] { "normal early return", "null", "empty", "throw" })
+{
+    var model = new MegaCrit.Sts2.Core.Models.Events.TheArchitect
+    { NullLegacy = fault == "null", EmptyLegacy = fault == "empty", FailLegacyLoad = fault == "throw" };
+    var layout = new NEventLayout(model);
+    layout.AddOptions(model.CurrentOptions);
+    var room = new MegaCrit.Sts2.Core.Nodes.Rooms.NEventRoom(model, layout);
+    ShinGetterBondDialogueBridge.Get(model);
+    HarmonyLib.AccessTools.Method(typeof(ShinGetterBondArchitectSetupPatch), "Postfix").Invoke(null, new object[] { layout });
+    var ui = NShinGetterBondDialogue.Last;
+    ui.Fail();
+    Check(!ShinGetterBondDialogueBridge.IsBlocking(model), fault + ": legacy loading guard was not released");
+    room.RefreshOptions(); // Actual native SetOptions body, including IsFinished replacement.
+    var option = layout.Buttons.Single().Option;
+    Check(!model.IsFinished && !option.IsProceed, fault + ": fallback exposed map return rather than native ending");
+    Check(model.StoredDialogue != null, fault + ": WinRun would dereference null Dialogue");
+    if (fault != "normal early return")
+        Check(model.StoredDialogue!.EndAttackers == MegaCrit.Sts2.Core.Entities.Ancients.ArchitectAttackers.Player,
+            fault + ": invalid native ending payload");
+    int maps = MegaCrit.Sts2.Core.Nodes.Rooms.NEventRoom.MapOpens;
+    option.Chosen().GetAwaiter().GetResult(); // Managed WinRun payload consumer only.
+    ui.Fail();
+    Check(model.EndingCalls == 1 && MegaCrit.Sts2.Core.Nodes.Rooms.NEventRoom.MapOpens == maps,
+        fault + ": selected native ending did not consume once or returned to map");
+}
+{
+    var gate = new TaskCompletionSource();
+    var model = new MegaCrit.Sts2.Core.Models.Events.TheArchitect { PlayGate = gate };
+    var layout = new NEventLayout(model);
+    layout.AddOptions(model.CurrentOptions);
+    var room = new MegaCrit.Sts2.Core.Nodes.Rooms.NEventRoom(model, layout);
+    var originalOptions = model.CurrentOptions.ToArray();
+    ShinGetterBondDialogueBridge.Get(model);
+    HarmonyLib.AccessTools.Method(typeof(ShinGetterBondArchitectSetupPatch), "Postfix").Invoke(null, new object[] { layout });
+    NShinGetterBondDialogue.Last.Fail();
+    Check(!model.IsFinished && originalOptions.SequenceEqual(model.CurrentOptions), "legacy intro changed model options while awaiting");
+    Check(ShinGetterBondDialogueBridge.IsBlocking(model), "legacy intro allowed premature native click");
+    var route = HarmonyLib.AccessTools.Method(typeof(ShinGetterBondProtectRewardsPatch), "Prefix");
+    Check(!(bool)route.Invoke(null, new object[] { room, originalOptions[0] })!, "legacy loading click leaked to ending");
+    gate.SetResult();
+    MegaCrit.Sts2.Core.Helpers.TaskHelper.Tasks.Last().GetAwaiter().GetResult();
+    Check(!ShinGetterBondDialogueBridge.IsBlocking(model) && !model.IsFinished, "legacy intro did not release input cleanly");
+    room.RefreshOptions();
+    Check((bool)route.Invoke(null, new object[] { room, layout.Buttons.Single().Option })!, "completed legacy intro still intercepted native click");
+    Check(!layout.Buttons.Single().Option.IsProceed, "completed legacy intro exposed map Proceed");
+}
+{
+    var model = new MegaCrit.Sts2.Core.Models.Events.TheArchitect { PublishLegacyOption = true };
+    var layout = new NEventLayout(model);
+    ShinGetterBondDialogueBridge.Get(model);
+    HarmonyLib.AccessTools.Method(typeof(ShinGetterBondArchitectSetupPatch), "Postfix").Invoke(null, new object[] { layout });
+    NShinGetterBondDialogue.Last.Fail();
+    Check(!model.IsFinished && ReferenceEquals(model.CurrentOptions.Single(), model.LegacyOption),
+        "successful native legacy line option replaced by emergency ending");
+    Check(!ShinGetterBondDialogueBridge.IsBlocking(model), "successful native legacy line kept input blocked");
+}
+Console.WriteLine($"PASS: {assertions} production-bridge/native-source-method CPU assertions; NOT native Godot/input/reward proof.");

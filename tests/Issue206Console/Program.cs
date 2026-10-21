@@ -69,6 +69,27 @@ var aliases = Parse("坦克斯", "解锁", "龙马", "2");
 Check(aliases.Targets.SequenceEqual(new[] { "TANX" }), "Chinese alias");
 Check(Parse("Architect", "status").Targets.Single() == "THE_ARCHITECT", "Architect alias");
 
+// Native EnterNextAct does not append an Architect map-history slot. Its last
+// persistent point still describes the boss, and this is not a normal map event.
+{
+    var id = new ModelId("EVENT", "THE_ARCHITECT");
+    var player = new Player();
+    player.RunState.Players.Add(player);
+    player.RunState.MapPointHistory.Add(new() { new() { Rooms = new() {
+        new() { RoomType = RoomType.Combat, ModelId = new("ENCOUNTER", "BOSS") } } } });
+    player.RunState.CurrentRoom = player.RunState.BaseRoom = new EventRoom { ModelId = id };
+    var model = new MegaCrit.Sts2.Core.Models.Events.TheArchitect { Id = id, Owner = player };
+    var terminal = new ShinGetterBondSession(model);
+    Check(terminal.Begin(), "terminal Architect rejected boss history: " + terminal.Error);
+    Check(terminal.MarkDisplayed(), terminal.Error);
+    Check(terminal.Advance(), terminal.Error);
+    var restored = new ShinGetterBondSession(model);
+    Check(restored.Begin() && restored.Encounter!.Line == 1, "terminal Architect did not resume stable identity");
+    Check(Load().Encounters.Keys.Any(key => key.Contains(":terminal:")), "terminal borrowed boss history identity");
+    player.RunState.CurrentRoom = new EventRoom { ModelId = new("EVENT", "NEOW") };
+    Check(!new ShinGetterBondSession(model).Begin(), "terminal accepted mismatched active event");
+}
+
 Command("TANX", "unlock", "RYOMA", "2");
 var pending = Load();
 Check(pending.DebugNextDialogues["TANX"] == "TANX_RYOMA_BOND_03", "request not persisted");
@@ -177,7 +198,7 @@ local.RunState.Players.RemoveAt(1);
 local.RunState.GameMode = GameMode.Daily;
 Check(!command.Process(local, new[] { "ALL", "clear" }).success, "daily mode edit");
 local.RunState.GameMode = GameMode.Standard;
-local.RunState.Modifiers.Add("custom");
+local.RunState.Modifiers.Add(new() { Id = new("MODIFIER", "CUSTOM") });
 Check(!command.Process(local, new[] { "ALL", "clear" }).success, "custom mode edit");
 local.RunState.Modifiers.Clear();
 local.Character = new object();
@@ -317,4 +338,26 @@ Check(newReleaseProfile.Begin() && newReleaseProfile.Encounter!.DialogueId == "N
 Check(Load().ProgressEpoch == ShinGetterBondSession.ReleaseProgressEpoch && Load().Completed.Count == 0, "new profile did not start at zero");
 SaveManager.Instance.CurrentProfileId = 4;
 Check(unchanged.SequenceEqual(File.ReadAllBytes(path)), "other profile initialization touched existing profile");
+// Feedback ②: no console mutation is required to initialize a cold eligible room.
+SaveManager.Instance.CurrentProfileId = 6;
+var automatic = Scene("NEOW", 0);
+Check(automatic.Begin() && automatic.Encounter!.DialogueId == "NEOW_FIRST_01", "cold room needed sgd to activate");
+Check(Load().ProgressEpoch == "v1.3.0" && Load().Completed.Count == 0, "cold first encounter failed to initialize once at zero");
+Check(!automatic.CompleteDisplayedFinalLine() && !automatic.Closed, "unshown line auto-completed");
+Check(automatic.MarkDisplayed(), automatic.Error);
+Check(!automatic.CompleteDisplayedFinalLine(), "intermediate line auto-completed");
+while (automatic.Encounter!.Line < automatic.CurrentLines("zhs").Length - 1)
+    Check(automatic.Advance(), automatic.Error);
+byte[] beforeAutomaticWrite = File.ReadAllBytes(SaveManager.Instance.GetProfileScopedPath("shin_getter_bonds.json"));
+using (new FileStream(SaveManager.Instance.GetProfileScopedPath("shin_getter_bonds.json") + ".lock", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+    Check(!automatic.CompleteDisplayedFinalLine(), "automatic completion ignored write lock");
+Check(!automatic.Closed && beforeAutomaticWrite.SequenceEqual(File.ReadAllBytes(SaveManager.Instance.GetProfileScopedPath("shin_getter_bonds.json"))), "failed auto-completion published progress");
+Check(automatic.CompleteDisplayedFinalLine() && automatic.Closed, "displayed final line required another finish button");
+Check(Load().Completed.Contains("NEOW_FIRST_01"), "automatic completion not persisted");
+long revisionAfterAutomatic = Load().Revision;
+Check(!automatic.CompleteDisplayedFinalLine() && Load().Revision == revisionAfterAutomatic, "duplicate completion committed twice");
+var coldCompleted = Scene("NEOW", 0);
+Check(coldCompleted.Begin() && coldCompleted.Closed, "cold completed encounter reopened");
+Check(Load().ProgressEpoch == "v1.3.0" && Load().Revision == revisionAfterAutomatic, "restart reinitialized valid release progress");
+checks += Bs2CompatibilityChecks.Run();
 Console.WriteLine($"PASS: {checks} managed assertions, linked production source; NOT Godot/game acceptance.");

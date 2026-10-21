@@ -16,6 +16,7 @@ import wave
 
 from validate_b130_core import block, compact, has, ordered, require
 from repair_star_slash_foreground import baseline as metadata_baseline, repair_document
+from star_slash_runtime_metadata import expand_document
 
 ROOT = Path(__file__).resolve().parents[1]
 REPO = ROOT.parent
@@ -32,6 +33,12 @@ PREPARATION_AUDIO = {
 
 def read(path: str) -> str:
     return (ROOT / path).read_text(encoding="utf-8-sig")
+
+
+def read_metadata(action):
+    document = json.loads(read(f"images/characters/shin_getter/forms/{action}/animation.json"))
+    delivery = json.loads((REPO / f"art_sources/characters/shin_getter/forms/{action}/delivery.json").read_text(encoding="utf-8"))
+    return expand_document(document, delivery)
 
 
 def card_contract(source: str) -> None:
@@ -111,13 +118,17 @@ def sequence_contract(source: str) -> None:
                   "PlayIdle", "_phaseDone?.TrySetResult(false)", "_selectionReady?.TrySetResult(false)",
                   "_ended.TrySetResult(false)", "_foregroundTexture = null;"], "Cleanup is scoped and releases waiters and cache")
     draw = block(source, "public override void _Draw()")
-    ordered(draw, ["NShinGetterStarSlashData.BuildWeapon(frame, _poseTime, _data.HoldTime)",
-                   "frame.WeaponCover", "DrawTriangulated", "MergeOutline(opaque)", "UpdateForeground(frame)", "DrawTriangles"],
+    ordered(draw, ["EnsureMeshTransform()", "UpdateWeapon(frame)", "_weaponCore", "DrawMesh",
+                   "_weaponLight", "_weaponOutline", "UpdateForeground(frame)", "DrawTriangles"],
             "Opaque weapon overlay then textured hand foreground")
     has(draw, "new(37f / 255f, 219f / 255f, 103f / 255f, 1f)", "Getter-line opaque green covers source weapon")
-    has(draw, "frame.WeaponCover.Concat(geometry.Blades).Append(geometry.Shaft)", "Draw curved blade plus tapered shaft over old weapon")
-    ordered(draw, ["DrawTriangulated(polygon, core)", "geometry.BladeLights", "MergeOutline(opaque)",
-                   "UpdateForeground(frame)"], "Inside-blade energy layer does not obscure restored armor/hands")
+    weapon = block(source, "private void UpdateWeapon(")
+    ordered(weapon, ["_weaponFrame == _sprite.Frame && _weaponPoseTime == _poseTime",
+                     "NShinGetterStarSlashData.BuildWeapon(frame, _poseTime, _data.HoldTime)",
+                     "frame.WeaponCover.Select(StaticMesh)", "geometry.Blades.Select(DynamicMesh)",
+                     "DynamicMesh(geometry.Shaft)", "geometry.BladeLights.Select(DynamicMesh)",
+                     "_weaponCore.Select(mesh => mesh.Source)", "MergeOutline(opaque)",
+                     "_weaponPoseTime = _poseTime"], "Continuous pose geometry and exact old union inputs/order")
     has(draw, "new Color(128f / 255f, 1f, 183f / 255f, 1f)", "Opaque inner Getter-line energy band, not a flat placeholder")
     require("24f" not in draw and "DrawLine(" not in draw, "Do not restore the rejected constant-width rectangular shaft")
     has(source, "Geometry2D.MergePolygons(outlines[left], outlines[right])", "One union edge preserves concavity, not old/new double heads")
@@ -129,9 +140,24 @@ def sequence_contract(source: str) -> None:
         has(foreground, token, "Foreground samples the actual frame region of the atlas, not the whole sheet")
     for token in ("_foregroundFrame == _sprite.Frame", "_foregroundFlipH == _sprite.FlipH",
                   "_foregroundFlipV == _sprite.FlipV", "_foregroundCentered == _sprite.Centered",
-                  "_foregroundOffset == _sprite.Offset", "CleanPolygon(foreground)", "Triangulate(polygon)",
-                  "vertices.AddRange(polygon.Select(Local))", "index + offset", "_foregroundIndices = indices.ToArray();"):
+                  "_foregroundOffset == _sprite.Offset", "ForegroundMesh(foreground)",
+                  "vertices.AddRange(polygon)", "mesh.Source.Select", "index + offset", "_foregroundIndices = indices.ToArray();"):
         has(foreground, token, "Current-frame cache keeps source ordering, transforms and indexed geometry")
+    fore_mesh = block(source, "private PolygonMesh ForegroundMesh(")
+    ordered(fore_mesh, ["_foregroundMeshes.TryGetValue", "CleanPolygon(source)",
+                        "polygon.Select(Local).ToArray(), Triangulate(polygon)", "_foregroundMeshes.Add"],
+            "Native foreground triangulation remains in source coordinates; local vertices retain exact UVs")
+    static_mesh = block(source, "private PolygonMesh StaticMesh(")
+    ordered(static_mesh, ["_staticMeshes.TryGetValue", "source.Select(Local)", "CleanPolygon(local)",
+                          "Triangulate(vertices)", "_staticMeshes.Add"], "Opaque source triangle cache preserves old Local-before-clean order")
+    transform = block(source, "private void EnsureMeshTransform()")
+    for token in ("_meshFlipH == _sprite.FlipH", "_meshFlipV == _sprite.FlipV", "_meshCentered == _sprite.Centered",
+                  "_meshOffset == _sprite.Offset", "_staticMeshes.Clear()", "_foregroundMeshes.Clear()",
+                  "_weaponFrame = -1", "_foregroundFrame = -1"):
+        has(transform, token, "Transform changes invalidate all local caches")
+    for token in ("_staticMeshes.Clear()", "_foregroundMeshes.Clear()", "_weaponCore = Array.Empty<PolygonMesh>()",
+                  "_weaponOutline = Array.Empty<Vector2[]>()"):
+        has(end, token, "Sequence exit releases bounded geometry caches")
     has(source, "Geometry2D.TriangulatePolygon(polygon)", "Use native triangulation, not repeated CanvasItem polygon failure")
     has(source, "RenderingServer.CanvasItemAddTriangleArray", "Submit validated indexed triangles")
     require("DrawPolygon(" not in source and "DrawColoredPolygon(" not in source,
@@ -183,7 +209,12 @@ def data_contract(source: str) -> None:
         has(source, token, "Reject incomplete metadata; use weighted frame durations")
     geometry = block(source, "internal static WeaponGeometry BuildWeapon(")
     has(source, "(point + origin) / textureSize", "Frame-local pixels are mapped into the atlas region")
-    for token in ("frame.BladeCover.SelectMany", "frame.HandleCover.SelectMany", "step <= 18", "step <= 8",
+    projection = block(source, "private static WeaponProjection ProjectWeapon(")
+    for token in ("foreach (Vector2[] polygon in bladeCover)", "foreach (Vector2[] polygon in handleCover)",
+                  "(axisPoint - grip).Normalized()", "Math.Max(32f, root - 8f)", "width + 12f", "Math.Min(-90f, tail)"):
+        has(projection, token, "Static projections retain distinct blade and handle source roles")
+    for token in ("frame.WeaponAxis", "frame.WeaponNormal", "frame.BladeRoot", "frame.BladeWidth", "frame.HandleTail",
+                  "LobeSamples[index]", "step <= 8",
                   "Lobe(1f, 1f, -1f)", "Lobe(0.8f, 0.82f, 1f)", "t * t * (3f - 2f * t)"):
         has(geometry, token, "Shared reference-driven asymmetric Bezier blade / smoothstep tapered shaft")
     require("BuildBlade" not in source and "hull" not in geometry.lower(), "No rejected convex-hull placeholder")
@@ -193,7 +224,10 @@ def data_contract(source: str) -> None:
     expected = [point for segment in profile["blade"]["left"]["cubic_segments"] for point in segment]
     require(expected == [point for segment in profile["blade"]["right"]["cubic_segments"] for point in segment],
             "Same interpreted curves with asymmetric length/width, not different unreviewed lobes")
-    controls = geometry.split("Vector2[][] segments =", 1)[1].split("Vector2[] Lobe(", 1)[0]
+    samples = block(source, "private static Vector2[] CreateLobeSamples()")
+    has(samples, "step <= 18", "The reference's 18 samples per cubic remain exact")
+    has(source, "private static readonly Vector2[] LobeSamples = CreateLobeSamples();", "Reference samples are computed once")
+    controls = samples.split("Vector2[][] segments =", 1)[1].split("var points", 1)[0]
     actual = [[float(x), float(y)] for x, y in re.findall(r"new Vector2\(([-0-9.]+)f, ([-0-9.]+)f\)", controls)] + [[0, 0]]
     require(actual == expected, "Actual production Bezier controls match the reference proposal exactly")
     band = block(source, "private static Vector2[] LightBand(")
@@ -274,8 +308,13 @@ def source_checks() -> int:
         (sequence_contract, SEQUENCE, "Geometry2D.MergePolygons(outlines[left], outlines[right])", "new Godot.Collections.Array<Godot.Vector2[]>()"),
         (sequence_contract, SEQUENCE, "uvOrigin = atlas.Region.Position;", "uvOrigin = Vector2.Zero;"),
         (data_contract, DATA, "(point + origin) / textureSize", "point / textureSize"),
-        (data_contract, DATA, "frame.BladeCover.SelectMany", "frame.WeaponCover.SelectMany"),
-        (data_contract, DATA, "frame.HandleCover.SelectMany", "frame.WeaponCover.SelectMany"),
+        (data_contract, DATA, "foreach (Vector2[] polygon in bladeCover)", "foreach (Vector2[] polygon in handleCover)"),
+        (data_contract, DATA, "foreach (Vector2[] polygon in handleCover)", "foreach (Vector2[] polygon in bladeCover)"),
+        (sequence_contract, SEQUENCE, "_weaponPoseTime == _poseTime", "true"),
+        (sequence_contract, SEQUENCE, "_meshOffset == _sprite.Offset", "true"),
+        (sequence_contract, SEQUENCE, "_foregroundMeshes.Clear();", "// stale foreground"),
+        (sequence_contract, SEQUENCE, "mesh.Source.Select", "mesh.Vertices.Select"),
+        (sequence_contract, SEQUENCE, "_weaponCore.Select(mesh => mesh.Source)", "_weaponCore.Select(mesh => mesh.Vertices)"),
         (data_contract, DATA, "step <= 18", "step <= 1"),
         (data_contract, DATA, "new Vector2(0.36f, 1.18f)", "new Vector2(0.36f, 0.3f)"),
         (data_contract, DATA, "outerPoint.Lerp(innerPoint, 0.28f)", "outerPoint.Lerp(innerPoint, -0.5f)"),
@@ -350,7 +389,7 @@ def main() -> None:
         with wave.open(str(path), "rb") as audio:
             require(audio.getnframes() > 0 and audio.getnchannels() in (1, 2), "Nonempty PCM preparation voice")
     for action, (count, hold_source) in FORMS.items():
-        document = json.loads(read(f"images/characters/shin_getter/forms/{action}/animation.json"))
+        document = read_metadata(action)
         repaired, _ = repair_document(metadata_baseline(action), action)
         require(document == repaired, "Only the six native-proven foreground repairs may differ from b5 metadata")
         delivery = json.loads((REPO / f"art_sources/characters/shin_getter/forms/{action}/delivery.json").read_text(encoding="utf-8"))

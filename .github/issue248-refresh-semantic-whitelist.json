@@ -1,0 +1,582 @@
+{
+  "formalTag": "mod-v1.3.0",
+  "formalCommit": "26c8da9a907fd9e12d41bf5bf17d24ca5975bfa8",
+  "betaBase": "dce78bf472ca678b8bac042e878489d48014e83c",
+  "productCSharpFiles": 348,
+  "apiOnlyOrNativeReplacementDifferences": [
+    {
+      "path": "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs",
+      "reason": "111 synchronizer owns mutable clone: canonical encounters in, CanonicalInstance comparisons",
+      "formalSha256": "9811b9c9434b0f0b0b3cabdcc63245cbc7c940c4c685869fc79d19fb2b48d9ed",
+      "betaSha256": "835fabdf56626c769033195e6653d354c0725a82c3a772adc25a31c15e6c8f40",
+      "normalizedSha256": "9d13670d67b74007c8edf12d3ebe70680c0bbf0dfe7968c7a63c8d485adfa9c0"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/SGC_Annihilation.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "24548ec1dceb007be2bbf87f056cd18713fd542457309f41b080938669bbbc59",
+      "betaSha256": "03ef1ec863bbfb3fb6f8e99715377d348059cb6aba3df55d91981e67fd0128c3",
+      "normalizedSha256": "53392386b19a72530a22568452913aeef9a89d5697e469569e318605e5a5b37b"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/SGC_Avalanche.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "1b0b5745d5f85e7e4e7003a07fff20a9d21c19edb9a83bdb2eda9e7cb1634f03",
+      "betaSha256": "5379587b6b0a9adfdf78f8741bf5bd0d1f1e97bae3f855aca52b6c2a1fc19263",
+      "normalizedSha256": "bc0ac73ae434f761d91323a8422faee6549ed6dfba05e190a32c851a8e4f849e"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/SGC_ChangeAttack.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "ac5f26b346e7c5433c493fff9b567e5042a6aeb6502455013c51e0f5452ffb51",
+      "betaSha256": "f58fde287df31e13118b8673c0478fefa6793f9915cccba1dba98f86b3a86996",
+      "normalizedSha256": "7023cc68e357fbc95e15062ece3a54994651d0d4bddef718e622586b76f00c82"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/SGC_DiveStrike.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "de9db22649932451739ad9ddfb83f60ca1846acd5e6da7544bcf1918f258a6e8",
+      "betaSha256": "c2cc4c16506a9b26d3b450321b1327ce236d9f284a0c74a808286e91c060d8e5",
+      "normalizedSha256": "71dd237586dbf15e71413d2f1b51303ac032b6f9807bdcab1f85f1f6d1ded843"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/SGC_ExpansionStrike.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "6016fbc63a63b632df2cafb7bbf8b5ece095e83304c2a5071563781a8dd9479b",
+      "betaSha256": "6525741ab122a87bd4e5ec850278e187f2db7ce59ad3c9c84247511528a493d9",
+      "normalizedSha256": "106b6b8e446b5cb8d6ce2d85bb3f54508a21e195886eed49dc97b205b8c1f49b"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/SGC_FinalGetterBeam.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "c47e23f3f5419242bad813ce32799049bb8fc0a916c562db51c9ec247f863678",
+      "betaSha256": "8d91cdcdf129a846da1ca5aa3029033f57eb52b2da8150bb556a5f3366e986e8",
+      "normalizedSha256": "fe5c525fb1418940cceea6fe25c1cf4a9a761de41cf487dccf7d9a55d21efe27"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/SGC_FocusFire.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "0ce95731790e283f58c012393103b61ebd4450d47b1ba69f105e72452e9bc538",
+      "betaSha256": "316a3fe71c81ecdfbbd33ce34eacef3e24c47f934e6d4e2e10ce745bb4b9b649",
+      "normalizedSha256": "a6d6a2725f2ea37eec3b061c985297993823c1ee306741f5c8b289a7a26681c6"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/SGC_GetterBeam.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "fad5a26a8c856437faf059b34122617353cb1cd0264500a517d1faad5afaa6a2",
+      "betaSha256": "2f67c69144e602b8d5d571f7b1f6963e513c1e21d538884ea34460e9abfb7ed5",
+      "normalizedSha256": "e3081ee2f27ed15fd185ccfc74b99396fac8a10e79d7cd814312416e5c670f7f"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/SGC_GetterChop.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "22ff1aad8f80fbd0c8615ef539a71bb47bf60198863f33ab4da89acc98872eb1",
+      "betaSha256": "ccb648d102eaae4e5602274e85f0aa37d3e2adc36454544f6e7cff91ced1acd5",
+      "normalizedSha256": "97faaeaeaeba24f334b6f1340b02d839444edfced7a8d9d3d2847478427a3405"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/SGC_GetterClaw.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "b3012fef582e9b9d8dc460fa97361604b618995c0ac373b96a3958a5cb76ee66",
+      "betaSha256": "f7311234e099126bddae409741a068b8dc4c52e3e43a2a633380ec9e3488bdff",
+      "normalizedSha256": "0c5060d74114c6481bcfa25efacc8d629ffcf342c965eadc86112f88bbf9e534"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/SGC_GetterElbow.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "427fbda3ae96ec4a217c8fbefec261f599baf35b7f15501286320210da9aa3ed",
+      "betaSha256": "0313e49b247d8d11641a875faf8eaca9c24cf64ebdf0c15c42e8c7fc8cac8115",
+      "normalizedSha256": "fc8f323d6b044ad55653e3b99c80e1f41548ad718c0badf2f3c2e65ef904aaf2"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/SGC_GetterFlash.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "e8743f184b05375a9aaf36f907faf3398cdc156fa47eed0eb7297cb8898d242f",
+      "betaSha256": "8c5e50d493e57e7e85186d13ea9b1e45eb247e46fdc883cdcb1564ae3e65b00a",
+      "normalizedSha256": "e7a4e4ceeb43bfd007af9677ff55db87dd5ffbfeeea98c7d9dfd054b16c7762a"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/SGC_GetterMissile.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "f72eef1905be12ef39958847b2a9499ed7a87949984319ca077d13f326ea6249",
+      "betaSha256": "9d5e6350371485e0197c6c5e954b39c1cc4f70c2f4f65bc4e0285066ef74413f",
+      "normalizedSha256": "566f8f61b0d40145539c5e05e9c82a3f81ec56a9d47309f3c9e25e100143fd70"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/SGC_GetterRush.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "af104fc46b725497925d430662755c89be02b805f69109e431e58218227e81d4",
+      "betaSha256": "9a316dc5ffdc33b560582c86ee25c344ae5f22ad12fc37171fccbd694ae816a3",
+      "normalizedSha256": "3074a452dba9010edfda8cfae26974bf196e0ffa6717154edb5fbc0baf7577b6"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/SGC_GetterTomahawk.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "526f40a96610f0740327370953ee5b1bace8c6ca5a0b0d3e2703be1394f2f966",
+      "betaSha256": "b5f787dc323f805051e74a3e1310fd8ea800d80db6297d0c3e93eb76749eff42",
+      "normalizedSha256": "13fffc002a5a406d67636cad0ad9e1ced21a87a2fb196058e3c7f4a44b0efbc2"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/SGC_HotBlood.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "a448818bdb2a65d06fcbe961ad2974efc10a977471268105a12164f7783d58c6",
+      "betaSha256": "c545408c1b9b91b226401e3389ffc82e5e735b00c1437d8984c921173ac0181e",
+      "normalizedSha256": "7f163746a547e15ca281e5ff1603b9922616765b15ca42ead95b23d15abd6d64"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/SGC_HurricaneStrike.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "c4ca12ccde396c55a8d48842555cd76469bc9e308a440640e3c274d41e23a228",
+      "betaSha256": "43f0b5ea6883f1b2c7d61f7f940c50b9acbcbdc50ea286c70c7d5f5ace22cb54",
+      "normalizedSha256": "5b6f023b25477f97f9ad5aea8f9a249749fb059e7a1798e0118e6d5ee8ec7662"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/SGC_LigerAssault.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "d62f1447f8bea30dd35de3c5f479b8c55378815d99f68163a91ad6fb10a674a1",
+      "betaSha256": "8e24f63c1891af2cb582c91bcb48b06971ffcd7cb974d272f952c0a6f349b015",
+      "normalizedSha256": "f96bc7e731e85ac8f2972458e9612699be526db33d8dfde54b59317a4308e36d"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/SGC_PetalBreakthrough.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "77190c0e1acd2f7ca93ce126cb6bca7336ad8d5485b9b5008356595cab147c95",
+      "betaSha256": "43def10cae9b1417e27ed0ea2401a48b1bcc88db4aa09bb31b6d72b613f43817",
+      "normalizedSha256": "69ba48ad1b0e163645d3b9420afe9c000c4818b94c08e20ed0e5ea10d067ae22"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/SGC_PoseidonThunder.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "fba4772fa7ee845b40d1ceea00cc3389f329f2027be0e7c34944e7c88bbaeded",
+      "betaSha256": "829d4fea41545f522cf6be8ff52bb21868b73d6e9ef95838ba90f0bb1f1ba181",
+      "normalizedSha256": "c436374e97f5b92e8f7f6cb22cb3c98e8095aac5c344d5d18e1b3bbb05bc886f"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/SGC_Radiated.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "8ceeecc6566da8b04d3d8b43f384758461b981ebcd02f70d4dee8500ca774d36",
+      "betaSha256": "00bcfde3c6b4bbecaeabc3f94c97ad1bae8e1b7c8a2b6989bcb5886979948279",
+      "normalizedSha256": "3ec39209dc42d90cb3e35b8984ef79394a6295ec5bce1d71280d2474cd3252f2"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/SGC_SaintDragonRoar.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "cec52ba2b7ec458500267986b8f5069bc49c1317d285c1aa325fee83da0e3d3a",
+      "betaSha256": "45cc42ac12d95300dc402d4abdd25efd26bb759a8d2cd5a95f117d0350f7548e",
+      "normalizedSha256": "b50fa0ef9930f82469a1974bf3b8930aff77161c48b6391abcfeb6e444228502"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/SGC_ShiftStrike.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "a7f7994b5221f87f533ff457bf48ed5569210a4af75400478943ac860cd23f22",
+      "betaSha256": "a578ab48f61e7302670efdc2fc0aaed07a702cb7cfa0e7d56d5429ea1c030177",
+      "normalizedSha256": "f6ffd05f6c79dbb00bbab41ee8b95c4553fcfed0123cc8cb2311ae771f1be6ec"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/SGC_ShiningSpark.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "b033993804b4fafd905edd340ff0a90f1c8b04f1a1d41e287e1b1a9855d08a4e",
+      "betaSha256": "16f2784e2371b1b5bb06af7c239f87fc26ec3eb6bab6984bbc88535215cc2328",
+      "normalizedSha256": "8a98216b913847701dc441d4786fbb50068c3044434f768338c2050111afe4db"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/SGC_SpiralDrill.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "3ec642b7a3c951f832aa5e94a163ab2ea58e1f9170c4c32937fb0d5fd6cc79ed",
+      "betaSha256": "b598e419af5be5f5d44f3673cfff67c85e50618ab8fb80aae9bccb12d4f33d21",
+      "normalizedSha256": "54126f7ca52c21194e9c5de82372a4897c3a4d99de7011c5abd50fb76143530c"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/SGC_StarSlash.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "af800628f313cbd8bfff9215f22b10af4a511275d0e796d3be3e1c610a2a45ca",
+      "betaSha256": "f18a030cdfe76fb4d356003466bd199b8cfaf4a2d3cee9c33ac36fb844d8b274",
+      "normalizedSha256": "258e20f04cfc1bc385824540faef059bbf9bcb023ca45fce670440a886c569ec"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/SGC_StonerSunshine.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "fbc47810d6c65633a6719414f227e8cd0e8644d29cde968e2e1284618a01dab2",
+      "betaSha256": "121abea681e94e04c2996beecaf7271638d68f5d1baeba9ac576728aad89fd3f",
+      "normalizedSha256": "2bff25b243dc7cebd921990d4594e9756aaabe29129b6f5bb8a954014b929a62"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/SGC_Strike.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "51aef83faa2fbe302c40fcaa46119eb700151e4c37a2cbadb5252e68a561c421",
+      "betaSha256": "fc37c7b82a35dde30ba5246f8ce7bd7321545aa174cc924ae60b33ed3d78e182",
+      "normalizedSha256": "4a4c8e8eb5e2e3d58d1a6f26beaa340cf97983e4d035f68f0bb75db7c8848bcc"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/SGC_TomahawkFury.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "a9d6f656bc0d8aa86de3a93afd1b4bc7b239fe200041fcdcb497c5beb8817ae1",
+      "betaSha256": "3e7b965cd16eaedd4d15bf874d6516209a4d5bd3a05068d07c52197fe7d0db60",
+      "normalizedSha256": "9bacc49ed1a0ca5379ff97cbbc421c3227d080e81cd899595a6fc939891c0c73"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/SGC_TornadoDrill.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "6bde2f9c4393fcb28ec2de6258a81fc6f3b38dcc11b16382cdb9c61d9237cd00",
+      "betaSha256": "69e5ef50d72f7974acdf80a68256ce6044e6b3f73a540849eeffa368c9c13b55",
+      "normalizedSha256": "a454226fa5b895960057d67851bc5d316b7b9888f28f2e75c155a6391bfa402b"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_06.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "944aed42cb080f0ef1ecc67d9ec8f763797b61650f066669707f360fb97856a8",
+      "betaSha256": "34f46b84236cb91c03a1a5af5cdc26a5e3629b1732fb0e45d8d8178b1137e129",
+      "normalizedSha256": "41772bae969c7e5ec4993f3c94dc3b31689375347c4511147f6ff4cd9004d96c"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_07.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "c7db80056da811504b423f92eae772302f4e87587325101d03209843b60f928a",
+      "betaSha256": "15e3623d7da0662ff66eb6ede614d36164d6be55f9a09dd0da88dcfc90947f16",
+      "normalizedSha256": "d484319082985659b00a32df8c8bf905b5827d37c80b455edbf181cd721443c8"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_13.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "f9d6ad154d657921a5dabc76fceb6379722669549e447918a79197a2378adfee",
+      "betaSha256": "49323bfd7422159e0de6de560a281a275c5d8681622d04e2f47e26a33d2a977d",
+      "normalizedSha256": "d24066c4de5b5295611cdcd3ccf513779c7b4c5a84a82749b2f8facf750156c9"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_14.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "c1c2f325949f67d6822ca1dd089794ea31e2d83bb072953ef45a93b5b2f19c8c",
+      "betaSha256": "a2f819801e2170bffb6139cfef77475b987f92ed006e649be89b26dd89afd2b0",
+      "normalizedSha256": "e12693cb4bc91d57b03239c39247513d3e7f2906031ecde5cabadef7c3afbc0b"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_18.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "7192e0920635416c6c3b561d1efae45e55adf75eb6eb4535ff82ed9dd9ba711e",
+      "betaSha256": "a9a1429a551465f1cd5cd68ab317bbdfc11853df6c7629da16e897eef03c7bcf",
+      "normalizedSha256": "37621058863268c406cc15335ef36203b5bfd645ef220cefc602618882b29513"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_21.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "c0230197fdd612c1d03b764cfc4dff489e7c17aa134e7b55e514f5d93debaf26",
+      "betaSha256": "85dc0eab33dd21deee0668b2a0c3645d3afbde0d6f22a1612a6b790ae856a1aa",
+      "normalizedSha256": "fb918ca3da82b35c11009bc33d7dee1f70cc2a40ade29244a3a60377d12270ff"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_22.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "21b5db770606e0e2e7b0c6aca1c8943f414f8cf3c4a123139b1ca859a9f2499f",
+      "betaSha256": "d2e5c4aac097a958e9c79a5f1dde3e1e7c43f673b8ad3c43e449fd9c4c377cef",
+      "normalizedSha256": "1c423f05094f41a3d0672231b1659ba17ff1fea8e2cc8d02347b7ea7d04b5630"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_24.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "6996b92d9130d43f70f2185e6c5bfa6346f7f3e81bc191890f8fee2b0a3d9cfe",
+      "betaSha256": "863ad1097ec54bb38dc10f1a1c0dd83b3af8ce28d6a53baee3adacaa30870abc",
+      "normalizedSha256": "11e843402bcfd0281ef90aa2bea023de07aa3d26c7d925228ceeb86f736e82a6"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_27.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "9d730d3669563e58d52e6564ba04de22abbfc3efdccbb45a9be8ba1eb43388ac",
+      "betaSha256": "c41074165883936e3c85b0fb54cba3cf3cd063b702f51fe6aaa601ec598fe080",
+      "normalizedSha256": "b5075279005c69bca60b4a062fd3b175d352b2f0992b05956ce70c62f670bada"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_30.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "ad1470e13c384b93d5e86b1640e97a9600a6c1be31c1728c240a31c480b54126",
+      "betaSha256": "4e7a03bcb2c10d651d38fe052b6ce41f99cf7db69b95e4d38a7fd0b1f0f72377",
+      "normalizedSha256": "b520cf862e13f24a74387144c6fa76de8c21eee2726ab17fcc73cba0ba58e7bf"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_34.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "d3f3fc7d00275bca2f2f7b83a2fbeb9e47b053a247cfa699616ffc8268eac454",
+      "betaSha256": "0af2fcc993b3fe52e04fce43e3e8b7c10c074beb34f37e4eb37a0a80830c804c",
+      "normalizedSha256": "d54152268055e1d839a972abf1f917afaab3de718bd5d773f38a01bedff50f04"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_39.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "005fe2735c7e46230713f3a806ab350fe66c3e5c605d5960e68563e506ec9f3b",
+      "betaSha256": "1666083e04318a19bd9bd780cd3a1ead1d71ed87ddfee2c373009ed21e46c2c5",
+      "normalizedSha256": "cb1c9655f8cbd25087e713f001de639cd90bcd658b3d9c284a5538be416266c1"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_40.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "4cad4792e0f2e20700c6a9c76d6cb321c765e665bbf2a430f9a0802a66487d6f",
+      "betaSha256": "02016228e28375fd219d6d7e1682d42505ffcc0e7d3241ab9d0861dbcf466260",
+      "normalizedSha256": "85b348d24f563ca81a47d9fd7c7c2c6715ee2565e8ee8d94e2f39d34b71254f4"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_41.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "a0befb05337de6dff9c0c036602715999fad50fb1ea114c7699297c4ace31f0a",
+      "betaSha256": "61fec4361399b5d582567481c01d9096b143b624d8e8a3b057f6fc18d65afe4a",
+      "normalizedSha256": "ce6a2788293d43eb2425bb80b7292ee1b26f3887354bf67acf74534bb5f0220f"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_43.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "dd5163cbe2ecd980a521f50157b307c4c6dd6670b23d6de7ceda63fb26f6d54f",
+      "betaSha256": "79fc65dda5beecabf918316347f7f956531eec3bc28f3ad4721b2f30f1d17a4b",
+      "normalizedSha256": "5ea6d8e01b1123b2938fc983ab85b9d0a19ee304fc94ac04f266a0c144e61e99"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_44.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "228728a79724f4133a163df793ae001aaa9429be504428e3da6dbce5dbead866",
+      "betaSha256": "ecdf4220eb2c9c9c4b3c1fa41423a4b46c264991a6dd55a82639a68d0e4d2252",
+      "normalizedSha256": "9db44bad821077d5216f657cce502381765de6fa201b68ed588d427cd3c9af8e"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_45.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "ac95749687056066b049a5433599e043cf070e421617fdad8f5e71e036c1e11d",
+      "betaSha256": "3a35388657342077ab0939645c897507aa0be4499c0a69338439272244e85305",
+      "normalizedSha256": "38479946790b16c26a3fbded0880276ee652ad4bbc9d1fc5902c8a28a0b7a853"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_46.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "0c6c596d056274ea37282646ffe56503428ce9f75238bf1bf3d175578ff898d6",
+      "betaSha256": "2677d49c4b6218f594f17162df61c3f21ac16eec031e8c0be952523f8ef544aa",
+      "normalizedSha256": "b58d1208c24e7900b425f7f7a35a006596a9ad2ac5818def2384cd7f53b90024"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_49.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "7a18b412620d7c8d68206b21bef9562c5cc79b7f14cf5375cea9ea4c155a4ccf",
+      "betaSha256": "a7bf2ba7d305c3a0b7d8a7ccfaede14a2beeed16610bde9cf3d6e4119ee16084",
+      "normalizedSha256": "6b8a78c5909ecabb2802bf90487944f4d6b64514b19acd67db74ed520ba98f47"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_52.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "d4d2799ad89f7a2b8cb057438d822e6fe393ddad61db9aad2e754517b5596b2a",
+      "betaSha256": "5743e45d5711813bf3518bda60656d6fee1cd73e7ed7084489cd60b2c6b8e7fb",
+      "normalizedSha256": "fc1abf59c50d93480d44f6c38e185960bfe9d2ab8d74b91fd7584844c7efdd80"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_53.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "d7bd716ecd8197a66eea46751e5b9b32901e4c81acc44c7f5fd76f62a45abf11",
+      "betaSha256": "e2aa77d0a46258676ab39c4e2c7c2834d0ca82db38f7e99b563020cdd33185ef",
+      "normalizedSha256": "eb2f43672bd8d44f0d629281fb69c29fe70f538c0d3eb77512396318de1e72c5"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_57.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "d369a6518224b76c8215bd58e19e8c6509239bc66cedb433c6a162eaeebf2345",
+      "betaSha256": "497d2999698776e3e8d0e35042b73b9624c4162c304974a2e6be086608864d9a",
+      "normalizedSha256": "d0f7501cefa1fecfd5110fc244576f41d5273442a3de39a27c8e44a731cb99e4"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_59.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "4a0e14e3dccefb5d44b2b789ebff3d4a415e1d96671cb8131f3d537afb6d6df5",
+      "betaSha256": "a1aeaaee0ec803509dbec968fa44ee01f18bb2a7a770fa935c357a40107083ec",
+      "normalizedSha256": "1b717fb79014623a58769e83f0e6e58329d8b0dc1451ccb717d3b454d233ad13"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_61.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "95269ce326a0b15ad90fc10deba8298d6059c081ea07152926da8ff666354c00",
+      "betaSha256": "5ecaa5f98f42e8d23bc3bf54083320d6783d5189317a20fbd23284c35abee8e9",
+      "normalizedSha256": "9dce486d890bed21a42db2f87b420bcd4d3f1b7d3b6b45a7130a6d155ef2c668"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_67.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "a11ef48c17b195f72c3bd5c836eee25f42bd8a40b71a63d1ef962548e1e96ea0",
+      "betaSha256": "4fed8972df4b9998ff9dd994086d1431a26e357fb8dfb0e9e4ba507aa6bb5e06",
+      "normalizedSha256": "df65aa78ef016b2b9a1ac2c3ba58e3aa2fbfeeffcb47619d782a6e8dc063bc9a"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_68.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "14efdc2137f4112ab5579da1bcc29c42a74b9f9221a0a418e759a32accbf2674",
+      "betaSha256": "e8a91e76c0e8be7819053f677c954798aba218f3df22b1cdfc678b75ac811175",
+      "normalizedSha256": "10d08e056480a83daeb5a56c0695ff322656b62ff225f8dcab79ccfef4b65354"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_81.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "9ac3eb299dc0f1abd8c2c330eb0ba5d695a8901737bce7c3c760e4a973de01cf",
+      "betaSha256": "542b6ab2c465b52447cbfad6ffa9723e1ef842db40ebaa5beeef6f69e34bf928",
+      "normalizedSha256": "6ead0b5842451e41136dd0049b64dfd61bc390fcad70d49ab426cb5e7034b04f"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_83.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "a4a1798f1b61e60c0dfbb8a0503fc863bbf9ac42b4147733fcf8f6127142a37f",
+      "betaSha256": "e090f0903440817d57dc188725d51a2a49b2e4799c58942f5fb68d29f6f4dcaf",
+      "normalizedSha256": "779d3d96b8755fab266c8d6db2e3a0b2f159cce88aafecc1659b0bc346c35c35"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_87.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "27ccc23ab30611aa6055f248fbdef2b601f093e8dfe92c0816e2de81db3c032f",
+      "betaSha256": "2de9d52b38e311a44c99ad0dcdd57760a67077bacb2a2d83048435022cb1f414",
+      "normalizedSha256": "ef0dc16d6bc56d9365c72f6758cf5f54ea7be74fc017e145c755da503ee3eb94"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_90.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "a59da945ed1dfe56fb8e5bf75bfb2f3391abc138c87505d6b7aba853ed412a2a",
+      "betaSha256": "c6134865c11f4fa0ba255c4060d356427dc05edce7dd924ecd1d71298565842c",
+      "normalizedSha256": "8a2a6f886ee9f45c18b3b94a9f4c9c0bda617893ea2433efaf31dcf8e1493696"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_91.cs",
+      "reason": "111 CardPlay attack propagation; GetterChop also retains choiceContext/remover for LoseBlock",
+      "formalSha256": "0c667d3c4e997b7637a8ae5eb07e9b205c330e6de52de284333321c7912637e3",
+      "betaSha256": "7da21cce53b292793c5630417422acc972bff45f54cfd23775aeccd74ff7b8fc",
+      "normalizedSha256": "0cf4e1e6b7479abdc1d4fe5d6e7b93c5e4f165fb88195a1bc97c2a49719bffdd"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Characters/ShinGetter.cs",
+      "reason": "111 GenerateAnimator(MegaSprite, Creature) override",
+      "formalSha256": "6d46b749a21c6a1412d15cc397f29f8c4d78a7af3a4704ddbabde689294c9d85",
+      "betaSha256": "bf64067c84c639f0e646b004ed9accdda960f67926c6be4cb4a561df154dc7eb",
+      "normalizedSha256": "93e1d385c275a69c29c2763bec667d2d0ad027099af42b8439aa005d1a131940"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Enchantments/SGE_Adaptation.cs",
+      "reason": "111 damage override/direct-Damage CardPlay context; non-card sources explicitly null",
+      "formalSha256": "f25158a8e75a98f0112706496831f53acfdb250b17359c8547c96384d6adecd0",
+      "betaSha256": "0e474c206c5d9a3aae71f94aaff5fd0d5b13010605b227b443b65205aa6efe6f",
+      "normalizedSha256": "f2004f5b7f45fce08ad36c842fbb5aa095e6a321f22eda2a5a0a7b302c48948a"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Powers/SGP_Airborne.cs",
+      "reason": "111 damage override/direct-Damage CardPlay context; non-card sources explicitly null",
+      "formalSha256": "cad57e3227bbed31a23c3ec0d4489a2aea32ff952864a084ddece117e2dd88b5",
+      "betaSha256": "4021a048dc95804bcf706b4ae7bcb289f2acece8b086c2ff89fbd36d6d98c39d",
+      "normalizedSha256": "957008a6d3888801e8e20e9bf268c979201f36c74c3d90544a68b2612d2b089b"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Powers/SGP_FightingSpirit.cs",
+      "reason": "111 damage override/direct-Damage CardPlay context; non-card sources explicitly null",
+      "formalSha256": "2703d5683ec8c295847c6c2fca843929a8f747a16024ed0b7fe94c7acdfdd1c7",
+      "betaSha256": "d321d7bda7898c01a1765fcd3b1b7ac7bb1ada0ea165d4bfe12e7724c51b8c9c",
+      "normalizedSha256": "2ca50bda1723474e318926a88ed55c8e6af65199e4c6f2eb4d1c29f4fdb56c95"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Powers/SGP_HotBlood.cs",
+      "reason": "111 damage override/direct-Damage CardPlay context; non-card sources explicitly null",
+      "formalSha256": "81386c82131c62342cc0c911406138acbc4ff49b9578a7e94df4eaa8db7d42ae",
+      "betaSha256": "8d4d818587cd749f3b270a0d09dac4f0e7a5c75d518c7c2b4a627bb18febcad5",
+      "normalizedSha256": "e5069178b8817d47fa03ad70813b560294befd6ebc2b69194606588b5b69ba19"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Powers/SGP_IronWall.cs",
+      "reason": "111 damage override/direct-Damage CardPlay context; non-card sources explicitly null",
+      "formalSha256": "f69d9b27242c1dab7b520e418ff119a655bf4583bca4a71d58957fe1921f32c6",
+      "betaSha256": "d678584c2fa2f1c07a193c5e05d6c27cd9a6c148cf13c0cd5e097cbd68d3c95a",
+      "normalizedSha256": "cc42ef3989528a5dfa86ffa3cf2acfb04636a5f8464f34a8fee76637a937ed4b"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Powers/SGP_Ki.cs",
+      "reason": "111 damage override/direct-Damage CardPlay context; non-card sources explicitly null",
+      "formalSha256": "2587f1ebe8b4093d0b3059ee01d75f284f11f6557a5f7caa81ab189606be648b",
+      "betaSha256": "027491c247fead2b48ad4b78160d743a7e38c79892e16aed34620725019e054d",
+      "normalizedSha256": "f1175f79011794925e17a3acf57c2744ab3e94606cbd5ae30aa08025c957de3a"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Powers/SGP_OpenGet.cs",
+      "reason": "111 damage override/direct-Damage CardPlay context; non-card sources explicitly null",
+      "formalSha256": "5c6820722440942ef0a9e417f184478426725ae7bd6c7d06ffe2c06ecbe98320",
+      "betaSha256": "073c7f3a9369868a6b34f4e65377da1e72bfca6834cbc3e035ae44bd6d54da7d",
+      "normalizedSha256": "04a0d3dc817b06279656cf90d2ccaaafe63f27765b8584ec0ecb7dc16dcf6a33"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Powers/SGP_Radiation.cs",
+      "reason": "111 damage override/direct-Damage CardPlay context; non-card sources explicitly null",
+      "formalSha256": "65bf706e0c15c3ea9246b2aac0ad0a68e02c5933a7db8091dbf0dc06fcf62fde",
+      "betaSha256": "9049b6f9549e9a407a6a6157a370220f7ad5b8443fd8974d726301b87f4748f6",
+      "normalizedSha256": "de335ec2ed0afc0fa62fe0ab7a7587277c20b434a56778590eb66098a1860b1e"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Powers/SGP_Shade.cs",
+      "reason": "111 damage override/direct-Damage CardPlay context; non-card sources explicitly null",
+      "formalSha256": "6b908b97eea567de305bf9711cbf7087e27d0e5b683803df1a36304230a3f6fa",
+      "betaSha256": "2581b5e0049f770ccc7a8f64c6b2e057693cdd6f218f4ff52c5e84c20b6df90a",
+      "normalizedSha256": "a26704f8f0680570a000a4f969cc48094f5a60ea0310319923f3487dc1582ddb"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Models/Powers/SGP_Wane.cs",
+      "reason": "111 damage override/direct-Damage CardPlay context; non-card sources explicitly null",
+      "formalSha256": "e2969dec20082176f768db342a31f1e36549d32b05173305c0911dbf8c44a69b",
+      "betaSha256": "10b6ea8e2d8a52000365265cb09998b125d5c4da6f76e89cae2ebfd64350c08f",
+      "normalizedSha256": "1a027a4cffb23a49c38306b3ec941f882fd7ff3c61f3f5dff15bd1cd4c2c2e1d"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Nodes/Combat/NShinGetterFormChoice.cs",
+      "reason": "111 SignalPlayerChoiceBegun includes Player",
+      "formalSha256": "3a8e1ca7edcc21bcbf77db71fa025c6c561848f100c1c4a7a54f4fe1b7a587cf",
+      "betaSha256": "12e9ffde561c71edca69740cc7f1fb3b830eaea1b811dad5c550f565577c1b61",
+      "normalizedSha256": "4d90549f26830239dffb0be0e3fbd1d4bbb520add56dcdb67b4e787f50995653"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Patches/ShinGetterPotionFactoryWeightPatch.cs",
+      "reason": "111 plural CreateRandomPotions / IEnumerable result",
+      "formalSha256": "32b86f9345601fce98473ae1648446bf2e21140f96081dafc4fd3d815ff9a2cf",
+      "betaSha256": "a61f7be5a0db7c915189fadcd9668c01fdabd993f71756fcfe76ce3290efb2c6",
+      "normalizedSha256": "baebedc944c91365d003c878b7bd9325cf450d7ff61de04e91a5ce1210427052"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Patches/ShinGetterSavedPropertiesPatch.cs",
+      "reason": "109-only cache shim omitted; 111 native ModelIdSerializationCache owns registration/IDs/width/hash"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Patches/ShinGetterVisualsPatch.cs",
+      "reason": "111 StartRunLobbyPlayer character-select signature",
+      "formalSha256": "a76fec19da1e342687b5b998ac101162577ee1f0ecf961e0f3d33691202b3d7e",
+      "betaSha256": "f9a836dc7bb09c0e2be1ce0719f844599740e1b50a99a69e0edf81cdb498258a",
+      "normalizedSha256": "86bd43bb82be46ed15cff3c747b1e748bcd7f3080d7a12ea6b2aff5cb01bd110"
+    }
+  ],
+  "betaBehaviorCompatibilityDifferences": [
+    {
+      "path": "shin-getter-mod-godot/src/Diagnostics/ShinGetterDialogueConsoleCmd.cs",
+      "reason": "Exact registered BS2 passive-stat modifier accepted consistently for dialogue/console/history; other eligibility unchanged",
+      "formalSha256": "8561846560fce5493c28ac4d063913e4ec64ccc52c73792ed6108edf9b89ec9e",
+      "betaSha256": "db6758cb0bf79a81e4d8b4db9800f03024d910dff280d25bedf43de3b0383d7b"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Services/ShinGetterBondSession.cs",
+      "reason": "Exact registered BS2 passive-stat modifier accepted consistently for dialogue/console/history; other eligibility unchanged",
+      "formalSha256": "8eca415f765e37ec286be6c611aedc7b55d603145f4a685da2ea8a8c8b5c20b4",
+      "betaSha256": "b266fd540e01877bd299c4ff07d4be0c74ef3b575fa23b3c1430ec23eb71980a"
+    },
+    {
+      "path": "shin-getter-mod-godot/src/Services/ShinGetterBondRunCompatibility.cs",
+      "reason": "Optional exact St2bs assembly/sealed full type + full ID + current ModelDb registration; fail closed, no cached misses or assembly loading",
+      "betaSha256": "0243b5cc748509252cf2f807a1ff5cf4553792c81c61b102b0fdc044e4933c13"
+    }
+  ],
+  "resourceChannelWhitelist": [
+    "shin-getter-mod-godot/ShinGetterMod.json",
+    "shin-getter-mod-godot/ShinGetterMod/localization/eng/settings_ui.json",
+    "shin-getter-mod-godot/ShinGetterMod/localization/jpn/settings_ui.json",
+    "shin-getter-mod-godot/ShinGetterMod/localization/zhs/settings_ui.json",
+    "shin-getter-mod-godot/ShinGetterMod/update_history.json"
+  ],
+  "resourceRule": "All other tracked project resources byte-identical to formal Tag. Common settings/history entries exact; only beta history/localization keys and manifest version/min_game_version differ.",
+  "metadataInput": {
+    "kind": "official111 ExportRelease",
+    "sha256": "0861BFA1DF347538D932F22D580E75420F08082792EB914E53B4882764ACDBE9",
+    "mvid": "73b63ee0-6c0a-47bb-b0d1-b21f6d94222e"
+  },
+  "bs2StaticInput": {
+    "version": "2.3.0",
+    "dllSha256": "B58AC78FE6CB7C1E771AF483450D7AFB402DB7E9AC7FB5A113970D3844BBC0B2",
+    "adapterChanged": false,
+    "runtimeAcceptance": "NOT_RUN"
+  }
+}

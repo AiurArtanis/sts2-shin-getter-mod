@@ -68,6 +68,8 @@ PROBE_PROJECT = REPO_ROOT / "tools/Issue93CompatibilityProbe/Issue93Compatibilit
 MOD_ASSEMBLY = PROJECT_ROOT / "build/ShinGetterMod.dll"
 
 REVIEW_CONCLUSIONS = {
+    "MegaCrit.Sts2.Core.Runs::RunManager::InitializeRunLobby": (
+        "compatible", "111 adds the run-lobby players argument. The optional BS2 adapter uses a parameterless Postfix, binds by method name, and installs after mod loading for both new runs and cold save-load paths; it does not call this private method."),
     "MegaCrit.Sts2.Core.Combat::CombatManager::WaitForUnpause": (
         "compatible", "Public zero-argument Task remains; the new private turn-state overload is not called. Shining Spark retains its scene-end race and pause boundary."),
     "MegaCrit.Sts2.Core.Map::MapCoord": (

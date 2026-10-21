@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.Models.Powers;
 using ShinGetterMod.Nodes.Vfx;
+using ShinGetterMod.Audio;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -33,10 +34,15 @@ public sealed class SGC_ExpansionStrike : ShinGetterCardBase
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
         int debuffTypes = Owner.Creature.Powers.Count(power => power.Type == PowerType.Debuff)
             + cardPlay.Target.Powers.Count(power => power.Type == PowerType.Debuff);
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue * debuffTypes).FromCard(this, cardPlay)
-            .Targeting(cardPlay.Target)
-            .BeforeDamage(() => PlayMovementVfx(() => ShinGetterCombatVfx.PlayExpansionRush(Owner.Creature, cardPlay.Target)))
-            .WithHitFx("vfx/vfx_attack_blunt").Execute(choiceContext);
+        // The supplied FireNow WAV has a phrase gap ending at approximately 0.86s.
+        // Do not hold silent/consumed/wrong-form voices behind an artificial lead-in.
+        if (ShinGetterVoiceService.TryPlayCardVoiceAtCustomTiming(this, out float duration) && duration > 0f)
+            await Cmd.CustomScaledWait(Math.Min(0.86f, duration), Math.Min(0.86f, duration));
+        await PlayMovementVfx(() => ShinGetterCombatVfx.PlayExpansionRush(
+            Owner.Creature, cardPlay.Target,
+            async () => await DamageCmd.Attack(DynamicVars.Damage.BaseValue * debuffTypes).FromCard(this, cardPlay)
+                .Targeting(cardPlay.Target).WithNoAttackerAnim()
+                .WithHitFx("vfx/vfx_attack_blunt").Execute(choiceContext)));
         if (debuffTypes > 0 && HasForm(Owner, ShinGetterForm.Getter3))
             await PowerCmd.Apply<PlatingPower>(choiceContext, Owner.Creature, debuffTypes * 2m, Owner.Creature, this);
     }

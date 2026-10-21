@@ -9,6 +9,7 @@ using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Events;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves;
@@ -48,7 +49,7 @@ internal sealed class ShinGetterBondSession
     internal static bool IsEligible(EventModel model) => model.Owner is { Character: ShinGetter } owner
         && owner.RunState.Players.Count == 1
         && owner.RunState.GameMode == GameMode.Standard
-        && owner.RunState.Modifiers.Count == 0
+        && ShinGetterBondRunCompatibility.IsStandardModifiers(owner.RunState.Modifiers)
         && RunManager.Instance.IsInProgress && RunManager.Instance.ShouldSave
         && !RunManager.Instance.DailyTime.HasValue && !TestMode.IsOn && !NonInteractiveMode.IsActive
         && ShinGetterDialogueCatalog.ContainsNpc(model.Id.Entry);
@@ -96,10 +97,16 @@ internal sealed class ShinGetterBondSession
     {
         var state = model.Owner!.RunState;
         int act = state.CurrentActIndex;
-        if (run <= 0 || act < 0 || act >= state.MapPointHistory.Count)
+        if (run <= 0 || state.CurrentRoom is not EventRoom current || current.ModelId != model.Id)
+            throw new InvalidDataException("Conversation does not match the active event.");
+        // EnterNextAct enters the terminal Architect directly, without appending a
+        // map-history slot. It is unique per run; never borrow the last boss slot.
+        if (model is TheArchitect)
+            return $"encounter-v2:{run}:{state.Rng.Seed}:terminal:{model.Id}";
+        if (act < 0 || act >= state.MapPointHistory.Count)
             throw new InvalidDataException("No persistent map history for this conversation. Skip to continue.");
         var points = state.MapPointHistory[act];
-        if (points.Count == 0 || state.CurrentRoom is not EventRoom current || current.ModelId != model.Id)
+        if (points.Count == 0)
             throw new InvalidDataException("Conversation does not match the active event. Skip to continue.");
         var rooms = points[points.Count - 1].Rooms;
         // ToSave/FromSerializable preserve map history, including ordered Rooms.
@@ -228,7 +235,7 @@ internal sealed class ShinGetterBondSession
             var result = SaveManager.Instance.LoadRunHistory(file);
             // Repaired/data-loss history is not proof of an outcome or a gap.
             if (result.Status != ReadSaveStatus.Success || result.SaveData is not { } history) continue;
-            if (history.StartTime <= 0 || history.StartTime >= _run || history.GameMode != GameMode.Standard || history.Modifiers.Count != 0
+            if (history.StartTime <= 0 || history.StartTime >= _run || history.GameMode != GameMode.Standard || !ShinGetterBondRunCompatibility.IsStandardHistoryModifiers(history.Modifiers)
                 || history.Players.Count != 1 || history.Players[0].Character != ModelDb.Character<ShinGetter>().Id) continue;
             histories.Add(history);
         }
@@ -265,12 +272,20 @@ internal sealed class ShinGetterBondSession
         return Commit(next =>
         {
             var encounter = next.Encounters[_key];
-            // Only the explicit confirmation after the final visible line reaches here.
+            // The native UI completes after the final line was displayed; writes
+            // still commit atomically before the original reward flow is restored.
             next.Completed.Add(encounter.DialogueId);
             if (encounter.ResultRun > 0) next.RespondedResults[_npc] = encounter.ResultRun;
             encounter.Completed = true;
             encounter.Closed = true;
         });
+    }
+
+    internal bool CompleteDisplayedFinalLine()
+    {
+        if (Encounter is not { WasShown: true, DialogueId.Length: > 0 } encounter
+            || encounter.Line != CurrentLines("zhs").Length - 1) return false;
+        return Advance();
     }
 
     internal bool ConsumeCue(int line)

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Godot;
 using MegaCrit.Sts2.Core.Combat;
@@ -16,7 +17,7 @@ using ShinGetterMod.Models.Cards;
 
 namespace ShinGetterMod.Nodes.Combat;
 
-public static class NShinGetterStaticVisuals
+public static partial class NShinGetterStaticVisuals
 {
     private const float OpeningFusionFirstFrameHoldSeconds = 0.2f;
     private const float FusionTransitionHoldSeconds = 0.2f;
@@ -29,6 +30,14 @@ public static class NShinGetterStaticVisuals
         bool animate = true,
         float speedScale = 1f)
     {
+        TacticalRetreatSync? retreatSync = TacticalRetreatSync.For(creature);
+        if (retreatSync?.CancellationToken.IsCancellationRequested == true && !retreatSync.ShouldAbortAction)
+        {
+            // If a replacement visual already exists, commit the selected form without replaying the canceled motion.
+            animate = false;
+            retreatSync = null;
+        }
+        retreatSync?.CancellationToken.ThrowIfCancellationRequested();
         if (!TryGetFormSprites(creature, out var visuals, out var sprites))
             return Task.CompletedTask;
 
@@ -39,7 +48,7 @@ public static class NShinGetterStaticVisuals
             _ => sprites.GetterOne,
         };
 
-        return SwitchTo(visuals, sprites, next, animate, speedScale);
+        return SwitchTo(visuals, sprites, next, animate, speedScale, retreatSync);
     }
 
     /// <summary>
@@ -124,7 +133,8 @@ public static class NShinGetterStaticVisuals
     public static async Task PlayCreatureActionAnimationAndWait(
         Creature creature,
         string trigger,
-        float fallbackDuration)
+        float fallbackDuration,
+        CancellationToken cancellationToken = default)
     {
         var creatureNode = NCombatRoom.Instance?.GetCreatureNode(creature);
         if (creatureNode == null
@@ -134,7 +144,7 @@ public static class NShinGetterStaticVisuals
                 trigger,
                 formAnimation.EnsureLoaded))
         {
-            await Cmd.CustomScaledWait(fallbackDuration, fallbackDuration);
+            await Cmd.CustomScaledWait(fallbackDuration, fallbackDuration, cancellationToken: cancellationToken);
             return;
         }
 
@@ -146,7 +156,7 @@ public static class NShinGetterStaticVisuals
         float duration = frameCount > 0 && framesPerSecond > 0d
             ? (float)(frameCount / framesPerSecond / speedScale)
             : fallbackDuration;
-        await Cmd.CustomScaledWait(duration, duration);
+        await Cmd.CustomScaledWait(duration, duration, cancellationToken: cancellationToken);
     }
 
     // Shift Strike waits for the recovery frames before it can transform or attack again.
@@ -702,94 +712,6 @@ public static class NShinGetterStaticVisuals
 
         if (creatureNode.Visuals.GetNodeOrNull<AnimatedSprite2D>("Visuals/ShinDragon") is { } shinDragon)
             yield return new FormAnimation(shinDragon, NShinGetterSpriteSequence.EnsureShinDragonLoaded);
-    }
-
-    private static async Task SwitchTo(
-        NCreatureVisuals visuals,
-        FormSprites sprites,
-        FormVisual next,
-        bool animate,
-        float speedScale)
-    {
-        FormVisual? previous = null;
-        foreach (var sprite in sprites.All)
-        {
-            if (sprite.Item != next.Item && sprite.Item.Visible && sprite.Item.Modulate.A > 0.01f)
-                previous = sprite;
-        }
-
-        if (next.Item.Visible && next.Item.Modulate.A > 0.99f)
-        {
-            ActivateIdleAnimation(next);
-            return;
-        }
-
-        if (!animate)
-        {
-            foreach (var sprite in sprites.All)
-            {
-                bool isNext = sprite.Item == next.Item;
-                sprite.Item.Visible = isNext;
-                sprite.Item.Modulate = new Color(sprite.Item.Modulate, isNext ? 1f : 0f);
-                sprite.Node.RotationDegrees = 0f;
-                if (!isNext && sprite.Node is AnimatedSprite2D animation)
-                    NShinGetterSpriteSequence.ReleaseActionAnimations(animation);
-            }
-            ActivateIdleAnimation(next);
-            return;
-        }
-
-        float animationSpeed = Math.Max(0.05f, speedScale);
-
-        if (await TryPlayFusionTransition(sprites, previous, next, animationSpeed))
-            return;
-
-        foreach (var sprite in sprites.All)
-        {
-            if (sprite.Item != next.Item && (previous == null || sprite.Item != previous.Value.Item))
-            {
-                sprite.Item.Visible = false;
-                sprite.Item.Modulate = new Color(sprite.Item.Modulate, 0f);
-                sprite.Node.RotationDegrees = 0f;
-            }
-        }
-
-        Vector2 nextBaseScale = next.Node.Scale;
-        next.Item.Visible = true;
-        ActivateIdleAnimation(next);
-        next.Item.Modulate = new Color(next.Item.Modulate, 0f);
-        next.Node.Scale = nextBaseScale * 0.76f;
-        next.Node.RotationDegrees = -5f;
-
-        Tween transformTween = visuals.CreateTween().SetParallel();
-        Vector2 previousBaseScale = Vector2.One;
-        if (previous != null)
-        {
-            FormVisual previousVisual = previous.Value;
-            previousBaseScale = previousVisual.Node.Scale;
-            transformTween.TweenProperty(previousVisual.Item, "modulate:a", 0f, 0.16f / animationSpeed)
-                .SetEase(Tween.EaseType.In)
-                .SetTrans(Tween.TransitionType.Sine);
-            transformTween.TweenProperty(previousVisual.Node, "scale", previousBaseScale * 1.18f, 0.16f / animationSpeed)
-                .SetEase(Tween.EaseType.In)
-                .SetTrans(Tween.TransitionType.Sine);
-        }
-
-        transformTween.TweenProperty(next.Item, "modulate:a", 1f, 0.28f / animationSpeed)
-            .SetDelay(0.06f / animationSpeed)
-            .SetEase(Tween.EaseType.Out)
-            .SetTrans(Tween.TransitionType.Sine);
-        transformTween.TweenProperty(next.Node, "scale", nextBaseScale, 0.28f / animationSpeed)
-            .SetDelay(0.06f / animationSpeed)
-            .SetEase(Tween.EaseType.Out)
-            .SetTrans(Tween.TransitionType.Back);
-        transformTween.TweenProperty(next.Node, "rotation_degrees", 0f, 0.28f / animationSpeed)
-            .SetDelay(0.06f / animationSpeed)
-            .SetEase(Tween.EaseType.Out)
-            .SetTrans(Tween.TransitionType.Sine);
-        transformTween.TweenCallback(Callable.From(() => HideInactive(sprites, next, previous, previousBaseScale)))
-            .SetDelay(0.36f / animationSpeed);
-        await visuals.ToSignal(transformTween, Tween.SignalName.Finished);
     }
 
     private static async Task PlayOpeningGetterOneFusion(FormSprites sprites)

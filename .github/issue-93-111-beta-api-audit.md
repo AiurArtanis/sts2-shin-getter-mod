@@ -1,5 +1,17 @@
 # issue#93 — Slay the Spire 2 0.111 Beta API audit
 
+## 2026-10-19 issue#248 stable Tag refresh
+
+Current candidate: `v1.3.0-beta.111`, complete v1.3.0 content from released `mod-v1.3.0` / `26c8da9a907fd9e12d41bf5bf17d24ca5975bfa8`.
+Planned Beta Tag/archive remain `mod-v1.3.0-beta.111` / `shin-getter-mod-v1.3.0-beta.111.zip`; unpublished.
+Current mechanical review: **31 changed symbol groups**, 347 product C# sources; actual CLR binding uses official 0.111 ExportRelease `0861BFA1...`, not the reconstructed Debug DLL.
+Actual CLR probe: 1209 references, 102 Harmony targets / 203 named parameters and 48 scoped dynamic members, plus isolated metadata-only saved-property checks. This does not execute a game or prove native patch installation.
+Stable deltas include the complete issue#206 recovery, issue#254/255 animation metadata/render preparation, issue#257/260 timing and issue#259 cold-load entry.
+The newly crossed RunManager.InitializeRunLobby adds players on 111; the parameterless BS2 Postfix still binds and covers new-run and cold saved-run initialization.
+Existing CardPlay, damage/LoseBlock context, canonical event-combat input, StartRunLobbyPlayer, animator and plural PotionFactory adapters are retained. The 109-only SavedPropertiesTypeCache patch remains excluded because 111 owns the native serialization cache.
+BS2 Workshop input is now v2.3.0. Its St2bs assembly / SmokeForest type / public instance ExploreEvents getter returning IReadOnlyList<EventModel> and PickExploreEvent filtering/random/visited chain were checked read-only; no compatibility code change was needed. This is not runtime compatibility acceptance.
+Full file-level semantic whitelist and artifact identity are recorded in `tools/issue248-refresh-20261019-audit.md` and the external candidate receipt. Previous sections below remain historical.
+
 ## 2026-09-21 v1.2.2 delta (issue#234)
 
 This section supersedes only the current release mapping below; old audit snapshots remain historical.
