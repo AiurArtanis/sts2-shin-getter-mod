@@ -1,6 +1,6 @@
-[b]0.111 Beta regression candidate: v1.3.0-beta.111 (unpublished)[/b]
-Synchronizes stable v1.3.0 (mod-v1.3.0; shin-getter-mod-v1.3.0.zip). Planned Beta archive: shin-getter-mod-v1.3.0-beta.111.zip. The published Beta remains v1.2.2-beta.111; this candidate is not a released package.
-[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest]Stable download[/url] · [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2]Published Beta download[/url]
+[b]0.111 Beta: v1.3.0-beta.111[/b]
+Includes all stable v1.3.0 content plus blacksouls2 compatibility.
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.3.0]v1.3.0 Release[/url] · [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.3.0/shin-getter-mod-v1.3.0-beta.111.zip]111 Beta download[/url]
 Historical compatibility note: old BaseLib 3.3.7 may freeze card play on 111. Use a compatible version; QuickRestart and dependent mods require separate validation. Never mix stable and Beta packages.
 
 [h1]Slay the Spire 2 - Shin Getter Mod[/h1]
@@ -31,3 +31,6 @@ Pilot Shin Getter up the Spire. Switch between four forms and make transformatio
 [/list]
 
 Includes 77 cards, 13 relics, 6 potions, and 2 enchantments. Available in Simplified Chinese, English, and Japanese.
+
+[h2]blacksouls2 compatibility[/h2]
+Getter Mandala joins the SmokeForest event pool, and Ancient bonds support the blacksouls2 statistics modifier. blacksouls2 is optional.

@@ -8,16 +8,16 @@
 
 让真盖塔穿越时空登上高塔。切换一号机的爆发、二号机的高速战术与三号机的钢铁防线，最终唤醒真盖塔龙，用盖塔射线吞没高塔。这里不是换一张角色皮肤，而是一套围绕变形、卡组与演出共同运转的玩法型角色 Mod。
 
-> 当前Beta候选 `v1.3.0-beta.111`（游戏 `0.111 Beta`）· 正式来源 `v1.3.0` · 已公开Beta `v1.2.2-beta.111` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> 111 Beta `v1.3.0-beta.111`（游戏 `0.111 Beta`）· 正式版 `v1.3.0` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
-[正式版下载](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest) · [已发布0.111 Beta](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+[正式版下载](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest) · [已发布0.111 Beta](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.3.0) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
 
 ## 🧪 0.111 Beta 适配
 
-- **本支线候选：** `v1.3.0-beta.111`，完整同步已批准正式v1.3.0内容及原生羁绊UI／一次性从0发布起点；仍待本轮Beta原生回归与发布，不是已公开包。
-- **计划包／Tag：** 正式来源 `shin-getter-mod-v1.3.0.zip` / `mod-v1.3.0`；Beta `shin-getter-mod-v1.3.0-beta.111.zip` / `mod-v1.3.0-beta.111`。发布前不提供不存在的新版下载链接。
-- **当前公开下载：** 正式109仍使用Release实际列出的正式包；已公开111 Beta为 `v1.2.2-beta.111`，资产 `shin-getter-mod-v1.2.2.111-beta.zip`，见[v1.2.2 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2)。
+- **当前版本：** `v1.3.0-beta.111`，同步正式v1.3.0全部内容，并包含111 Beta与blacksouls2兼容适配。
+- **包／Tag：** 正式 `shin-getter-mod-v1.3.0.zip` / `mod-v1.3.0`；Beta `shin-getter-mod-v1.3.0-beta.111.zip` / `mod-v1.3.0-beta.111`。
+- **下载：** [v1.3.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.3.0)同时提供正式与Beta独立包。[下载111 Beta](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.3.0/shin-getter-mod-v1.3.0-beta.111.zip)。
 - 不混用正式与Beta四件套。切换游戏分支时完整替换DLL、PCK、JSON与`mod_image.png`，再重启。
 - **外部兼容风险：** 旧 `BaseLib 3.3.7` 在111 Beta的 `CardPileCmd.Add` transpiler可能导致出牌卡住。验收前更新或禁用BaseLib、QuickRestart及依赖模组；这不是本模组的强制依赖。
 
@@ -53,7 +53,7 @@
 
 这些故事不替换原事件的战斗、奖励或评分。`sgd`控制台指令用于查看和构造羁绊进度；修改进度属于调试操作。
 
-## v1.3.0-beta.111 2026-10-12
+## v1.3.0-beta.111 2026-10-21
 
 ### 玩法
 
@@ -70,9 +70,9 @@
 - 优化动画加载性能，精简动画数据与资源包。
 - 调整气势、换挡打击、斗志卡牌效果。
 - 更新8张卡面及紧凑卡牌图集，修正纹理定位与采样边界。
-- 盖塔曼陀罗事件适配 blacksouls2 模组。
+- 适配 blacksouls2：盖塔曼陀罗接入 SmokeForest 事件池，先古羁绊兼容其统计标记。
 
-面向0.111 Beta，正式版与Beta版四件套不可混用。当前公开Beta包仍为v1.2.2-beta.111；下载以Release实际资产为准。
+面向0.111 Beta，正式版与Beta版四件套不可混用。两个版本均在v1.3.0 Release下载。
 
 ## v1.2.2 更新说明
 
@@ -119,7 +119,7 @@ v1.2.2同时提供正式109与0.111 Beta独立四件套；Beta版也包含本次
 
 ### 安装发布版
 
-1. 从 [v1.2.2 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2) 下载 `shin-getter-mod-v1.2.2.zip`，解压得到 `ShinGetterMod.pck`、`ShinGetterMod.dll`、`ShinGetterMod.json` 与 `mod_image.png`。
+1. 从 [v1.3.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.3.0) 下载 `shin-getter-mod-v1.3.0.zip`，解压得到 `ShinGetterMod.pck`、`ShinGetterMod.dll`、`ShinGetterMod.json` 与 `mod_image.png`。
 2. 在游戏的模组加载目录中创建 `ShinGetterMod` 子目录，并将四个文件放在一起。
 3. 启动游戏，从主菜单进入**设置 → 模组设置**，在**已下载的模组**中启用“真盖塔模组”。
 4. 确认加载提示后完全退出并重新启动游戏。新开一局，选择**真盖塔**即可开始。
@@ -127,7 +127,7 @@ v1.2.2同时提供正式109与0.111 Beta独立四件套；Beta版也包含本次
 ### 安装 0.111 Beta 专用版
 
 1. 确认游戏已切换到 **Slay the Spire 2 0.111 Beta**。
-2. 从 [v1.2.2 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2) 下载 `shin-getter-mod-v1.2.2.111-beta.zip`。
+2. 从 [v1.3.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.3.0) 下载 `shin-getter-mod-v1.3.0-beta.111.zip`。
 
 3. 将 ZIP 内四个文件完整覆盖到同一个 `ShinGetterMod` 目录；不要与正式版的 DLL／PCK 混搭。
 4. 完全退出并重新启动游戏，再启用模组并新开一局。

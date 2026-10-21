@@ -1,4 +1,4 @@
-v1.3.0-beta.111 2026-10-12
+v1.3.0-beta.111 2026-10-21
 
 Gameplay:
 - Added Ancient bonds: crossover interactions between the three-pilot team and the Ancients.
@@ -12,4 +12,4 @@ QoL / Balance:
 - Optimized animation loading and reduced animation data and package size.
 - Adjusted Drive, Shift Strike and Fighting Spirit card effects.
 - Updated eight card illustrations and the compact card atlas, correcting texture references and sampling boundaries.
-- Added blacksouls2 mod compatibility for the Getter Mandala event.
+- Added blacksouls2 compatibility: Getter Mandala joins the SmokeForest event pool, and Ancient bonds support its statistics modifier.

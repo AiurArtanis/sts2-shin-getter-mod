@@ -1,6 +1,6 @@
-[b]0.111 Beta 回归候选：v1.3.0-beta.111（未发布）[/b]
-本候选同步正式v1.3.0（mod-v1.3.0；shin-getter-mod-v1.3.0.zip），计划Beta包为shin-getter-mod-v1.3.0-beta.111.zip。当前公开Beta仍是v1.2.2-beta.111，不能把候选当作已发布包。
-[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest]正式版下载[/url] · [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2]已发布Beta下载[/url]
+[b]0.111 Beta：v1.3.0-beta.111[/b]
+同步正式v1.3.0全部内容，并增加blacksouls2兼容适配。
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.3.0]v1.3.0 Release[/url] · [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.3.0/shin-getter-mod-v1.3.0-beta.111.zip]111 Beta下载[/url]
 历史兼容提示：旧BaseLib 3.3.7可能造成111出牌卡住；请使用适配版本，QuickRestart及其他依赖也须单独验证。不要混用正式与Beta四件套。
 
 [h1]杀戮尖塔2 - 真盖塔模组[/h1]
@@ -31,3 +31,6 @@
 [/list]
 
 收录77张卡牌、13个遗物、6瓶药水与2个附魔，支持简体中文、English、日本語。
+
+[h2]blacksouls2兼容[/h2]
+盖塔曼陀罗接入SmokeForest事件池，先古羁绊兼容blacksouls2统计标记。blacksouls2为可选模组。

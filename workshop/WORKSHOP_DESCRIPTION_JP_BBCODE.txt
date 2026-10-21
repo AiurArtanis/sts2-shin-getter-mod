@@ -1,6 +1,6 @@
-[b]0.111 Beta回帰候補：v1.3.0-beta.111（未公開）[/b]
-正式v1.3.0（mod-v1.3.0、shin-getter-mod-v1.3.0.zip）を同期。予定Betaパッケージはshin-getter-mod-v1.3.0-beta.111.zipです。公開済みBetaはv1.2.2-beta.111で、本候補は公開版ではありません。
-[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest]正式版ダウンロード[/url] · [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2]公開済みBeta[/url]
+[b]0.111 Beta：v1.3.0-beta.111[/b]
+正式v1.3.0の全内容に加え、blacksouls2への対応を収録。
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.3.0]v1.3.0 Release[/url] · [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.3.0/shin-getter-mod-v1.3.0-beta.111.zip]111 Betaダウンロード[/url]
 互換性の履歴：旧BaseLib 3.3.7では111のカード使用が停止する場合があります。対応版を使い、QuickRestartと依存MODも別途確認してください。正式版とBeta版のファイルを混在させないでください。
 
 [h1]Slay the Spire 2 - 真ゲッターMOD[/h1]
@@ -31,3 +31,6 @@
 [/list]
 
 カード77枚、レリック13個、ポーション6種、エンチャント2種を収録。簡体字中国語・英語・日本語に対応。
+
+[h2]blacksouls2対応[/h2]
+ゲッターマンダラをSmokeForestイベントプールに追加し、古の者との絆をblacksouls2の統計用Modifierに対応。blacksouls2の導入は任意です。
