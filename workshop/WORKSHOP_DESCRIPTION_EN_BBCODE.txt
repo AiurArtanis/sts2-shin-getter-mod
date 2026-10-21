@@ -1,36 +1,22 @@
-[b]0.111 Beta: v1.3.0-beta.111[/b]
-Includes all stable v1.3.0 content plus blacksouls2 compatibility.
-[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.3.0]v1.3.0 Release[/url] · [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.3.0/shin-getter-mod-v1.3.0-beta.111.zip]111 Beta download[/url]
-Historical compatibility note: old BaseLib 3.3.7 may freeze card play on 111. Use a compatible version; QuickRestart and dependent mods require separate validation. Never mix stable and Beta packages.
-
 [h1]Slay the Spire 2 - Shin Getter Mod[/h1]
 
-Pilot Shin Getter up the Spire. Switch between four forms and make transformation part of each turn's offense and defense.
+Pilot Shin Getter up the Spire, weaving transformations into offense and defense.
 
-[h2]Four forms, one deck[/h2]
+[h2]Four forms, your build[/h2]
 [list]
-[*][b]Shin Getter 1:[/b] Build Vigor for powerful bursts of damage.
-[*][b]Shin Getter 2:[/b] Gain extra Energy and card draw at the cost of halved Block.
-[*][b]Shin Getter 3:[/b] Hold the line with Plating, Block, and defensive retaliation.
+[*][b]Shin Getter 1:[/b] Build Vigor for explosive attacks.
+[*][b]Shin Getter 2:[/b] Trade halved Block for extra Energy and card draw.
+[*][b]Shin Getter 3:[/b] Rely on Plating, Block, and defensive retaliation.
 [*][b]Shin Getter Dragon:[/b] Accept rewards from all three forms and combine their strengths.
 [/list]
+Build around Vigor bursts, Exhaust loops, defensive retaliation, or transformation chains with exclusive relics, potions, and enchantments.
 
-[h2]Choose your build[/h2]
-[list]
-[*][b]Vigor burst:[/b] Build Vigor, then finish with a powerful attack.
-[*][b]Exhaust loop:[/b] Exhaust cards to trigger Getter Claw, and use Parts Swap to recover key cards.
-[*][b]Iron retaliation:[/b] Stack Plating and Block to turn enemy attacks into counterattack opportunities.
-[*][b]Transformation chain:[/b] Build around transformation cards and related relics to turn form changes into resources or defense.
-[/list]
+[h2]The Getter team's journey[/h2]
+Discover unique event branches and Getter Mandala. In standard single-player Shin Getter runs, develop persistent bonds between Ryoma, Hayato, Benkei, and the Ancients. Form animations, attack effects, character voices, and selectable BGM bring Getter's combat style to life.
 
-[h2]Beyond combat[/h2]
-[list]
-[*][b]Event invasions:[/b] Discover Getter-team branches in familiar Spire events, plus the Getter Mandala event.
-[*][b]Ancient bonds:[/b] Progress through dialogue and bonds between the three-pilot team and the Ancients in standard single-player Shin Getter runs, without changing the original events' combat, rewards, or scoring.
-[*][b]Battle presentation:[/b] Form animations, attack effects, character voices, and selectable BGM bring Getter's combat style to life.
-[/list]
+77 cards, 13 relics, 6 potions, and 2 enchantments. Available in Simplified Chinese, English, and Japanese.
 
-Includes 77 cards, 13 relics, 6 potions, and 2 enchantments. Available in Simplified Chinese, English, and Japanese.
-
-[h2]blacksouls2 compatibility[/h2]
-Getter Mandala joins the SmokeForest event pool, and Ancient bonds support the blacksouls2 statistics modifier. blacksouls2 is optional.
+[h2]Installation and compatibility[/h2]
+For game [b]0.111 Beta[/b]. Never mix stable and Beta files; fully restart the game after switching.
+blacksouls2 is optional: Getter Mandala can appear in SmokeForest, and Ancient bonds support its statistics modifier. BaseLib is not required by this mod. If using BaseLib, QuickRestart, or dependent mods, choose versions compatible with 0.111.
+[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.3.0]Manual download[/url]
