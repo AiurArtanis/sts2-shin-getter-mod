@@ -1,4 +1,4 @@
-# v1.3.0-beta.111 2026-10-12
+# v1.3.0 2026-10-12
 
 ## 简体中文
 
@@ -17,9 +17,10 @@
 - 优化动画加载性能，精简动画数据与资源包。
 - 调整气势、换挡打击、斗志卡牌效果。
 - 更新8张卡面及紧凑卡牌图集，修正纹理定位与采样边界。
-- 盖塔曼陀罗事件适配 blacksouls2 模组。
 
-面向0.111 Beta，正式版与Beta版四件套不可混用。当前公开Beta包仍为v1.2.2-beta.111；下载以Release实际资产为准。
+正式包面向游戏0.109。2026-10-21追加0.111 Beta包，包含以上全部更新，并额外适配blacksouls2：盖塔曼陀罗接入SmokeForest事件池，先古羁绊兼容其统计标记。请勿混用四件套。
+
+兼容提示：blacksouls2为可选模组；请使用适配0.111的BaseLib及相关依赖。旧BaseLib 3.3.7可能造成出牌卡住。
 
 ## English
 
@@ -38,9 +39,10 @@
 - Optimized animation loading and reduced animation data and package size.
 - Adjusted Drive, Shift Strike and Fighting Spirit card effects.
 - Updated eight card illustrations and the compact card atlas, correcting texture references and sampling boundaries.
-- Added blacksouls2 mod compatibility for the Getter Mandala event.
 
-Targets 0.111 Beta. Do not mix stable and Beta four-file packages. The published Beta package remains v1.2.2-beta.111; download only assets actually listed in the Release.
+The stable package targets game 0.109. Added the 0.111 Beta package on 2026-10-21 with all updates above plus blacksouls2 compatibility: Getter Mandala joins the SmokeForest event pool, and Ancient bonds support its statistics modifier. Do not mix four-file packages.
+
+Compatibility: blacksouls2 is optional. Use 0.111-compatible versions of BaseLib and related dependencies; old BaseLib 3.3.7 may freeze card play.
 
 ## 日本語
 
@@ -59,15 +61,16 @@ Targets 0.111 Beta. Do not mix stable and Beta four-file packages. The published
 - アニメーションの読み込みを最適化し、アニメーションデータとパッケージを軽量化。
 - 気迫、シフトストライク、闘志のカード効果を調整。
 - カードイラスト8枚とコンパクトなカードアトラスを更新し、テクスチャの参照とサンプリング境界を修正。
-- ゲッターマンダライベントをblacksouls2 MODに対応。
 
-0.111 Beta向けです。正式版とBeta版の4ファイルを混在させないでください。公開済みBeta版はv1.2.2-beta.111です。ダウンロードにはReleaseに実在する配布物をご利用ください。
+正式版はゲーム0.109向けです。2026-10-21に0.111 Beta版を追加。上記の全更新に加え、ゲッターマンダラをblacksouls2のSmokeForestイベントプールに追加し、古の者との絆を統計用Modifierに対応。4ファイルを混在させないでください。
+
+互換性：blacksouls2の導入は任意です。BaseLibと関連依存MODは0.111対応版をご利用ください。旧BaseLib 3.3.7ではカード使用が停止する場合があります。
 
 ## Package Contract
 
-- Tag: `mod-v1.3.0-beta.111`
-- Beta archive: `shin-getter-mod-v1.3.0-beta.111.zip`
+- Tag: `mod-v1.3.0`
+- Stable archive: `shin-getter-mod-v1.3.0.zip` (game 0.109)
+- Beta source tag: `mod-v1.3.0-beta.111`
+- Beta archive: `shin-getter-mod-v1.3.0-beta.111.zip` (game 0.111 Beta)
 - Archive root: `ShinGetterMod.dll`, `ShinGetterMod.pck`, `ShinGetterMod.json`, `mod_image.png`
 - Public assets: https://github.com/AiurArtanis/sts2-shin-getter-mod/releases
-
-This file supplies publication text; its presence does not assert that the tag, Release or Workshop upload exists.
