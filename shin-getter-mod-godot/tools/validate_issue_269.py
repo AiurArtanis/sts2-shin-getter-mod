@@ -12,6 +12,13 @@ def source(relative):
     return (ROOT / relative).read_text(encoding="utf-8-sig")
 
 
+def modifier_text_contract(loc):
+    require(all(loc.get(f"S_G_M_PHYSICS_OVERRIDE.{field}") for field in ("title", "description")),
+            "Saved marker text must match native StringHelper.Slugify(SGM_PhysicsOverride)")
+    require(not any(key.startswith("SGM_PHYSICS_OVERRIDE.") for key in loc),
+            "Legacy unresolvable modifier keys must not return")
+
+
 def activation_contract(text):
     activate = block(text, "internal static CmdResult TryActivate(")
     for fragment in ("owner?.Character is not ShinGetter", "owner.PlayerCombatState == null",
@@ -114,8 +121,15 @@ def main():
             "Honor master switch and avoid restarting the active execution track")
     for language in ("zhs", "eng", "jpn"):
         loc = json.loads(source(f"ShinGetterMod/localization/{language}/modifiers.json"))
-        require(all(loc.get(f"SGM_PHYSICS_OVERRIDE.{field}") for field in ("title", "description")),
-                "Saved marker has three-language UI text")
+        modifier_text_contract(loc)
+        legacy = {key.replace("S_G_M_PHYSICS_OVERRIDE.", "SGM_PHYSICS_OVERRIDE."): value
+                  for key, value in loc.items()}
+        try:
+            modifier_text_contract(legacy)
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError(f"Legacy modifier keys accepted: {language}")
     rejected = 0
     for contract, old, new in [
         (activation_contract, "state.Running = true;", "state.Running = false;"),
@@ -136,7 +150,8 @@ def main():
             rejected += 1
         else:
             raise AssertionError(f"Unsafe variant accepted: {old}")
-    print(f"issue#269 source gate PASS; {rejected} unsafe variants rejected. Build/network/gameplay NOT executed.")
+    print(f"issue#269 source gate PASS; {rejected} unsafe variants and 3 legacy-key variants rejected. "
+          "Build/network/gameplay NOT executed.")
 
 
 if __name__ == "__main__":
