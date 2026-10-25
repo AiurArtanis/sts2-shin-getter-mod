@@ -58,11 +58,12 @@ internal static class ShinGetterMerchantReactions
         string sound = nativeSfx;
         try
         {
+            MerchantInventory? model = inventory.Inventory;
             Player? player = GetLocalPlayer(inventory);
             SGR_GoodCitizenCard? relic = player?.GetRelic<SGR_GoodCitizenCard>();
-            if (relic != null)
+            if (relic != null && model != null)
             {
-                GreetingState state = Greetings.GetValue(inventory.Inventory, _ => new GreetingState());
+                GreetingState state = Greetings.GetValue(model, _ => new GreetingState());
                 state.PendingKey = null;
                 if (!state.Greeted)
                 {
@@ -87,8 +88,9 @@ internal static class ShinGetterMerchantReactions
         string? key = null;
         try
         {
-            if (GetLocalPlayer(inventory) != null &&
-                Greetings.TryGetValue(inventory.Inventory, out GreetingState? state))
+            MerchantInventory? model = inventory.Inventory;
+            if (model != null && GetLocalPlayer(inventory) != null &&
+                Greetings.TryGetValue(model, out GreetingState? state))
             {
                 key = state.PendingKey;
                 state.PendingKey = null;
