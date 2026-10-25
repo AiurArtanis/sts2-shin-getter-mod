@@ -70,6 +70,7 @@ public sealed class SGR_GoodCitizenCard : ShinGetterRelicBase
         Flash();
         FreePurchaseActIndices.Add(Owner.RunState.CurrentActIndex);
         LastFreeFloor = Owner.RunState.TotalFloor;
+        ShinGetterMerchantReactions.MarkFreePurchase(player, itemPurchased);
         ShinGetterMerchantVisuals.RefreshCurrentRoom();
         return Task.CompletedTask;
     }
