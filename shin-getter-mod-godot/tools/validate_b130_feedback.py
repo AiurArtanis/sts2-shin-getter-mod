@@ -107,11 +107,14 @@ def full_attack_contract(text: str) -> None:
     attack = block(text, "public static async Task PlayCompleteCreatureAttack(")
     ordered(attack, ["NonInteractiveMode.IsActive", "FastModeType.Instant", "await onImpact();",
                      "if (!await WaitForPreviousSpecialAttack(creature, sprite))",
-                     "await onImpact();", "QueueNextActionSpeed(sprite, 1f)",
+                     "await onImpact();", "QueueNextActionSpeed(sprite, actionSpeed)",
                      'TryStartFreshAttack(sprite, form.EnsureLoaded)',
                      "frames.GetFrameDuration(animation, index)", "frameUnits * 0.5d, duration);",
                      "await onImpact();", "frameUnits, duration);"],
-            "Full normal-speed animation: impact in the middle, recovery before returning")
+            "Full animation: impact in the middle, recovery before returning")
+    has(text, "float speedScale = 1f", "Existing callers keep normal attack speed")
+    has(attack, "float actionSpeed = Math.Max(0.05f, speedScale);", "Action speed is bounded")
+    has(attack, "frameUnits / fps / actionSpeed", "Wait budget follows the requested animation speed")
     wait = block(text, "private static async Task WaitForAttackPhase(")
     for fragment in ("budget = duration + 0.25f", "sprite.Animation == animation", "sprite.IsPlaying()",
                      "!creature.IsDead", "!CombatManager.Instance.IsOverOrEnding", "FastModeType.Instant",

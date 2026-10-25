@@ -79,6 +79,7 @@ public sealed class SGP_ShinGetterOne : PowerModel
             float speedScale = cardSource switch
             {
                 SGC_ChangeAttack => SGC_ChangeAttack.TransformSpeedScale,
+                SGC_ShiftStrike => SGC_ShiftStrike.TransformSpeedScale,
                 SGC_TacticalRetreat => SGC_TacticalRetreat.TransformSpeedScale,
                 _ => 1f,
             };
