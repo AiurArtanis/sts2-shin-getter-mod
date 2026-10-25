@@ -701,6 +701,13 @@ internal static class ShinGetterVoiceService
         return true;
     }
 
+    internal static Task PlayCheatRoar(Player player)
+    {
+        StopAllVoiceAudio(PlaybackStates.GetOrCreateValue(player));
+        return TryPlayLine(player, LinesByCode["014"], out float duration, ignoreRequiredForm: true)
+            ? Cmd.Wait(duration) : Task.CompletedTask;
+    }
+
     internal static void PlayAudio(string path, float volume = 1f) =>
         TryPlayStandaloneAudio(path, out _, volume);
 
