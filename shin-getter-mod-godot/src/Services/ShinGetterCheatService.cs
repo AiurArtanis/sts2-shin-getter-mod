@@ -73,7 +73,10 @@ internal static class ShinGetterCheatService
     {
         try
         {
-            var context = new ThrowingPlayerChoiceContext();
+            // Exhaust hooks can draw/autoplay a Strike that opens a native card picker.
+            // Match native console commands: retain choice synchronization while the
+            // enclosing ConsoleCmdGameAction waits for this whole sequence.
+            var context = new BlockingPlayerChoiceContext();
             if (owner.Creature.GetPower<SGP_ShinForm>() != null)
                 await ShinGetterCardBase.Transform(context, owner, null, playVoice: false);
             else

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Source-only guards for cheat aliases, native queue/persistence and effect ordering."""
 import json
+import argparse
 from pathlib import Path
 from validate_b130_core import block, has, ordered, require
 
@@ -29,7 +30,9 @@ def activation_contract(text):
 
 def effect_contract(text):
     execute = block(text, "private static async Task Execute(")
-    ordered(execute, ["owner.Creature.GetPower<SGP_ShinForm>() != null",
+    require("ThrowingPlayerChoiceContext" not in execute, "Exhaustion hooks may request a native player choice")
+    ordered(execute, ["var context = new BlockingPlayerChoiceContext();",
+                     "owner.Creature.GetPower<SGP_ShinForm>() != null",
                      "await ShinGetterCardBase.Transform(context, owner, null, playVoice: false);",
                      "await ShinGetterCardBase.TransformTo(context, owner, ShinGetterForm.Getter1, null, playVoice: false);",
                      "await ShinGetterVoiceService.PlayCheatRoar(owner);",
@@ -51,10 +54,43 @@ def effect_contract(text):
             "End-of-combat checks guard asynchronous phases")
 
 
+def native_choice_contract(base):
+    def read(relative):
+        return (base / "src/Core" / relative).read_text(encoding="utf-8-sig")
+    blocking = read("GameActions/Multiplayer/BlockingPlayerChoiceContext.cs")
+    for signature in ("public override Task SignalPlayerChoiceBegun(",
+                      "public override Task SignalPlayerChoiceEnded("):
+        method = block(blocking, signature)
+        has(method, "return Task.CompletedTask;", "Native console choice signal completes without rejecting UI")
+        require("throw" not in method, "Choice signals must not use a throwing context")
+    has(read("DevConsole/ConsoleCommands/ApplyPowerConsoleCmd.cs"),
+        "PlayerChoiceContext choiceContext = new BlockingPlayerChoiceContext();",
+        "Choice context matches the native console")
+    has(read("Models/Powers/DarkEmbracePower.cs"),
+        "await CardPileCmd.Draw(choiceContext, base.Amount, base.Owner.Player);",
+        "Exhaustion can draw through the supplied context")
+    has(read("Models/Powers/HellraiserPower.cs"), "await CardCmd.AutoPlay(choiceContext, card, null);",
+        "Drawn Strikes can autoplay through that context")
+    has(read("Models/Cards/SeekerStrike.cs"), "CardSelectCmd.FromCombatPile(choiceContext,",
+        "Native Seeker Strike can request card selection")
+    select = block(read("Commands/CardSelectCmd.cs"),
+        "public static async Task<IEnumerable<CardModel>> FromCombatPile(PlayerChoiceContext context, "
+        "CardPile pile, Player player, CardSelectorPrefs prefs, Func<CardModel, bool> filter)")
+    ordered(select, ["ReserveChoiceId(player)", "await context.SignalPlayerChoiceBegun(",
+                     "SyncLocalChoice(player", "WaitForRemoteChoice(player",
+                     "await context.SignalPlayerChoiceEnded();"],
+            "Real picker preserves begin/end and native local/remote synchronization")
+
+
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--base-game-root", type=Path)
+    args = parser.parse_args()
     service = source("src/Services/ShinGetterCheatService.cs")
     activation_contract(service)
     effect_contract(service)
+    if args.base_game_root:
+        native_choice_contract(args.base_game_root)
     cmd = source("src/Diagnostics/ShinGetterCheatConsoleCmd.cs")
     has(cmd, "public override bool IsNetworked => true;", "Native console requests must be synchronized")
     patch = source("src/Patches/ShinGetterCheatConsolePatch.cs")
@@ -87,6 +123,8 @@ def main():
         (activation_contract, "run.AddModifierDebug(marker);", ""),
         (effect_contract, "await PlayerCmd.GainEnergy(10m, owner);", "await PlayerCmd.GainEnergy(1m, owner);"),
         (effect_contract, "await CardCmd.Exhaust(context, card);", ""),
+        (effect_contract, "new BlockingPlayerChoiceContext()", "new ThrowingPlayerChoiceContext()"),
+        (effect_contract, "await CardCmd.Exhaust(context, card);", "_ = CardCmd.Exhaust(context, card);"),
         (effect_contract, "combat.CreateCard<SGC_StarSlash>(owner)", "combat.CreateCard<SGC_Strike>(owner)"),
         (effect_contract, "finally\n        {\n            state.Running = false;",
          "finally\n        {\n            state.Running = true;"),
