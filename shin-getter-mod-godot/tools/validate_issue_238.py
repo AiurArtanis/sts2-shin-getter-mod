@@ -131,7 +131,7 @@ def persistence_contracts(events):
     require("Rollback" not in confirmed and "return false" not in confirmed, "confirmed disk write must not reopen reward")
     save = body(events, "private static async Task SaveFourth(")
     contains(save, "native.Saved += OnSaved", "finally { native.Saved -= OnSaved; }", "manager.CurrentRunSaveTask",
-             "LoadRunSave()", "StableRunSnapshot(readback.SaveData)", "!= expected", "saveProgress: false")
+             "LoadRunSave()", "Capture(readback.SaveData)", "Compare(expected, actualReadback)", "saveProgress: false")
     verifier = read("src/Events/ShinGetterEventSaveVerification.cs")
     contains(verifier, "await write()", "if (!wasSaved())", "readback()", "catch (Exception ex) when (wasSaved())")
     rollback = read("src/Events/ShinGetterEventTransaction.cs")
@@ -140,23 +140,27 @@ def persistence_contracts(events):
     require("SyncWithSerializedPlayer" not in rollback, "rollback must not replace complete Player or replay pickup hooks")
 
 
-def save_boundary_contracts(events, state=None, patches=None, verifier=None):
+def save_boundary_contracts(events, state=None, patches=None, verifier=None, scope=None, reload=None):
     """Source guard for the new entered-room contract, not a production restore verdict."""
     state = read("src/Services/ShinGetterPlayerEventState.cs") if state is None else state
     patches = read("src/Patches/ShinGetterEventInvasionPatch.cs") if patches is None else patches
     verifier = read("src/Events/ShinGetterEventSaveVerification.cs") if verifier is None else verifier
+    scope = read("src/Events/ShinGetterEventMapSaveScope.cs") if scope is None else scope
+    reload = read("src/Patches/ShinGetterEventSaveScopePatch.cs") if reload is None else reload
     save = body(events, "private static async Task SaveFourth(EventModel model)")
     contains(save, "DebugOnlyGetState(), owner.RunState", "room.ModelId != model.Id",
              "FourthVisitKey(model) == null", "ReferenceEquals(owner.RunState.BaseRoom, room)",
              "EventRoom checkpoint = new(room.CanonicalEvent);", "checkpoint.MarkPreFinished();",
              "visit.RoomCheckpoint = new()", "RngCounter = model.Rng.Counter",
-             "Extra = previousCheckpoint?.Extra", "StableRunSnapshot(RunManager.Instance.ToSave(checkpoint))",
-             "manager.SaveRun(checkpoint, saveProgress: false)", "StableRunSnapshot(readback.SaveData)",
+             "Extra = previousCheckpoint?.Extra", "BeginCheckpoint(owner.RunState, checkpoint)",
+             "manager.SaveRun(checkpoint, saveProgress: false)", "Capture(readback.SaveData)",
+             "scope.Expected ?? throw", "Compare(expected, actualReadback)",
              "catch when (!saved) { visit.RoomCheckpoint = previousCheckpoint; throw; }")
     require(events.count(".MarkPreFinished(") == 1 and save.count("manager.SaveRun(") == 1,
             "only the detached checkpoint may be pre-finished; only its native save may run")
     require("SaveRun(null" not in save and "checkpoint = room" not in save,
             "an entered room must not save the pre-entry/null boundary or mutate the live room")
+    require(".ToSave(" not in save, "expected must come from the actual native pre-write DTO, not a second ToSave")
     require(save.index("EventRoom checkpoint = new(") < save.index("checkpoint.MarkPreFinished()")
             < save.index("manager.SaveRun(checkpoint"), "detached room must exist before marking and saving")
 
@@ -198,8 +202,9 @@ def save_boundary_contracts(events, state=None, patches=None, verifier=None):
     contains(body(state, "private static void Validate("), "checkpoint.Version != 1",
              "checkpoint.RngCounter is < 0 or > 100000")
 
-    stable = body(verifier, "internal static string StableRunSnapshot(")
-    contains(stable, "SerializeToElement(save, JsonSerializationUtility.GetTypeInfo<SerializableRun>())",
+    stable = body(verifier, "internal static Snapshot Capture(")
+    contains(stable, "InspectSnapshot(save)", "MapFlag(p.Path, p.Point.CanBeModified)",
+             "SerializeToUtf8Bytes(save, JsonSerializationUtility.GetTypeInfo<SerializableRun>())",
              "root.EnumerateObject()", "property.WriteTo(writer)")
     filters = re.findall(r'property.Name is not \(([^)]+)\)', stable)
     require(len(filters) == 1 and re.findall(r'"([^"]+)"', filters[0]) == ["save_time", "run_time"]
@@ -207,6 +212,27 @@ def save_boundary_contracts(events, state=None, patches=None, verifier=None):
             "complete run readback may exclude only the two native clocks")
     contains(body(verifier, "internal static async Task Verify("), "await write()", "if (!wasSaved())",
              "readback()", "catch (Exception ex) when (wasSaved())")
+    contains(scope, "AsyncLocal<ShinGetterEventMapSaveScope?>", "ReferenceEqualityComparer.Instance",
+             "ToFrozenSet<SerializableMapPoint>", "Interlocked.CompareExchange(ref points",
+             "Volatile.Read(ref scope.active)", "Interlocked.Exchange(ref active, 0)", "Ambient.Value = previous",
+             "nativeCondition != null ? nativeCondition(obj, value) : value is true",
+             "if (info.IsReadOnly", "InstalledMetadata.TryGetValue(info")
+    capture = body(scope, "internal static void CaptureNativeToSave(")
+    contains(capture, "ReferenceEquals(manager.DebugOnlyGetState(), scope.run)",
+             "ReferenceEquals(preFinishedRoom, scope.checkpoint)", "room.EventId != scope.checkpoint!.ModelId",
+             "scope.RegisterPoints(save)", "scope.Expected = ShinGetterEventSaveVerification.Capture(save)")
+    contains(reload, 'nameof(RunManager.SetUpSavedSinglePlayer)', '"MoveNext"', "code.Count(i => i.Calls(NativeReload)) != 1",
+             "ReferenceEquals(runManager.DebugOnlyGetState(), state)", "OwnsFourthReloadCheckpoint(state, save)",
+             "InspectSnapshot(save)", "await manager.IncrementNumReloads(save, isMultiplayer)")
+    owns = body(events, "internal static bool OwnsFourthReloadCheckpoint(")
+    contains(owns, "run.CurrentRoom != null", "run.Players.Count != 1", "save.Players.Count != 1",
+             "player.NetId != owner.NetId", "save.SerializableRng.Seed != run.Rng.StringSeed",
+             "save.VisitedMapCoords.SequenceEqual(run.VisitedMapCoords)", "point.Rooms.Count != 1",
+             "save.MapPointHistory[act].Count - 1, 0, eventId", "visit.RoomCheckpoint is { Version: 1 }",
+             "ShinGetterPlayerEventState.Encode(saved) == ShinGetterPlayerEventState.Encode(live)")
+    require("NetService" not in owns, "reload identity must not use the uninitialized network service")
+    contains(body(verifier, "internal static void Compare("), "FindDifferences", "DiagnosticSink?.Invoke(comparison)",
+             "catch (Exception ex)", "if (!equal)")
     commit = body(events, "private static async Task<bool> CommitFourth(")
     confirmed = commit[commit.index("catch (ShinGetterEventSaveVerification.ConfirmedWriteReadbackException"):commit.index("catch { snapshot.Rollback()")]
     require("Rollback" not in confirmed and "return false" not in confirmed,
@@ -218,7 +244,9 @@ def save_boundary_negative_contracts(events):
     """Ensure the guard rejects concrete unsafe regressions instead of deleting the old ban."""
     sources = {"events": events, "state": read("src/Services/ShinGetterPlayerEventState.cs"),
                "patches": read("src/Patches/ShinGetterEventInvasionPatch.cs"),
-               "verifier": read("src/Events/ShinGetterEventSaveVerification.cs")}
+                "verifier": read("src/Events/ShinGetterEventSaveVerification.cs"),
+                "scope": read("src/Events/ShinGetterEventMapSaveScope.cs"),
+                "reload": read("src/Patches/ShinGetterEventSaveScopePatch.cs")}
     mutations = [
         ("live room marking", "events", "EventRoom checkpoint = new(room.CanonicalEvent);", "EventRoom checkpoint = room;"),
         ("null save", "events", "manager.SaveRun(checkpoint,", "manager.SaveRun(null,"),
@@ -230,9 +258,19 @@ def save_boundary_negative_contracts(events):
         ("host service", "events", "RunManager.Instance.NetService.Type != NetGameType.Singleplayer", "false"),
         ("global Hook skip", "patches", "if (!ShinGetterEventInvasionService.IsRestoringFourthRoom(runState, room)) return true;", ""),
         ("future stamp admitted", "state", "checkpoint.Version != 1", "false"),
-        ("player-only readback", "events", "StableRunSnapshot(readback.SaveData)", "StableRunSnapshot(expectedPlayerOnly)"),
+        ("player-only readback", "events", "Capture(readback.SaveData)", "Capture(expectedPlayerOnly)"),
         ("hidden pool mismatch", "verifier", '"save_time" or "run_time"', '"save_time" or "run_time" or "acts"'),
         ("Saved boundary inverted", "verifier", "catch (Exception ex) when (wasSaved())", "catch (Exception ex) when (!wasSaved())"),
+        ("uncaptured pre-write expected", "events", "scope.Expected ?? throw", "otherExpected ?? throw"),
+        ("wrong native checkpoint reference", "scope", "ReferenceEquals(preFinishedRoom, scope.checkpoint)", "true"),
+        ("wrong active run", "scope", "ReferenceEquals(manager.DebugOnlyGetState(), scope.run)", "true"),
+        ("revocation removed", "scope", "Interlocked.Exchange(ref active, 0)", "1"),
+        ("global false serialization", "scope", "nativeCondition != null ? nativeCondition(obj, value) : value is true", "true"),
+        ("reload wrong owner", "events", "player.NetId != owner.NetId", "false"),
+        ("reload wrong seed", "events", "save.SerializableRng.Seed != run.Rng.StringSeed", "false"),
+        ("reload no stamp", "events", "&& visit.RoomCheckpoint is { Version: 1 }", "&& true"),
+        ("reload wrong input state", "reload", "ReferenceEquals(runManager.DebugOnlyGetState(), state)", "true"),
+        ("reload global scope", "reload", "!ShinGetterEventInvasionService.OwnsFourthReloadCheckpoint(state, save)", "false"),
     ]
     for name, key, old, new in mutations:
         require(old in sources[key], f"negative contract fixture no longer matches: {name}")

@@ -9,13 +9,18 @@ using MegaCrit.Sts2.Core.Saves;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using ShinGetterMod.Models.Relics;
 using ShinGetterMod.Services;
+using ShinGetterMod.Events;
 
 namespace ShinGetterMod.Patches;
 
 [HarmonyPatch(typeof(JsonSerializationUtility), nameof(JsonSerializationUtility.AlphabetizeProperties))]
 internal static class ShinGetterEventStateJsonPatch
 {
-    private static void Postfix(JsonTypeInfo info) => ShinGetterPlayerEventState.AddJsonField(info);
+    private static void Postfix(JsonTypeInfo info)
+    {
+        ShinGetterPlayerEventState.AddJsonField(info);
+        ShinGetterEventMapSaveScope.AddJsonRule(info);
+    }
 }
 
 [HarmonyPatch(typeof(Player), nameof(Player.ToSerializable))]

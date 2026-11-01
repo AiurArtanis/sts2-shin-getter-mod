@@ -114,6 +114,47 @@ internal static partial class ShinGetterEventInvasionService
 
     internal static bool IsRestoringFourthRoom(IRunState run, AbstractRoom room) => RestoredFourthVisit(run, room) != null;
 
+    // Called only at SetUpSavedSingleplayer's native reload-save call site. At this
+    // point State is bound but rooms/NetService have not yet been initialized.
+    internal static bool OwnsFourthReloadCheckpoint(RunState run, SerializableRun save)
+    {
+        if (run.CurrentRoom != null || run.Players.Count != 1 || save.Players.Count != 1
+            || save.PreFinishedRoom is not { RoomType: RoomType.Event, IsPreFinished: true, EventId: { } eventId }
+            || !FourthEvents.Contains(eventId.Entry) || save.CurrentActIndex != run.CurrentActIndex
+            || save.SerializableRng.Seed != run.Rng.StringSeed || save.VisitedMapCoords.Count == 0
+            || !save.VisitedMapCoords.SequenceEqual(run.VisitedMapCoords)
+            || save.MapPointHistory.Count != run.MapPointHistory.Count) return false;
+        Player owner = run.Players[0];
+        SerializablePlayer player = save.Players[0];
+        if (!ShinGetterPlayerEventState.IsShinGetter(owner.Character.Id) || player.CharacterId != owner.Character.Id
+            || player.NetId != owner.NetId || !ReferenceEquals(owner.RunState, run)) return false;
+        int act = run.CurrentActIndex;
+        if (act < 0 || act >= save.MapPointHistory.Count || save.MapPointHistory[act].Count == 0) return false;
+        for (int a = 0; a < save.MapPointHistory.Count; a++)
+        {
+            if (save.MapPointHistory[a].Count != run.MapPointHistory[a].Count) return false;
+            for (int p = 0; p < save.MapPointHistory[a].Count; p++)
+            {
+                var savedPoint = save.MapPointHistory[a][p];
+                var livePoint = run.MapPointHistory[a][p];
+                if (savedPoint.MapPointType != livePoint.MapPointType
+                    || !savedPoint.Rooms.Select(r => (r.RoomType, r.ModelId)).SequenceEqual(livePoint.Rooms.Select(r => (r.RoomType, r.ModelId)))) return false;
+            }
+        }
+        var point = save.MapPointHistory[act][^1];
+        if (point.Rooms.Count != 1 || point.Rooms[0].RoomType != RoomType.Event || point.Rooms[0].ModelId != eventId) return false;
+        string key = ShinGetterEventVisitIdentity.Create(run.Rng.StringSeed, owner.NetId, act,
+            run.CurrentMapCoord.ToString(), save.MapPointHistory[act].Count - 1, 0, eventId);
+        string? wire = ShinGetterPlayerEventState.GetWire(player);
+        if (wire == null) return false;
+        var saved = ShinGetterPlayerEventState.Decode(wire);
+        var live = ShinGetterPlayerEventState.Get(owner);
+        return saved.Seed == run.Rng.StringSeed && saved.Visits.TryGetValue(key, out var visit)
+            && visit.RoomCheckpoint is { Version: 1 }
+            && (visit.CompletedRoute.Length == 0 || FourthRouteNames(eventId.Entry).Contains(visit.CompletedRoute))
+            && ShinGetterPlayerEventState.Encode(saved) == ShinGetterPlayerEventState.Encode(live);
+    }
+
     internal static bool RestoreFourthState(EventModel model, bool isPreFinished)
     {
         if (!FourthEvents.Contains(model.Id.Entry) || model.Owner == null || model.Owner.RunState.Players.Count != 1
@@ -377,13 +418,15 @@ internal static partial class ShinGetterEventInvasionService
         try
         {
             visit.RoomCheckpoint = new() { RngCounter = model.Rng.Counter, Extra = previousCheckpoint?.Extra };
-            string expected = ShinGetterEventSaveVerification.StableRunSnapshot(RunManager.Instance.ToSave(checkpoint));
+            using var scope = ShinGetterEventMapSaveScope.BeginCheckpoint(owner.RunState, checkpoint);
             await ShinGetterEventSaveVerification.Verify(() => manager.SaveRun(checkpoint, saveProgress: false), () => saved, () =>
             {
                 var readback = native.LoadRunSave();
-                if (!readback.Success || readback.SaveData == null
-                    || ShinGetterEventSaveVerification.StableRunSnapshot(readback.SaveData) != expected)
-                    throw new InvalidOperationException("Native event save readback differs from the complete entered-room run snapshot.");
+                if (!readback.Success || readback.SaveData == null)
+                    throw new InvalidOperationException("Native event save could not be read back.");
+                var actualReadback = ShinGetterEventSaveVerification.Capture(readback.SaveData);
+                var expected = scope.Expected ?? throw new InvalidOperationException("Native pre-write event snapshot was not captured.");
+                ShinGetterEventSaveVerification.Compare(expected, actualReadback);
             });
         }
         catch when (!saved) { visit.RoomCheckpoint = previousCheckpoint; throw; }

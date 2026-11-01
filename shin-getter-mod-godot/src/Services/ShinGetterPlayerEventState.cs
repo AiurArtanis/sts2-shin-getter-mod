@@ -14,6 +14,7 @@ using MegaCrit.Sts2.Core.Saves;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using ShinGetterMod.Models.Characters;
 using ShinGetterMod.Models.Relics;
+using ShinGetterMod.Events;
 
 namespace ShinGetterMod.Services;
 
@@ -172,5 +173,6 @@ internal static class ShinGetterPlayerEventState
         JsonTypeInfo info = JsonSerializationUtility.GetTypeInfo<SerializablePlayer>();
         if (!info.Properties.Any(p => p.Name == FieldName && p.Get != null && p.Set != null))
             throw new InvalidOperationException("SerializablePlayer metadata was cached before event-state patching; persistence unavailable.");
+        ShinGetterEventMapSaveScope.VerifyJsonMetadata();
     }
 }

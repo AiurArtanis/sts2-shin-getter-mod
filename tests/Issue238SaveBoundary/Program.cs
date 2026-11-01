@@ -26,6 +26,12 @@ using ShinGetterMod.Models.Cards;
 // Offline CLR/native-109 contract checks. No SaveManager setup, file-save mutation,
 // game process, Godot scene, map traversal, or claimed production Continue acceptance.
 var mod=typeof(ShinGetterMod.Entry).Assembly;
+if (args.Contains("--inspect-save-api"))
+{
+ foreach (var method in typeof(RunManager).GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Where(m => m.Name.Contains("Saved") || m.Name.Contains("Single")))
+  Console.WriteLine(method.ToString());
+ return;
+}
 var state=mod.GetType("ShinGetterMod.Services.ShinGetterPlayerEventState",true)!;
 var service=mod.GetType("ShinGetterMod.Events.ShinGetterEventInvasionService",true)!;
 var verification=mod.GetType("ShinGetterMod.Events.ShinGetterEventSaveVerification",true)!;
@@ -168,6 +174,13 @@ foreach(string fault in new[]{"ok","no-signal","write-error","read-error","misma
  Require(complete==saved&&rollback!=saved,"Saved transaction boundary changed: "+fault);
 }
 Console.WriteLine("actual verifier: Saved-before/after failure semantics six cases PASS (injected; no production disk proof)");
+rooms[0] = checkpoint; history[0][0].Rooms[0].ModelId = canonical.Id;
+history[0][0].MapPointType = MapPointType.Unknown;
+visits[Key()] = Visit(7);
+var reloadSave = MakeRun(); reloadSave.Players = new() { SavedPlayer() };
+Call(state, "Capture", owner, reloadSave.Players[0]);
+rooms.Clear();
+await ScopedMapSaveChecks.Run(mod, harmony, run, reloadSave, checkpoint);
 Console.WriteLine("ALL_SAVE_BOUNDARY_CLR_CONTRACTS_PASS; REAL_AUTO_SAVE_CONTINUE_NOT_RUN");
 
 public class HostProxy:DispatchProxy
