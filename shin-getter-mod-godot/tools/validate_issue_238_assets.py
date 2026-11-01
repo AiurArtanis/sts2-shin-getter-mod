@@ -14,7 +14,7 @@ MANIFEST = REPO / ART / "manifest.json"
 PROVENANCE = REPO / ART / "final-art-provenance-20261102.json"
 # Independent of the mutable integration manifest. Complete selected records are
 # portable; original approval/export receipts remain traceable by their SHA.
-PROVENANCE_SHA256 = "0cf7da2226aa6ad9f1663ecb7a99fc8ef52daa4471de18706a4280faaf4b05e4"
+PROVENANCE_SHA256 = "60636b8d533a299e82ceb1759d4284605f7ed87416d800873dcb588c68057f5e"
 ORIGINAL_RECEIPTS = {
     "approval": "b5d9b2b913e944dda03651bfda8ce0ed8cd408d828083484dff53316f1347359",
     "cards": "4ad369e88c80244e14a16071de3a77c415713c0e5307db7c51d7e5438239d4c3",
