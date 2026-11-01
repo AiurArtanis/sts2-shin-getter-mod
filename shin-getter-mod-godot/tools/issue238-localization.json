@@ -1,0 +1,679 @@
+{
+  "languages": [
+    "zhs",
+    "eng",
+    "jpn"
+  ],
+  "content": {
+    "cards": {
+      "S_G_C_TABLET_OF_TRUTH.title": [
+        "真理石板",
+        "Tablet of Truth",
+        "真理の石板"
+      ],
+      "S_G_C_TABLET_OF_TRUTH.description": [
+        "降级本场战斗中你所有现存的牌。回复{Heal:diff()}点生命。\n此牌被消耗时，升级本场战斗中你所有可升级的牌。",
+        "Downgrade all your current cards in this combat. Heal {Heal:diff()} HP.\nWhen this card is Exhausted, Upgrade all your upgradable cards in this combat.",
+        "この戦闘に現在存在する自分のカードをすべてダウングレードする。HPを{Heal:diff()}回復する。\nこのカードが廃棄された時、この戦闘のアップグレード可能な自分のカードをすべてアップグレードする。"
+      ],
+      "S_G_C_TRIPLE_WHIRLWIND.title": [
+        "三重旋风",
+        "Triple Whirlwind",
+        "三重旋風"
+      ],
+      "S_G_C_TRIPLE_WHIRLWIND.description": [
+        "对所有敌人造成{CalculatedDamage:diff()}点伤害3次。获得{Block:diff()}点格挡3次。\n[getter_ray]真盖塔龙[/getter_ray]：给予所有敌人3层[gold]衰退[/gold]。",
+        "Deal {CalculatedDamage:diff()} damage to ALL enemies 3 times. Gain {Block:diff()} Block 3 times.\n[getter_ray]Shin Getter Dragon[/getter_ray]: Apply 3 [gold]Wane[/gold] to ALL enemies.",
+        "敵全体に{CalculatedDamage:diff()}ダメージを3回与える。{Block:diff()}ブロックを3回得る。\n[getter_ray]真ゲッタードラゴン[/getter_ray]：敵全体に[gold]衰退[/gold]3を与える。"
+      ],
+      "S_G_C_DRILL_MISSILE.title": [
+        "钻头导弹",
+        "Drill Missile",
+        "ドリルミサイル"
+      ],
+      "S_G_C_DRILL_MISSILE.description": [
+        "造成{CalculatedDamage:diff()}点伤害。\n[white]二号机[/white]：变形。\n打出后，本场战斗中此牌变为[gold]破碎钻头[/gold]。",
+        "Deal {CalculatedDamage:diff()} damage.\n[white]Getter 2[/white]: Transform.\nAfter playing, this card becomes [gold]Broken Drill[/gold] for this combat.",
+        "{CalculatedDamage:diff()}ダメージを与える。\n[white]ゲッター2[/white]：変形する。\n使用後、この戦闘中このカードは[gold]壊れたドリル[/gold]になる。"
+      ],
+      "S_G_C_BROKEN_DRILL.title": [
+        "破碎钻头",
+        "Broken Drill",
+        "壊れたドリル"
+      ],
+      "S_G_C_BROKEN_DRILL.description": [
+        "每当此牌从其他牌堆进入手牌时，获得2层[gold]衰退[/gold]。",
+        "Whenever this card enters your hand from another pile, gain 2 [gold]Wane[/gold].",
+        "このカードが他の山札から手札に入るたび、[gold]衰退[/gold]2を得る。"
+      ],
+      "S_G_C_ANNOTATIONS.title": [
+        "批注",
+        "Annotations",
+        "書き込み"
+      ],
+      "S_G_C_ANNOTATIONS.description": [
+        "选择1张手牌，按类型为其添加本场战斗的附魔：攻击牌[gold]锋利[/gold]、能获得格挡的技能牌[gold]灵巧[/gold]、能力牌[gold]迅捷[/gold]，层数为{Enchantment:diff()}。\n[red]一号机[/red]：额外获得5层[gold]活力[/gold]。",
+        "Enchant a card in your hand for this combat: an Attack with [gold]Sharp[/gold], a Block-gaining Skill with [gold]Nimble[/gold], or a Power with [gold]Swift[/gold], with {Enchantment:diff()} stacks.\n[red]Getter 1[/red]: Also gain 5 [gold]Vigor[/gold].",
+        "手札1枚をこの戦闘中エンチャントする。アタックには[gold]鋭利[/gold]、ブロックを得るスキルには[gold]身軽[/gold]、パワーには[gold]迅速[/gold]を{Enchantment:diff()}付与する。\n[red]ゲッター1[/red]：さらに[gold]活力[/gold]5を得る。"
+      ],
+      "S_G_C_ANNOTATIONS.selectionScreenPrompt": [
+        "选择1张手牌附魔。取消不消耗批注。",
+        "Choose a card to Enchant. Canceling does not consume Annotations.",
+        "エンチャントする手札を選ぶ。キャンセルすると書き込みは消費されない。"
+      ]
+    },
+    "relics": {
+      "S_G_R_ACTIVATED_SAPPHIRE.flavor": [
+        "盖塔线在晶体里留下了四道脉动，最后一道替驾驶舱挡住了冲击。",
+        "Getter Rays left four pulses in the crystal. The last took the blow meant for the cockpit.",
+        "結晶にはゲッター線の脈動が四つ残った。最後の一つが、操縦席を襲う衝撃を受け止める。"
+      ],
+      "S_G_R_SYMBIOTIC_FILTER.flavor": [
+        "它学会了分辨污染，也学会了在盖塔线上留下自己的痕迹。",
+        "It learned to recognize contamination—and to leave its own trace in the Getter Rays.",
+        "汚染を見分けることを覚え、ゲッター線に自らの痕跡を残すことも覚えた。"
+      ],
+      "S_G_R_EMBER.flavor": [
+        "从墓中带走的火种，仍在等待下一次燃烧。",
+        "The spark carried out of the grave still waits to burn again.",
+        "墓から持ち帰った火種は、再び燃える時を待っている。"
+      ],
+      "S_G_R_ACTIVATED_SAPPHIRE.title": [
+        "活化蓝宝石",
+        "Activated Sapphire",
+        "活性化サファイア"
+      ],
+      "S_G_R_ACTIVATED_SAPPHIRE.description": [
+        "每场战斗中，你第4次实际受到的生命伤害变为0。每场战斗仅生效一次。",
+        "Each combat, the fourth instance of actual HP damage you would take is reduced to 0. Once per combat.",
+        "各戦闘で、自分が実際に受ける4回目のHPダメージを0にする。各戦闘1回。"
+      ],
+      "S_G_R_SYMBIOTIC_FILTER.title": [
+        "共生滤膜",
+        "Symbiotic Filter",
+        "共生フィルター"
+      ],
+      "S_G_R_SYMBIOTIC_FILTER.description": [
+        "每场战斗中，第一次有状态牌进入你的手牌时，将其消耗，然后获得1层[gold]进化[/gold]。",
+        "Each combat, the first time a Status enters your hand, Exhaust it, then gain 1 [gold]Evolution[/gold].",
+        "各戦闘で、初めて状態異常カードが自分の手札に入った時、そのカードを廃棄し、その後[gold]進化[/gold]1を得る。"
+      ],
+      "S_G_R_EMBER.title": [
+        "余火",
+        "Ember",
+        "残り火"
+      ],
+      "S_G_R_EMBER.description": [
+        "每场战斗中，第一次抽到带消耗的攻击牌或技能牌时，使该牌在本场战斗中失去消耗。其他类型不占用此次机会。",
+        "Each combat, the first Attack or Skill you draw with Exhaust loses Exhaust for this combat. Other card types do not consume this opportunity.",
+        "各戦闘で、初めて引いた廃棄付きのアタックかスキルは、この戦闘中廃棄を失う。他の種類のカードでは発動回数を消費しない。"
+      ]
+    },
+    "potions": {
+      "S_G_R_MOBILITY_CATALYST.title": [
+        "机动催化剂",
+        "Mobility Catalyst",
+        "機動触媒"
+      ],
+      "S_G_R_MOBILITY_CATALYST.description": [
+        "获得[gold]战机分离[/gold]，获得1点能量，然后抽2张牌。",
+        "Gain [gold]Open Get[/gold], gain 1 Energy, then draw 2 cards.",
+        "[gold]オープンゲット[/gold]を得て、エナジー1を得る。その後カードを2枚引く。"
+      ]
+    },
+    "events": {
+      "SHIN_GETTER_EVENT_INVASION.CANCEL": [
+        "取消",
+        "Cancel",
+        "キャンセル"
+      ],
+      "SHIN_GETTER_EVENT_INVASION.TRANSACTION_ERROR.title": [
+        "事件结算未能确认",
+        "Event transaction could not be confirmed",
+        "イベントの処理を確認できませんでした"
+      ],
+      "SHIN_GETTER_EVENT_INVASION.TRANSACTION_ERROR.description": [
+        "未完成的结算已撤回。若完整写入已确认但回读失败，结果页会保留，避免重复扣除或发奖。请检查存档目录的写入权限，再继续。",
+        "An incomplete transaction has been rolled back. If a complete write was confirmed but readback failed, the result remains closed to prevent duplicate costs or rewards. Check save-folder permissions before continuing.",
+        "未完了の処理は取り消しました。完全な書き込み後に読み戻しだけが失敗した場合は、二重支払い・報酬を防ぐため結果を保持します。セーブ先の書き込み権限を確認してください。"
+      ]
+    }
+  },
+  "routes": [
+    {
+      "event": "WHISPERING_HOLLOW",
+      "route": "BENKEI",
+      "title": [
+        "弁庆",
+        "Benkei",
+        "弁慶"
+      ],
+      "description": [
+        "[yellow]「别堵。让它从我这儿过。」[/yellow]\n自选失去1件遗物，将1张三重旋风加入牌组。",
+        "[yellow]「Don't seal it off. Let it pass through me.」[/yellow]\nChoose a Relic to lose. Add Triple Whirlwind to your deck.",
+        "[yellow]「塞ぐな。俺に通せ。」[/yellow]\nレリックを1つ選んで失い、三重旋風をデッキに加える。"
+      ],
+      "locked": [
+        "[yellow]弁庆：[/yellow]需要真化形态、尚未拥有三重旋风，并持有可移除的遗物。",
+        "[yellow]Benkei:[/yellow] Requires Shin Form, no Triple Whirlwind in the deck, and a removable Relic.",
+        "[yellow]弁慶：[/yellow]真化形態、三重旋風がデッキにないこと、手放せるレリックが必要。"
+      ],
+      "prompt": [
+        "选择要失去的1件遗物；可以取消。",
+        "Choose a Relic to lose. You may cancel.",
+        "手放すレリックを1つ選ぶ。キャンセル可能。"
+      ],
+      "result": [
+        "车弁庆让三号机停在空谷中央。陌生的回声沿盖塔线一层层压进装甲，舱内携带的零件与遗物跟着低鸣起来。\n\n[yellow]「想把这阵风带走，就得留下能压住它的东西。」[/yellow]\n\n他解开那件要留下的东西，打开舱门，把它朝谷中的回声掷出去，随即扣好舱门。回声收住它，谷风骤然回转三次，层层叠起的噪声被剪成一段稳定的旋流，随后彻底安静。\n\n龙马低声说：[red]「你倒舍得。」[/red]\n\n[yellow]「舍不得。可要是不把它留下，盖塔就出不去这道谷。」[/yellow]",
+        "Benkei stops Getter 3 in the hollow's center. Alien echoes press through the Getter rays into its armor; loose parts and Relics hum inside the cockpit.\n\n[yellow]「To carry this wind away, we have to leave something that can hold it down.」[/yellow]\n\nHe unfastens the chosen object, opens the hatch, throws it into the echoes, then seals the hatch again. The echo catches it. The wind turns three times, shearing the piled noise into a stable vortex. Silence follows.\n\nRyoma murmurs, [red]「You can really let it go?」[/red]\n\n[yellow]「No. But unless we leave it, Getter isn't getting out of this hollow.」[/yellow]",
+        "弁慶は谷の中央でゲッター3を止めた。異質な反響がゲッター線を伝い、幾重にも装甲へ押し寄せる。操縦席の部品やレリックまで低く唸った。\n\n[yellow]「この風を持っていくなら、押さえ込めるものを置いていくしかねえ。」[/yellow]\n\n弁慶は手放す品を外し、ハッチを開いて谷の反響へ投げ込むと、すぐに閉じた。反響がそれを受け止め、谷風が三度反転する。重なる騒音は安定した渦へと切り分けられ、やがて静まり返った。\n\n竜馬が低く言う。[red]「思い切ったな。」[/red]\n\n[yellow]「惜しくねえわけじゃない。だが置いていかなきゃ、ゲッターはこの谷を出られねえ。」[/yellow]"
+      ]
+    },
+    {
+      "event": "SYMBIOTE",
+      "route": "BENKEI",
+      "title": [
+        "弁庆",
+        "Benkei",
+        "弁慶"
+      ],
+      "description": [
+        "[yellow]「越界的烧掉。剩下的，我来扛。」[/yellow]\n失去5点最大生命，选择1张攻击牌附魔适应。",
+        "[yellow]「Burn what crosses the line. I'll bear the rest.」[/yellow]\nLose 5 Max HP. Enchant an Attack with Adaptation.",
+        "[yellow]「越えてくる分は焼け。残りは俺が引き受ける。」[/yellow]\n最大HPを5失い、アタック1枚に適応を付与する。"
+      ],
+      "locked": [
+        "[yellow]弁庆：[/yellow]需要大于5点最大生命，以及可附魔适应的攻击牌。",
+        "[yellow]Benkei:[/yellow] Requires more than 5 Max HP and an Attack compatible with Adaptation.",
+        "[yellow]弁慶：[/yellow]最大HPが5より多く、適応を付与できるアタックが必要。"
+      ],
+      "prompt": [
+        "选择1张攻击牌附魔适应。",
+        "Choose an Attack for Adaptation.",
+        "適応を付与するアタックを選ぶ。"
+      ],
+      "result": [
+        "根须沿装甲接缝往驾驶舱爬。车弁庆让三号机向前一顶，将那团不断增生的东西全部压进胸甲外侧的封锁区。\n\n龙马在通讯里骂了一句，短火已经燎过伸向舱门的触须。\n\n[yellow]「封住了。别问我舒不舒服。」[/yellow]",
+        "Roots crawl along the armor seams toward the cockpit. Benkei drives Getter 3 forward, pressing the proliferating mass into the sealed zone outside its chest armor.\n\nRyoma curses over the comms; a short burst of flame scorches the tendrils reaching for the hatch.\n\n[yellow]「It's sealed. Don't ask if it feels good.」[/yellow]",
+        "根が装甲の継ぎ目を這い、操縦席へ迫る。弁慶はゲッター3を押し出し、増え続ける塊を胸部装甲の外側の封鎖区へ押し込んだ。\n\n通信越しに竜馬が悪態をつく。ハッチへ伸びた触手を短い炎が焦がす。\n\n[yellow]「封じたぜ。楽かどうかは聞くなよ。」[/yellow]"
+      ]
+    },
+    {
+      "event": "SYMBIOTE",
+      "route": "HAYATO",
+      "title": [
+        "隼人",
+        "Hayato",
+        "隼人"
+      ],
+      "description": [
+        "[white]「别让它什么都吞。认住第一份就够了。」[/white]\n获得共生滤膜。",
+        "[white]「Don't let it swallow everything. One sample is enough.」[/white]\nObtain Symbiotic Filter.",
+        "[white]「何でも食わせるな。最初の一つを覚えれば十分だ。」[/white]\n共生フィルターを得る。"
+      ],
+      "locked": [
+        "[white]隼人：[/white]需要熔毁或湮灭，并且尚未持有共生滤膜。",
+        "[white]Hayato:[/white] Requires Meltdown or Annihilation, and no Symbiotic Filter.",
+        "[white]隼人：[/white]メルトダウンか殲滅が必要。共生フィルターは未所持でなければならない。"
+      ],
+      "result": [
+        "隼人从共生体边缘揭下一层薄膜，把一小片污染样本按了上去。薄膜先是鼓起，随后安静下来。\n\n第二份样本靠近时，它主动让开。[white]「再喂下去，它就分不清谁才是污染。」[/white]\n\n龙马瞥了一眼那层透明薄膜：[red]「你还真敢往机体上贴。」[/red]",
+        "Hayato peels a membrane from the symbiote's edge and presses a small contamination sample against it. It swells, then settles.\n\nWhen a second sample approaches, it moves aside. [white]「Feed it any more and it won't know which one is the contamination.」[/white]\n\nRyoma glances at the transparent film. [red]「You're really putting that on the machine?」[/red]",
+        "隼人は共生体の端から薄膜を剥がし、小さな汚染試料を押し当てた。膜は一度膨らみ、やがて静まる。\n\n二つ目の試料を近づけると、膜は自ら避けた。[white]「これ以上食わせたら、何が汚染か分からなくなる。」[/white]\n\n透明な膜を見て竜馬が言う。[red]「よくもそんなものを機体に貼る気になったな。」[/red]"
+      ]
+    },
+    {
+      "event": "AROMA_OF_CHAOS",
+      "route": "HAYATO",
+      "title": [
+        "隼人",
+        "Hayato",
+        "隼人"
+      ],
+      "description": [
+        "[white]「混沌也有边。三个里选一个，别贪。」[/white]\n失去6点生命，选择1张牌，再从最多3个不同变化结果中选择1个。",
+        "[white]「Even chaos has limits. Pick one of three. Don't get greedy.」[/white]\nLose 6 HP. Transform a card into one of up to 3 distinct options.",
+        "[white]「混沌にも境界はある。三つから一つ選べ。欲張るな。」[/white]\nHPを6失い、カード1枚を最大3種の異なる候補から選んで変化させる。"
+      ],
+      "locked": [
+        "[white]隼人：[/white]需要策略路线、大于6点生命和可变化的牌；已固定的目标与候选必须仍然合法。",
+        "[white]Hayato:[/white] Requires a Strategy card, more than 6 HP, and a transformable card. Any fixed target and candidates must remain valid.",
+        "[white]隼人：[/white]策略系カード、6より多いHP、変化可能なカードが必要。固定済みの対象と候補も有効でなければならない。"
+      ],
+      "prompt": [
+        "选择变化目标或变化结果；取消不受伤。",
+        "Choose the target or result. Canceling costs no HP.",
+        "変化対象または結果を選ぶ。キャンセル時はHPを失わない。"
+      ],
+      "result": [
+        "孢子灌进二号机的滤网。隼人把参数一档档锁死，投影里的无数岔路相继熄灭，只剩三条仍能维持形状的轨道。\n\n龙马的手已经搭在切断杆上。隼人没有回头：[white]「选。选完就走，别再闻了。」[/white]",
+        "Spores flood Getter 2's filters. Hayato locks the parameters one setting at a time. Countless projected branches go dark, leaving only three paths that can retain their shape.\n\nRyoma's hand is already on the cutoff lever. Hayato does not turn. [white]「Choose. Then we leave. No more breathing it in.」[/white]",
+        "胞子がゲッター2のフィルターへ流れ込む。隼人は設定を一段ずつ固定した。投影された無数の分岐が消え、形を保てる三本の軌道だけが残る。\n\n竜馬の手はすでに遮断レバーにかかっている。隼人は振り向かずに言った。[white]「選べ。決まったら出るぞ。もう嗅ぐな。」[/white]"
+      ]
+    },
+    {
+      "event": "SAPPHIRE_SEED",
+      "route": "RYOMA",
+      "title": [
+        "龙马",
+        "Ryoma",
+        "竜馬"
+      ],
+      "description": [
+        "[red]「用盖塔线照它一下试试？」[/red]\n获得活化蓝宝石。",
+        "[red]「How about a little Getter-ray light?」[/red]\nObtain Activated Sapphire.",
+        "[red]「ゲッター線をちょっと当ててみるか？」[/red]\n活性化サファイアを得る。"
+      ],
+      "locked": [
+        "[red]龙马：[/red]已经持有活化蓝宝石。",
+        "[red]Ryoma:[/red] You already have Activated Sapphire.",
+        "[red]竜馬：[/red]活性化サファイアはすでに持っている。"
+      ],
+      "result": [
+        "龙马把种子搁在掌心，只放出一线盖塔光。晶面深处接连亮了几次，又缓缓暗下去。\n\n掌心发烫。他嘿了一声，把种子收进胸前装甲。[red]「带上。真要挡的时候，它自己会动。」[/red]\n\n通讯里隼人只回了半句：[white]「别当糖含。」[/white]",
+        "Ryoma rests the seed on his palm and releases a single thread of Getter light. Deep inside the crystal, several flashes glow, then slowly fade.\n\nHis palm heats up. He grunts and tucks it into the chest armor. [red]「We'll take it. When something needs stopping, it'll move on its own.」[/red]\n\nHayato's reply is brief. [white]「Don't suck on it like candy.」[/white]",
+        "竜馬は種を掌に置き、一筋だけゲッターの光を当てた。結晶の奥が何度か光り、ゆっくり暗くなる。\n\n掌が熱い。竜馬は鼻を鳴らし、種を胸の装甲へ収めた。[red]「持っていくぞ。止める時が来りゃ、こいつが動く。」[/red]\n\n通信越しに隼人が短く返す。[white]「飴みたいに舐めるなよ。」[/white]"
+      ]
+    },
+    {
+      "event": "HUNGRY_FOR_MUSHROOMS",
+      "route": "BENKEI",
+      "title": [
+        "弁庆",
+        "Benkei",
+        "弁慶"
+      ],
+      "description": [
+        "[yellow]「我尝一口试试，龙马，你别偷吃。」[/yellow]\n失去15点生命，获得5点最大生命，随机升级1张牌。",
+        "[yellow]「I'll try a bite. Ryoma, keep your hands off.」[/yellow]\nLose 15 HP, gain 5 Max HP, and Upgrade 1 random card.",
+        "[yellow]「俺が一口試す。竜馬、つまみ食いするなよ。」[/yellow]\nHPを15失い、最大HPを5得て、ランダムなカード1枚をアップグレードする。"
+      ],
+      "locked": [
+        "[yellow]弁庆：[/yellow]需要三号机／防杀路线、大于15点生命和可升级的牌。",
+        "[yellow]Benkei:[/yellow] Requires a Getter 3 defense card, more than 15 HP, and an upgradable card.",
+        "[yellow]弁慶：[/yellow]ゲッター3の防御系カード、15より多いHP、アップグレード可能なカードが必要。"
+      ],
+      "result": [
+        "车弁庆在龙马抓到蘑菇之前，从两种菌盖上各切下一小片，收进掌心。他进三号机驾驶舱坐定，才把两片菌肉一起送进嘴里。苦味刚压上舌根，紧接着便有一股灼热沿盖塔线冲进机体。\n\n喉咙里烧起一条线，他握杆的手绷到指节发白。装甲内侧传来一声短促的闷响，他硬把机体的躁动压了回去，直到眼前重新对焦。隼人盯着体征曲线，没有出声阻止。\n\n[yellow]「能吃。」[/yellow]他抹了抹嘴，看向还盯着蘑菇的龙马：[yellow]「先等等，真要带走，也得知道它会让机体变成什么样。」[/yellow]",
+        "Before Ryoma can grab a mushroom, Benkei cuts a thin slice from each cap and holds them in his palm. Only once seated in Getter 3's cockpit does he put both pieces into his mouth. Bitterness strikes his tongue, followed by heat rushing through the Getter rays into the machine.\n\nHis throat burns. His knuckles whiten around the controls. A muffled impact comes from inside the armor; he forces the machine's agitation down until his vision refocuses. Hayato watches the vital signs without interrupting.\n\n[yellow]「It's edible.」[/yellow] He wipes his mouth and looks at Ryoma, still eyeing the mushrooms. [yellow]「Hold on. If we're taking any, we need to know what they'll do to Getter.」[/yellow]",
+        "竜馬がキノコへ手を伸ばす前に、弁慶は二種類の傘から薄い一片ずつを切り取った。ゲッター3の操縦席に落ち着いてから、二つとも口に入れる。舌の奥へ苦みが押し寄せ、続いて熱がゲッター線を伝って機体へ走った。\n\n喉が焼け、操縦桿を握る指が白くなる。装甲の内側で短い衝撃音が響く。弁慶は視界が戻るまで、機体の暴れを力ずくで抑え込んだ。隼人は生体曲線を見つめたまま止めなかった。\n\n[yellow]「食えるな。」[/yellow]口元を拭い、まだキノコを見ている竜馬に向き直る。[yellow]「待てって。持っていくなら、ゲッターがどうなるか分かってからだ。」[/yellow]"
+      ]
+    },
+    {
+      "event": "BRAIN_LEECH",
+      "route": "TRIPLE_COORDINATION",
+      "title": [
+        "三体协同",
+        "Triple Coordination",
+        "三人の連携"
+      ],
+      "description": [
+        "[red]「看可以。」[/red][white]「整个人交出去，门都没有。」[/white]\n失去5点最大生命，从3张已升级无色牌中选择1张。",
+        "[red]「You can look.」[/red][white]「But you're not taking all of us.」[/white]\nLose 5 Max HP. Choose 1 of 3 Upgraded Colorless cards.",
+        "[red]「見るだけならいい。」[/red][white]「俺たち全部を渡す気はない。」[/white]\n最大HPを5失い、アップグレード済みの無色カード3枚から1枚選ぶ。"
+      ],
+      "locked": [
+        "需要觉醒之魂或石川贤的原稿、大于5点最大生命，以及3种不同的合法可升级无色牌。",
+        "Requires Awakened Soul or Ken Ishikawa's Manuscript, more than 5 Max HP, and 3 distinct legal upgradable Colorless cards.",
+        "覚醒の魂または石川賢の原稿、5より多い最大HP、3種類の有効なアップグレード可能な無色カードが必要。"
+      ],
+      "prompt": [
+        "选择1张已升级的无色牌。",
+        "Choose an Upgraded Colorless card.",
+        "アップグレード済みの無色カードを1枚選ぶ。"
+      ],
+      "result": [
+        "触须刚碰到意识边缘，龙马便把最凶的一层顶了回去。[red]「看可以。想把我们整个人拖进去，门都没有。」[/red]\n\n隼人从裂隙中截下一小段能够理解的异界知识，随即切断连接。脑蛭尖叫着蜷缩起来，三颗心脏被反冲同时攥紧。车弁庆一手按住龙马的后背，一手扣住隼人的手腕，把两个人从各自的乱流里拽回同一个节拍。\n\n控制台上只剩三份被筛选过的记录。",
+        "The tendrils barely touch their consciousness before Ryoma drives back the fiercest layer. [red]「You can look. But you're not dragging all of us in there.」[/red]\n\nHayato extracts a comprehensible fragment of alien knowledge from the fissure and severs the link. The leech shrieks and coils; the recoil grips all three hearts at once. Benkei presses one hand against Ryoma's back and catches Hayato's wrist with the other, pulling them from separate currents into a single rhythm.\n\nOnly three filtered records remain on the console.",
+        "触手が意識の端に触れた瞬間、竜馬は最も凶暴な層を押し返した。[red]「見るだけならいい。俺たち全部を引きずり込めると思うなよ。」[/red]\n\n隼人は裂け目から理解できる異界の知識を少しだけ抜き取り、接続を断つ。ヒルが叫んで丸まり、反動が三つの心臓を同時に締めつけた。弁慶は片手で竜馬の背を押さえ、もう一方で隼人の手首を掴む。別々の奔流から二人を同じ拍動へ引き戻した。\n\n操縦盤には、選別された三つの記録だけが残った。"
+      ]
+    },
+    {
+      "event": "FIELD_OF_MAN_SIZED_HOLES",
+      "route": "HAYATO",
+      "title": [
+        "隼人",
+        "Hayato",
+        "隼人"
+      ],
+      "description": [
+        "[white]「人能钻，整机进去只会被它挤碎。」[/white]\n失去7点生命，选择1张牌附魔适应。",
+        "[white]「A person fits. Put Getter in there and it'll be crushed.」[/white]\nLose 7 HP. Enchant a card with Adaptation.",
+        "[white]「人間なら通れる。機体ごと入れば潰されるだけだ。」[/white]\nHPを7失い、カード1枚に適応を付与する。"
+      ],
+      "locked": [
+        "[white]隼人：[/white]需要识破或备用方案、大于7点生命，以及可附魔适应的攻击、技能或能力牌。",
+        "[white]Hayato:[/white] Requires Foresight or Backup Plan, more than 7 HP, and a compatible Attack, Skill, or Power.",
+        "[white]隼人：[/white]見切りか予備プラン、7より多いHP、適応を付与できるアタック・スキル・パワーが必要。"
+      ],
+      "prompt": [
+        "选择1张牌附魔适应。",
+        "Choose a card for Adaptation.",
+        "適応を付与するカードを1枚選ぶ。"
+      ],
+      "result": [
+        "龙马刚迈向最近的洞口，隼人便把他拽了回来。岩壁正沿着他的肩线缓慢收缩。\n\n[white]「它在等东西进去，好照着做一副模子。」[/white]\n\n两人退回驾驶舱，机体变形为二号机，独自停在洞口前。隼人卸下一截报废的测距探针，送进最窄的洞口。石壁立刻贴着零件咬合；他在探针被彻底压扁前猛然抽回，收缩的反震沿机械臂撞进驾驶舱。\n\n探针上留下一段压缩的刻度。隼人把它记进战术参数，又扫了一眼仍在变化的岩壁：[white]「哼，这规律也不复杂。」[/white]",
+        "Ryoma steps toward the nearest hole, but Hayato pulls him back. The wall is slowly contracting along his shoulder line.\n\n[white]「It's waiting for something to enter so it can make a mold.」[/white]\n\nThey return to the cockpit. Getter transforms into Getter 2 and stops alone before the holes. Hayato detaches a discarded ranging probe and pushes it into the narrowest opening. Stone bites around it; he jerks it out before it is flattened. The contraction's recoil travels up the arm into the cockpit.\n\nCompressed markings remain on the probe. Hayato enters them into the tactical parameters and looks once more at the shifting wall. [white]「Hmph. Not such a complicated pattern.」[/white]",
+        "竜馬が近くの穴へ踏み出した途端、隼人が引き戻した。岩壁が竜馬の肩の線に沿って、ゆっくり縮んでいる。\n\n[white]「何かが入るのを待っている。そいつに合わせた型を作る気だ。」[/white]\n\n二人は操縦席へ戻り、機体をゲッター2に変形させ、穴の前で止めた。隼人は廃棄予定の測距プローブを外し、一番狭い穴へ差し込む。石壁が即座に噛みついた。潰されきる前に引き抜くと、収縮の反動が腕を伝って操縦席へ叩きつけられた。\n\nプローブに圧縮された目盛りが残る。隼人はそれを戦術設定へ記録し、変わり続ける岩壁を見た。[white]「ふん、大した法則でもないな。」[/white]"
+      ]
+    },
+    {
+      "event": "DOLL_ROOM",
+      "route": "HAYATO",
+      "title": [
+        "隼人",
+        "Hayato",
+        "隼人"
+      ],
+      "description": [
+        "[white]「正面标的是血价。后面才是投币口。」[/white]\n支付80金币，从3件固定玩偶遗物中选择1件。",
+        "[white]「The front asks for blood. The coin slot is around back.」[/white]\nPay 80 Gold. Choose 1 of 3 fixed doll Relics.",
+        "[white]「正面は血の値段だ。投入口は裏にある。」[/white]\n80ゴールドを払い、固定の人形レリック3つから1つ選ぶ。"
+      ],
+      "locked": [
+        "[white]隼人：[/white]需要识破或备用方案，以及80金币。",
+        "[white]Hayato:[/white] Requires Foresight or Backup Plan, and 80 Gold.",
+        "[white]隼人：[/white]見切りか予備プランと80ゴールドが必要。"
+      ],
+      "prompt": [
+        "选择1件玩偶遗物，确认后支付80金币。",
+        "Choose a doll Relic. Pay 80 Gold after confirmation.",
+        "人形レリックを1つ選ぶ。確定後に80ゴールドを払う。"
+      ],
+      "result": [
+        "隼人绕到底座后方，沿磨损处卸下一块假砖。细针刚刚弹出，二号机已经侧身避开。三只玩偶同时睁眼，把各自藏着的东西推到灯下。\n\n[white]「三件都能看。只准拿一件。」[/white]\n\n龙马啧了一声：[red]「那就挑最值钱的。」[/red]\n\n选择落定后，金币才逐枚落进维护槽；另外两盏灯随即熄灭。",
+        "Hayato circles behind the plinth and removes a false brick along its worn edge. Needles spring out, but Getter 2 has already sidestepped them. All three dolls open their eyes and push their hidden possessions into the light.\n\n[white]「Look at all three. Take only one.」[/white]\n\nRyoma clicks his tongue. [red]「Then take the most valuable.」[/red]\n\nOnly after the choice is settled do the coins drop into the maintenance slot. The other two lights go out.",
+        "隼人は台座の裏へ回り、摩耗した部分から偽の煉瓦を外した。針が飛び出す頃には、ゲッター2は身をかわしている。三体の人形が同時に目を開き、隠していた品を灯りの下へ押し出した。\n\n[white]「三つとも見ていい。持っていけるのは一つだ。」[/white]\n\n竜馬が舌打ちする。[red]「なら一番高そうなのにしろ。」[/red]\n\n品が決まってから、金貨が一枚ずつ整備用の溝へ落ちる。他の二つの灯りは消えた。"
+      ]
+    },
+    {
+      "event": "ZEN_WEAVER",
+      "route": "BENKEI",
+      "title": [
+        "弁庆",
+        "Benkei",
+        "弁慶"
+      ],
+      "description": [
+        "[yellow]「这勒不倒我。」[/yellow]\n失去4点最大生命，选择移除1张牌。",
+        "[yellow]「These threads won't bring me down.」[/yellow]\nLose 4 Max HP. Remove 1 card.",
+        "[yellow]「こんな締めつけじゃ倒れねえ。」[/yellow]\n最大HPを4失い、カード1枚を削除する。"
+      ],
+      "locked": [
+        "[yellow]弁庆：[/yellow]需要不屈、铁壁或底力、大于4点最大生命，以及可移除的牌。",
+        "[yellow]Benkei:[/yellow] Requires Persist, Wall, or Prevail, more than 4 Max HP, and a removable card.",
+        "[yellow]弁慶：[/yellow]不屈・鉄壁・底力のいずれか、4より多い最大HP、削除できるカードが必要。"
+      ],
+      "prompt": [
+        "选择移除1张牌。",
+        "Choose a card to remove.",
+        "削除するカードを1枚選ぶ。"
+      ],
+      "result": [
+        "蛛丝一圈圈收紧。车弁庆让三号机缓缓下沉，像一块钉进地里的铁，沉住之后就不再动。黄色护甲在丝线下发出细微的吱响。\n\n龙马几回想催弁庆松手，最后还是没开口。\n\n最旧的那根丝终于绷断。弁庆借着松开的空隙，把一段旧战斗记录从控制台里清掉。护甲接缝上留下几道勒痕，最深的一道不会合上。\n\n弁庆喘着气笑了笑：[yellow]「松开了。这一段，也该放下了。」[/yellow]",
+        "Webs tighten in rings. Benkei lowers Getter 3 slowly, like iron driven into the earth, then holds perfectly still. Yellow armor creaks beneath the threads.\n\nRyoma nearly tells him to let go several times, but says nothing.\n\nThe oldest strand finally snaps. In the opening, Benkei clears an old combat record from the console. Marks remain on the armor seams; the deepest will not close.\n\nBreathing hard, he smiles. [yellow]「It's loose. Time to let this part go, too.」[/yellow]",
+        "糸が幾重にも締まっていく。弁慶はゲッター3をゆっくり沈め、地に打ち込まれた鉄のように動かなくなった。黄色い装甲が糸の下で小さく軋む。\n\n竜馬は何度か手を離せと言いかけたが、結局黙っていた。\n\n一番古い糸がついに切れる。その隙に、弁慶は操縦盤から古い戦闘記録を一つ消した。装甲の継ぎ目に締めつけの跡が残る。最も深い傷は閉じない。\n\n息を切らして笑った。[yellow]「ほどけたな。この分も、もう手放していい頃だ。」[/yellow]"
+      ]
+    },
+    {
+      "event": "ZEN_WEAVER",
+      "route": "HAYATO",
+      "title": [
+        "隼人",
+        "Hayato",
+        "隼人"
+      ],
+      "description": [
+        "[white]「网的极限算完了。钻头打出去。」[/white]\n失去10点生命，将1张钻头导弹加入牌组。",
+        "[white]「I've calculated the web's limit. Fire the drill.」[/white]\nLose 10 HP. Add Drill Missile to your deck.",
+        "[white]「網の限界は計算した。ドリルを撃ち出すぞ。」[/white]\nHPを10失い、ドリルミサイルをデッキに加える。"
+      ],
+      "locked": [
+        "[white]隼人：[/white]需要真化形态、大于10点生命，且牌组中尚未拥有钻头导弹。",
+        "[white]Hayato:[/white] Requires Shin Form, more than 10 HP, and no Drill Missile in the deck.",
+        "[white]隼人：[/white]真化形態、10より多いHP、デッキにドリルミサイルがないことが必要。"
+      ],
+      "result": [
+        "隼人没有和织网者比耐心。二号机贴着蛛网最低处加速，钻头转速越过安全线。丝线合拢的瞬间，钻头脱离机体，拖着白色尾迹贯穿整张巨网。\n\n发射的反冲猛然砸进驾驶舱。警报灯接连亮起，远处只剩一截失去平衡的钻头残骸。\n\n[white]「看到了吗，这就是真狮虎的力量。」[/white]",
+        "Hayato does not compete in patience. Getter 2 accelerates along the web's lowest edge; the drill spins beyond its safety limit. As the threads close, it launches from the machine and pierces the giant web with a white trail.\n\nThe recoil slams into the cockpit. Warning lights flare in succession. In the distance, only a broken, unbalanced drill remains.\n\n[white]「You see? That's the power of Shin Liger.」[/white]",
+        "隼人は織り手と忍耐を競わない。ゲッター2が網の最下部に沿って加速し、ドリルの回転数が安全域を超える。糸が閉じる瞬間、ドリルは機体を離れ、白い尾を引いて巨大な網を貫いた。\n\n発射の反動が操縦席を叩く。警告灯が次々に点り、遠くには均衡を失ったドリルの残骸だけが残る。\n\n[white]「見たか、これが真ライガーの力だ。」[/white]"
+      ]
+    },
+    {
+      "event": "WATERLOGGED_VAULT",
+      "route": "RYOMA",
+      "title": [
+        "龙马",
+        "Ryoma",
+        "竜馬"
+      ],
+      "description": [
+        "[red]「大箱小箱都一样，打到它把能拿的吐出来！」[/red]\n失去8点生命，获得150金币。",
+        "[red]「Big chest, small chest—hit it until it spits out what we can take!」[/red]\nLose 8 HP. Gain 150 Gold.",
+        "[red]「大箱も小箱も同じだ。取れる分を吐くまでぶん殴る！」[/red]\nHPを8失い、150ゴールドを得る。"
+      ],
+      "locked": [
+        "[red]龙马：[/red]需要气魄，当前生命必须大于8；不足时会致死。",
+        "[red]Ryoma:[/red] Requires Drive and more than 8 HP. The cost would otherwise be fatal.",
+        "[red]竜馬：[/red]気迫と8より多い現在HPが必要。不足すれば致命的。"
+      ],
+      "result": [
+        "最亮的锁孔还在对人眨眼，一号机的拳头越过它，直直砸在那口更大的箱子上。箱盖当场崩开，锁舌折断，注水阀跟着裂开。\n\n水立刻从破口倒灌进来，碎金在浑水里一闪就不见了。反冲震得龙马手臂发麻，他只来得及扫走一批金币，便一脚踢开仍在咬合的箱盖。\n\n[red]「会咬人的箱子，就该先挨一拳。」[/red]",
+        "The brightest keyhole still winks at them when Getter 1's fist passes it and strikes the larger chest. The lid bursts, the bolt snaps, and the water valve cracks.\n\nWater pours through the breach. Loose gold flashes in the murk and vanishes. The recoil numbs Ryoma's arm; he sweeps up one batch of coins before kicking away the snapping lid.\n\n[red]「A chest that bites deserves a fist first.」[/red]",
+        "まぶしい鍵穴がまだ誘うように光る中、ゲッター1の拳がその上を越え、大きな箱へ叩き込まれた。蓋が弾け、錠が折れ、注水弁まで割れる。\n\n破れ目から水が流れ込み、金片が濁流の中で一瞬光って消えた。反動で竜馬の腕が痺れる。金貨を一掴みかき集め、まだ噛みつく蓋を蹴り飛ばした。\n\n[red]「噛みつく箱なら、先に一発食らわせてやる。」[/red]"
+      ]
+    },
+    {
+      "event": "POTION_COURIER",
+      "route": "RYOMA",
+      "title": [
+        "龙马",
+        "Ryoma",
+        "竜馬"
+      ],
+      "description": [
+        "[red]「抢什么抢？我可是有证的。六十金币，卖不卖？」[/red]\n支付60金币，从3种不同的罕见药水中选择1瓶。",
+        "[red]「Rob you? I've got a certificate! Sixty Gold. You selling or not?」[/red]\nPay 60 Gold. Choose 1 of 3 distinct Uncommon Potions.",
+        "[red]「奪うだと？俺には証明書があるんだ。六十ゴールド、売るのか売らねえのか？」[/red]\n60ゴールドを払い、異なるアンコモンポーション3種から1本選ぶ。"
+      ],
+      "locked": [
+        "[red]龙马：[/red]需要良好市民证、60金币、1个空药水槽及3种不同的已解锁罕见药水。",
+        "[red]Ryoma:[/red] Requires Good Citizen Card, 60 Gold, an empty Potion slot, and 3 distinct unlocked Uncommon Potions.",
+        "[red]竜馬：[/red]善良な市民証、60ゴールド、空きポーション枠、異なる解放済みアンコモンポーション3種が必要。"
+      ],
+      "prompt": [
+        "选择1瓶罕见药水；确认后支付60金币。",
+        "Choose an Uncommon Potion. Pay 60 Gold after confirmation.",
+        "アンコモンポーションを1本選ぶ。確定後に60ゴールドを払う。"
+      ],
+      "result": [
+        "龙马把那张怎么看都不像他的证件拍在箱盖上，报出六十金币的价钱，又抓了一把金币按在箱边。\n\n快递员核对许久，才摆出三瓶货真价实的药水。龙马选中一瓶，数好的金币才当着他的面推过封条。\n\n[red]「看见没有？我也会按规矩买东西。」[/red]\n\n[white]「那就别再强调『也会』。」[/white]隼人合上箱子。",
+        "Ryoma slaps a thoroughly unconvincing certificate onto the lid, names his price, and pins a handful of coins against the box.\n\nAfter a long inspection, the courier sets out three genuine Potions. Ryoma picks one; only then are the counted coins pushed past the seal.\n\n[red]「See? I can buy things by the rules, too.」[/red]\n\n[white]「Then stop emphasizing 'too.'」[/white] Hayato closes the box.",
+        "竜馬はどう見ても似合わない証明書を箱の蓋へ叩きつけ、六十ゴールドと言うなり金貨を箱の端へ押さえた。\n\n配達員は長く調べた末、本物のポーションを三本並べた。竜馬が一本選んでから、数えた金貨が封印の向こうへ押し出される。\n\n[red]「見たか？俺だってまともに買い物できるんだ。」[/red]\n\n[white]「なら『だって』を強調するな。」[/white]隼人が箱を閉じた。"
+      ]
+    },
+    {
+      "event": "POTION_COURIER",
+      "route": "HAYATO",
+      "title": [
+        "隼人",
+        "Hayato",
+        "隼人"
+      ],
+      "description": [
+        "[white]「封条是假的，不过爆栓是真的。七十，不能更多了。」[/white]\n支付70金币，获得机动催化剂；栏满时可先丢弃1瓶已有药水。",
+        "[white]「The seal is fake. The explosive bolts are real. Seventy, not a coin more.」[/white]\nPay 70 Gold for Mobility Catalyst. If full, choose a Potion to discard first.",
+        "[white]「封は偽物だが、爆発ボルトは本物だ。七十、それ以上は出さん。」[/white]\n70ゴールドで機動触媒を得る。枠が満杯なら先に所持ポーション1本を捨てられる。"
+      ],
+      "locked": [
+        "[white]隼人：[/white]需要研究笔记和70金币。",
+        "[white]Hayato:[/white] Requires Research Notes and 70 Gold.",
+        "[white]隼人：[/white]研究ノートと70ゴールドが必要。"
+      ],
+      "prompt": [
+        "选择丢弃1瓶已有药水；可以取消且不扣款。",
+        "Choose a Potion to discard. Canceling costs nothing.",
+        "捨てるポーションを1本選ぶ。キャンセル時は支払わない。"
+      ],
+      "result": [
+        "隼人把细长瓶子举到灯下，对照研究笔记扫过瓶底。快递员还在解释封条编号，七十枚金币已经被推到箱边。\n\n[white]「这不是变形药。用了就得立刻动。」[/white]",
+        "Hayato lifts the narrow bottle into the light and checks its base against his research notes. The courier is still explaining the seal number when seventy coins reach the box's edge.\n\n[white]「This isn't a transformation Potion. Use it and move immediately.」[/white]",
+        "隼人は細長い瓶を灯りへ掲げ、研究ノートと瓶底を照合した。配達員が封の番号を説明している間に、七十枚の金貨が箱の端へ押し出される。\n\n[white]「変形薬じゃない。使ったらすぐ動け。」[/white]"
+      ]
+    },
+    {
+      "event": "FORGOTTEN_GRAVE",
+      "route": "TRIPLE_COORDINATION",
+      "title": [
+        "三体协同",
+        "Triple Coordination",
+        "三人の連携"
+      ],
+      "description": [
+        "[red]「别叫我们的名字。」[/red][white]「能用的留下。」[/white][yellow]「被抽走的，我扛。」[/yellow]\n失去6点最大生命，选择1张消耗牌附魔灵魂之力。",
+        "[red]「Don't call our names.」[/red][white]「Keep what we can use.」[/white][yellow]「I'll bear what it takes.」[/yellow]\nLose 6 Max HP. Enchant a compatible Exhaust card with Soul's Power.",
+        "[red]「俺たちの名を呼ぶな。」[/red][white]「使えるものを残せ。」[/white][yellow]「取られる分は俺が受ける。」[/yellow]\n最大HPを6失い、適合する廃棄付きカード1枚に魂力を付与する。"
+      ],
+      "locked": [
+        "需要觉醒之魂或超强气、大于6点最大生命，以及通过灵魂之力兼容检查的消耗牌。",
+        "Requires Awakened Soul or Super Spirit, more than 6 Max HP, and an Exhaust card compatible with Soul's Power.",
+        "覚醒の魂か超強気、6より多い最大HP、魂力を付与できる廃棄付きカードが必要。"
+      ],
+      "prompt": [
+        "选择1张消耗牌附魔灵魂之力。",
+        "Choose an Exhaust card for Soul's Power.",
+        "魂力を付与する廃棄付きカードを選ぶ。"
+      ],
+      "result": [
+        "墓穴里的低语轮番叫出三个名字。龙马把第一阵侵入顶了回去：[red]「别钻进来。」[/red]\n\n隼人从死者的回声中截下一段仍能用于战斗的经验。车弁庆没有回应那些声音，只让墓穴从三颗心脏中取走约定的份额。\n\n灰火缠上选中的战术记录，原本注定熄灭的部分重新稳定下来。",
+        "Whispers in the grave call their three names in turn. Ryoma drives back the first intrusion. [red]「Stay out.」[/red]\n\nHayato extracts experience still useful in battle from the dead's echoes. Benkei gives no answer, allowing the grave to take its agreed share from their three hearts.\n\nGray fire curls around the chosen tactical record. What was destined to fade becomes stable again.",
+        "墓の囁きが三人の名を順に呼ぶ。竜馬は最初の侵入を押し返した。[red]「入ってくるんじゃねえ。」[/red]\n\n隼人は死者の反響から、まだ戦いに使える経験を切り取る。弁慶は声に答えず、三つの心臓から約束した分だけを墓に取らせた。\n\n灰色の火が選んだ戦術記録へ絡みつく。消えるはずだった部分が再び安定した。"
+      ]
+    },
+    {
+      "event": "FORGOTTEN_GRAVE",
+      "route": "RYOMA",
+      "title": [
+        "龙马",
+        "Ryoma",
+        "竜馬"
+      ],
+      "description": [
+        "[red]「还在烧的东西，凭什么埋回去？」[/red]\n获得余火。",
+        "[red]「If it's still burning, why bury it again?」[/red]\nObtain Ember.",
+        "[red]「まだ燃えてるものを、何で埋め戻す？」[/red]\n残り火を得る。"
+      ],
+      "locked": [
+        "[red]龙马：[/red]已经持有余火。",
+        "[red]Ryoma:[/red] You already have Ember.",
+        "[red]竜馬：[/red]残り火はすでに持っている。"
+      ],
+      "result": [
+        "坟土底下有一簇余火。每次被灰烬盖住，它都会从另一道缝隙里重新透出红光。\n\n龙马伸手将它攥住。低语沿着手臂往上爬，他反而握得更紧：[red]「想烧就继续烧。谁也别埋。」[/red]\n\n火光没有变旺，只在掌心留下一个仍在跳动的红点。",
+        "An ember glows beneath the grave's soil. Each time ash covers it, red light leaks from another crack.\n\nRyoma reaches in and grasps it. Whispers climb his arm; he grips tighter. [red]「If you want to burn, burn. Nobody's burying you.」[/red]\n\nThe flame does not grow. It leaves only a pulsing red point in his palm.",
+        "墓土の下で残り火が光る。灰に覆われるたび、別の隙間から赤い光が漏れ出した。\n\n竜馬は手を伸ばして掴む。囁きが腕を這い上がると、かえって強く握った。[red]「燃えたいなら燃えてろ。誰にも埋めさせねえ。」[/red]\n\n炎は大きくならない。掌に、まだ脈打つ赤い点だけが残った。"
+      ]
+    },
+    {
+      "event": "STONE_OF_ETERNITY",
+      "route": "BENKEI",
+      "title": [
+        "弁庆",
+        "Benkei",
+        "弁慶"
+      ],
+      "description": [
+        "[yellow]「药水留着。等我们过去，我再放手。」[/yellow]\n净失去12点当前生命，获得10点最大生命。",
+        "[yellow]「Keep the Potions. I'll let go once we're through.」[/yellow]\nLose a net 12 current HP. Gain 10 Max HP.",
+        "[yellow]「ポーションは残しとけ。通り抜けたら手を離す。」[/yellow]\n現在HPを正味12失い、最大HPを10得る。"
+      ],
+      "locked": [
+        "[yellow]弁庆：[/yellow]需要铁壁或底力，当前生命必须大于12。",
+        "[yellow]Benkei:[/yellow] Requires Wall or Prevail, and more than 12 current HP.",
+        "[yellow]弁慶：[/yellow]鉄壁か底力と、12より多い現在HPが必要。"
+      ],
+      "result": [
+        "车弁庆让三号机把双臂嵌进巨石下方。地面先沉了一截，整条通道随即在装甲的呻吟声中震动起来。石缝里的碎屑顺着装甲往下落。\n\n龙马和隼人在驾驶舱里没有出声，看着他一步步把石头顶高，斜靠在通道侧壁上。三号机贴着石壁挪过那段窄口，等落下的碎屑滚停，他才慢慢收回手臂。石头在壁面上挂了一瞬，随即脱开，砸在他身后的通道里，闷响盖过了驾驶舱里的喘息。",
+        "Benkei wedges Getter 3's arms beneath the boulder. The ground sinks, then the passage trembles with the armor's groaning. Fragments rain down along its plates.\n\nRyoma and Hayato watch silently from the cockpit as he lifts the stone step by step and leans it against the wall. Getter 3 edges through the narrow gap. Only once the fallen debris stops rolling does he withdraw his arms. The boulder hangs against the wall for a moment, then drops into the passage behind him, its dull crash drowning out his breathing.",
+        "弁慶はゲッター3の両腕を巨石の下へ差し込んだ。地面が沈み、装甲の呻きとともに通路全体が震える。石の隙間の破片が装甲を伝って落ちた。\n\n竜馬と隼人は操縦席で黙って見ていた。弁慶は少しずつ石を持ち上げ、通路の壁へ斜めに預ける。ゲッター3が壁に沿って狭い隙間を抜け、落ちた破片が止まってから、ようやく腕を引いた。石は壁に一瞬引っかかり、外れて背後の通路へ落ちる。鈍い音が操縦席の荒い息をかき消した。"
+      ]
+    },
+    {
+      "event": "TABLET_OF_TRUTH",
+      "route": "HAYATO",
+      "title": [
+        "隼人",
+        "Hayato",
+        "隼人"
+      ],
+      "description": [
+        "[white]「真理不必全读。找到它不敢删的那一行。」[/white]\n失去5点最大生命，选择升级1张牌。",
+        "[white]「We don't need all the truth. Find the line it won't erase.」[/white]\nLose 5 Max HP. Upgrade 1 chosen card.",
+        "[white]「真理を全部読む必要はない。消せない一行を探せ。」[/white]\n最大HPを5失い、カード1枚を選んでアップグレードする。"
+      ],
+      "locked": [
+        "[white]隼人：[/white]需要识破或备用方案、大于5点最大生命和可升级牌；仅首次解读前可用。",
+        "[white]Hayato:[/white] Requires Foresight or Backup Plan, more than 5 Max HP, and an upgradable card. Only before the first decipher.",
+        "[white]隼人：[/white]見切りか予備プラン、5より多い最大HP、アップグレード可能なカードが必要。最初の解読前のみ。"
+      ],
+      "prompt": [
+        "选择升级1张牌。",
+        "Choose a card to Upgrade.",
+        "アップグレードするカードを1枚選ぶ。"
+      ],
+      "result": [
+        "石板上的句子还在自行生长。隼人让二号机停稳，只盯着每次改写后都留在原处的那道刻痕。\n\n银白光切下去，反噬随即沿操纵杆钻进身体。他头也不抬：[white]「够了。再读下去，它就要拿命换答案。」[/white]\n\n石板沉回阴影，没有留下下一页。",
+        "Sentences keep growing on the tablet. Hayato steadies Getter 2 and watches only the mark that stays in place through every rewrite.\n\nSilver-white light cuts down. The backlash runs through the controls into his body. He does not look up. [white]「Enough. Keep reading and it'll ask for a life instead of an answer.」[/white]\n\nThe tablet sinks into shadow, leaving no next page.",
+        "石板の文がひとりでに増えていく。隼人はゲッター2を止め、書き換わるたびに同じ場所へ残る刻みだけを見た。\n\n銀白の光が切り込み、反動が操縦桿を伝って身体へ走る。隼人は顔も上げない。[white]「もういい。この先は答えと引き換えに命を取る気だ。」[/white]\n\n石板は影へ沈み、次の頁は残らなかった。"
+      ]
+    },
+    {
+      "event": "TABLET_OF_TRUTH",
+      "route": "BENKEI",
+      "title": [
+        "弁庆",
+        "Benkei",
+        "弁慶"
+      ],
+      "description": [
+        "[yellow]「先收下。现在看不懂，就留着。」[/yellow]\n将1张真理石板加入牌组。",
+        "[yellow]「Take it. If we can't read it now, we keep it.」[/yellow]\nAdd Tablet of Truth to your deck.",
+        "[yellow]「まず受け取ろう。今読めないなら、取っておけばいい。」[/yellow]\n真理の石板をデッキに加える。"
+      ],
+      "locked": [
+        "[yellow]弁庆：[/yellow]牌组中已拥有真理石板；仅首次解读前可用。",
+        "[yellow]Benkei:[/yellow] Tablet of Truth is already in your deck. Only before the first decipher.",
+        "[yellow]弁慶：[/yellow]真理の石板はすでにデッキにある。最初の解読前のみ。"
+      ],
+      "result": [
+        "文字仍在石面上游走。车弁庆没有伸手追逐答案，只让三号机托稳石板边缘，等那些危险的刻痕停止扩张。\n\n他把石板封进隔离层：[yellow]「看不懂的东西，更不能随便砸。带回去。」[/yellow]",
+        "Letters wander across the stone. Benkei does not chase the answers; he has Getter 3 steady the tablet's edge until the dangerous markings stop spreading.\n\nHe seals it in the isolation layer. [yellow]「If we don't understand it, all the more reason not to smash it. Take it back.」[/yellow]",
+        "文字が石の表面を泳ぎ続ける。弁慶は答えを追わず、ゲッター3に石板の端を支えさせ、危険な刻みが広がらなくなるまで待った。\n\n隔離層へ封じ込める。[yellow]「分からねえものこそ、むやみに壊せねえ。持って帰ろう。」[/yellow]"
+      ]
+    },
+    {
+      "event": "SELF_HELP_BOOK",
+      "route": "RYOMA",
+      "title": [
+        "龙马",
+        "Ryoma",
+        "竜馬"
+      ],
+      "description": [
+        "[red]「讲那么多干什么？有用的几句撕下来就行。」[/red]\n将1张批注加入牌组。",
+        "[red]「What's all the talking for? Tear out the useful lines.」[/red]\nAdd Annotations to your deck.",
+        "[red]「長話なんか要るか。使える数行を破って持っていきゃいい。」[/red]\n書き込みをデッキに加える。"
+      ],
+      "locked": [
+        "[red]龙马：[/red]牌组中已经拥有批注。",
+        "[red]Ryoma:[/red] Annotations is already in your deck.",
+        "[red]竜馬：[/red]書き込みはすでにデッキにある。"
+      ],
+      "result": [
+        "龙马懒得读结论，只照着页边最危险的一招比划。\n\n他把那几页扯下来塞进怀里：[red]「这几句能用，剩下的，等打起来再说。」[/red]",
+        "Ryoma cannot be bothered with the conclusion. He tries only the most dangerous move sketched in the margin.\n\nHe tears out the pages and stuffs them inside his jacket. [red]「These lines will do. The rest can wait until the fight.」[/red]",
+        "竜馬は結論を読む気になれず、頁の端にある最も危険な技だけを真似してみた。\n\nその数頁を破り、懐へ押し込む。[red]「この数行は使える。残りは戦いながら考えりゃいい。」[/red]"
+      ]
+    }
+  ]
+}

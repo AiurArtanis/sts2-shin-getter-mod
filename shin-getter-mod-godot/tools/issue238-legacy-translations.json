@@ -1,0 +1,170 @@
+{
+  "INFESTED_AUTOMATON.HAYATO": [
+    "Hayato leaves the exposed core untouched. He sends a scan against the abnormal pulse, marking every parasitic filament in his field of view.\n\n[white]「The pulses don't match. It can't hide any longer.」[/white]\n\nGetter Two cuts in along the markers. The filaments snap and writhe as the mechanical core lights again; a sharp neural feedback shoots through the controls into the cockpit. Pressing a hand to his temple, Hayato intercepts a complete technical record before the core finishes its self-check.",
+    "隼人は露出したコアには触れなかった。異常な脈動を逆にたどる走査線で、寄生する菌糸を一本ずつ視界に刻んでいく。\n\n[white]「脈動が合っていない。もう隠れられんぞ。」[/white]\n\n二号機が印に沿って一瞬で切り込む。菌糸は痙攣しながら断ち切られ、機械のコアが再び光る。鋭い神経の反動が制御系を伝い、操縦席を貫いた。隼人は額を押さえ、コアの自己診断が終わる前に、完全な技術記録を一つ抜き取った。"
+  ],
+  "BYRDONIS_NEST.BENKEI": [
+    "As the nest floor splits, Benkei Kuruma has Getter Three braced against the broken branches, with Ryoma and Hayato in the cockpit behind him. Its forearms catch the rolling eggs one by one and return them to the nest.\n\nThe weight of the supporting branches presses entirely onto Getter Three's shoulder armor, denting the metal. Benkei grits his teeth and holds. Only when the last branch is back in place does he look up at the sky.\n\n[yellow]「All right. Time to move.」[/yellow]",
+    "巣の底が割れた時、車弁慶はすでに三号機を折れた枝の前に据えていた。竜馬と隼人は、その後ろの操縦席にいる。巣から転がり出る卵を、三号機の両腕が一つずつ受け止め、巣へ戻していく。\n\n支え直した枝の重みが肩の装甲にのしかかり、金属がへこんだ。弁慶は歯を食いしばり、力を緩めない。最後の枝が元の位置に収まってから、ようやく空を見上げた。\n\n[yellow]「よし、行こうぜ。」[/yellow]"
+  ],
+  "BYRDONIS_NEST.RYOMA": [
+    "Ryoma stoops to lift an egg and carries it into the cockpit before combination, securing it in a cushioned compartment. Benkei steadies it at the hatch while Hayato glances at the winged shadows circling above.\n\n[white]「It'll look for the egg when it returns. We wait here.」[/white]\n\n[yellow]「It's after the egg. Keep it from crashing into the cockpit.」[/yellow]\n\nRyoma fastens each latch of the compartment and looks toward the shadow beyond the cliff.\n\n[red]「Right on time. Plenty of room here. [jitter]CHANGE GETTER ONE![/jitter]」[/red]\n\nThe roar of combination rolls between the cliffs. Shin Getter stands before the nest. The egg remains secure in its cushioned compartment.",
+    "竜馬は身をかがめて卵を一つ抱え、まだ合体していない機体の操縦席に潜り込み、緩衝区画へ収めた。弁慶がハッチのそばで支え、隼人は巣の上を旋回する羽の影に目をやる。\n\n[white]「戻ってくれば、まず卵を探す。ここで待つぞ。」[/white]\n\n[yellow]「狙いは卵だ。操縦席に突っ込ませるなよ。」[/yellow]\n\n竜馬は区画の留め具を一つずつ締め、崖の向こうの影を見上げた。\n\n[red]「いいところに来たな。ここなら十分広い。[jitter]チェンジ・ゲッター・ワン！[/jitter]」[/red]\n\n叫びとともに合体の轟音が崖間を走り、真ゲッターが巣の前に立つ。操縦席の卵は、緩衝区画にしっかり収まったままだ。"
+  ],
+  "BYRDONIS_NEST.RYOMA_HATCH": [
+    "The Byrdonis falls into the rocks outside the nest. Residual [getter_ray]Getter Rays[/getter_ray] still drift between the cliffs. Inside the cockpit, the egg gives a faint tremor, then develops a hairline crack.\n\nHayato presses a hand to the console, watching its shifting readings.\n\n[white]「It absorbed the [getter_ray]Getter Rays[/getter_ray] left by the battle...? The hatching's accelerated.」[/white]\n\nBenkei has already placed his palm beneath the hatch, his voice gentler now.\n\n[yellow]「Easy. It hasn't found its feet yet.」[/yellow]\n\nThe shell breaks. A baby bird peeks out. Ryoma watches it shake fragments from its wings, then lifts it from the compartment.\n\nNone of them speaks at once. Only the chick's tiny wingbeats fill the cockpit.\n\n[red]「Then come with us, little one.」[/red]",
+    "ドニスの異鳥が巣の外の岩場へ落ちる。戦いの余波に残った[getter_ray]ゲッター線[/getter_ray]が、まだ崖間を漂っていた。操縦席の卵が小さく震え、殻に細い亀裂が走る。\n\n隼人はコンソールに手を置き、跳ね続ける数値を見つめた。\n\n[white]「戦いの余波の[getter_ray]ゲッター線[/getter_ray]を吸収した……のか。孵化が早まったな。」[/white]\n\n弁慶はもうハッチに手のひらを添え、声を落としている。\n\n[yellow]「ゆっくりだ。まだ足元がおぼつかねえ。」[/yellow]\n\n殻が割れ、異鳥の雛が顔を出した。竜馬は羽から殻を振り落とす様子を見て、そっと抱き上げる。\n\n三人とも、すぐには口を開かなかった。操縦席には小さな羽ばたきだけが響く。\n\n[red]「それじゃ、一緒に来いよ、ちび助。」[/red]"
+  ],
+  "DOORS_OF_LIGHT_AND_DARK.RYOMA": [
+    "The corridor is too narrow for the machine. Ryoma leaves Shin Getter outside and stands between the doors himself.\n\nBoth doors urge him on. He fixes his eyes on the wall with no handle.\n\nBefore Hayato finishes explaining the mechanism, Ryoma charges and punches it. Stone splits down the middle. Light and darkness pour through the crack; recoil drives from his knuckles into his forearm. Both currents scrape his side. He stumbles half a step into the doorframe. The nearest combat record tears apart, leaving a colorless outline.\n\n[red][jitter]「Doors are for people who play by the rules.」[/jitter][/red] He braces his other hand on the wall and shakes the stone dust from his fingers.",
+    "通廊は機体が入れないほど狭い。竜馬は真ゲッターを外に残し、自分で二つの扉の間に立った。\n\n両方の扉が選択を急かす。竜馬が見据えたのは、取っ手のない壁だった。\n\n隼人が仕掛けの説明を終える前に、竜馬は走り込み、拳を叩きつけた。石壁が中央から裂け、光と闇が噴き出す。拳の甲から前腕へ反動が逆流し、二つの奔流が半身をかすめた。半歩よろけ、肩が扉枠にぶつかる。最も近くにあった戦闘記録が引き裂かれ、色のない輪郭だけが残った。\n\n[red][jitter]「扉なんざ、行儀のいい奴のためにあるんだよ。」[/jitter][/red]もう片方の手で壁を支え、指についた石屑を振り払った。"
+  ],
+  "SLIPPERY_BRIDGE.RYOMA": [
+    "Ryoma takes Getter One onto the bridge through the downpour. The first plank snaps beneath its foot, driving a shock through the controls into the cockpit. He never looks back. Through collapsing boards he carries the machine to the far bank; splinters scrape the armor and stones strike the canopy, but nothing is left behind.\n\n[red]「Throw something away just to cross? Don't make me laugh!」[/red]",
+    "竜馬は豪雨の木橋へ一号機を踏み出させた。最初の橋板が足元で折れ、衝撃が操縦桿を伝って座席に叩きつけられる。それでも振り返らない。次々に崩れる板を踏み越え、対岸まで機体を運んだ。木の破片が装甲を削り、石が天蓋を叩く。だが、何一つ置いてはこなかった。\n\n[red]「渡りたけりゃ何か捨てろだと？ふざけるな！」[/red]"
+  ],
+  "SLIPPERY_BRIDGE.HAYATO": [
+    "A glance at the current, wind, and bending planks tells Hayato the only safe sequence of steps. Before crossing, he has Getter Two unload its external spares and ballast on the bank, lightening the bridge's burden.\n\nWith the parts unloaded, he reviews the tactical records inside the cockpit and strikes out the one he won't carry across.\n\nGetter Two flashes over the bridge's surviving skeleton.",
+    "隼人は水流、風向き、橋板のしなりを一目見て、唯一安全な足運びを示した。渡る前に二号機の外付けの予備部品と重りを岸に下ろし、橋が受ける荷重を減らす。\n\n部品を外し終えると、操縦席で戦術記録を見直し、橋の向こうへ持っていかない一節を消した。\n\n二号機が、まだ崩れ切っていない橋の骨組みを一瞬で渡り抜けた。"
+  ],
+  "REFLECTIONS.TRIPLE_UNITY": [
+    "The mirror stands before the three men. Their reflections raise their hands half a beat early, each landing just off its mark. The first misaligned fist faces Ryoma. He meets it and forces its path back where it belongs.\n\nHayato watches the mirror and calls out that missing half-beat. Ryoma shifts his hand a fraction. Benkei sinks his weight into his feet; when the mirror shakes, he holds first.\n\nThe three reflections overlap. Red, silver-white, and yellow flash only at that instant, leaving a combat record identical to the one outside. A fine crack appears at the edge. All three stagger together, as if half a breath has been drawn out of them.\n\n[red]「Another shadow doesn't matter. Not one of us is changing places.」[/red]",
+    "鏡が三人の前に立ちはだかる。映った姿がそれぞれ手を上げるが、動き出しは半拍早く、届く位置もわずかにずれていた。最初にずれた拳は竜馬に向かっている。竜馬は正面から受け、その軌道を本来の位置へ押し戻した。\n\n隼人が鏡を見据えて、ずれた半拍を告げる。竜馬の手が少し動いた。弁慶は足裏へ重心を落とし、鏡が震えると真っ先に踏ん張る。\n\n三つの影が重なった。輪郭が合う一瞬だけ赤、銀白、黄色が走り、鏡の中に外と同じ戦闘記録が残る。鏡の縁に細い亀裂が入った。三人は同時によろめいた。息を半分、抜き取られたようだった。\n\n[red]「影が一つ増えたって構わねえ。俺たち三人の居場所は、何一つ変わらねえんだ。」[/red]"
+  ],
+  "COLOSSAL_FLOWER.HAYATO": [
+    "The petals pause before every contraction. Hayato guides Getter Two into that beat; a silver-white afterimage slips through the corolla.\n\nScattered coins come out with it, along with a torn piece of armor. Ryoma asks over the comms whether he'll go further. Hayato checks how fast the petals are closing.\n\n[white]「This is far enough.」[/white] He clears the alarm. [white]「Any deeper, and the flower eats the way out first.」[/white]",
+    "花弁は縮む直前に、一瞬だけ止まる。隼人はその間に二号機を滑り込ませ、銀白の残像が花冠の隙間を抜けた。\n\n散らばった金貨とともに、装甲の一片も外へ引き剥がされる。通信越しに竜馬が、まだ行くのかと尋ねた。隼人は閉じる速度を確かめる。\n\n[white]「ここまでだ。」[/white]警報を消し、続けた。[white]「奥へ行けば、先に退路を食われる。」[/white]"
+  ],
+  "COLOSSAL_FLOWER.RYOMA": [
+    "Before the petals close, Ryoma has already lowered Getter One into its charge. The full drive of its punch goes into the corolla. Recoil slams through the cockpit, but he forces up a corner of the petals, ripping an opening all the way outside—wide enough to retreat through.\n\n[red][jitter]「If once isn't enough, I'll hit it again.」[/jitter][/red]\n\nRyoma wipes the blood from his brow. The flower keeps closing, but the tear holds. Getter One backs out while the petals bite together inch by inch behind it.",
+    "花弁が閉じる前に、竜馬は一号機を低く構えさせていた。拳の勢いを丸ごと花冠へ叩き込む。反動が操縦席を襲っても、めくれた花弁の端を押し広げた。裂け目が花冠の外まで走る。一号機が抜けられるだけの幅だ。\n\n[red][jitter]「一度で駄目なら、もう一度だ。」[/jitter][/red]\n\n竜馬は額の血を拭う。花冠はなお閉じ続けていたが、裂け目が支えになった。一号機が後退し、その背後で花弁が少しずつ噛み合っていく。"
+  ],
+  "LUMINOUS_CHOIR.RYOMA": [
+    "The chorus bears down, and filaments coil around Getter One's armor. Hayato only calls the roots' location over the comms. Ryoma compresses the beam into a dazzling narrow line.\n\nIt sweeps the roots, breaking the chorus into countless shattered notes. The filaments snap and peel from the machine. Spores surge back along the light and strike the armor; the recoil burns through the circuits into the cockpit, searing Ryoma's chest.\n\n[red][jitter]「Much quieter.」[/jitter][/red] Ryoma bares his teeth. [red]「Keep it down next time.」[/red]",
+    "合唱が押し寄せ、菌糸が一号機の装甲に絡みつく。隼人が通信で根元の位置だけを告げると、竜馬は射線をまぶしいほど細い一本に絞った。\n\n光束が根元を薙ぎ、合唱は無数の途切れた音に砕ける。装甲の菌糸も断ち切られ、機体から剥がれ落ちた。胞子の群れが光を逆にたどって装甲へ襲いかかる。反動が回路を焼き、操縦席へ流れ込み、竜馬の胸を焦がした。\n\n[red][jitter]「静かになったな。」[/jitter][/red]竜馬は歯を見せて笑う。[red]「今度は小声で歌えよ。」[/red]"
+  ],
+  "LUMINOUS_CHOIR.HAYATO": [
+    "The chorus seeps through cracks in the wall. Filaments emerge and cling to Getter Two's outer armor. Hayato doesn't fire. Using the machine's own hand, he severs them outside the armor and grips a small fragment at the cut.\n\nHe reverses the rhythm; the chorus inside the filament misses a beat. Recoil races through the controls into the cockpit. Hayato coughs once.\n\nOnce the wall's chorus subsides, Getter Two raises the hand holding the fragment to the hatch and steadies it. Hayato opens the hatch, retrieves the fragment, and seals it in an isolation box.\n\nRyoma studies the box. [red]「Even that has a use?」[/red]\n\n[white]「When it swallows the noise, it'll stand in front of you.」[/white]",
+    "合唱が壁の隙間から漏れ出し、菌糸が二号機の外装に張りついた。隼人は発砲せず、機体の手で装甲の外側の菌糸を断ち、切り口の小さな欠片をつまんだ。\n\n拍子を逆にたどると、菌糸の合唱が一拍抜ける。操縦桿を伝って反動が座席へ走り、隼人は一度咳き込んだ。\n\n壁の合唱が収まってから、二号機は欠片をつまんだ手をハッチのそばへ持ち上げ、動きを止める。隼人はハッチを開け、機体の手から欠片を取り、隔離箱へ収めた。\n\n竜馬が箱を見つめる。[red]「こんなものまで使えるのか？」[/red]\n\n[white]「雑音を喰うその一拍が、お前の前に立ってくれる。」[/white]"
+  ],
+  "SPIRIT_GRAFTER.TRIPLE_UNITY": [
+    "Ashen roots reach for three hearts. The men allow contact. As the roots touch, Ryoma resists the first intrusion; Hayato follows the pulse to the segment it came through. Benkei says nothing. When the recoil pours in, he only grits his teeth.\n\nThree heartbeats become one. [getter_ray][sine]Blue-green light[/sine][/getter_ray] floods back along the roots, loosening them one by one. The intrusion is driven out. The grafter cannot take command of Shin Getter, but a new structure remains within it.\n\n[red]「What you touched was[/red][white] our souls.[/white][yellow] Now it gets to adapt to us.」[/yellow]",
+    "灰白の根が三つの心臓へ伸びる。三人は接触を断たず、届くままにした。根が触れた瞬間、竜馬が最初の侵入を押しとどめ、隼人は脈動をたどって、どの節から入り込んだかを見抜く。弁慶は何も言わない。反動が流れ込んでも、ただ歯を食いしばった。\n\n三つの鼓動が一つに重なる。[getter_ray][sine]青緑の光[/sine][/getter_ray]が根を逆流し、接ぎ木師の根が一本ずつほどけていった。侵入は完全に押し返され、真ゲッターの主導権は奪われなかった。それでも、新たな構造が機体の内側に残る。\n\n[red]「お前が触れたのは[/red][white]俺たちの魂だ。[/white][yellow]今度はそっちが、俺たちに合わせる番だぜ。」[/yellow]"
+  ],
+  "SPIRALING_WHIRLPOOL.HAYATO": [
+    "Hayato slowly spins Getter Two's drill in reverse. Two [sine][aqua]spirals[/aqua][/sine] mesh, breaking the unreadable water into layers of clear [sine][aqua]trajectories[/aqua][/sine].\n\nAn enhanced combat record unravels under the reverse calculation, returning to its [u]unupgraded[/u] state. Hayato writes the extracted principles into the Tornado Drill and Spiral Drill records able to accept them. Next activation, the drills will replay along that same [sine][aqua]trajectory[/aqua][/sine].",
+    "隼人は二号機のドリルを、逆方向へゆっくり回した。二筋の[sine][aqua]螺旋[/aqua][/sine]が噛み合い、読み取れなかった水紋が、明瞭な[sine][aqua]軌跡[/aqua][/sine]の層へ分かれていく。\n\n強化を終えた戦闘記録が逆算に従ってほどけ、[u]未強化[/u]の状態へ戻った。隼人は取り出した法則を、新しい軌跡を受け入れられるトルネードドリルとスパイラルドリルの戦術記録に刻む。次に起動する時、ドリルは同じ[sine][aqua]軌跡[/aqua][/sine]を繰り返したどるだろう。"
+  ],
+  "LOST_WISP.BENKEI": [
+    "Benkei places Getter Three at the front. Its broad armor closes around the drifting wisp until it is trapped in a palm. Hayato reports the erosion readings over the comms. Benkei does not turn.\n\nCold creeps through the circuits, leaving irreparable ashen scars. Benkei grunts but holds on until the wisp grows quiet.\n\n[yellow]「The wound stays here.」[/yellow] He says, [yellow]「We still walk the road together.」[/yellow]",
+    "弁慶は三号機を先頭に立たせた。厚い装甲を少しずつ閉じ、漂う鬼火を手のひらに閉じ込める。隼人が通信で侵食の数値を告げても、弁慶は振り返らなかった。\n\n冷気が回路へ入り込み、修復できない灰白の傷を残す。弁慶は低く呻いたが、鬼火が静まるまで手を緩めない。\n\n[yellow]「傷はここに置いていく。」[/yellow]弁慶は言った。[yellow]「道は、みんなで歩くんだ。」[/yellow]"
+  ],
+  "LOST_WISP.HAYATO": [
+    "As the wisp drifts toward the fork, Hayato stops Getter Two rather than chasing the cold flame.\n\nA silver-white scan traces its incoming path once. Cold pours back through the circuits along that same line. Hayato records the route back as coordinates, releasing the controls only when the chill fades.\n\n[white]「That white suits Getter Two rather well.」[/white]",
+    "鬼火が分かれ道へ漂っていくと、隼人は二号機を止めた。冷たい炎を追っては行かない。\n\n銀白の走査線が、鬼火の来た軌跡を一度だけなぞる。同じ道筋を冷気が逆流し、回路へ入り込んだ。隼人は帰り道を座標として記録し、冷気が引いてから操縦桿を離す。\n\n[white]「その白、二号機にはよく似合うな。」[/white]"
+  ],
+  "WOOD_CARVINGS.TRIPLE_CARVING": [
+    "Ryoma takes three carvings from the shelf. He gives the snake to Hayato and places the ring in Benkei's open palm, keeping the bird himself.\n\nHayato traces the snake's grooves: each turn avoids the hardest grain. A silver-white line glints across it. Satisfied, he sets it beside Benkei.\n\nA fine crack runs along the ring's edge. Benkei supports it in his palm, slowly joining the break until yellow light appears within. Ryoma looks at those hands and offers the bird. [red]「Like you. Rough as they come.」[/red]\n\n[yellow]「And just as sturdy.」[/yellow] Benkei takes it with his free hand and places it on the joined ring. A red line flashes along its wingtip. The carvings rest together; red, white, and yellow glimmer in turn, then become one.",
+    "竜馬は棚から木彫りを三つ取った。長い蛇を隼人に渡し、円環を弁慶の手のひらへ置く。自分は鳥をつまんでいる。\n\n隼人は蛇の彫り跡を指でたどった。曲がり角はどれも、木目の硬いところを避けている。銀白の線が蛇の胴をかすめた。見終えると、弁慶の手元へ置く。\n\n円環の縁には細い裂け目があった。弁慶が手のひらで支え、断面をゆっくり合わせると、中に黄色い光が灯る。竜馬はその手を見て、鳥を差し出した。[red]「お前みたいだな。ごつごつしやがって。」[/red]\n\n[yellow]「その分、頑丈さ。」[/yellow]弁慶は空いた手で受け取り、繋がった円環に乗せた。赤い線が翼の先に一瞬走る。三つの木彫りが寄り添い、赤、白、黄色が順に光り、最後には一つになった。"
+  ],
+  "WELLSPRING.RYOMA": [
+    "Blue-green light sinks into the spring, yet its ripples return to the bank in time with the Getter Rays.\n\nRyoma narrows the beam, retaining the strange resonance in the circuits. Water surges back along it, biting away a corner of armor. Hayato waits until the surface dims, then saves the waveform in a tactical record.\n\n[white]「We've kept the resonance.」[/white] He steadies the still-trembling gauge. [white]「The price is the same. This isn't a gift.」[/white]",
+    "青緑の光が泉底へ沈む。だが波紋は、ゲッター線の拍子に合わせて岸へ戻ってきた。\n\n竜馬が射線を最小に絞り、回路に異常な共鳴を残す。泉水が光を逆流して、装甲の角を噛み取った。隼人は水面の光が消えてから、共鳴の波形を戦術記録に収める。\n\n[white]「この共鳴は残った。」[/white]まだ震える計器を押さえ、隼人は続けた。[white]「代償は同じだ。恵みではない。」[/white]"
+  ],
+  "AMALGAMATOR.RYOMA": [
+    "[b][jitter]CLANG! CLANG!!![/jitter][/b]\n\nThe [orange]Amalgamator[/orange]'s great hammer strikes the bone anvil.\n\nRyoma names every old technique he means to discard in one breath. With each hammer blow, moves are crossed out of the combat records. Sparks scatter at his feet.\n\n[red]「Take the lot. Don't give that last move back either.」[/red]",
+    "[b][jitter]ガァン！ガァン！！！[/jitter][/b]\n\n[orange]熔合者[/orange]の大槌が骨の金床を叩く。\n\n竜馬は捨てるつもりの古い戦い方を、一気に告げた。槌が落ちるたびに、戦闘記録の技が一つずつ消され、火花が足元へ飛ぶ。\n\n[red]「全部持っていけ。残りの一手も返すなよ。」[/red]"
+  ],
+  "AMALGAMATOR.BENKEI": [
+    "[b][jitter]CLANG! CLANG!!![/jitter][/b]\n\nThe Amalgamator raises its great hammer.\n\nBenkei puts a hand on the bone anvil. 「Wait.」 He counts out the coins and pushes them over before handing over the old offensive and defensive tactical records.\n\nThe Amalgamator says nothing and bends to work.\n\nWhen the hammer falls silent, the records contain a fiercer attack and a steadier defense. Benkei checks that both are usable, then packs away the remaining parts.",
+    "[b][jitter]ガァン！ガァン！！！[/jitter][/b]\n\n熔合者が大槌を振り上げる。\n\n弁慶は骨の金床に手を置いた。「ちょっと待ってくれ。」金貨を数えて差し出し、それから攻撃と防御、二組の古い戦術記録を渡す。\n\n熔合者は黙ったまま、顔を伏せて仕事に取りかかった。\n\n槌の音が止むと、記録にはより激しい攻撃と、より確かな防御が加わっていた。弁慶はどちらも使えると確かめ、残りの部品をしまった。"
+  ],
+  "ABYSSAL_BATHS.TRIPLE_COOLANT": [
+    "Water begins slipping into the armor seams. Hayato switches the circuit to a cooling branch. Ryoma speaks over the rush: [red]「Don't bring the whole pool back.」[/red]\n\nThe armor briefly grows in the heat. Condensation-wreathed liquid follows the branch into a spare collection tank. Hayato holds back the return flow, keeping the pool's force out of the circuit until the gauge reaches zero, then seals the tank.\n\n[white]「This layer is enough. We leave what's underneath alone.」[/white]",
+    "池の水が装甲の隙間へ入り始めた。隼人が回路を冷却用の支線へ切り替える。水音を越えて竜馬が言った。[red]「池ごと持ってくるんじゃねえぞ。」[/red]\n\n熱の流れで装甲が一時的に増殖し、白い結露をまとった液体が支線を通って予備の回収槽へ流れる。隼人は逆流を押さえ、池の衝撃を回路へ入れない。計器がゼロに戻るのを待ち、回収槽を密封した。\n\n[white]「この層だけで十分だ。底のものには触れん。」[/white]"
+  ],
+  "TRIAL.RYOMA": [
+    "The case has been read.\n\nRyoma first looks at the accused on the platform.\n\n[red]「You're guilty. Of cowardice.」[/red]\n\nAngry voices erupt from the court. Getter One stands in the space between jury and platform—the hall is tall enough for a machine. In the cockpit, the controls creak in Ryoma's grip. He turns the machine to face the jury.\n\n[red]「You've judged cases like this too many times. But the ones who should be condemned are you sitting there judging them.」[/red]\n\nThe gavel falls. Chains and shadows leap together. Shin Getter charges into them and out of the court; battle begins.",
+    "事件の読み上げが終わった。\n\n竜馬はまず、壇上の被告を見る。\n\n[red]「お前は有罪だ。弱さという罪のな。」[/red]\n\n裁判席から非難の声が噴き上がる。一号機は陪審席と壇の間の空地に立っていた。この大広間は、機体一台を収められるほど高い。操縦席の竜馬が握る操縦桿がきしむ。機体は向きを変え、陪審員たちと正面から向き合った。\n\n[red]「こんな事件、何度も裁いてきたんだろう。だが一番裁かれるべきなのは、そこに座って人を裁いてるお前らだ。」[/red]\n\n槌が落ち、鎖と影が同時に襲いかかる。真ゲッターは正面から突進して裁判席を飛び出した。戦いが始まる。"
+  ],
+  "WATERLOGGED_SCRIPTORIUM.HAYATO_ADAPTATION": [
+    "Hayato separates the swollen sheets layer by layer. Their ink has run together, but a few blue-green lines keep growing in the same direction.\n\nHe compares them page by page until every stroke fits its proper square. By the time the coins stop falling into the ink pool, the formula is fully copied into a combat record. Ryoma waits impatiently at the door, but Hayato does not hurry the final stroke.\n\n[white]「Only copy what's useful. Leave the rest soaking.」[/white]",
+    "隼人は水を吸った紙を一枚ずつ分けた。墨はすでに混ざり合っていたが、青緑の筋だけは同じ方向へ伸び続けている。\n\n一頁ずつ照らし合わせ、どの線をどの枠へ置くべきか確かめた。金貨が墨の池へ落ちる音が止む頃、式は戦闘記録へ完全に写されていた。竜馬は入口で待ちくたびれていたが、隼人は最後の一筆を急がない。\n\n[white]「使えるところだけ写す。残りの文字は、水に浸けておけ。」[/white]"
+  ],
+  "WATERLOGGED_SCRIPTORIUM.HAYATO_INK": [
+    "Water pushes the sheets toward the table's edge. Hayato doesn't fish out the most intact one. He copies every stroke he can still recognize into a small bottle.\n\nCoins sink into the pool. The liquid deepens to green. He seals the bottle and looks up into Ryoma's impatient stare.\n\n[red]「Will that work, Hayato?」[/red]\n\n[white]「It will.」[/white] He hands the bottle over. The dark green settles at the bottom, no longer stirring.",
+    "水が紙を机の端へ押し流す。隼人は一番形の残った一枚を拾わず、読み取れる線を一本ずつ小瓶へ写していった。\n\n金貨が池底へ沈み、液体が濃い緑に変わっていく。隼人が栓を締めて顔を上げると、竜馬が苛立った目で見ていた。\n\n[red]「それでいけるのか、隼人？」[/red]\n\n[white]「使える。」[/white]瓶を渡す。墨緑の液体は底に沈み、もう揺れなかった。"
+  ],
+  "ENDLESS_CONVEYOR.HAYATO": [
+    "Hayato feeds the coins into the maintenance port without touching the plate before him. Ryoma watches the food slide halfway and stop. [red]「Not changing it?」[/red]\n\n[white]「First, let's see how it reschedules.」[/white] Hayato pulls a rescheduling record from behind the port, wipes its edges, and folds it away in the cockpit.\n\nHe closes the cover. [white]「The dish stays as it is.」[/white]",
+    "隼人は整備口へ金貨を入れたが、目の前の皿には触れなかった。食べ物が途中まで流れて止まるのを、竜馬が見ている。[red]「変えねえのか？」[/red]\n\n[white]「まず、どう振り替えるかを見る。」[/white]隼人は整備口の奥から振替記録を引き出し、縁を拭いて折りたたみ、操縦席へしまった。\n\n蓋を戻して言う。[white]「この皿は、そのままだ。」[/white]"
+  ],
+  "UNREST_SITE.RYOMA": [
+    "As the roots lift, a column of searing flame erupts from the fissure. Ryoma lowers Getter One's shoulder into it.\n\nFire brushes the armor, but he holds that breath of resolve fast. When he straightens again, Getter One's stance has changed.\n\nRyoma tightens his grip on the controls. [red]「Now that's training.」[/red]",
+    "根がめくれ上がり、裂け目の奥から灼熱の火柱が噴き出した。竜馬は一号機の肩を落とし、炎へ向ける。\n\n炎が装甲をかすめても、その気迫を緩めなかった。再び身を起こした時、一号機の構えは変わっていた。\n\n竜馬が操縦桿を握り締める。[red]「こういうのを鍛錬って言うんだ。」[/red]"
+  ],
+  "UNREST_SITE.BENKEI_BREATH": [
+    "When the roots press down, Benkei doesn't retreat. He braces Getter Three under their heaviest weight.\n\nHayato sends a breathing rhythm over the comms. [white]「Inhale for four beats. Hold against it for four.」[/white]\n\nBenkei endures the worst blow in time with the count. When the roots loosen, the machine has sunk further than expected. He doesn't lift it immediately, only repeats the rhythm aloud. [yellow]「Easy to count the beats. Your turn next time.」[/yellow]",
+    "根が押し下がってきても、弁慶は三号機を退かせなかった。最も重い部分の下に、機体を据える。\n\n隼人が通信で呼吸の拍子を送った。[white]「四拍で吸え。次の四拍で耐えるんだ。」[/white]\n\n弁慶は拍子に合わせ、最も重い一撃をしのいだ。根が緩む頃、機体は予想より深く沈んでいる。すぐには持ち上げず、今の拍子をもう一度口にした。[yellow]「拍子を数えるだけなら楽だよな。次はお前たちの番だぜ。」[/yellow]"
+  ],
+  "DROWNING_BEACON.RYOMA": [
+    "Ryoma brings Getter One low across the tower's base, skimming the water and flinging it into the backward-flowing light.\n\nThe water does not scatter. It is swept back into the air. Blue-green and cold white collide, as if forcing a sleeping record onto its next page.\n\nWatching the light still flow backward, Ryoma pushes the controls another inch. [red]「So that's another use for it.」[/red]",
+    "竜馬は一号機を低く走らせ、塔の底を水面すれすれに抜けた。機体で跳ね上げた水を、逆流する光へぶつける。\n\n水は散らず、その光に巻き戻されて宙へ上がった。青緑と冷たい白が衝突し、眠っていた記録を無理やり次の頁へめくったようだった。\n\nまだ逆流する光を見て、竜馬は操縦桿を少し前へ押す。[red]「こいつには、こんな使い方もあったのか。」[/red]"
+  ],
+  "DROWNING_BEACON.BENKEI_PRISM": [
+    "The tower tilts. Benkei sinks Getter Three to the bottom and braces the wall with its shoulder armor. Hayato calls out the angle of the mirrors over the comms.\n\nWater pressure pounds the armor. A prism far smaller than the topmost lens sits in the inner wall, its socket lit by a beam folded down through the mirrors. Getter Three removes it underwater, cupping it in its mechanical palm before the armor. Once surfaced, Benkei opens the cockpit hatch and takes the prism from that palm. He never looks back at the upper lens.\n\n[yellow]「That isn't the color of Getter Rays.」[/yellow] Benkei says, [yellow]「Still, no sense wasting the lighthouse's last light.」[/yellow]",
+    "塔が傾き始めていた。弁慶は三号機を水底へ沈め、肩の装甲で壁を支え直す。隼人が通信で鏡の角度を告げた。\n\n水圧が繰り返し装甲を叩く。塔の内壁には、頂上のレンズよりずっと小さなプリズムが埋まっていた。鏡を折り返してきた光が、その溝を照らしている。弁慶は三号機の手で水中のプリズムを外し、装甲の前で手のひらに包んだ。水面へ上がるとハッチを開け、機体の手から操縦席へ受け取る。頂上のレンズには目を向けなかった。\n\n[yellow]「ゲッター線の色じゃねえな。」[/yellow]弁慶は言った。[yellow]「それでも、灯台の残り火を無駄にはできねえ。」[/yellow]"
+  ],
+  "THE_FUTURE_OF_POTIONS.HAYATO": [
+    "Hayato places the potion on the test bench and checks its wax seal. Ryoma stares at the familiar color. [red]「What are you trading that good stuff for?」[/red]\n\nThe liquid passes through the cooling tube little by little. Its old potency breaks down, leaving only a faintly warm glow. Hayato slips the new bottle into the vacated slot.\n\n[white]「Seal it. Don't test it here. I'm not ready to clean up the aftermath.」[/white]\n\nRyoma snorts. [red]「Then let's not leave it until next time.」[/red]",
+    "隼人は薬瓶を実験台へ置き、口の封蝋を確かめた。竜馬は見慣れた色を見つめる。[red]「そのいい物を、何と引き換えにする気だ？」[/red]\n\n薬液が少しずつ冷却管を通る。元の効力はほどけ、ほのかに熱を持つ蛍光だけが残った。隼人は空いた場所へ新しい瓶を差し込む。\n\n[white]「栓をしろ。ここでは試すな。後始末の用意はまだない。」[/white]\n\n竜馬は鼻を鳴らした。[red]「だったら、次まで取っとくなよ。」[/red]"
+  ],
+  "RELIC_TRADER.HAYATO": [
+    "[sine]A thread of blue-green light seeps from the Emperor's Fragment.[/sine] Before the trader names a price, Ryoma places the chosen old relic on the counter.\n\nLight circles the relic. Three overlapping shadows rise above the counter, each like another path it could have taken. Hayato compares them in turn and points to one. The coins fall into the bag; the other shadows dissolve.\n\nThe fragment falls silent, and the counter's light withdraws with it.",
+    "[sine]皇帝の欠片から、青緑の光が一筋にじみ出た。[/sine]商人が値をつける前に、竜馬は選んだ古い遺物を台へ置く。\n\n光が遺物の周りを一巡すると、台に三つの影が重なって浮かんだ。それぞれ、遺物がたどり得た別の道のようだ。隼人は順に見比べ、一つを指した。金貨が袋へ落ち、残る二つの影が消える。\n\n欠片は再び静まり、台の光も引いていった。"
+  ],
+  "ROUND_TEA_PARTY.RYOMA": [
+    "Ryoma lifts the cup, smells it, and turns it back onto the table.\n\n[red]「You put something in the tea and still act so polite.」[/red]\n\nHe flips the round table forward. Through the gap, Hayato sees the chairs to the side move first and tells him to duck. Benkei catches a piece of tabletop to shield them from pursuers behind.\n\nRyoma takes a full collision, lowers his body with it, and changes the angle of his punch. Without breaking his drive, he tears a path out of the circle.\n\nWhen the others retreat, he finds a relic beneath the wrecked table and wipes the blood from his mouth. [red][jitter]「Now that's hospitality.」[/jitter][/red]",
+    "竜馬は茶碗を持ち上げて匂いを嗅ぎ、そのまま卓へ伏せた。\n\n[red]「茶に細工をしておいて、ずいぶん丁寧な面だな。」[/red]\n\n円卓を前へひっくり返す。卓板が舞う隙間から、隼人は横の椅子の列が先に動くのを見て、頭を下げろと告げた。弁慶は飛んできた卓板をつかみ、後ろから迫る者を二人の前で受け止める。\n\n竜馬は体当たりをまともに受け、その勢いで身を低くして、拳に力を乗せる角度を変えた。気迫を切らさず、包囲に出口をこじ開ける。\n\n残りの者が退くと、壊れた卓の下で遺物を見つけ、口元の血を拭った。[red][jitter]「これでこそ、もてなしってもんだ。」[/jitter][/red]"
+  ],
+  "RANWID_THE_ELDER.RYOMA": [
+    "Ranwid hasn't looked away since seeing Getter. He circles halfway around the machine, tracing its combination joints in the air and muttering. Ryoma knows that absorbed expression. The old man wore it over unfinished machines; he'd seen it countless times at the Saotome Institute.\n\n「Want to study Getter? Bring out your collection first.」 Ryoma lays down the terms.\n\nHayato unfolds a corner of the blueprint. Ranwid immediately leans over it, riveted by combination structures that contradict one another yet all work.\n\n[red]「The complete plans for one piece from your collection. I choose.」[/red] Ryoma makes no concession. [red]「You really do look like that old man.」[/red]",
+    "ゲッターを見てから、ランウィドは一度も目を離さなかった。機体の周りを半周し、合体の接合部を空中で指しながら、ぶつぶつ呟く。竜馬はその見入った顔を知っていた。未完成の機械を眺めるあの爺さんの目だ。早乙女研究所で、嫌というほど見てきた。\n\n「ゲッターを調べたいなら、まずお前のコレクションを出せ。」竜馬は言い切った。\n\n隼人が設計図の一角を広げると、ランウィドはすぐ身を乗り出した。互いに矛盾していながら同時に成立する合体構造に、目が釘づけになる。\n\n[red]「資料全部と、お前の持ち物一つだ。俺が選ぶ。」[/red]竜馬は遠慮しない。[red]「その顔、あの爺さんにそっくりだぜ。」[/red]"
+  ],
+  "RANWID_THE_ELDER.RYOMA_RESULT": [
+    "After a long silence, the elder sets out two relics. Ryoma takes one and pushes the complete blueprint over. Before Ranwid looks up, the three men are already moving on.",
+    "長い沈黙の末、老人は遺物を二つ並べた。竜馬は一つを取り、完全な設計図を差し出す。ランウィドが顔を上げるより早く、三人は先へ進んでいた。"
+  ],
+  "TEA_MASTER.RYOMA": [
+    "Ryoma never touches the cup. He suddenly punches across the tea table. The master catches it steadily on a tray. Cushions fly in the gust, but not a drop of tea spills.\n\nRecoil travels up his arm into his chest. Ryoma steps back, then bursts out laughing. The master takes no offense, simply sliding the cup with its dark-red embers toward him.\n\n「Not bad! Now that's a proper cup!」",
+    "竜馬は茶碗に触れもせず、いきなり茶席越しに拳を振るった。茶の達人は盆で確かに受け止める。拳の風が座布団を吹き飛ばしても、茶は一滴もこぼれなかった。\n\n反動が腕から胸へ響く。竜馬は半歩下がり、すぐに大笑いした。達人は怒らず、暗い紅の残り火を宿す茶を、彼の前へ差し出す。\n\n「いいねえ！これでこそ飲み甲斐があるぜ！」"
+  ],
+  "TEA_MASTER.BENKEI": [
+    "Ryoma means to throw another punch, but Benkei gently pushes him aside and rolls up his sleeves at the tea table. Those broad palms, strong enough for Getter's controls, now guide a steady stream: warming the cups, measuring leaves, pouring, and serving, each step remarkably quiet.\n\nThe tea's aroma slowly overcomes the scorched smell. For the first time the master sets aside his scrutiny, carefully finishes Benkei's tea, and places Bone Tea and Ember Tea before him.\n\nBenkei rubs his nose, a little embarrassed.\n\n「Picked up a little looking after the kids. Even a rough fellow shouldn't waste good tea.」",
+    "竜馬がもう一発試そうとすると、弁慶はそっと脇へ押し、袖をまくって茶席についた。ゲッターの操縦桿を支える大きな手が、今は水流を確かに操る。器を温め、茶葉を入れ、湯を注ぎ、茶を収める。その一つ一つが驚くほど静かだった。\n\n茶の香りが部屋の焦げ臭さを包んでいく。達人は初めて吟味する表情を解き、弁慶の茶を丁寧に飲み切ると、骨の茶と残り火の茶を並べた。\n\n弁慶は少し照れて鼻をこする。\n\n「子供たちの世話をしてた頃に、少しな。こんな俺でも、いい茶を台無しにはできねえよ。」"
+  ],
+  "TINKER_TIME.HAYATO": [
+    "Hayato lays the blueprint over the mad scientist's drafts. Ryoma takes one look and frowns. [red]「Calculating it all from scratch again?」[/red]\n\nAfter a shower of sparks, the two old frameworks are dismantled into parts, and new structures rise from the apparatus. Hayato steadies the gauge still flickering with figures and puts away the blueprint.\n\n[white]「One restart only. Keep calculating, and the scientist won't be the first to go mad.」[/white]",
+    "隼人は狂科学者の草稿に設計図を重ねた。竜馬は一目で眉をひそめる。[red]「また一から計算かよ？」[/red]\n\n火花が散り、二組の古い枠組みが部品へ戻される。装置から新しい構造が立ち上がった。隼人は数字が跳ねる計器を押さえ、設計図をしまう。\n\n[white]「やり直しは一度だけだ。これ以上続ければ、科学者より先にこっちが狂う。」[/white]"
+  ],
+  "WELCOME_TO_WONGOS.HAYATO": [
+    "The scanner swallows the card. Price tags go dark one after another. The screen displays several zero-amount bills, then settles on 「Customer verification complete.」\n\nA line lights up over the gate: [red]「Malicious spending detected. This transaction has been frozen.」[/red]\n\nRyoma stares at the bills. [red]「Taking it free still counts as spending?」[/red]\n\n[white]「In its accounts, at least.」[/white] Hayato retrieves the card and indicates the exit. Benkei looks at the darkened shelves. [yellow]「Let's leave arguing with the store for another day.」[/yellow]",
+    "読取口が証明書を飲み込み、棚の値札が一つずつ消えた。画面には零円の明細がいくつか映り、最後に「顧客資格の確認完了」で止まる。\n\n続いて門に文字が灯った。[red]「悪質な消費行為を検出。本取引は凍結されました。」[/red]\n\n竜馬は明細を睨む。[red]「ただでも消費扱いかよ？」[/red]\n\n[white]「こいつの帳簿では、な。」[/white]隼人は証明書を戻し、出口を示した。弁慶は暗くなった棚を見る。[yellow]「今回は百貨店に道理を説くのはよそうぜ。」[/yellow]"
+  ],
+  "TRASH_HEAP.BENKEI": [
+    "As a gap opens in the rubbish mountain, a whole sheet of rusted components collapses. Benkei does not retreat. Getter Three sinks into the sludge, holding the falling weight overhead with both arms.\n\n[yellow]「Make it quick, you two.」[/yellow]\n\nThree old objects that still respond roll from the gap. Only after one is chosen does Benkei ease his grip, letting the heap thunder shut behind them.",
+    "ごみ山に隙間が開いた途端、錆びた部品が一面に崩れ落ちた。弁慶は退かない。三号機が泥へ沈み、両腕で落ちてくる重量を宙に支える。\n\n[yellow]「二人とも、早く頼むぜ。」[/yellow]\n\n隙間から、まだ反応する古い品が三つ転がり出た。一つが選ばれてから、弁慶はゆっくり力を緩める。背後で、ごみ山が轟音とともに閉じた。"
+  ],
+  "ROOM_FULL_OF_CHEESE.BENKEI": [
+    "Benkei breaks off a small piece from each cheese. The first is too salty, the second bitter, and the third jumps on his tongue.\n\nHis face grows worse, but he neatly sets the safe pieces before everyone. As someone reaches out, Hayato warns them: [white]「Benkei hasn't tried that one yet.」[/white]\n\nRyoma eyes the empty row and laughs mercilessly. [red]「So there's a reason Getter Three's pilot is that fat.」[/red]\n\n[yellow]「I'm fine. At least these really are edible.」[/yellow] Benkei manages a smile, holding his stomach.",
+    "弁慶はチーズを一つずつ、小さくちぎった。最初は塩辛すぎ、次は苦い。三つ目は口に入れた途端、舌の上で跳ねた。\n\n顔色は悪くなる一方だが、安全なものをきれいに皆の前へ並べる。誰かが手を伸ばすと、隼人が言った。[white]「それはまだ弁慶が試していない。」[/white]\n\n竜馬は空になった一列を見て、容赦なく笑う。[red]「三号機のパイロットが太ってるのには、訳があったんだな。」[/red]\n\n[yellow]「平気さ。少なくとも、これはちゃんと食える。」[/yellow]弁慶は腹を押さえ、どうにか笑った。"
+  ],
+  "THIS_OR_THAT.RYOMA": [
+    "The two buttons flash in turn, urging a choice. Ryoma watches, then punches straight between them. Gears, springs, and an iron plate marked 「Choice」 scatter across the floor. The machine finally falls silent.\n\nHe takes nothing, simply stepping over the wreckage and moving on.\n\n「You don't get to decide my answer.」",
+    "二つのボタンが選択を急かすように交互に点滅する。竜馬はしばらく眺め、いきなりその間へ拳を打ち込んだ。歯車、ばね、「選択」と刻まれた鉄板が床へ散らばる。装置はようやく静まった。\n\n何も取らず、残骸をまたいで先へ進む。\n\n「勝手に俺の答えを決めるな。」"
+  ],
+  "THIS_OR_THAT.HAYATO": [
+    "Hayato's fingers trace the back of the device, finding a nearly invisible coin slot under the grease. As the coins fall, both competing buttons go dark. A hidden compartment at the side springs open with a relic.\n\n[white]「One or the other is merely the question it wanted you to see.」[/white]",
+    "隼人は装置の裏を指でたどり、油汚れの下に、ほとんど見えない投入口を見つけた。金貨が落ちると、競い合っていた二つのボタンが同時に消える。横の隠し箱が開き、遺物が現れた。\n\n[white]「二者択一は、こいつがお前に見せたかった問題にすぎん。」[/white]"
+  ]
+}

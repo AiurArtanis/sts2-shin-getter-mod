@@ -20,11 +20,29 @@ internal static class ShinGetterEventInvasionPatch
 {
     private static void Prefix(
         EventModel __instance,
-        LocString description,
+        ref LocString description,
         ref IEnumerable<EventOption> eventOptions)
     {
+        description = ShinGetterEventReturnProse.Compose(__instance, description);
         eventOptions = ShinGetterEventInvasionService.AppendOptions(__instance, eventOptions);
     }
+}
+
+[HarmonyPatch(typeof(LocString), nameof(LocString.GetRawText))]
+internal static class ShinGetterEventReturnProsePatch
+{
+    private static bool Prefix(LocString __instance, ref string __result)
+    {
+        if (!ShinGetterEventReturnProse.TryRawText(__instance, out string text)) return true;
+        __result = text;
+        return false;
+    }
+}
+
+[HarmonyPatch(typeof(EventModel), "SetInitialEventState")]
+internal static class ShinGetterFourthCompletedEventPatch
+{
+    private static bool Prefix(EventModel __instance) => !ShinGetterEventInvasionService.RestoreFourthCompleted(__instance);
 }
 
 [HarmonyPatch(typeof(EventModel), "get_IsShared")]

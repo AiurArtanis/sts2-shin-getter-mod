@@ -160,5 +160,16 @@
   "S_G_C_WISP_COORDINATE.title": "Wisp Coordinates",
   "S_G_C_WISP_COORDINATE.description": "Look at the top {Cards:diff()} cards of your draw pile. Put 1 into your hand, then return the rest in any order. Gain {SGP_Radiation:diff()} [gold]Radiation[/gold].",
   "S_G_C_WISP_COORDINATE.selectionScreenPrompt": "Choose 1 card to put into your hand.",
-  "S_G_C_WISP_COORDINATE.orderSelectionScreenPrompt": "Choose the next card to return to the top of your draw pile."
+  "S_G_C_WISP_COORDINATE.orderSelectionScreenPrompt": "Choose the next card to return to the top of your draw pile.",
+  "S_G_C_TABLET_OF_TRUTH.title": "Tablet of Truth",
+  "S_G_C_TABLET_OF_TRUTH.description": "Downgrade all your current cards in this combat. Heal {Heal:diff()} HP.\nWhen this card is Exhausted, Upgrade all your upgradable cards in this combat.",
+  "S_G_C_TRIPLE_WHIRLWIND.title": "Triple Whirlwind",
+  "S_G_C_TRIPLE_WHIRLWIND.description": "Deal {CalculatedDamage:diff()} damage to ALL enemies 3 times. Gain {Block:diff()} Block 3 times.\n[getter_ray]Shin Getter Dragon[/getter_ray]: Apply 3 [gold]Wane[/gold] to ALL enemies.",
+  "S_G_C_DRILL_MISSILE.title": "Drill Missile",
+  "S_G_C_DRILL_MISSILE.description": "Deal {CalculatedDamage:diff()} damage.\n[white]Getter 2[/white]: Transform.\nAfter playing, this card becomes [gold]Broken Drill[/gold] for this combat.",
+  "S_G_C_BROKEN_DRILL.title": "Broken Drill",
+  "S_G_C_BROKEN_DRILL.description": "Whenever this card enters your hand from another pile, gain 2 [gold]Wane[/gold].",
+  "S_G_C_ANNOTATIONS.title": "Annotations",
+  "S_G_C_ANNOTATIONS.description": "Enchant a card in your hand for this combat: an Attack with [gold]Sharp[/gold], a Block-gaining Skill with [gold]Nimble[/gold], or a Power with [gold]Swift[/gold], with {Enchantment:diff()} stacks.\n[red]Getter 1[/red]: Also gain 5 [gold]Vigor[/gold].",
+  "S_G_C_ANNOTATIONS.selectionScreenPrompt": "Choose a card to Enchant. Canceling does not consume Annotations."
 }

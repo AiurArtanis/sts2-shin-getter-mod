@@ -7,6 +7,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="addons\**\*.cs" />
+    <Compile Remove="tools\issue238-probe\**\*.cs" />
     <EmbeddedResource Include="data\dialogues\*.json" />
   </ItemGroup>
   <ItemGroup>

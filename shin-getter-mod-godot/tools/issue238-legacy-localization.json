@@ -1,0 +1,334 @@
+{
+  "entries": [
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.INFESTED_AUTOMATON.pages.HAYATO.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：被寄生的自动机械.md",
+      "chapter": "完整场景",
+      "scene_sha256": "22da50d64d6e76229b507508b080b1c9866570c6a4f543aca16391aaa9954710",
+      "zhs": "隼人没有碰触暴露的核心。他先让扫描线逆着异常脉冲游走，把每一根寄生菌丝标在视野中。\n\n[white]「脉冲对不上。它已经藏不住了。」[/white]\n\n二号机沿着标记瞬间切入。菌丝抽搐着断开，机械核心重新亮起；一股尖锐的神经反馈却顺着控制系统刺进驾驶舱。隼人按住额角，抢在核心自检结束前截下一段完整的技术记录。"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.BYRDONIS_NEST.pages.BENKEI.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：多尼斯异鸟巢.md",
+      "chapter": "完整场景",
+      "scene_sha256": "08f6f963864de409849472f92ab374b59a925fdc272a97f2fa4d392d0bf33dc2",
+      "zhs": "巢底裂开时，车弁庆已经把三号机横在断枝前，龙马和隼人就在他身后的驾驶舱里。滚出巢口的蛋，靠三号机的两条前臂一只只兜回巢中。\n\n承重枝压回来的分量全落在三号机的肩甲上，金属被顶出一道凹痕。弁庆咬住牙关没有松力。等最后一根枝压回原位，他才抬头看了一眼天色。\n\n[yellow]「好了，该走了。」[/yellow]"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.BYRDONIS_NEST.pages.RYOMA.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：多尼斯异鸟巢.md",
+      "chapter": "完整场景",
+      "scene_sha256": "08f6f963864de409849472f92ab374b59a925fdc272a97f2fa4d392d0bf33dc2",
+      "zhs": "龙马俯身托起一枚鸟蛋，抱着它钻进还没有合体的驾驶舱，把蛋放进舱内的缓冲格。车弁庆在舱口扶稳，隼人扫了一眼巢穴上方盘旋的羽影。\n\n[white]「它回来时会先找蛋，我们就在这里等。」[/white]\n\n[yellow]「它追的是蛋，别让它撞进驾驶舱。」[/yellow]\n\n龙马把缓冲舱的锁扣一道道压紧，抬头望向崖壁外的阴影。\n\n[red]「来得正好，这地方够宽敞。[jitter]CHANGE GETTER ONE！[/jitter]」[/red]\n\n喊声落下，合体的震响从崖壁间滚过，真盖塔在巢前站定。驾驶舱里的蛋仍卡在缓冲舱里。"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.BYRDONIS_NEST.pages.RYOMA_HATCH.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：多尼斯异鸟巢.md",
+      "chapter": "完整场景",
+      "scene_sha256": "08f6f963864de409849472f92ab374b59a925fdc272a97f2fa4d392d0bf33dc2",
+      "zhs": "多尼斯异鸟坠入巢外的乱石堆，残余的[getter_ray]盖塔线[/getter_ray]仍在崖壁间游走。驾驶舱里的鸟蛋先是轻轻震了一下，随后裂开一道细纹。\n\n隼人伸手按住控制台，盯着不断跳动的读数。\n\n[white]「吸收了战斗余波的[getter_ray]盖塔线[/getter_ray]...吗，它的孵化提前了。」[/white]\n\n车弁庆已经把掌心垫在舱口边，放轻了声音。\n\n[yellow]「慢点，它还没站稳。」[/yellow]\n\n蛋壳碎开，一只异鸟宝宝探出头来。龙马看着它抖干翅膀上的碎壳，伸手把它从舱里托出来。\n\n三人谁都没有立刻开口。舱里只剩雏鸟细小的扑翅声。\n\n[red]「那跟我们走吧，小家伙。」[/red]"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.DOORS_OF_LIGHT_AND_DARK.pages.RYOMA.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：光与暗的门扉.md",
+      "chapter": "完整场景",
+      "scene_sha256": "30d3e79650c7dbf5d8d0f8486009a90ae9b1f88072ba8b1fccbb2c7124db3305",
+      "zhs": "门廊窄得进不了机体。龙马把真盖塔留在外面，自己站到两扇门之间。\n\n两扇门各自催促。他盯住那道没有门把手的墙。\n\n没等隼人把机关说明讲完，他已经冲上去，一拳砸在墙上。石壁从正中裂开，光与暗一同从裂口涌出；反震顺着拳背倒灌回小臂，两股乱流擦过他半边身子，他踉跄半步，肩膀撞上门框。离得最近的一段战斗记录被扯碎，只剩下看不出颜色的轮廓。\n\n[red][jitter]「门是给守规矩的人留的。」[/jitter][/red]他用另一只手撑住墙，甩掉指节上的石屑。"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.SLIPPERY_BRIDGE.pages.RYOMA.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：滑脚木桥.md",
+      "chapter": "完整场景",
+      "scene_sha256": "0691088b8612cc6189df5dd28237479d93391d07bea3a3ff6107428254f6afd5",
+      "zhs": "龙马驾驶一号机踏上暴雨中的木桥。第一块桥板就在机体脚下断开，冲击沿操纵杆撞进驾驶舱。他没有回头，顶着接连塌落的桥板把机体带到对岸；木刺刮开装甲，碎石砸在舱盖上，没有任何东西被留在身后。\n\n[red]「要我扔下什么才能过去？少开玩笑了！」[/red]"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.SLIPPERY_BRIDGE.pages.HAYATO.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：滑脚木桥.md",
+      "chapter": "完整场景",
+      "scene_sha256": "0691088b8612cc6189df5dd28237479d93391d07bea3a3ff6107428254f6afd5",
+      "zhs": "隼人只看了一眼水流、风向和桥板的弯曲程度，便指出唯一安全的落脚顺序。过桥前，他让二号机把外挂的备用件和配重卸在岸上；桥面要承受的分量随之少了一截。\n\n卸完零件，他在舱里把战术记录翻了一遍，划掉不带过桥的那一段。\n\n二号机沿着尚未彻底崩断的桥骨一闪而过。"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.REFLECTIONS.pages.TRIPLE_UNITY.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：镜中倒影 影倒中镜.md",
+      "chapter": "完整场景",
+      "scene_sha256": "e299020a79df67f558163a24a091447b377e35092ae6f7793dca1d2486d182fc",
+      "zhs": "镜面横在三人面前，镜里的倒影照着他们各自抬手，起手都早半拍，落下的位置却差着一线。最先错位的那一道正对龙马，他迎上去，把那条拳路按回它该在的地方。\n\n隼人盯着镜面，报出错位的那半拍；龙马的手跟着偏了半握。车弁庆把重心沉进脚底，镜面抖动时，是他先顶住。\n\n三道倒影在镜面上重合。红、银白、黄只在轮廓交叠的一瞬闪过，镜里留下一段与外面相同的战斗记录。镜缘随即裂开一道细纹——镜前的三人同时晃了一下，像被抽走了半口气。\n\n[red]「影子多一个无所谓但我们三个的位置，一个都不会变。」[/red]"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.COLOSSAL_FLOWER.pages.HAYATO.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：巨大花卉.md",
+      "chapter": "完整场景",
+      "scene_sha256": "5d6c53990e99ac8d26bf90ab2c6e6b3ab5158c965e78824eb0105e574cf474d6",
+      "zhs": "花瓣每次收缩前都会停一瞬。隼人驾驶二号机贴着那一拍切入，银白残影从花冠的缝里穿过去。\n\n散落的金币被带出外层，装甲也被刮掉一片。龙马在通讯里问他还要不要继续，隼人看了一眼闭合速度。\n\n[white]「就到这里。」[/white]他抹去警报，[white]「再往里，花会先把路吃掉。」[/white]"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.COLOSSAL_FLOWER.pages.RYOMA.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：巨大花卉.md",
+      "chapter": "完整场景",
+      "scene_sha256": "5d6c53990e99ac8d26bf90ab2c6e6b3ab5158c965e78824eb0105e574cf474d6",
+      "zhs": "花瓣合拢前，龙马已经把一号机压到最低。这一拳的冲势整段送进花冠，反震沿座舱砸回来，瓣叶翻起的一角被他硬顶开，裂口一路撕到花冠外侧——够一号机退出去。\n\n[red][jitter]「一次不行就再来一次。」[/jitter][/red]\n\n龙马抹去额前的血。花冠还在合拢，只是那道裂口撑住了。一号机从口子里退开，瓣叶在它背后一寸寸咬回去。"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.LUMINOUS_CHOIR.pages.RYOMA.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：冷光合唱团.md",
+      "chapter": "完整场景",
+      "scene_sha256": "bb90a52aa19ea7e89517c6ff31d5ede7ee17c18dd071c9c920e7a8810db343e5",
+      "zhs": "合唱声压过来，菌丝跟着往一号机的装甲上缠。隼人只在通讯里点出根部的位置，龙马把射线压成一条细得刺眼的光。\n\n光束贴着根部横扫，合唱断成无数破碎的单音。缠上装甲的菌丝跟着断开，从机体上剥落。孢子群顺着光反扑，撞在装甲上，反冲顺着机体回路烧进驾驶舱，在龙马胸口烫出伤痕。\n\n[red][jitter]「安静多了。」[/jitter][/red]龙马咧嘴，[red]「下回唱小声点。」[/red]"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.LUMINOUS_CHOIR.pages.HAYATO.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：冷光合唱团.md",
+      "chapter": "完整场景",
+      "scene_sha256": "bb90a52aa19ea7e89517c6ff31d5ede7ee17c18dd071c9c920e7a8810db343e5",
+      "zhs": "合唱声从墙缝里钻出来。菌丝顺着缝口探出，贴上二号机的外装甲。隼人没有让二号机开火，只操纵机体机械手在装甲外把缠上来的菌丝截断，夹住断口那一小段残片。\n\n他把节拍倒过来，菌丝里的合唱顿时漏掉了一拍。反冲顺着操纵杆窜进驾驶舱，隼人咳了一声。\n\n等墙缝里的合唱平息下去，二号机把夹着残片的那只手掌抬到舱门旁停稳。隼人打开舱门，从机械手上取回那截残片，装进隔离盒。\n\n龙马盯着盒子：[red]「这也能用？」[/red]\n\n[white]「它把杂音吃掉的那一下，会替你挡在前面。」[/white]"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.SPIRIT_GRAFTER.pages.TRIPLE_UNITY.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：灵魂嫁接者.md",
+      "chapter": "完整场景",
+      "scene_sha256": "af601abcb097b2991101ea6e21a632f0301f951765dae1e6cc4fb9f8c2ee2b86",
+      "zhs": "灰白的根须探向三颗心脏。三人没有先切断接触，让它探到心脏上。根须一贴住，龙马就顶住先到的那一路侵入，隼人顺着脉动看清侵入是从哪一节根须钻进来的；车弁庆没说话，反冲灌进来的时候，他只是咬紧了牙。\n\n三次心跳重叠成一次。[getter_ray][sine]青绿色的光[/sine][/getter_ray]沿根须倒灌回去，嫁接者的根须一根根松开。侵入被彻底推回，嫁接者没能拿走真盖塔的主导权，新的结构却留在真盖塔体内。\n\n[red]「你碰到的是[/red][white]我们的灵魂。[/white][yellow]现在，轮到它适应我们了。」[/yellow]"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.SPIRALING_WHIRLPOOL.pages.HAYATO.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：螺旋漩涡.md",
+      "chapter": "完整场景",
+      "scene_sha256": "92a7561ded4ba24aa975fc0fbf24f6a9f3f0f6e20b254651fb90efda78722b68",
+      "zhs": "隼人让二号机的钻头以相反方向缓慢旋转。两股[sine][aqua]螺旋[/aqua][/sine]彼此咬合，原本无法理解的水纹被拆成一层层清晰[sine][aqua]轨迹[/aqua][/sine]。\n\n一段已经完成强化的战斗记录随逆向运算逐层松开，退回[u]未升级[/u]状态。隼人把拆出的规律写进能承接新轨迹的龙卷钻头与螺旋钻头战术记录；下一次启动时，钻头会沿同一道[sine][aqua]轨迹[/aqua][/sine]连续重演。"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.LOST_WISP.pages.BENKEI.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：迷失鬼火.md",
+      "chapter": "完整场景",
+      "scene_sha256": "490200773683f1d0be49e411839e1740225603c5321e34178015b93fa30891eb",
+      "zhs": "车弁庆让三号机挡在最前，宽厚装甲一点点合拢，把漂移的鬼火困进掌心。隼人在通讯里报出侵蚀读数，弁庆没有回头。\n\n寒意沿回路钻进来，留下无法修补的灰白伤痕。弁庆闷哼一声仍没松手，直到鬼火安静下来。\n\n[yellow]「伤留在这里。」[/yellow]弁庆说，[yellow]「路还得一起走。」[/yellow]"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.LOST_WISP.pages.HAYATO.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：迷失鬼火.md",
+      "chapter": "完整场景",
+      "scene_sha256": "490200773683f1d0be49e411839e1740225603c5321e34178015b93fa30891eb",
+      "zhs": "鬼火刚飘向岔路，隼人让二号机停在原地，没有追进那团冷焰。\n\n银白的扫描线只沿它来时的轨迹走了一遍，寒意顺着同一道轨迹倒灌进回路。隼人把那条回头的路记成坐标，等冷意退去才松开操纵杆。\n\n[white]「这白色，倒是和二号机很搭啊。」[/white]"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.WOOD_CARVINGS.pages.TRIPLE_CARVING.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：木雕.md",
+      "chapter": "完整场景",
+      "scene_sha256": "7cceff48f815a32983c45fe60246c918efae1e3c3ff7c7e9c0bcc2352fc3ef31",
+      "zhs": "龙马从架子上取下三件木雕：长蛇递到隼人手里，圆环放进弁庆摊开的掌心，自己捏着飞鸟。\n\n隼人指腹顺着长蛇的刻痕走了一遍：每一处转弯都避开木纹最硬的地方，一线银白从蛇身上掠过。他看够了，把长蛇搁到弁庆手边。\n\n圆环边缘正裂着一道细缝。弁庆用掌心托住，慢慢把断口合拢，黄色微光才在环内亮起。龙马看着那双手，把飞鸟递过去：[red]「像你，粗糙得很。」[/red]\n\n[yellow]「也够结实。」[/yellow]弁庆腾出一只手接住，把它摆上合拢的圆环，红线贴着翅尖亮了一瞬。三件木雕靠在一起，红、白、黄依次闪过，最后合成一件。"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.WELLSPRING.pages.RYOMA.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：泉水.md",
+      "chapter": "完整场景",
+      "scene_sha256": "6cf3f7faf9d4ed130cc7fe545813ae3558ac7a5b89218451deb82b3383d9d8e1",
+      "zhs": "青绿色的光沉进泉底，涟漪却沿着盖塔线的节拍一圈圈回到岸边。\n\n龙马把射线收到最小，回路里留下那段异常的共振。泉水沿着射线倒灌回来，装甲被咬掉一角；隼人等水面熄灭，才把共振波形存进战术记录。\n\n[white]「这段共鸣留下了。」[/white]隼人按住仍在震动的仪表，[white]「代价还是一样，这并非恩赐。」[/white]"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.AMALGAMATOR.pages.RYOMA.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：熔合者.md",
+      "chapter": "完整场景",
+      "scene_sha256": "7a4c30b9422a97f45a7f378e642a87145f4abeb75b43bfb6ca95af8ee8143a1c",
+      "zhs": "[b][jitter]锵！锵！！！[/jitter][/b]\n\n[orange]熔合者[/orange]的巨锤砸在骨砧上。\n\n龙马把要舍弃的旧打法一口气报给熔合者。锤子落下，那些写在战斗记录里的招式被一道道划去，火花溅到他脚边。\n\n[red]「全拿走。剩下那招也别还我。」[/red]"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.AMALGAMATOR.pages.BENKEI.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：熔合者.md",
+      "chapter": "完整场景",
+      "scene_sha256": "7a4c30b9422a97f45a7f378e642a87145f4abeb75b43bfb6ca95af8ee8143a1c",
+      "zhs": "[b][jitter]锵！锵！！！[/jitter][/b]\n\n熔合者举起巨锤。\n\n弁庆伸手按住骨砧：「等一下。」他把金币数清、推过去，才把攻防两套旧战术记录交给熔合者。\n\n熔合者没出声，低下头开始干活。\n\n锤声停下时，记录里多出一套更狠的进攻和一套更稳的防守。弁庆确认两者都能用，才收好余下的零件。"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.ABYSSAL_BATHS.pages.TRIPLE_COOLANT.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：深渊浴场.md",
+      "chapter": "完整场景",
+      "scene_sha256": "d35df29401b046fdcf6ca654a712aff7e7ed859f112b3139fdcf94ac9840eaca",
+      "zhs": "池水开始往装甲缝里钻。隼人把回路切到冷却支线，龙马压过水声说：[red]「别把整池都带回来。」[/red]\n\n装甲在热流里短暂增生，一股泛着冷凝雾的液体沿支线流进备用收集罐。隼人压住回流，没让池水的冲击继续灌进回路，直到仪表归零才把收集罐封好。\n\n[white]「取这一层就够了，底下那些，不碰。」[/white]"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.TRIAL.pages.RYOMA.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：审判.md",
+      "chapter": "完整场景",
+      "scene_sha256": "acf90a94dcd351cfe6a231b25070d19223dc8a6f0e4ed82602a32638bd63b746",
+      "zhs": "案子已经念完。\n\n龙马先看台上那位。\n\n[red]「你有罪。罪在懦弱。」[/red]\n\n审判席爆出一阵不满的呵斥。一号机停在陪审席与审判台之间那块空地上——这座大厅高得容得下一台机体。龙马坐在驾驶舱里，操纵杆在掌心里发出裂响，机体转过身，正面朝向陪审团。\n\n[red]「这样的案子，你们判过太多回。可最该定罪的，是坐着审人的你们。」[/red]\n\n法槌落下，锁链与阴影一齐扑来。真盖塔迎着它们冲出审判席，战斗随即开始。"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.WATERLOGGED_SCRIPTORIUM.pages.HAYATO_ADAPTATION.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：水漫缮写室.md",
+      "chapter": "完整场景",
+      "scene_sha256": "1fc193fa864bdebbddd4abf5da05cef58ebc77eb5313a11d3d8092ce99d43a60",
+      "zhs": "隼人把泡涨的纸页逐层分开。墨迹早已混成一团，只有几道青绿色纹路始终顺着同一个方向生长。\n\n他把这些走向一页页比过去，直到每一笔该落在哪一格都对得上。硬币落进墨池的声音停下时，那道公式已经被完整转写进一张战斗记录。龙马在门口等得不耐烦，隼人却没有加快最后一笔。\n\n[white]「只抄有用的。剩下的字，让水泡着。」[/white]"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.WATERLOGGED_SCRIPTORIUM.pages.HAYATO_INK.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：水漫缮写室.md",
+      "chapter": "完整场景",
+      "scene_sha256": "1fc193fa864bdebbddd4abf5da05cef58ebc77eb5313a11d3d8092ce99d43a60",
+      "zhs": "水把纸页推向桌边。隼人没有去捞最完整的一张，而是把每道仍能辨认的笔画抄进小瓶。\n\n硬币沉进池底，液体慢慢转成浓绿。隼人塞紧瓶口，抬头时正撞见龙马不耐烦的目光。\n\n[red]「这行得通吗，隼人？」[/red]\n\n[white]「能用。」[/white]他把瓶子递过去，墨绿沉在瓶底，没再晃。"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.ENDLESS_CONVEYOR.pages.HAYATO.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：无尽传送带.md",
+      "chapter": "完整场景",
+      "scene_sha256": "f5fd48fc357012ef358156a3e1c78362c6ec5cc85b0903fc928381726780e654",
+      "zhs": "隼人把金币送进维护口，却没有拨动眼前的餐盘。龙马盯着那盘食物滑到一半又停下：[red]「不换？」[/red]\n\n[white]「先看看它怎么改签。」[/white]隼人从维护口后抽出一张改签记录，把边缘擦净，折好收进驾驶舱。\n\n他把盖板合回去：[white]「眼前这盘照旧。」[/white]"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.UNREST_SITE.pages.RYOMA.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：无休之处.md",
+      "chapter": "完整场景",
+      "scene_sha256": "e10c2baf2e7e18559817990bbbd1845ad0d7160527779f75b50808689aed2b94",
+      "zhs": "根须翻起时，裂隙深处喷出一柱滚烫的火。龙马让一号机迎着火光压低肩膀。\n\n火从装甲上掠过去，他仍死死稳住那口气。等他重新直起身，一号机的架势已经换了模样。\n\n龙马攥紧操纵杆：[red]「这才叫磨练。」[/red]"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.UNREST_SITE.pages.BENKEI_BREATH.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：无休之处.md",
+      "chapter": "完整场景",
+      "scene_sha256": "e10c2baf2e7e18559817990bbbd1845ad0d7160527779f75b50808689aed2b94",
+      "zhs": "树根压下来的时候，车弁庆没有让三号机后退，只把机体横在根系最沉的地方。\n\n隼人把呼吸节拍传进通讯：[white]「前四拍吸气，后四拍顶住。」[/white]\n\n弁庆照着节拍撑过最重的一下。根系松开时，机体比他预计的多沉了半截，他没有马上把机身撑回去，只把刚才那套节拍重新报了一遍：[yellow]「数节拍，说得轻松，下次换你们来。」[/yellow]"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.DROWNING_BEACON.pages.RYOMA.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：淹水灯塔.md",
+      "chapter": "完整场景",
+      "scene_sha256": "8bf0cb28ecc13e7a04e4dec77b6b9ae585b7c8d702bed9b505cfa87290e0c638",
+      "zhs": "龙马压下一号机，贴着水面掠过塔底，用机体把水掀向那道倒卷的逆流光。\n\n水没有散开，反而被那道逆流光卷回半空。青绿与冷白撞在一起，像把一段沉睡的记录硬生生翻到了下一页。\n\n龙马望着仍在倒流的光，把操纵杆往前压了一寸：[red]「原来这玩意儿还能这么用。」[/red]"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.DROWNING_BEACON.pages.BENKEI_PRISM.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：淹水灯塔.md",
+      "chapter": "完整场景",
+      "scene_sha256": "8bf0cb28ecc13e7a04e4dec77b6b9ae585b7c8d702bed9b505cfa87290e0c638",
+      "zhs": "塔身正在倾斜。车弁庆把三号机沉到水底，先用肩甲托直塔壁；隼人的声音从通讯里报出镜面的折角。\n\n水压一下接一下砸在装甲上。塔身内壁嵌着一枚比顶层透镜小得多的折光棱镜，一路顺着镜面折下来的光束把嵌槽照得通亮。车弁庆伸出三号机的手，在水下把它从嵌槽里拆下来，让机体手掌拢住那枚棱镜护在装甲前。等三号机浮出水面，弁庆打开驾驶舱的舱门，从机体手掌上把棱镜接进舱里，没再看顶层的透镜。\n\n[yellow]「这不是盖塔线的颜色。」[/yellow]弁庆说，[yellow]「不过别把灯塔的余光浪费了。」[/yellow]"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.THE_FUTURE_OF_POTIONS.pages.HAYATO.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：药水的未来？.md",
+      "chapter": "完整场景",
+      "scene_sha256": "f50994f74b81df2cdf0ae76405824d73540804606d015cc1ecb0c2a7b613f11b",
+      "zhs": "隼人把药水摆上试验台，先检查瓶口的封蜡。龙马盯着那瓶熟悉的颜色：[red]「要拿这好东西去换什么？」[/red]\n\n药液一点点通过冷却管，原来的效力被拆散，只剩一层微微发烫的荧光。隼人把新瓶塞进空出来的位置。\n\n[white]「封好。别在这里试，我还没准备好收拾残局。」[/white]\n\n龙马哼了一声：[red]「那就别留到下次。」[/red]"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.RELIC_TRADER.pages.HAYATO.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：遗物交换商.md",
+      "chapter": "完整场景",
+      "scene_sha256": "aa828c7c16a711267a2e7d9c1c118711cbfc9ba7003c5b9cc6de82ee20c40725",
+      "zhs": "[sine]皇帝的碎片渗出一线青绿光芒。[/sine]龙马没等交换商开价，先把选中的旧遗物放上柜台。\n\n青绿光贴着那件遗物走了一圈，柜台上随即亮起三道彼此重叠的影子，每一道都像它走去的另一条路。隼人把三道影子挨个比对过，抬手点了其中一道。金币落袋，另外两道影子散开。\n\n碎片重新沉寂，柜台上的光也跟着收了回去。"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.ROUND_TEA_PARTY.pages.RYOMA.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：圆桌茶会.md",
+      "chapter": "完整场景",
+      "scene_sha256": "b3f6d4e0a3f3f72db9b7b6576463b5c7e01b181c9f7087e808b7240a4bc41b24",
+      "zhs": "龙马端起茶杯闻了一下，随手扣回桌面。\n\n[red]「茶里下了东西，还摆这副客气脸。」[/red]\n\n圆桌被他掀向前方。桌板翻起的空隙里，隼人看见侧面的椅阵先动了，提醒他低头；车弁庆顺手抄起一块翻过来的桌板，替两人挡住后面追上来的人。\n\n龙马硬吃下一记冲撞，身子跟着往下一压，出拳的发力换了角度。同一口气没断，他从包围里撕开一道出口。\n\n余下的人退开后，龙马在碎桌下找到一件遗物，擦掉嘴角的血。[red][jitter]「这才像请客。」[/jitter][/red]"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.RANWID_THE_ELDER.pages.RYOMA.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：长者兰伟德.md",
+      "chapter": "完整场景",
+      "scene_sha256": "d82373227888a7406ebef28ba05a266cb011f5451eed2720619a7dd3f2d376c6",
+      "zhs": "兰伟德从看见盖塔起就没把眼睛挪开。他绕着机体走了半圈，手指在空气里点着合体的接点，嘴里念念有词。那份出神的样子龙马认得——老头子盯着还没完工的机器时就是这么个眼神，早乙女研究所里他见过太多次。\n\n「想研究盖塔？先拿你的收藏来交换。」龙马直接把话撂下。\n\n隼人把蓝图摊开一角。兰伟德立刻凑到纸面前，目光在那几组互相矛盾却能同时成立的合体结构上钉住了。\n\n[red]「整份资料，换你收藏里的一件东西，我来挑。」[/red]龙马丝毫不客气，[red]「你这样子，跟那老头子真像啊。」[/red]"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.RANWID_THE_ELDER.pages.RYOMA_RESULT.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：长者兰伟德.md",
+      "chapter": "完整场景",
+      "scene_sha256": "d82373227888a7406ebef28ba05a266cb011f5451eed2720619a7dd3f2d376c6",
+      "zhs": "老者沉默许久，终于摆出两件遗物。龙马收起其中一件，把完整蓝图推了过去；没等兰伟德抬头，三人已经向前进发。"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.TEA_MASTER.pages.RYOMA.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：茶艺大师.md",
+      "chapter": "事件分支",
+      "scene_sha256": "25289840c5ba2853003fd4f06c41244575f09cba67370d88202ca4f7c202ea40",
+      "zhs": "龙马连茶杯都没碰，忽然隔着茶席挥出一拳。茶艺大师抬起托盘稳稳接住，拳风掀翻了四周的坐垫，却没有让杯中的茶溅出一滴。\n\n反震沿着手臂撞进胸口，龙马后退半步，随即大笑起来。茶艺大师也不生气，只把那杯仍在燃着暗红余火的茶推到他面前。\n\n「不错！这杯才像样！」"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.TEA_MASTER.pages.BENKEI.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：茶艺大师.md",
+      "chapter": "事件分支",
+      "scene_sha256": "25289840c5ba2853003fd4f06c41244575f09cba67370d88202ca4f7c202ea40",
+      "zhs": "龙马还想再试一拳，弁庆却轻轻把他推到旁边，挽起衣袖坐到茶席前。那双足以托住真盖塔操纵杆的宽厚手掌，此刻稳稳控制着水流；温杯、投茶、注水、收汤，每一步都安静得出奇。\n\n茶香渐渐压过了屋里的焦味。茶艺大师第一次收起审视的神情，认真喝完弁庆递来的茶，又将骨茶与余烬茶同时摆到他的面前。\n\n弁庆有些不好意思地摸了摸鼻子。\n\n「以前照顾孩子们的时候学过一点。粗人也不能糟蹋好茶啊。」"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.SUNKEN_STATUE.pages.BENKEI.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：沉没雕像.md",
+      "chapter": "事件分支",
+      "scene_sha256": "319aa878e9be5c539fe4e77005337de7b03a6461ff4c41d868a69d3aa23242dc",
+      "zhs": "三号机沿雕像残破的肩部缓缓[jitter]下潜[/jitter]。水压一层层压紧装甲，警报声也跟着变得低沉。\n\n[yellow]「再坚持一会儿，马上就找齐了。」[/yellow]\n\n车弁庆没有在第一处闪光前停下。他护住回收舱继续向底部摸索，直到最后一枚被淤泥埋住的金币也被捞起，才拖着受损装甲浮回水面。",
+      "eng": "Getter 3 [jitter]descends[/jitter] along the statue's ruined shoulder. Each layer of pressure tightens around its armor and deepens the warning alarms.\n\n[yellow]「Just a little longer. I have almost found them all.」[/yellow]\n\nBenkei does not stop at the first glint. He shields the recovery bay and searches the bottom until even the last coin buried in silt is aboard, then drags the damaged armor back to the surface.",
+      "jpn": "ゲッター3は崩れた像の肩に沿って[jitter]沈む[/jitter]。水圧が装甲を締め付けるたび、警報音も低くなっていく。\n\n[yellow]「もう少しだ。すぐ全部見つける。」[/yellow]\n\n弁慶は最初の輝きで止まらない。回収庫を守りながら底を探り、泥に埋もれた最後の一枚まで拾い上げてから、傷ついた装甲を水面へ引き戻した。"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.TINKER_TIME.pages.HAYATO.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：打造时间.md",
+      "chapter": "事件分支",
+      "scene_sha256": "e4861dd4b0547aebafc4e32094f0c2593cf78c029a259bc761ed1dbfaed72993",
+      "zhs": "隼人把蓝图盖在疯狂科学家的草稿上。龙马只看了一眼就皱起眉头：[red]「又要从头算？」[/red]\n\n一阵火花之后，原先的两组框架被拆回零件，新的结构从仪器里升起。隼人压住还在跳字的仪表，收起蓝图。\n\n[white]「只重来一次。再算下去，先疯的就不是科学家了。」[/white]"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.BUGSLAYER.pages.BENKEI.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：害虫杀手.md",
+      "chapter": "事件分支",
+      "scene_sha256": "9ecb9fe6b4e98ceb92ac498cff4c2a7694e36e1124a90c56f3815ca502e43acf",
+      "zhs": "讲解者刚说到「方法有两种」，车弁庆已经让三号机压低重心。隼人在通讯里报出不会震塌洞顶的窄口，弁庆只回了一声「知道」。\n\n三号机顺着标记稳稳碾过，甲壳和黏液飞得到处都是，反震也撞进驾驶舱。虫群被压平后，通讯里终于安静下来。\n\n龙马过了一会儿才笑出声：[red]「弁庆也有这么乱来的时候？」[/red]\n\n隼人沉默片刻：[white]「你们两个对‘乱来’的定义，最好别让我参与制定。」[/white]\n\n[yellow]「名字你们慢慢想。」[/yellow]弁庆说，[yellow]「先别让它们再跑出来。」[/yellow]",
+      "eng": "The guide has barely begun explaining that 「there are two methods」 when Benkei lowers Getter 3's stance. Hayato marks a narrow line that will not bring down the cavern roof. Benkei answers only, 「Got it.」\n\nGetter 3 rolls steadily through the mark, spraying shell and slime everywhere as the recoil slams into the cockpit. When the swarm lies flat, the comms finally fall silent.\n\nAfter a moment, Ryoma bursts out laughing: [red]「Even Benkei cuts loose like that?」[/red]\n\nHayato pauses. [white]「Please don't ask me to define ‘cutting loose’ for either of you.」[/white]\n\n[yellow]「Take your time naming the method,」[/yellow] Benkei says. [yellow]「Just don't let them crawl out again.」[/yellow]",
+      "jpn": "説明役が「方法は二つある」と言い終える前に、弁慶は真ゲッター3の重心を落とした。隼人が洞窟を崩さない狭い進路を通信で示すと、弁慶は「分かった」とだけ答える。\n\n真ゲッター3は印に沿って虫の群れを着実に押し潰した。殻と粘液が飛び散り、反動が操縦席まで突き上げる。群れが平らになると、通信はようやく静かになった。\n\n少しして竜馬が笑い出す：[red]「弁慶もこんな無茶をするんだな？」[/red]\n\n隼人は少し黙った。[white]「お前たち二人の『無茶』を、俺に定義させるな。」[/white]\n\n[yellow]「名前はゆっくり考えろ。」[/yellow]弁慶が言う。[yellow]「まずは二度と這い出させるな。」[/yellow]"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.WELCOME_TO_WONGOS.pages.HAYATO.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：欢迎来到旺购百货.md",
+      "chapter": "事件分支",
+      "scene_sha256": "cff316359f0168286b81e5940580c4bca0ee6af8e9e2cfc79c11671b9f92a562",
+      "zhs": "扫描口吞下证件，货架上的价签一张接一张熄灭。屏幕翻出几笔零金额账单，最后定在「顾客资格核验完成」。\n\n接着，闸门上亮起一行字：[red]「检测到恶意消费行为。本次交易已冻结。」[/red]\n\n龙马盯着那几笔账：[red]「白拿的也算消费？」[/red]\n\n[white]「至少在它的账里算。」[/white]隼人收回证件，示意出口。弁庆看了一眼暗下去的货架：[yellow]「这次就别跟百货讲道理了。」[/yellow]"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.TRASH_HEAP.pages.BENKEI.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：垃圾堆.md",
+      "chapter": "事件分支",
+      "scene_sha256": "01ddd70341540cc315041928d8dfe4291173c82998840c4e7a0cd8676e501292",
+      "zhs": "垃圾山刚被掀开一道缝，整片锈蚀构件便向下坍塌。车弁庆没有后退，三号机沉进污泥，双臂把倾落的重量硬生生托在半空。\n\n[yellow]「赶紧的，两位。」[/yellow]\n\n缝隙里滚出三件仍有反应的旧物。等选定其中一件，弁庆才缓缓松手，让垃圾在身后轰然合拢。"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.ROOM_FULL_OF_CHEESE.pages.BENKEI.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：满屋芝士.md",
+      "chapter": "事件分支",
+      "scene_sha256": "51f741cb5fe5fee718c5be81b5d4e2ce26b4337c85dd2f1c41aedfd961136fbf",
+      "zhs": "车弁庆挨个掰下一小块芝士。第一块太咸，第二块发苦，第三块刚入口便在舌尖弹了一下。\n\n他脸色越来越难看，仍把安全的几块整齐摆到众人面前。有人刚伸手，隼人便在旁边提醒：[white]「那块弁庆还没试。」[/white]\n\n龙马盯着空掉的一排芝士，笑得很不客气：[red]「三号机的驾驶员长这么胖，原来是有原因的。」[/red]\n\n[yellow]「没事，至少这些真的能吃。」[/yellow]弁庆捂着肚子勉强笑道。"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.THIS_OR_THAT.pages.RYOMA.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：这个还是那个？.md",
+      "chapter": "事件分支",
+      "scene_sha256": "a8fb68c0b0396787a0c294473c76e424a41868069c73def55153472fd337652c",
+      "zhs": "两个按钮催促般交替闪烁。龙马看了一会儿，忽然一拳砸进它们中间。齿轮、弹簧和刻着「选择」的铁牌散落一地，机关终于安静下来。\n\n他什么也没拿，只跨过残骸继续前进。\n\n「别擅自替我规定答案。」"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.THIS_OR_THAT.pages.HAYATO.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：这个还是那个？.md",
+      "chapter": "事件分支",
+      "scene_sha256": "a8fb68c0b0396787a0c294473c76e424a41868069c73def55153472fd337652c",
+      "zhs": "隼人的手指沿着装置背面滑过，在油污下找到一道几乎看不见的投币槽。金币落下后，原本互相排斥的两个按钮同时熄灭，侧面的暗格弹出一件遗物。\n\n[white]「二选一，只是它希望你看到的题目。」[/white]"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.THE_LEGENDS_WERE_TRUE.pages.RYOMA.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：传说是真的.md",
+      "chapter": "事件分支",
+      "scene_sha256": "d107d85fa093e0c60ddcbc3665434bd01a77c58703ce440c142d2806327e9f99",
+      "zhs": "龙马把藏宝图举到火光前看了两眼，顺手撕成几片。夹层里掉出一张被水汽熏黄的证件，他捏着边角晃了晃。\n\n[red]「良好市民可不会上这种幼稚的当。」[/red]\n\n隼人看清证件上的字，忍不住笑骂：[white]「你这家伙……」[/white]\n\n车弁庆凑近一步，眼睛都睁大了：[yellow]「你竟然还带着？」[/yellow]\n\n[red]「少啰嗦了，你们两个大叔。」[/red]",
+      "eng": "Ryoma holds the treasure map to the fire, studies it for two seconds, then tears it apart. A smoke-stained card slips from between its layers. He holds it by one corner.\n\n[red]「A good citizen would never fall for a trick this childish.」[/red]\n\nHayato reads the card and starts laughing. [white]「You...」[/white]\n\nBenkei leans closer, eyes wide. [yellow]「You actually kept that?」[/yellow]\n\n[red]「Quiet, both of you old men.」[/red]",
+      "jpn": "竜馬は宝の地図を火にかざして二度見すると、あっさり引き裂いた。重なった紙の間から、煙で黄ばんだ証明書が落ちる。\n\n[red]「良き市民が、こんな子供騙しに引っかかるかよ。」[/red]\n\n文字を読んだ隼人が吹き出す。[white]「お前という奴は……」[/white]\n\n弁慶は目を見開いた。[yellow]「まさか、まだ持っていたのか？」[/yellow]\n\n[red]「うるせえぞ、おっさん二人。」[/red]"
+    },
+    {
+      "key": "SHIN_GETTER_EVENT_INVASION.THE_LEGENDS_WERE_TRUE.pages.HAYATO.description",
+      "source": "游戏/杀戮尖塔2/事件笔记/事件：传说是真的.md",
+      "chapter": "事件分支",
+      "scene_sha256": "d107d85fa093e0c60ddcbc3665434bd01a77c58703ce440c142d2806327e9f99",
+      "zhs": "隼人蹲在壁画前，用指尖沿着几道旧裂缝划过去。石壁里传出的回声短了半拍，出口的位置立刻清楚起来。\n\n二号机贴着狭窄通道掠过，外壳被石棱割出一道道火花。尽头的冷藏罐还在工作，金币落入校准槽，锁扣随即弹开。\n\n隼人拧开瓶盖看了一眼青绿色漩涡。\n\n[white]「意外收获，还能喝一杯。」[/white]",
+      "eng": "Hayato crouches before the mural and traces its old fractures. One echo returns half a beat early, revealing the exit.\n\nGetter 2 slips through the narrow passage as stone edges rake sparks from its shell. A refrigerated canister still runs at the end. Coins drop into its calibration slot and the lock springs open.\n\nHayato studies the green spiral beneath the cap.\n\n[white]「Unexpected profit. We even get a drink.」[/white]",
+      "jpn": "隼人は壁画の前にしゃがみ、古い亀裂を指でなぞった。一つだけ半拍早く返る反響が出口を示す。\n\nゲッター2は狭い通路を抜け、岩角が装甲から火花を削り取った。奥では冷却容器がまだ動いている。調整口へ硬貨を落とすと、留め金が跳ねた。\n\n隼人は蓋の下の緑の渦を見つめる。\n\n[white]「思わぬ収穫だ。ついでに一杯やれる。」[/white]"
+    }
+  ]
+}

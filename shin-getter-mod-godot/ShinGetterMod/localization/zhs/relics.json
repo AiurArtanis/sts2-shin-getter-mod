@@ -38,5 +38,14 @@
   "S_G_R_BEACON_PRISM.flavor": "淹没的灯塔把不同海色折成一道航光；偏离盖塔航线的牌，也会被它再照亮一次。",
   "S_G_R_MYCELIAL_SILENCER.title": "菌丝消音器",
   "S_G_R_MYCELIAL_SILENCER.description": "每回合第一次消耗卡牌后，获得{Block:diff()}点格挡。",
-  "S_G_R_MYCELIAL_SILENCER.flavor": "把合唱漏掉一拍，后面的杂音便再也压不进驾驶舱。"
+  "S_G_R_MYCELIAL_SILENCER.flavor": "把合唱漏掉一拍，后面的杂音便再也压不进驾驶舱。",
+  "S_G_R_ACTIVATED_SAPPHIRE.title": "活化蓝宝石",
+  "S_G_R_ACTIVATED_SAPPHIRE.description": "每场战斗中，你第4次实际受到的生命伤害变为0。每场战斗仅生效一次。",
+  "S_G_R_SYMBIOTIC_FILTER.title": "共生滤膜",
+  "S_G_R_SYMBIOTIC_FILTER.description": "每场战斗中，第一次有状态牌进入你的手牌时，将其消耗，然后获得1层[gold]进化[/gold]。",
+  "S_G_R_EMBER.title": "余火",
+  "S_G_R_EMBER.description": "每场战斗中，第一次抽到带消耗的攻击牌或技能牌时，使该牌在本场战斗中失去消耗。其他类型不占用此次机会。",
+  "S_G_R_ACTIVATED_SAPPHIRE.flavor": "盖塔线在晶体里留下了四道脉动，最后一道替驾驶舱挡住了冲击。",
+  "S_G_R_SYMBIOTIC_FILTER.flavor": "它学会了分辨污染，也学会了在盖塔线上留下自己的痕迹。",
+  "S_G_R_EMBER.flavor": "从墓中带走的火种，仍在等待下一次燃烧。"
 }

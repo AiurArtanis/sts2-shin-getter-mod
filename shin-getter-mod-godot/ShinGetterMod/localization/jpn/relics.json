@@ -38,5 +38,14 @@
   "S_G_R_BEACON_PRISM.flavor": "沈んだ灯台は海の異なる色を一筋の導光へ屈折させる。ゲッターの航路を外れたカードも、もう一度だけ照らし出される。",
   "S_G_R_MYCELIAL_SILENCER.title": "菌糸サイレンサー",
   "S_G_R_MYCELIAL_SILENCER.description": "各ターン最初にカードを廃棄した後、{Block:diff()}ブロックを得る。",
-  "S_G_R_MYCELIAL_SILENCER.flavor": "合唱から一拍を消せば、残りの雑音は操縦席まで届かない。"
+  "S_G_R_MYCELIAL_SILENCER.flavor": "合唱から一拍を消せば、残りの雑音は操縦席まで届かない。",
+  "S_G_R_ACTIVATED_SAPPHIRE.title": "活性化サファイア",
+  "S_G_R_ACTIVATED_SAPPHIRE.description": "各戦闘で、自分が実際に受ける4回目のHPダメージを0にする。各戦闘1回。",
+  "S_G_R_SYMBIOTIC_FILTER.title": "共生フィルター",
+  "S_G_R_SYMBIOTIC_FILTER.description": "各戦闘で、初めて状態異常カードが自分の手札に入った時、そのカードを廃棄し、その後[gold]進化[/gold]1を得る。",
+  "S_G_R_EMBER.title": "残り火",
+  "S_G_R_EMBER.description": "各戦闘で、初めて引いた廃棄付きのアタックかスキルは、この戦闘中廃棄を失う。他の種類のカードでは発動回数を消費しない。",
+  "S_G_R_ACTIVATED_SAPPHIRE.flavor": "結晶にはゲッター線の脈動が四つ残った。最後の一つが、操縦席を襲う衝撃を受け止める。",
+  "S_G_R_SYMBIOTIC_FILTER.flavor": "汚染を見分けることを覚え、ゲッター線に自らの痕跡を残すことも覚えた。",
+  "S_G_R_EMBER.flavor": "墓から持ち帰った火種は、再び燃える時を待っている。"
 }

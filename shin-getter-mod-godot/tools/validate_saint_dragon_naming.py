@@ -3,6 +3,7 @@ import json
 import re
 import subprocess
 from pathlib import Path
+from registered_card_contract import validate_registered_cards
 
 ROOT = Path(__file__).resolve().parents[2]
 PROJECT = ROOT / "shin-getter-mod-godot"
@@ -39,8 +40,7 @@ for language in ("eng", "jpn", "zhs"):
         assert cards["S_G_C_SAINT_DRAGON_ROAR.title"] == "Saint Dragon Roar"
 assert (PROJECT / "src/Models/Cards/SGC_SaintDragonRoar.cs").is_file()
 pool = (PROJECT / "src/Models/CardPools/ShinGetterCardPool.cs").read_text(encoding="utf-8-sig")
-entries = re.findall(r"ModelDb\.Card<([^>]+)>\(\)", pool)
-assert len(entries) == 77 and len(set(entries)) == 77
+entries = validate_registered_cards(pool)
 assert entries.count("SGC_SaintDragonRoar") == 1
 assert not errors, "\n".join(errors)
 print("Saint Dragon naming: PASS (legacy values only in explicit migration/test inputs)")
