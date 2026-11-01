@@ -24,7 +24,7 @@ session结束时撤销共享active标志，已捕获ExecutionContext也失效；
 - 特许正式109编译0warning/0error，源合同31种不安全负向及15实际ID/3错负向、15事件20路线与三语/旧剧情门禁通过。
 - 定向CLR安装真实三组Harmony补丁（含两个原生MoveNext适配），实际执行原生SaveEventOptionToHistory及Postfix。检查同key异引用/其他player/synchronizer拒绝、history完成前不存、待保存结果不放行、缓存重入、native取消、保存失败后仍走清理且不重试、异常原样传播和session撤销。
 - CLR中discovered5→8是明确的候选展示夹具，未执行Godot场景、真实MarkCardAsSeen、ToSave全体或磁盘Continue。不得把该结果记成真实游戏保存通过。原map scope/reload CLR保护仍通过。
-- 第一次CLR因SimpleGrid实际IL调用基类而非派生声明的方法被门禁拒绝，保留原log；已按实际IL绑定基类且保留虚派发后通过，不放宽调用计数。
+- 第一次CLR因SimpleGrid实际IL调用基类而非派生声明的方法被门禁拒绝，保留原log；已按实际IL绑定相同基类方法并保持原调用及返回任务后通过，不放宽调用计数。
 - 九件批准美术、已独立解除的3项P2及运行时资源无改动。不重跑R2–R4/整局/多人/Beta，不开新游戏；候选交主开发独立准入后才新实例。
 
 ## 新实例应核对
