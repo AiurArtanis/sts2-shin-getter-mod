@@ -57,9 +57,14 @@
         "手札1枚をこの戦闘中エンチャントする。アタックには[gold]鋭利[/gold]、ブロックを得るスキルには[gold]身軽[/gold]、パワーには[gold]迅速[/gold]を{Enchantment:diff()}付与する。\n[red]ゲッター1[/red]：さらに[gold]活力[/gold]5を得る。"
       ],
       "S_G_C_ANNOTATIONS.selectionScreenPrompt": [
-        "选择1张手牌附魔。取消不消耗批注。",
-        "Choose a card to Enchant. Canceling does not consume Annotations.",
-        "エンチャントする手札を選ぶ。キャンセルすると書き込みは消費されない。"
+        "选择1张手牌附魔。取消本次手动使用不扣费、不消耗批注。",
+        "Choose a hand card to enchant. Canceling this manual attempt spends no resources or card.",
+        "付与する手札を1枚選ぶ。この手動使用をキャンセルすると、リソースも書き込みも消費しない。"
+      ],
+      "S_G_C_ANNOTATIONS.committedSelectionScreenPrompt": [
+        "选择本次附魔目标。出牌已提交；取消仅跳过效果，不退款、不撤销之前的效果。",
+        "Choose this play's enchantment target. The play is committed: canceling skips its effect without refunds or undoing earlier effects.",
+        "今回付与する対象を選ぶ。使用は確定済み。キャンセルは効果のみを省略し、返金や以前の効果の取り消しはしない。"
       ]
     },
     "relics": {

@@ -171,5 +171,6 @@
   "S_G_C_BROKEN_DRILL.description": "抽到时，获得2层[gold]衰退[/gold]。\n被消耗时，获得1点[gold]气力[/gold]。",
   "S_G_C_ANNOTATIONS.title": "批注",
   "S_G_C_ANNOTATIONS.description": "选择1张手牌，按类型为其添加本场战斗的附魔：攻击牌[gold]锋利[/gold]、能获得格挡的技能牌[gold]灵巧[/gold]、能力牌[gold]迅捷[/gold]，层数为{Enchantment:diff()}。\n[red]一号机[/red]：额外获得5层[gold]活力[/gold]。",
-  "S_G_C_ANNOTATIONS.selectionScreenPrompt": "选择1张手牌附魔。取消不消耗批注。"
+  "S_G_C_ANNOTATIONS.selectionScreenPrompt": "选择1张手牌附魔。取消本次手动使用不扣费、不消耗批注。",
+  "S_G_C_ANNOTATIONS.committedSelectionScreenPrompt": "选择本次附魔目标。出牌已提交；取消仅跳过效果，不退款、不撤销之前的效果。"
 }

@@ -13,6 +13,7 @@ using MegaCrit.Sts2.Core.Models.Enchantments;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.HoverTips;
+using MegaCrit.Sts2.Core.Localization;
 using ShinGetterMod.Services;
 
 namespace ShinGetterMod.Models.Cards;
@@ -20,9 +21,39 @@ namespace ShinGetterMod.Models.Cards;
 public sealed class SGC_Annotations : ShinGetterEventCardBase
 {
     private bool _canceled;
-    private bool _succeeded;
-    internal void BeginPlaySequence() { _canceled = false; _succeeded = false; }
-    internal void EndPlaySequence() { _canceled = false; _succeeded = false; }
+    private bool _manualCanceled;
+    private CardModel? _preparedTarget;
+    internal void BeginPlaySequence() { _canceled = false; }
+    internal void EndPlaySequence() { _canceled = false; _manualCanceled = false; _preparedTarget = null; }
+    internal bool HasPreparedTarget => _preparedTarget is CardModel target && target.Pile?.Type == PileType.Hand && IsLegalTarget(target);
+    internal void CancelManualPreparation() { _manualCanceled = true; _preparedTarget = null; }
+    internal bool ConsumeManualCancellation()
+    {
+        bool canceled = _manualCanceled;
+        if (canceled) EndPlaySequence();
+        return canceled;
+    }
+
+    internal async Task<bool> PrepareManualPlay(PlayerChoiceContext choiceContext)
+    {
+        EndPlaySequence();
+        choiceContext.PushModel(this);
+        try
+        {
+            _preparedTarget = (await CardSelectCmd.FromHand(choiceContext, Owner,
+                new CardSelectorPrefs(SelectionScreenPrompt, 1) { Cancelable = true }, IsLegalTarget, this)).FirstOrDefault();
+            if (HasPreparedTarget) return true;
+            CancelManualPreparation();
+            return false;
+        }
+        finally { choiceContext.PopModel(this); }
+    }
+
+    protected override void AfterCloned()
+    {
+        base.AfterCloned();
+        EndPlaySequence();
+    }
     public SGC_Annotations() : base(1, CardType.Skill, TargetType.Self) { }
     public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Exhaust };
     protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new DynamicVar("Enchantment", 2m) };
@@ -45,13 +76,21 @@ public sealed class SGC_Annotations : ShinGetterEventCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        if (_canceled) return; // A canceled replay sequence cannot reopen a selection.
+        if (_canceled) return; // Only the remaining effects are skipped; the native sequence stays committed.
         bool firstForm = HasForm(Owner, ShinGetterForm.Getter1);
-        CardModel? target = (await CardSelectCmd.FromHand(choiceContext, Owner,
-            new CardSelectorPrefs(SelectionScreenPrompt, 1) { Cancelable = true }, IsLegalTarget, this)).FirstOrDefault();
+        CardModel? target = _preparedTarget;
+        _preparedTarget = null;
         if (target == null || target.Pile?.Type != PileType.Hand || !IsLegalTarget(target))
         {
-            await CancelPlay(cardPlay);
+            // Auto-play, replay, or a target invalidated by native pre-play hooks is already
+            // committed. Its cancellation cannot refund resources or remove the play's hooks.
+            var prompt = new LocString("cards", Id.Entry + ".committedSelectionScreenPrompt");
+            target = (await CardSelectCmd.FromHand(choiceContext, Owner,
+                new CardSelectorPrefs(prompt, 1) { Cancelable = true }, IsLegalTarget, this)).FirstOrDefault();
+        }
+        if (target == null || target.Pile?.Type != PileType.Hand || !IsLegalTarget(target))
+        {
+            _canceled = true;
             return;
         }
         EnchantmentModel? previous = target.Enchantment == null ? null
@@ -64,23 +103,11 @@ public sealed class SGC_Annotations : ShinGetterEventCardBase
             CardCmd.ClearEnchantment(target);
             if (previous != null) CardCmd.Enchant(previous, target, previousAmount);
             Log.Error($"issue#238 annotations enchantment failed: {ex}");
-            await CancelPlay(cardPlay);
+            _canceled = true;
             return;
         }
-        _succeeded = true;
         if (firstForm)
             await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, 5m, Owner.Creature, this);
-    }
-
-    private async Task CancelPlay(CardPlay cardPlay)
-    {
-        _canceled = true;
-        // A later replay cancel cannot undo an earlier successful enchantment or its Exhaust.
-        if (_succeeded) return;
-        // Move off Play so the wrapper's captured Exhaust result does not consume this card.
-        if (Pile?.Type == PileType.Play) await CardPileCmd.Add(this, PileType.Hand);
-        if (!cardPlay.IsAutoPlay && cardPlay.PlayIndex == 0)
-            await PlayerCmd.GainEnergy(cardPlay.Resources.EnergySpent, Owner);
     }
 
     protected override void OnUpgrade() => DynamicVars["Enchantment"].UpgradeValueBy(1m);

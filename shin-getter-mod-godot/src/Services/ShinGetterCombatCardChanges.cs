@@ -30,6 +30,10 @@ internal static class ShinGetterCombatCardChanges
             state.Upgrades.TryAdd(card, card.CurrentUpgradeLevel);
             if (upgrade && card.IsUpgradable) CardCmd.Upgrade(card, CardPreviewStyle.None);
             else if (!upgrade && card.IsUpgraded) CardCmd.Downgrade(card);
+            // Native DowngradeInternal rebuilds canonical keywords. Ember's combat effect
+            // survives both upgrade directions; it must not be mistaken for an upgrade keyword.
+            if (state.RemovedExhaust.Contains(card) && card.Keywords.Contains(CardKeyword.Exhaust))
+                CardCmd.RemoveKeyword(card, CardKeyword.Exhaust);
         }
     }
 

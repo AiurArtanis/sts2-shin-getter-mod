@@ -130,9 +130,25 @@ def content_contracts():
     annotations = read("src/Models/Cards/SGC_Annotations.cs")
     contains(annotations, "base(1, CardType.Skill", "CardKeyword.Exhaust", 'DynamicVar("Enchantment", 2m)',
              "UpgradeValueBy(1m)", "CanEnchant(card)", "CardType.Skill when card.GainsBlock",
-             "card.Owner == Owner", "Cancelable = true", "if (_canceled) return", "if (_succeeded) return",
-             "cardPlay.PlayIndex == 0", "cardPlay.Resources.EnergySpent", "CardPileCmd.Add(this, PileType.Hand)",
+             "card.Owner == Owner", "Cancelable = true", "if (_canceled) return", "PrepareManualPlay",
+             "ConsumeManualCancellation", "HasPreparedTarget", "committedSelectionScreenPrompt",
              "previousAmount", "PowerCmd.Apply<VigorPower>")
+    require("GainEnergy" not in annotations and "CardPileCmd.Add(this, PileType.Hand)" not in annotations,
+            "committed annotations must never refund/return after native hooks")
+    preparation = read("src/Patches/ShinGetterAnnotationsPreparationPatch.cs")
+    contains(preparation, "typeof(PlayCardAction)", '"MoveNext"', "AsyncStateMachineAttribute", "PrepareResources",
+             "PlayPreparedCard", "new GameActionPlayerChoiceContext(action)", "ActionChoiceContext.SetValue(action, context)",
+             "card.CanPlay(out _, out _)", "card.IsValidTarget(action.Target)", "action.Cancel();", "return (0, 0)",
+             "annotations.ConsumeManualCancellation()", "return Task.CompletedTask")
+    preparing = body(preparation, "private static async Task<(int, int)> PrepareAnnotationsResources(")
+    require(preparing.index("await annotations.PrepareManualPlay(context)") < preparing.index("card.CanPlay(")
+            < preparing.index("await card.SpendResources()"), "manual choice must precede native recheck and cost")
+    require("Hook.AfterCardPlayed" not in preparation and "Hook.BeforeCardPlayed" not in preparation,
+            "do not replace global card hooks")
+    upgrades = body(changes, "internal static void ChangeUpgradeLevels(")
+    require(upgrades.index("CardCmd.Downgrade(card)") < upgrades.index("state.RemovedExhaust.Contains(card)")
+            < upgrades.index("CardCmd.RemoveKeyword(card, CardKeyword.Exhaust)"),
+            "Ember combat keyword must be reapplied after native upgrade reset")
     ember = read("src/Models/Relics/SGR_Ember.cs")
     contains(ember, "AfterCardDrawnEarly", "card.Owner != Owner", "PileType.Hand", "CardType.Attack or CardType.Skill",
              "CardKeyword.Exhaust", "RememberRemovedExhaust", "CardCmd.RemoveKeyword", "_used = false")
@@ -140,6 +156,8 @@ def content_contracts():
     filter_code = read("src/Models/Relics/SGR_SymbioticFilter.cs")
     contains(filter_code, "AfterCardChangedPiles", "CardType.Status", "card.Owner != Owner", "oldPileType == PileType.Hand", "_used = false")
     contains(filter_code, "new BlockingPlayerChoiceContext()")
+    contains(filter_code, "AfterCardEnteredCombat", "NewHandInstances", "ReferenceEqualityComparer.Instance",
+             "entries.Remove(card)", "oldPileType == PileType.Hand && !newHandInstance")
     require("ThrowingPlayerChoiceContext" not in filter_code, "nested Exhaust hooks may request native choices")
     require(filter_code.index("_used = true") < filter_code.index("await CardCmd.Exhaust") < filter_code.index("PowerCmd.Apply<SGP_Evolution>"), "Filter nested hook re-entry")
     catalyst = read("src/Models/Potions/SGR_MobilityCatalyst.cs")

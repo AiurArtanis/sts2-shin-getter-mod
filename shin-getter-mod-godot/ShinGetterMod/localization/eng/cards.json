@@ -171,5 +171,6 @@
   "S_G_C_BROKEN_DRILL.description": "When drawn, gain 2 [gold]Wane[/gold].\nWhen Exhausted, gain 1 [gold]Ki[/gold].",
   "S_G_C_ANNOTATIONS.title": "Annotations",
   "S_G_C_ANNOTATIONS.description": "Enchant a card in your hand for this combat: an Attack with [gold]Sharp[/gold], a Block-gaining Skill with [gold]Nimble[/gold], or a Power with [gold]Swift[/gold], with {Enchantment:diff()} stacks.\n[red]Getter 1[/red]: Also gain 5 [gold]Vigor[/gold].",
-  "S_G_C_ANNOTATIONS.selectionScreenPrompt": "Choose a card to Enchant. Canceling does not consume Annotations."
+  "S_G_C_ANNOTATIONS.selectionScreenPrompt": "Choose a hand card to enchant. Canceling this manual attempt spends no resources or card.",
+  "S_G_C_ANNOTATIONS.committedSelectionScreenPrompt": "Choose this play's enchantment target. The play is committed: canceling skips its effect without refunds or undoing earlier effects."
 }

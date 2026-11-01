@@ -171,5 +171,6 @@
   "S_G_C_BROKEN_DRILL.description": "引いた時、[gold]衰退[/gold]2を得る。\n廃棄された時、[gold]気力[/gold]1を得る。",
   "S_G_C_ANNOTATIONS.title": "書き込み",
   "S_G_C_ANNOTATIONS.description": "手札1枚をこの戦闘中エンチャントする。アタックには[gold]鋭利[/gold]、ブロックを得るスキルには[gold]身軽[/gold]、パワーには[gold]迅速[/gold]を{Enchantment:diff()}付与する。\n[red]ゲッター1[/red]：さらに[gold]活力[/gold]5を得る。",
-  "S_G_C_ANNOTATIONS.selectionScreenPrompt": "エンチャントする手札を選ぶ。キャンセルすると書き込みは消費されない。"
+  "S_G_C_ANNOTATIONS.selectionScreenPrompt": "付与する手札を1枚選ぶ。この手動使用をキャンセルすると、リソースも書き込みも消費しない。",
+  "S_G_C_ANNOTATIONS.committedSelectionScreenPrompt": "今回付与する対象を選ぶ。使用は確定済み。キャンセルは効果のみを省略し、返金や以前の効果の取り消しはしない。"
 }
