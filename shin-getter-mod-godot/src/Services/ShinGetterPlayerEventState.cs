@@ -24,6 +24,15 @@ internal static class ShinGetterPlayerEventState
     internal const string FieldName = "shin_getter_event_state_v1";
     internal const int MaxBytes = 48 * 1024;
     internal const int MaxVisits = 64;
+    internal sealed class EnteredRoomCheckpoint
+    {
+        [JsonRequired]
+        public int Version { get; set; } = 1;
+        [JsonRequired]
+        public int RngCounter { get; set; }
+        [JsonExtensionData]
+        public Dictionary<string, JsonElement>? Extra { get; set; }
+    }
     internal sealed class Visit
     {
         [JsonRequired]
@@ -32,6 +41,12 @@ internal static class ShinGetterPlayerEventState
         public string Target { get; set; } = "";
         [JsonRequired]
         public List<string> Candidates { get; set; } = new();
+        // Optional in v1: absent in legacy saves. Presence marks an already-entered room
+        // checkpoint and preserves the event-local RNG, which native run saves omit.
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public EnteredRoomCheckpoint? RoomCheckpoint { get; set; }
+        [JsonExtensionData]
+        public Dictionary<string, JsonElement>? Extra { get; set; }
     }
     internal sealed class Data
     {
@@ -45,6 +60,8 @@ internal static class ShinGetterPlayerEventState
         public string Seed { get; set; } = "";
         [JsonRequired]
         public SortedDictionary<string, Visit> Visits { get; set; } = new(StringComparer.Ordinal);
+        [JsonExtensionData]
+        public Dictionary<string, JsonElement>? Extra { get; set; }
     }
     private sealed class Holder
     {
@@ -111,6 +128,7 @@ internal static class ShinGetterPlayerEventState
         foreach (var pair in state.Visits)
             if (pair.Key.Length > 512 || pair.Value == null || pair.Value.Target == null
                 || pair.Value.CompletedRoute == null || pair.Value.CompletedRoute.Length > 64
+                || pair.Value.RoomCheckpoint is { } checkpoint && (checkpoint.Version != 1 || checkpoint.RngCounter is < 0 or > 100000)
                 || pair.Value.Candidates == null || pair.Value.Candidates.Count > 3
                 || pair.Value.Candidates.Any(id => id == null || id.Length > 256))
                 throw new JsonException("Damaged event visit.");

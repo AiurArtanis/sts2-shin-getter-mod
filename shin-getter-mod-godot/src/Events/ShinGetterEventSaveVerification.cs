@@ -1,5 +1,9 @@
 using System;
+using System.IO;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using MegaCrit.Sts2.Core.Saves;
 
 namespace ShinGetterMod.Events;
 
@@ -7,6 +11,22 @@ namespace ShinGetterMod.Events;
 // Once Saved fires, readback failures must never reopen a possibly persisted reward route.
 internal static class ShinGetterEventSaveVerification
 {
+    // Native ToSave is called again by SaveRun. Only these two clocks may advance
+    // between the expected snapshot and that write; all gameplay fields must match.
+    internal static string StableRunSnapshot(SerializableRun save)
+    {
+        JsonElement root = JsonSerializer.SerializeToElement(save, JsonSerializationUtility.GetTypeInfo<SerializableRun>());
+        using MemoryStream stream = new();
+        using (Utf8JsonWriter writer = new(stream))
+        {
+            writer.WriteStartObject();
+            foreach (JsonProperty property in root.EnumerateObject())
+                if (property.Name is not ("save_time" or "run_time")) property.WriteTo(writer);
+            writer.WriteEndObject();
+        }
+        return Encoding.UTF8.GetString(stream.ToArray());
+    }
+
     internal sealed class ConfirmedWriteReadbackException : Exception
     {
         internal ConfirmedWriteReadbackException(Exception inner)

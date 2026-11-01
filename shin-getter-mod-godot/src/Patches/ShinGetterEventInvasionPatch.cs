@@ -5,12 +5,14 @@ using System.Threading.Tasks;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Events;
+using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Events;
 using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.Events;
 using MegaCrit.Sts2.Core.Rooms;
+using MegaCrit.Sts2.Core.Runs;
 using ShinGetterMod.Events;
 
 namespace ShinGetterMod.Patches;
@@ -42,7 +44,22 @@ internal static class ShinGetterEventReturnProsePatch
 [HarmonyPatch(typeof(EventModel), "SetInitialEventState")]
 internal static class ShinGetterFourthCompletedEventPatch
 {
-    private static bool Prefix(EventModel __instance) => !ShinGetterEventInvasionService.RestoreFourthCompleted(__instance);
+    private static bool Prefix(EventModel __instance, bool isPreFinished)
+        => !ShinGetterEventInvasionService.RestoreFourthState(__instance, isPreFinished);
+}
+
+// Native pre-finished rooms skip BeforeRoomEntered and visit tracking, but EventRoom
+// still calls AfterRoomEntered. Our persisted visit already contains that first entry.
+[HarmonyPatch(typeof(Hook), nameof(Hook.AfterRoomEntered))]
+internal static class ShinGetterFourthRoomRestoreHookPatch
+{
+    private static bool Prefix(IRunState runState, AbstractRoom room, ref Task __result)
+    {
+        if (room is not EventRoom { IsPreFinished: true }) return true;
+        if (!ShinGetterEventInvasionService.IsRestoringFourthRoom(runState, room)) return true;
+        __result = Task.CompletedTask;
+        return false;
+    }
 }
 
 [HarmonyPatch(typeof(EventModel), "get_IsShared")]

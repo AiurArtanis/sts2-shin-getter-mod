@@ -67,17 +67,22 @@ internal static partial class ShinGetterEventInvasionService
     private static string? FourthVisitKey(EventModel model)
     {
         Player owner = RequireOwner(model);
+        return FourthVisitKey(owner, model.Id);
+    }
+
+    private static string? FourthVisitKey(Player owner, ModelId modelId)
+    {
         IRunState run = owner.RunState;
         int act = run.CurrentActIndex;
         if (act < 0 || act >= run.MapPointHistory.Count || run.MapPointHistory[act].Count == 0
-            || run.CurrentRoom is not EventRoom room || room.ModelId != model.Id) return null;
+            || run.CurrentRoom is not EventRoom room || room.ModelId != modelId) return null;
         var points = run.MapPointHistory[act];
         var rooms = points[^1].Rooms;
         int visit = ReferenceEquals(room, run.BaseRoom) ? 0
-            : rooms.FindLastIndex(r => r.RoomType == RoomType.Event && r.ModelId == model.Id);
-        if (visit < 0 || visit >= rooms.Count || rooms[visit].RoomType != RoomType.Event || rooms[visit].ModelId != model.Id) return null;
+            : rooms.FindLastIndex(r => r.RoomType == RoomType.Event && r.ModelId == modelId);
+        if (visit < 0 || visit >= rooms.Count || rooms[visit].RoomType != RoomType.Event || rooms[visit].ModelId != modelId) return null;
         return ShinGetterEventVisitIdentity.Create(run.Rng.StringSeed, owner.NetId, act,
-            run.CurrentMapCoord.ToString(), points.Count - 1, visit, model.Id);
+            run.CurrentMapCoord.ToString(), points.Count - 1, visit, modelId);
     }
 
     private static ShinGetterPlayerEventState.Visit? FourthVisit(EventModel model)
@@ -94,15 +99,40 @@ internal static partial class ShinGetterEventInvasionService
         return visit;
     }
 
-    internal static bool RestoreFourthCompleted(EventModel model)
+    private static ShinGetterPlayerEventState.Visit? RestoredFourthVisit(IRunState run, AbstractRoom? room)
+    {
+        if (room is not EventRoom { IsPreFinished: true } eventRoom
+            || !ReferenceEquals(run.CurrentRoom, room) || !ReferenceEquals(run.BaseRoom, room) || run.Players.Count != 1
+            || !FourthEvents.Contains(eventRoom.ModelId.Entry) || eventRoom.CanonicalEvent.IsShared
+            || RunManager.Instance.NetService.Type != NetGameType.Singleplayer) return null;
+        Player owner = run.Players[0];
+        if (!ShinGetterPlayerEventState.IsShinGetter(owner.Character.Id)) return null;
+        string? key = FourthVisitKey(owner, eventRoom.ModelId);
+        return key != null && ShinGetterPlayerEventState.Get(owner).Visits.TryGetValue(key, out var visit)
+            && visit.RoomCheckpoint is { Version: 1 } ? visit : null;
+    }
+
+    internal static bool IsRestoringFourthRoom(IRunState run, AbstractRoom room) => RestoredFourthVisit(run, room) != null;
+
+    internal static bool RestoreFourthState(EventModel model, bool isPreFinished)
     {
         if (!FourthEvents.Contains(model.Id.Entry) || model.Owner == null || model.Owner.RunState.Players.Count != 1
-            || !ShinGetterPlayerEventState.IsShinGetter(model.Owner.Character.Id) || model.IsShared) return false;
-        var visit = FourthVisit(model);
-        if (visit == null || visit.CompletedRoute.Length == 0) return false;
-        if (!FourthRouteNames(model.Id.Entry).Contains(visit.CompletedRoute)) throw new JsonException("Unknown completed event route.");
-        Finish(model, PageKey(model.Id.Entry, visit.CompletedRoute + "_RESULT"));
-        return true; // No cost, RNG, selection, or reward replay.
+            || !ReferenceEquals(model.Owner, model.Owner.RunState.Players[0])
+            || !ShinGetterPlayerEventState.IsShinGetter(model.Owner.Character.Id) || model.IsShared
+            || isPreFinished && model.Owner.RunState.CurrentRoom?.ModelId != model.Id) return false;
+        var visit = isPreFinished
+            ? RestoredFourthVisit(model.Owner.RunState, model.Owner.RunState.CurrentRoom)
+            : FourthVisit(model);
+        if (visit == null) return false;
+        if (visit.CompletedRoute.Length != 0)
+        {
+            if (!FourthRouteNames(model.Id.Entry).Contains(visit.CompletedRoute)) throw new JsonException("Unknown completed event route.");
+            Finish(model, PageKey(model.Id.Entry, visit.CompletedRoute + "_RESULT"));
+        }
+        else if (isPreFinished) ReturnFourthInitial(model); // Pending target/candidates remain selectable.
+        else return false;
+        if (isPreFinished) model.Rng.FastForwardCounter(visit.RoomCheckpoint!.RngCounter);
+        return true; // No cost, selection, or reward replay; only restore the event RNG cursor.
     }
 
     private static IEnumerable<EventOption> BuildFourthOptions(EventModel model)
@@ -321,30 +351,42 @@ internal static partial class ShinGetterEventInvasionService
         if (!popup.IsInsideTree()) popup.QueueFree();
     }
 
-    private static async Task SaveFourth(Player owner)
+    private static async Task SaveFourth(EventModel model)
     {
+        Player owner = RequireOwner(model);
         if (!RunManager.Instance.ShouldSave) return; // Practice/debug runs intentionally have no save.
         if (RunManager.Instance.NetService.Type != NetGameType.Singleplayer)
             throw new InvalidOperationException("Fourth batch persistence is single-player only.");
         SaveManager manager = SaveManager.Instance;
         if (manager.CurrentRunSaveTask != null) await manager.CurrentRunSaveTask;
+        if (!ReferenceEquals(RunManager.Instance.DebugOnlyGetState(), owner.RunState)
+            || owner.RunState.CurrentRoom is not EventRoom room || room.ModelId != model.Id
+            || FourthVisitKey(model) == null || !ReferenceEquals(owner.RunState.BaseRoom, room))
+            throw new InvalidOperationException("Fourth batch save requires its current base event room.");
+        var visit = FourthVisit(model)!;
+        var previousCheckpoint = visit.RoomCheckpoint;
+        // This is an AFTER-entry checkpoint: history, pool cursor and hooks have already
+        // advanced. A detached pre-finished snapshot bypasses native re-entry tracking;
+        // never mark the live event finished while a choice is still pending.
+        EventRoom checkpoint = new(room.CanonicalEvent);
+        checkpoint.MarkPreFinished();
         RunSaveManager native = (RunSaveManager)NativeRunSaveManager.GetValue(manager)!;
         bool saved = false;
         void OnSaved() => saved = true;
         native.Saved += OnSaved;
         try
         {
-            SerializablePlayer snapshot = owner.ToSerializable();
-            string expected = JsonSerializer.Serialize(snapshot, JsonSerializationUtility.GetTypeInfo<SerializablePlayer>());
-            await ShinGetterEventSaveVerification.Verify(() => manager.SaveRun(null, saveProgress: false), () => saved, () =>
+            visit.RoomCheckpoint = new() { RngCounter = model.Rng.Counter, Extra = previousCheckpoint?.Extra };
+            string expected = ShinGetterEventSaveVerification.StableRunSnapshot(RunManager.Instance.ToSave(checkpoint));
+            await ShinGetterEventSaveVerification.Verify(() => manager.SaveRun(checkpoint, saveProgress: false), () => saved, () =>
             {
                 var readback = native.LoadRunSave();
-                SerializablePlayer? readOwner = readback.SaveData?.Players.FirstOrDefault(p => p.NetId == owner.NetId);
-                if (!readback.Success || readOwner == null
-                    || JsonSerializer.Serialize(readOwner, JsonSerializationUtility.GetTypeInfo<SerializablePlayer>()) != expected)
-                    throw new InvalidOperationException("Native event save readback differs from the complete player snapshot.");
+                if (!readback.Success || readback.SaveData == null
+                    || ShinGetterEventSaveVerification.StableRunSnapshot(readback.SaveData) != expected)
+                    throw new InvalidOperationException("Native event save readback differs from the complete entered-room run snapshot.");
             });
         }
+        catch when (!saved) { visit.RoomCheckpoint = previousCheckpoint; throw; }
         finally { native.Saved -= OnSaved; }
     }
     private static async Task<bool> CommitFourth(EventModel model, string route, Func<Task> apply)
@@ -358,7 +400,7 @@ internal static partial class ShinGetterEventInvasionService
             await apply();
             if (!owner.Creature.IsAlive) throw new InvalidOperationException("Event owner died before reward completion.");
             visit.CompletedRoute = route; // After every cost and reward, never before a pending command.
-            await SaveFourth(owner);
+            await SaveFourth(model);
         }
         catch (ShinGetterEventSaveVerification.ConfirmedWriteReadbackException ex)
         {
@@ -434,7 +476,7 @@ internal static partial class ShinGetterEventInvasionService
             picked.Add(legal[index]); legal.RemoveAt(index);
         }
         visit.Candidates = picked.Select(c => prefix + c.Id).ToList();
-        await SaveFourth(RequireOwner(model));
+        await SaveFourth(model);
         return picked;
     }
     private static async Task AddFourthCard<T>(Player owner) where T : CardModel
@@ -501,7 +543,7 @@ internal static partial class ShinGetterEventInvasionService
                     target = await SelectFourthCard(model, route, c => c.IsTransformable);
                     if (target == null) return false;
                     visit.Target = FourthCardIdentity(owner, target);
-                    await SaveFourth(owner);
+                    await SaveFourth(model);
                 }
                 else target = FindFourthTarget(owner, visit.Target);
                 if (target == null || !target.IsTransformable) return false;
@@ -527,7 +569,7 @@ internal static partial class ShinGetterEventInvasionService
                     var candidates = owner.Deck.Cards.Where(c => c.IsUpgradable).ToArray();
                     if (candidates.Length == 0) return false;
                     visit.Target = FourthCardIdentity(owner, candidates[model.Rng.NextInt(candidates.Length)]);
-                    await SaveFourth(owner);
+                    await SaveFourth(model);
                 }
                 CardModel? target = FindFourthTarget(owner, visit.Target);
                 if (target == null || !target.IsUpgradable) return false;
