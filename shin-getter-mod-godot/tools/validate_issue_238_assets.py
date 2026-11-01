@@ -1,4 +1,4 @@
-"""Offline candidate-art contracts. Does not import Godot, approve art, or deploy."""
+"""Offline final-art integration contracts. Does not import Godot or deploy."""
 from pathlib import Path
 from io import BytesIO
 import hashlib
@@ -32,6 +32,15 @@ def checked_image(path, size):
 def validate():
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
     require(len(manifest["cards"]) == 5 and len(manifest["icons"]) == 4, "five cards and four item icons")
+    require(manifest["human_approval"] == "approved_Artanis_all_nine_20261102"
+            and manifest["production_export_ready"], "final approved/exported selection required")
+    selected_jobs = {"SGC_TabletOfTruth": "ART-007", "SGC_TripleCyclone": "ART-027",
+                     "SGC_DrillMissile": "ART-037", "SGC_BrokenDrill": "ART-001", "SGC_Annotations": "ART-016",
+                     "SGR_ActivatedSapphire": "ART-005", "SGR_SymbioticFilter": "ART-009",
+                     "SGR_Ember": "ART-017", "SGR_MobilityCatalyst": "ART-008"}
+    for item in manifest["cards"] + manifest["icons"]:
+        require(item["job"] == selected_jobs[item["model"]] and item["human_approval"] == "approved_Artanis"
+                and len(item["approved_source_sha256"]) == 64, "final human selection drifted")
     atlas = manifest["card_atlas"]
     path = REPO / atlas["path"]
     require(digest(path) == atlas["sha256"], "candidate card atlas receipt mismatch")
@@ -109,7 +118,7 @@ def validate():
     require(all(j["independent_qa"] in ("approved", "approved-selected-item-only") for j in manifest["art_jobs"]),
             "unreviewed candidate art selected")
     require(not manifest["deployed"], "feature receipt must not claim deployment")
-    print("issue#238 candidate assets: 5 native card entries / 4 item icons; SHA, dimensions, alpha, fixed-slot preservation PASS (human review pending)")
+    print("issue#238 final approved assets: 5 native card entries / 4 item icons; SHA, dimensions, alpha, fixed-slot preservation PASS (game display not verified)")
 
 
 if __name__ == "__main__":
