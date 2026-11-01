@@ -111,31 +111,139 @@ def persistence_contracts(events):
     contains(state, 'FieldName = "shin_getter_event_state_v1"', "[JsonRequired]",
              "MaxBytes", "MaxVisits", "ConditionalWeakTable<Player", "ConditionalWeakTable<SerializablePlayer",
              "JsonTypeInfoKind.Object", "SerializablePlayer", "Decode(value)")
-    require(state.count("[JsonRequired]") == 8, "every v1 payload/visit field must be required")
+    require(body(state, "internal sealed class Data").count("[JsonRequired]") == 5
+            and body(state, "internal sealed class Visit").count("[JsonRequired]") == 3,
+            "the original eight v1 payload/visit fields must remain required")
     identity = read("src/Events/ShinGetterEventVisitIdentity.cs")
     contains(identity, "{seed}:{owner}:{act}:{coordinate}:{point}:{room}:{model}")
-    contains(events, "points.Count - 1, visit, model.Id", "rooms.FindLastIndex", "ReferenceEquals(room, run.BaseRoom)",
+    contains(events, "points.Count - 1, visit, modelId", "rooms.FindLastIndex", "ReferenceEquals(room, run.BaseRoom)",
              "SHA256.HashData", "card.ToSerializable()", "visit.Candidates.Any(c => !valid.Contains(c))",
-             "model.Rng.NextInt(legal.Count)", "legal.RemoveAt(index)", "await SaveFourth(RequireOwner(model))")
-    restored = body(events, "internal static bool RestoreFourthCompleted(")
+             "model.Rng.NextInt(legal.Count)", "legal.RemoveAt(index)", "await SaveFourth(model)")
+    restored = body(events, "internal static bool RestoreFourthState(")
     contains(restored, "IsShinGetter", "model.IsShared", "FourthRouteNames", "Finish(", "return true")
     for token in ("AddFourthCard", "Obtain", "LoseGold", "FourthDamage", "SaveFourth", "NextInt"):
         require(token not in restored, f"completed page must not repeat {token}")
     commit = body(events, "private static async Task<bool> CommitFourth(")
-    require(commit.index("await apply()") < commit.index("visit.CompletedRoute = route") < commit.index("await SaveFourth(owner)"),
+    require(commit.index("await apply()") < commit.index("visit.CompletedRoute = route") < commit.index("await SaveFourth(model)"),
             "completion must follow all costs/rewards, then verified save")
     contains(commit, "ConfirmedWriteReadbackException", "catch { snapshot.Rollback(); throw; }")
     confirmed = commit[commit.index("catch (ShinGetterEventSaveVerification.ConfirmedWriteReadbackException"):commit.index("catch { snapshot.Rollback()")]
     require("Rollback" not in confirmed and "return false" not in confirmed, "confirmed disk write must not reopen reward")
     save = body(events, "private static async Task SaveFourth(")
     contains(save, "native.Saved += OnSaved", "finally { native.Saved -= OnSaved; }", "manager.CurrentRunSaveTask",
-             "LoadRunSave()", "GetTypeInfo<SerializablePlayer>()", "!= expected", "saveProgress: false")
+             "LoadRunSave()", "StableRunSnapshot(readback.SaveData)", "!= expected", "saveProgress: false")
     verifier = read("src/Events/ShinGetterEventSaveVerification.cs")
     contains(verifier, "await write()", "if (!wasSaved())", "readback()", "catch (Exception ex) when (wasSaved())")
     rollback = read("src/Events/ShinGetterEventTransaction.cs")
     contains(rollback, "RestoreRemovedRelicFlag", "RemovedFlag.SetValue(relic, false)", "Props?.Fill", "_saved.Deck",
              "_saved.Rng", "_saved.Odds", "_sharedRelics", "_potions", "_historyValues", "ShinGetterPlayerEventState.Restore")
     require("SyncWithSerializedPlayer" not in rollback, "rollback must not replace complete Player or replay pickup hooks")
+
+
+def save_boundary_contracts(events, state=None, patches=None, verifier=None):
+    """Source guard for the new entered-room contract, not a production restore verdict."""
+    state = read("src/Services/ShinGetterPlayerEventState.cs") if state is None else state
+    patches = read("src/Patches/ShinGetterEventInvasionPatch.cs") if patches is None else patches
+    verifier = read("src/Events/ShinGetterEventSaveVerification.cs") if verifier is None else verifier
+    save = body(events, "private static async Task SaveFourth(EventModel model)")
+    contains(save, "DebugOnlyGetState(), owner.RunState", "room.ModelId != model.Id",
+             "FourthVisitKey(model) == null", "ReferenceEquals(owner.RunState.BaseRoom, room)",
+             "EventRoom checkpoint = new(room.CanonicalEvent);", "checkpoint.MarkPreFinished();",
+             "visit.RoomCheckpoint = new()", "RngCounter = model.Rng.Counter",
+             "Extra = previousCheckpoint?.Extra", "StableRunSnapshot(RunManager.Instance.ToSave(checkpoint))",
+             "manager.SaveRun(checkpoint, saveProgress: false)", "StableRunSnapshot(readback.SaveData)",
+             "catch when (!saved) { visit.RoomCheckpoint = previousCheckpoint; throw; }")
+    require(events.count(".MarkPreFinished(") == 1 and save.count("manager.SaveRun(") == 1,
+            "only the detached checkpoint may be pre-finished; only its native save may run")
+    require("SaveRun(null" not in save and "checkpoint = room" not in save,
+            "an entered room must not save the pre-entry/null boundary or mutate the live room")
+    require(save.index("EventRoom checkpoint = new(") < save.index("checkpoint.MarkPreFinished()")
+            < save.index("manager.SaveRun(checkpoint"), "detached room must exist before marking and saving")
+
+    gate = body(events, "private static ShinGetterPlayerEventState.Visit? RestoredFourthVisit(")
+    contains(gate, "EventRoom { IsPreFinished: true }", "ReferenceEquals(run.CurrentRoom, room)",
+             "ReferenceEquals(run.BaseRoom, room)", "run.Players.Count != 1",
+             "FourthEvents.Contains(eventRoom.ModelId.Entry)", "eventRoom.CanonicalEvent.IsShared",
+             "NetService.Type != NetGameType.Singleplayer", "Player owner = run.Players[0]",
+             "IsShinGetter(owner.Character.Id)", "FourthVisitKey(owner, eventRoom.ModelId)",
+             "Visits.TryGetValue(key, out var visit)", "visit.RoomCheckpoint is { Version: 1 }")
+    require("FourthVisit(" not in gate and "Visits[key] =" not in gate,
+            "failed restore identity gates must not manufacture a visit")
+    identity = body(events, "private static string? FourthVisitKey(Player owner, ModelId modelId)")
+    contains(identity, "IRunState run = owner.RunState", "room.ModelId != modelId", "rooms[visit].ModelId != modelId",
+             "run.Rng.StringSeed, owner.NetId, act", "run.CurrentMapCoord.ToString(), points.Count - 1, visit, modelId")
+    restored = body(events, "internal static bool RestoreFourthState(")
+    contains(restored, "ReferenceEquals(model.Owner, model.Owner.RunState.Players[0])",
+             "isPreFinished && model.Owner.RunState.CurrentRoom?.ModelId != model.Id",
+             "var visit = isPreFinished", "? RestoredFourthVisit(", ": FourthVisit(model)", "if (visit == null) return false",
+             "FourthRouteNames", "Finish(model", "else if (isPreFinished) ReturnFourthInitial(model)",
+             "model.Rng.FastForwardCounter(visit.RoomCheckpoint!.RngCounter)")
+    for token in ("AddFourthCard", "Obtain", "LoseGold", "FourthDamage", "SaveFourth", "NextInt"):
+        require(token not in restored, f"restoring a room must not replay {token}")
+    contains(patches, "RestoreFourthState(__instance, isPreFinished)")
+    hook = body(body(patches, "internal static class ShinGetterFourthRoomRestoreHookPatch"), "private static bool Prefix(")
+    contains(hook, "if (room is not EventRoom { IsPreFinished: true }) return true",
+             "if (!ShinGetterEventInvasionService.IsRestoringFourthRoom(runState, room)) return true",
+             "__result = Task.CompletedTask", "return false")
+    require(hook.count("return false") == 1 and hook.index("IsRestoringFourthRoom") < hook.index("return false"),
+            "AfterRoomEntered may be skipped only after the exact checkpoint/identity gate")
+
+    checkpoint = body(state, "internal sealed class EnteredRoomCheckpoint")
+    contains(checkpoint, "Version { get; set; } = 1", "RngCounter", "[JsonExtensionData]")
+    require(checkpoint.count("[JsonRequired]") == 2, "checkpoint version and RNG counter must be explicit")
+    visit = body(state, "internal sealed class Visit")
+    contains(visit, "[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]",
+             "EnteredRoomCheckpoint? RoomCheckpoint", "[JsonExtensionData]")
+    contains(body(state, "internal sealed class Data"), "[JsonExtensionData]")
+    contains(body(state, "private static void Validate("), "checkpoint.Version != 1",
+             "checkpoint.RngCounter is < 0 or > 100000")
+
+    stable = body(verifier, "internal static string StableRunSnapshot(")
+    contains(stable, "SerializeToElement(save, JsonSerializationUtility.GetTypeInfo<SerializableRun>())",
+             "root.EnumerateObject()", "property.WriteTo(writer)")
+    filters = re.findall(r'property.Name is not \(([^)]+)\)', stable)
+    require(len(filters) == 1 and re.findall(r'"([^"]+)"', filters[0]) == ["save_time", "run_time"]
+            and stable.count("if (") == 1,
+            "complete run readback may exclude only the two native clocks")
+    contains(body(verifier, "internal static async Task Verify("), "await write()", "if (!wasSaved())",
+             "readback()", "catch (Exception ex) when (wasSaved())")
+    commit = body(events, "private static async Task<bool> CommitFourth(")
+    confirmed = commit[commit.index("catch (ShinGetterEventSaveVerification.ConfirmedWriteReadbackException"):commit.index("catch { snapshot.Rollback()")]
+    require("Rollback" not in confirmed and "return false" not in confirmed,
+            "a confirmed native write must not reopen the reward transaction")
+    require(events.count("await SaveFourth(model)") == 4, "all four shared save call sites must retain model identity")
+
+
+def save_boundary_negative_contracts(events):
+    """Ensure the guard rejects concrete unsafe regressions instead of deleting the old ban."""
+    sources = {"events": events, "state": read("src/Services/ShinGetterPlayerEventState.cs"),
+               "patches": read("src/Patches/ShinGetterEventInvasionPatch.cs"),
+               "verifier": read("src/Events/ShinGetterEventSaveVerification.cs")}
+    mutations = [
+        ("live room marking", "events", "EventRoom checkpoint = new(room.CanonicalEvent);", "EventRoom checkpoint = room;"),
+        ("null save", "events", "manager.SaveRun(checkpoint,", "manager.SaveRun(null,"),
+        ("missing explicit v1 stamp", "events", "visit.RoomCheckpoint is { Version: 1 }", "visit.RoomCheckpoint != null"),
+        ("owner mismatch", "events", "!ReferenceEquals(model.Owner, model.Owner.RunState.Players[0])", "false"),
+        ("coordinate mismatch", "events", "run.CurrentMapCoord.ToString(), points.Count - 1, visit, modelId", '"other", points.Count - 1, visit, modelId'),
+        ("history mismatch", "events", "points.Count - 1, visit, modelId", "0, visit, modelId"),
+        ("non-base room", "events", "!ReferenceEquals(run.BaseRoom, room)", "false"),
+        ("host service", "events", "RunManager.Instance.NetService.Type != NetGameType.Singleplayer", "false"),
+        ("global Hook skip", "patches", "if (!ShinGetterEventInvasionService.IsRestoringFourthRoom(runState, room)) return true;", ""),
+        ("future stamp admitted", "state", "checkpoint.Version != 1", "false"),
+        ("player-only readback", "events", "StableRunSnapshot(readback.SaveData)", "StableRunSnapshot(expectedPlayerOnly)"),
+        ("hidden pool mismatch", "verifier", '"save_time" or "run_time"', '"save_time" or "run_time" or "acts"'),
+        ("Saved boundary inverted", "verifier", "catch (Exception ex) when (wasSaved())", "catch (Exception ex) when (!wasSaved())"),
+    ]
+    for name, key, old, new in mutations:
+        require(old in sources[key], f"negative contract fixture no longer matches: {name}")
+        mutated = dict(sources); mutated[key] = mutated[key].replace(old, new)
+        rejected = False
+        try:
+            save_boundary_contracts(**mutated)
+        except (AssertionError, ValueError):
+            rejected = True
+        require(rejected, f"entered-room gate accepted unsafe regression: {name}")
+    print(f"issue#238: entered-room source contract and {len(mutations)} unsafe-regression negatives PASS (not production restore)")
 
 
 def content_contracts():
@@ -319,7 +427,7 @@ def event_selection_contracts(events):
              "if (selected == null || !choices.Contains(selected)) return false;")
     require("FromDeckGeneric" not in aroma and "FromSimpleGrid" not in aroma,
             "no-Pile Aroma candidates must not use the Deck preview or uncancelable grid")
-    require(aroma.index("visit.Target = FourthCardIdentity") < aroma.index("await SaveFourth(owner)")
+    require(aroma.index("visit.Target = FourthCardIdentity") < aroma.index("await SaveFourth(model)")
             < aroma.index("await CachedFourthChoices") < aroma.index("FromChooseACardScreen")
             < aroma.index("return await CommitFourth") < aroma.index("await FourthDamage(owner, 6)"),
             "Aroma must persist its target/candidates before selection and pay only on confirmation")
@@ -363,13 +471,20 @@ def prose_contracts():
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--probe", action="store_true", help="Run actual 109 CLR integration probe; no game scene/window")
+    parser.add_argument("--self-test-save-boundary", action="store_true", help="Check only entered-room source guards and negative mutations; no game/save writes")
+    args = parser.parse_args()
     events = read("src/Events/ShinGetterEventInvasionService.Issue238.cs")
+    save_boundary_contracts(events)
+    save_boundary_negative_contracts(events)
+    if args.self_test_save_boundary:
+        return
     native_event_contracts(events)
     routes = ROUTES
     require(len(routes) == 15 and sum(map(len, routes.values())) == 20, "fourth batch route quota")
     require("owner.RunState.Players.Count != 1" in events, "single-player guard missing")
     require("disableOnChosen: false" in events, "cancelable routes must not latch WasChosen")
-    require("MarkPreFinished" not in events, "ordinary event must not use Ancient pre-finished save")
     require("CommitFourth" in events and "Rollback" in events, "transaction boundary missing")
     require("FinalHp" in read("src/Models/Relics/SGR_ActivatedSapphire.cs"), "final HP-loss boundary")
     require("AfterOsty" in read("src/Patches/ShinGetterActivatedSapphirePatch.cs"), "final mitigation stage")
@@ -397,9 +512,6 @@ def main():
     damage_template_contracts()
     event_selection_contracts(events)
     prose_contracts()
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--probe", action="store_true", help="Run actual 109 CLR integration probe; no game scene/window")
-    args = parser.parse_args()
     if args.probe:
         subprocess.run(["dotnet", "run", "--project", str(ROOT / "tools/issue238-probe/issue238-probe.csproj"), "--verbosity", "quiet"], check=True)
     print("issue#238: 15 events / 20 routes; persistence/content/current-prose structural gates PASS (not game acceptance)")
