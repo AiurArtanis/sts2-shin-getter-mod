@@ -259,7 +259,7 @@ def save_boundary_contracts(events, state=None, patches=None, verifier=None, sco
              "await HistoryReady", "if (IsCurrent) await save()", "return await nativeSelection",
              "ExceptionDispatchInfo.Capture(error)", "Interlocked.Exchange(ref active, 0)")
     contains(interaction_patch, '"ChooseOptionForEvent"', '"SaveEventOptionToHistory"',
-             "HistoryFailed(__exception)", "HistoryCompleted(__instance.GetEventForPlayer(player)",
+             "HistoryFailed(__exception)", "NotifyHistoryCompleted(__instance, player, option)",
              "nameof(CardSelectCmd.FromChooseACardScreen)", "nameof(CardSelectCmd.FromSimpleGrid)",
              "code.Count(i => i.Calls(Choose) || i.Calls(Grid)) != 1",
              "BeforeSelectionResult(screen.CardsSelected())")

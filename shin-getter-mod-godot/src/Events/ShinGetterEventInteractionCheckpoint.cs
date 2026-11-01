@@ -17,6 +17,7 @@ namespace ShinGetterMod.Events;
 internal sealed class ShinGetterEventInteractionCheckpoint : IDisposable
 {
     private static readonly ConditionalWeakTable<EventModel, ShinGetterEventInteractionCheckpoint> Sessions = new();
+    private static readonly ConditionalWeakTable<EventOption, ShinGetterEventInteractionCheckpoint> Options = new();
     private static readonly AsyncLocal<ShinGetterEventInteractionCheckpoint?> Selection = new();
     private readonly EventModel model;
     private readonly EventSynchronizer source;
@@ -35,6 +36,8 @@ internal sealed class ShinGetterEventInteractionCheckpoint : IDisposable
         this.model = model; this.source = source; this.player = player; this.option = option;
         this.isCurrent = isCurrent; this.save = save; this.report = report;
         Sessions.Add(model, this);
+        try { Options.Add(option, this); }
+        catch { Sessions.Remove(model); throw; }
     }
 
     internal Task HistoryReady => historyReady.Task;
@@ -47,6 +50,12 @@ internal sealed class ShinGetterEventInteractionCheckpoint : IDisposable
         var session = Find(model);
         if (session != null && ReferenceEquals(session.source, source) && ReferenceEquals(session.player, player)
             && ReferenceEquals(session.option, option)) session.historyReady.TrySetResult();
+    }
+
+    internal static void NotifyHistoryCompleted(EventSynchronizer source, Player player, EventOption option)
+    {
+        // Ordinary native options require no event lookup or other extra behavior.
+        if (Options.TryGetValue(option, out var session)) HistoryCompleted(session.model, source, player, option);
     }
 
     internal void HistoryFailed(Exception error) => historyReady.TrySetException(error);
@@ -106,5 +115,6 @@ internal sealed class ShinGetterEventInteractionCheckpoint : IDisposable
         if (Interlocked.Exchange(ref active, 0) == 0) return;
         historyReady.TrySetCanceled();
         if (Sessions.TryGetValue(model, out var current) && ReferenceEquals(current, this)) Sessions.Remove(model);
+        if (Options.TryGetValue(option, out var bound) && ReferenceEquals(bound, this)) Options.Remove(option);
     }
 }

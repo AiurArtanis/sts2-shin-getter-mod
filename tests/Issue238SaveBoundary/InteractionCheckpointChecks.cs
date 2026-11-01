@@ -113,6 +113,9 @@ internal static class InteractionCheckpointChecks
         Check(ReferenceEquals(finalizer.Invoke(null,new object[]{original,failedHistory}),original),"Native history exception replaced");
         bool historyFailed=false;try{await Ready(failedHistory);}catch(InvalidOperationException ex)when(ReferenceEquals(ex,original)){historyFailed=true;}
         Check(historyFailed&&failedHistorySaves==0&&type.GetMethod("Find",Static)!.Invoke(null,new object[]{model})==null,"Native history failure left a session or caused persistence");
+        var ordinarySource=RuntimeHelpers.GetUninitializedObject(typeof(EventSynchronizer));
+        nativeHistory.Invoke(ordinarySource,new object[]{owner,Option()});
+        Check(history.Count==5&&saved.Count==3,"Ordinary native option history gained owned side effects");
         Console.WriteLine("actual native history postfix / same-key foreign rejection / history-before-save / presented discoveries fixture / pending-save result barrier / cached re-entry / cancellation / failure cleanup without retry / captured-context revocation PASS; NO_SCENE_OR_DISK_PROOF");
     }
 }

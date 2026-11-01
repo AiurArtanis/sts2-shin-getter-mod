@@ -39,7 +39,7 @@ internal static class ShinGetterFourthOptionInteractionPatch
 internal static class ShinGetterFourthOptionHistoryPatch
 {
     private static void Postfix(EventSynchronizer __instance, Player player, EventOption option)
-        => ShinGetterEventInteractionCheckpoint.HistoryCompleted(__instance.GetEventForPlayer(player), __instance, player, option);
+        => ShinGetterEventInteractionCheckpoint.NotifyHistoryCompleted(__instance, player, option);
 }
 
 // Adapt only these two native command call sites, preserving their UI, discovery,
