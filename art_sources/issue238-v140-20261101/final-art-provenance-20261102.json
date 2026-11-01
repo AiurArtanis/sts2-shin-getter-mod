@@ -1,0 +1,362 @@
+{
+  "schema": 1,
+  "issue": 238,
+  "date": "2026-11-02",
+  "purpose": "portable_complete_selected_approval_and_export_receipts",
+  "original_receipt_sha256": {
+    "approval": "b5d9b2b913e944dda03651bfda8ce0ed8cd408d828083484dff53316f1347359",
+    "cards": "4ad369e88c80244e14a16071de3a77c415713c0e5307db7c51d7e5438239d4c3",
+    "icons": "50f1385d459aaf2bf7dcaad6a5fb307efcc6688e60cd3a43208aff6c6de1ddea"
+  },
+  "approval": {
+    "human_approved": true,
+    "assets": [
+      {
+        "model": "SGC_Annotations",
+        "job": "ART-016",
+        "kind": "card",
+        "human_approval": "approved_Artanis_2026-11-01",
+        "source": "shin-getter-mod-godot/images/packed/card_portraits/shin_getter/s_g_c_annotations.png",
+        "source_sha256": "784820d43437a398809c4ce935a0415087b213e79c27094d618d3625bfeea61f"
+      },
+      {
+        "model": "SGC_BrokenDrill",
+        "job": "ART-001",
+        "kind": "card",
+        "human_approval": "approved_Artanis_2026-11-01",
+        "source": "shin-getter-mod-godot/images/packed/card_portraits/shin_getter/s_g_c_broken_drill.png",
+        "source_sha256": "fef1a10c2857f93d4a7ee80c65640df9dd2f4d4a31866fb6513d1581f7428249"
+      },
+      {
+        "model": "SGC_DrillMissile",
+        "job": "ART-037",
+        "kind": "card",
+        "human_approval": "approved_Artanis_2026-11-02",
+        "source": "art_sources/issue238-v140-20261101/approved_sources/s_g_c_drill_missile-rgb.png",
+        "source_sha256": "a51950ee82fd6bd75d6b340b4e8b7facc738712ab30584fe972cae9bd1047fbc"
+      },
+      {
+        "model": "SGC_TabletOfTruth",
+        "job": "ART-007",
+        "kind": "card",
+        "human_approval": "approved_Artanis_2026-11-01",
+        "source": "shin-getter-mod-godot/images/packed/card_portraits/shin_getter/s_g_c_tablet_of_truth.png",
+        "source_sha256": "0c2103ba31c4d58cf851b615af94c42abe6bab7859354894dbfb5de16fb69d7d"
+      },
+      {
+        "model": "SGC_TripleCyclone",
+        "job": "ART-027",
+        "kind": "card",
+        "human_approval": "approved_Artanis_2026-11-01",
+        "source": "shin-getter-mod-godot/images/packed/card_portraits/shin_getter/s_g_c_triple_cyclone.png",
+        "source_sha256": "9afb33bc4c58ff0d460c1490c14e92248ad768be1fadafa88473d60fea91623e"
+      },
+      {
+        "model": "SGR_ActivatedSapphire",
+        "job": "ART-005",
+        "kind": "relic",
+        "human_approval": "approved_Artanis_2026-11-01",
+        "source": "shin-getter-mod-godot/images/relics/s_g_r_activated_sapphire.png",
+        "source_sha256": "5a9f3d2b9673df1b2608efe74b654cc6f703db02b6004718803d6a8a9d21b0b8"
+      },
+      {
+        "model": "SGR_Ember",
+        "job": "ART-017",
+        "kind": "relic",
+        "human_approval": "approved_Artanis_2026-11-01",
+        "source": "shin-getter-mod-godot/images/relics/s_g_r_ember.png",
+        "source_sha256": "1bff3536d929ba223a8b3c2be481504677c02749dbc303dd637c473a5c6113ea"
+      },
+      {
+        "model": "SGR_MobilityCatalyst",
+        "job": "ART-008",
+        "kind": "potion",
+        "human_approval": "approved_Artanis_2026-11-01",
+        "source": "art_sources/issue238-v140-20261101/approved_sources/s_g_r_mobility_catalyst-256.png",
+        "source_sha256": "d3176f435f227b2f25ccef0452478dbc64132810d073523ea53a9c06b044701f"
+      },
+      {
+        "model": "SGR_SymbioticFilter",
+        "job": "ART-009",
+        "kind": "relic",
+        "human_approval": "approved_Artanis_2026-11-01",
+        "source": "shin-getter-mod-godot/images/relics/s_g_r_symbiotic_filter.png",
+        "source_sha256": "c2b438ff2872d5e92bd45f6cf9b1afa170c081c62713322791376457d7394b65"
+      }
+    ]
+  },
+  "exports": {
+    "cards": [
+      {
+        "model": "SGC_Annotations",
+        "job": "ART-016",
+        "sequence": 82,
+        "source_sha256": "784820d43437a398809c4ce935a0415087b213e79c27094d618d3625bfeea61f",
+        "portrait": "shin-getter-mod-godot/images/packed/card_portraits/shin_getter/s_g_c_annotations.png",
+        "portrait_sha256": "784820d43437a398809c4ce935a0415087b213e79c27094d618d3625bfeea61f",
+        "thumbnail_rgba_sha256": "cb8bfba551c8a790bb9de1bd9ca4efead0cdcc6135ad99bc03d3ff10bd372053",
+        "quality_band": "70-75",
+        "production_ready": true,
+        "thumbnail_export_sha256": "8edd864a5b08a2dfbcb73bd088e72a628242706bb8fe1b25997ad5b2a8e980e9"
+      },
+      {
+        "model": "SGC_BrokenDrill",
+        "job": "ART-001",
+        "sequence": 81,
+        "source_sha256": "fef1a10c2857f93d4a7ee80c65640df9dd2f4d4a31866fb6513d1581f7428249",
+        "portrait": "shin-getter-mod-godot/images/packed/card_portraits/shin_getter/s_g_c_broken_drill.png",
+        "portrait_sha256": "fef1a10c2857f93d4a7ee80c65640df9dd2f4d4a31866fb6513d1581f7428249",
+        "thumbnail_rgba_sha256": "40450c81af54ef341a8e47935771f79f2577ca8f681c3a771c44429cc0f24fbc",
+        "quality_band": "75-80",
+        "production_ready": true,
+        "thumbnail_export_sha256": "154f35118355f2ca393e47bc059820f221187b5e484f70b4f72c48293593d547"
+      },
+      {
+        "model": "SGC_DrillMissile",
+        "job": "ART-037",
+        "sequence": 80,
+        "source_sha256": "a51950ee82fd6bd75d6b340b4e8b7facc738712ab30584fe972cae9bd1047fbc",
+        "portrait": "shin-getter-mod-godot/images/packed/card_portraits/shin_getter/s_g_c_drill_missile.png",
+        "portrait_sha256": "d5b46d72ad4ec2f13dde8008be03904571173c5c0d7b9428b31114ce81ed42e0",
+        "thumbnail_rgba_sha256": "3fb643a00735132bb5f2fe91d14a77faed24f7efa133b2ed8dd590790a0288fc",
+        "quality_band": "75-80",
+        "production_ready": true,
+        "thumbnail_export_sha256": "52c1f8fce981f548d8507df256c1beadd42347435336db9b5ea6e5d542b034c5"
+      },
+      {
+        "model": "SGC_TabletOfTruth",
+        "job": "ART-007",
+        "sequence": 78,
+        "source_sha256": "0c2103ba31c4d58cf851b615af94c42abe6bab7859354894dbfb5de16fb69d7d",
+        "portrait": "shin-getter-mod-godot/images/packed/card_portraits/shin_getter/s_g_c_tablet_of_truth.png",
+        "portrait_sha256": "0c2103ba31c4d58cf851b615af94c42abe6bab7859354894dbfb5de16fb69d7d",
+        "thumbnail_rgba_sha256": "029eec94c980bff09fa7b3ec1a85bc012b93bcdd6c65e7159485d7cc94ff22ef",
+        "quality_band": "70-75",
+        "production_ready": true,
+        "thumbnail_export_sha256": "de88055c24f238a5f2b5f12750cd68274a8c8048376f3f05982b4c661a789b7a"
+      },
+      {
+        "model": "SGC_TripleCyclone",
+        "job": "ART-027",
+        "sequence": 79,
+        "source_sha256": "9afb33bc4c58ff0d460c1490c14e92248ad768be1fadafa88473d60fea91623e",
+        "portrait": "shin-getter-mod-godot/images/packed/card_portraits/shin_getter/s_g_c_triple_cyclone.png",
+        "portrait_sha256": "9afb33bc4c58ff0d460c1490c14e92248ad768be1fadafa88473d60fea91623e",
+        "thumbnail_rgba_sha256": "e6f3da8b222dc4769e32891b4f1883a6490ac2f13a2c7fb39cbfa97175e14737",
+        "quality_band": "65-70",
+        "production_ready": true,
+        "thumbnail_export_sha256": "ce1263c3736b3b55f9863b037e3a36c35ee1ad2c2028e790de481f5865feb02b"
+      }
+    ],
+    "icons": [
+      {
+        "model": "SGR_ActivatedSapphire",
+        "job": "ART-005",
+        "kind": "relic",
+        "slot": 0,
+        "source_sha256": "5a9f3d2b9673df1b2608efe74b654cc6f703db02b6004718803d6a8a9d21b0b8",
+        "exports": {
+          "icon": {
+            "rgba_sha256": "69b0132fb419cc18bd8426c4a62595aaf0d17a41e8a9ee7accf8ab5b7162af9f",
+            "png_sha256": "a7bc15b378daa212ceaaaa1d0a03becb168894a2028c11bf7fb9ac1081fa4c22"
+          },
+          "outline": {
+            "rgba_sha256": "41ce4db4ec5d4eca076a9dd64b00d3bfe65b7d1b0a88123d3fea5f55505cb40b",
+            "png_sha256": "7ddd5489ec60e506e792ede6e4e425a5530cad47f10143ee5e3d0272041d6c95"
+          },
+          "big": {
+            "path": "shin-getter-mod-godot/images/relics/s_g_r_activated_sapphire.png",
+            "sha256": "5a9f3d2b9673df1b2608efe74b654cc6f703db02b6004718803d6a8a9d21b0b8"
+          }
+        }
+      },
+      {
+        "model": "SGR_Ember",
+        "job": "ART-017",
+        "kind": "relic",
+        "slot": 2,
+        "source_sha256": "1bff3536d929ba223a8b3c2be481504677c02749dbc303dd637c473a5c6113ea",
+        "exports": {
+          "icon": {
+            "rgba_sha256": "c538e9183d4c1aa27e041eab251f12645574e722adbf4543ee8211a9c8f550b7",
+            "png_sha256": "9dc911f82b116c5d4c6592cbb3afa3eb11454948abc7edf09584cbbba36f8654"
+          },
+          "outline": {
+            "rgba_sha256": "9e97ba8f532e30ca6d23a6c173021c4469a408d0a2c06edfe64bd029dd33e584",
+            "png_sha256": "214426329520fa04c85a334bc892c4e97153926ee9a7c290294099e6b328a08c"
+          },
+          "big": {
+            "path": "shin-getter-mod-godot/images/relics/s_g_r_ember.png",
+            "sha256": "1bff3536d929ba223a8b3c2be481504677c02749dbc303dd637c473a5c6113ea"
+          }
+        }
+      },
+      {
+        "model": "SGR_MobilityCatalyst",
+        "job": "ART-008",
+        "kind": "potion",
+        "slot": 3,
+        "source_sha256": "d3176f435f227b2f25ccef0452478dbc64132810d073523ea53a9c06b044701f",
+        "exports": {
+          "icon": {
+            "rgba_sha256": "f4d0086d5009091c2ca46203a1ddfb04464792bf181a84fed12457f9d90e2bf8",
+            "png_sha256": "7488b65c35a5dca516904f8f7e9d809aa63a849c5e558aa89274b3803f984006"
+          },
+          "outline": {
+            "rgba_sha256": "922e0e99f1a3fb888e903604029c11537007db42a5a329570f48a0b76cc8f718",
+            "png_sha256": "1d7125e92497ea05b1e2e3408f7877e18b4ccb3dd1edbd21a705629b6033a4ec"
+          }
+        }
+      },
+      {
+        "model": "SGR_SymbioticFilter",
+        "job": "ART-009",
+        "kind": "relic",
+        "slot": 1,
+        "source_sha256": "c2b438ff2872d5e92bd45f6cf9b1afa170c081c62713322791376457d7394b65",
+        "exports": {
+          "icon": {
+            "rgba_sha256": "154bc785914867624aba719eb269b4e09a6f8c14e0502308f22a6abf2d4444f2",
+            "png_sha256": "6b5834794abe4e5598dfaeb82f1a1b8de0fd2682b5ccae46faed6e1724b4f3ac"
+          },
+          "outline": {
+            "rgba_sha256": "144f11b10c78fd7ea2b428cdbaf8d323ab63e23742d2d8b47adae48435b7b5e8",
+            "png_sha256": "0381adb26fdd2da674a8a53747213fb04fe602622812d43e12c79f467277edb4"
+          },
+          "big": {
+            "path": "shin-getter-mod-godot/images/relics/s_g_r_symbiotic_filter.png",
+            "sha256": "c2b438ff2872d5e92bd45f6cf9b1afa170c081c62713322791376457d7394b65"
+          }
+        }
+      }
+    ],
+    "item_atlases": [
+      {
+        "role": "icon",
+        "path": "shin-getter-mod-godot/images/atlases/issue238_item_atlas.png",
+        "sha256": "9d38d4309960c9ca023afb74682c4c10ac396e136d0b756b85dcd5586cc2fbc8"
+      },
+      {
+        "role": "outline",
+        "path": "shin-getter-mod-godot/images/atlases/issue238_item_outline_atlas.png",
+        "sha256": "e61cd1d888fbd12ecbd535c0ac22983e8b02e2577688240ce601683502329c99"
+      }
+    ]
+  },
+  "art_jobs": [
+    {
+      "job": "ART-001",
+      "selected_items": [
+        "SGC_BrokenDrill"
+      ],
+      "source_job_overall_qa": "approved",
+      "independent_qa": "approved",
+      "review_scope": "selected_asset",
+      "review_sha256": "545a2625963dd0067deb3c47cba2538ed07e49473ba5c31eb0ec1b335b7c8aad",
+      "result_sha256": "aae0d67d3638ce804885b7a03aa5625fdca4c4f1c4bc4d18e06d5d12d70039db",
+      "human_approval": "approved_Artanis"
+    },
+    {
+      "job": "ART-005",
+      "selected_items": [
+        "SGR_ActivatedSapphire"
+      ],
+      "source_job_overall_qa": "approved",
+      "independent_qa": "approved",
+      "review_scope": "selected_asset",
+      "review_sha256": "f160fa7e1502a9222f1bf5c3997108debd99d8c2cd11fd6f320ed9812c1d402f",
+      "result_sha256": "9d5e7bb9b3273e9758906221c6b22692212698c6daa7b28a23c90e69fc23f2ae",
+      "human_approval": "approved_Artanis"
+    },
+    {
+      "job": "ART-007",
+      "selected_items": [
+        "SGC_TabletOfTruth"
+      ],
+      "source_job_overall_qa": "approved",
+      "independent_qa": "approved",
+      "review_scope": "selected_asset",
+      "review_sha256": "f939990438a0a78e3f66d5bbf99842f33f308f27c9a14669e9699a204b5600b1",
+      "result_sha256": "a1cfc1b3ee4ec1848e9a2f4acc1852899f2f73b2f1bc35e5987c1eaf644283a3",
+      "human_approval": "approved_Artanis"
+    },
+    {
+      "job": "ART-008",
+      "selected_items": [
+        "SGR_MobilityCatalyst"
+      ],
+      "source_job_overall_qa": "approved",
+      "independent_qa": "approved",
+      "review_scope": "selected_asset",
+      "review_sha256": "8039947e1d0dd5425eab436925597d994d1d76b1637b761434fc9713d4e4d1a1",
+      "result_sha256": "a5a865183a6180b99ac005cc9991740c824155d34c8466c4bc89929fd07936ef",
+      "human_approval": "approved_Artanis"
+    },
+    {
+      "job": "ART-009",
+      "selected_items": [
+        "SGR_SymbioticFilter"
+      ],
+      "source_job_overall_qa": "revision-requested",
+      "independent_qa": "approved-selected-item-only",
+      "review_scope": "selected_asset",
+      "review_sha256": "dfdd3e8624d89845129fa50a7d755156fb3542b879b195f0ee420215ca332a1a",
+      "result_sha256": "4e9f062663780a80516ca25794349869902a03e28553a262f6c55f561d02023d",
+      "human_approval": "approved_Artanis"
+    },
+    {
+      "job": "ART-016",
+      "selected_items": [
+        "SGC_Annotations"
+      ],
+      "source_job_overall_qa": "PASS_AGENT_PENDING_HUMAN",
+      "independent_qa": "approved",
+      "review_scope": "selected_asset",
+      "review_sha256": "ac1d3d47f14ba94d7ce331739848803afe76908fb6d23306b56d8cb986a2b6f0",
+      "result_sha256": "319aa4cb8a32ee28698602c72e8a012553eae49e04b08549a718db43b69e3686",
+      "human_approval": "approved_Artanis"
+    },
+    {
+      "job": "ART-017",
+      "selected_items": [
+        "SGR_Ember"
+      ],
+      "source_job_overall_qa": "approved",
+      "independent_qa": "approved",
+      "review_scope": "selected_asset",
+      "review_sha256": "3fd0174bcb43768cfc8c793525367b57b43099351c621665fe63dde6ef2a2626",
+      "result_sha256": "781e1258a23cc7a494a69f504525e46a0945b157da2b316609f43e90ad1b19d5",
+      "human_approval": "approved_Artanis"
+    },
+    {
+      "job": "ART-027",
+      "selected_items": [
+        "SGC_TripleCyclone"
+      ],
+      "source_job_overall_qa": "approved",
+      "independent_qa": "approved",
+      "review_scope": "selected_asset",
+      "review_sha256": "6b37a729cead644d850c7988ea7ffdb8304406ccdaa85f45a692fe29838f1741",
+      "result_sha256": "70cd7811cbd4ccefbf567f09b28f4bfd5a83e2ab1a859ee60ec0005495229ce8",
+      "human_approval": "approved_Artanis"
+    },
+    {
+      "job": "ART-037",
+      "selected_items": [
+        "SGC_DrillMissile"
+      ],
+      "source_job_overall_qa": "approved",
+      "independent_qa": "approved",
+      "review_scope": "visual_preview_only_plus_separate_production_export",
+      "review_sha256": "64f2a8d12793317b97b165bc614a05c3f2a6ff27582f3df1b56d69bec90d96e2",
+      "result_sha256": "d7473be6b0bd34b772ae33500ca2aa4b640106b3a14cffdc04fe142d23e0f84e",
+      "human_approval": "approved_Artanis"
+    }
+  ],
+  "baseline": {
+    "path": "shin-getter-mod-godot/images/atlases/card_atlas_shin_getter_01.png",
+    "baseline_commit": "26c8da9a907fd9e12d41bf5bf17d24ca5975bfa8",
+    "baseline_sha256": "8fa1bbc0f3f168591664a7bc4a6ba4a11029c5d132c8902e9bfa8e1378f009a2"
+  },
+  "derivative_pixel_evidence": "RGBA SHA256 computed from the exact PNG export whose SHA matches the original export receipt; runtime atlas cells must match. Standalone derivative PNGs are not duplicated."
+}
