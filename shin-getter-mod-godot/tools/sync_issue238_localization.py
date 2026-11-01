@@ -6,6 +6,7 @@ import re
 
 ROOT = Path(__file__).resolve().parents[1]
 source = json.loads((ROOT / "tools/issue238-localization.json").read_text(encoding="utf-8-sig"))
+native_events = json.loads((ROOT / "tools/issue238-native-events.json").read_text(encoding="utf-8-sig"))
 check = argparse.ArgumentParser()
 check.add_argument("--check", action="store_true")
 check.add_argument("--normalize-glossary", action="store_true")
@@ -47,7 +48,7 @@ extra_locked = {
         "HAYATO_ROLE": ["[white]隼人：[/white]「先看清洞口在量什么。」", "[white]Hayato:[/white]「First, find out what the holes are measuring.」", "[white]隼人：[/white]「まず、穴が何を測っているか見極める。」"],
         "HAYATO_HP": ["[white]隼人：[/white]需要大于7点生命。", "[white]Hayato:[/white] Requires more than 7 HP.", "[white]隼人：[/white]HPが7より多い必要がある。"],
         "HAYATO_TARGET": ["[white]隼人：[/white]「没有能被洞口咬住的战斗记录。」", "[white]Hayato:[/white]「No combat record for the holes to bite into.」", "[white]隼人：[/white]「穴に食いつかせる戦闘記録がない。」"]},
-    "WATERLOGGED_VAULT": {
+    "SUNKEN_TREASURY": {
         "RYOMA_ROLE": ["[red]龙马：[/red]需要气魄。", "[red]Ryoma:[/red] Requires Drive.", "[red]竜馬：[/red]気魄が必要。"],
         "RYOMA_HP": ["[red]龙马：[/red]当前生命不足；这次冲击会致死，需要大于8点生命。", "[red]Ryoma:[/red] This impact would be fatal. Requires more than 8 HP.", "[red]竜馬：[/red]この衝撃は致命傷になる。HPが8より多い必要がある。"]},
     "POTION_COURIER": {
@@ -56,7 +57,7 @@ extra_locked = {
         "RYOMA_POOL": ["[red]龙马：[/red]没有足够的罕见药水可供挑选。", "[red]Ryoma:[/red] Not enough distinct Uncommon Potions to choose from.", "[red]竜馬：[/red]選べるアンコモンポーションの種類が足りない。"],
         "HAYATO_GOLD": ["[white]隼人：[/white]需要70金币。", "[white]Hayato:[/white] Requires 70 Gold.", "[white]隼人：[/white]70ゴールドが必要。"],
         "HAYATO_RELIC": ["[white]隼人：[/white]「没有核对这瓶的资料。」", "[white]Hayato:[/white]「No notes to verify this bottle.」", "[white]隼人：[/white]「この瓶を照合する資料がない。」"]},
-    "STONE_OF_ETERNITY": {
+    "STONE_OF_ALL_TIME": {
         "BENKEI_ROLE": ["[yellow]弁庆：[/yellow]需要铁壁或底力。", "[yellow]Benkei:[/yellow] Requires Wall or Prevail.", "[yellow]弁慶：[/yellow]鉄壁または底力が必要。"],
         "BENKEI_HP": ["[yellow]弁庆：[/yellow]需要大于12点当前生命。", "[yellow]Benkei:[/yellow] Requires more than 12 current HP.", "[yellow]弁慶：[/yellow]現在HPが12より多い必要がある。"]},
     "SELF_HELP_BOOK": {
@@ -67,10 +68,33 @@ pilot_colors = {"RYOMA": "red", "HAYATO": "white", "BENKEI": "yellow"}
 def colored_title(route, title):
     color = pilot_colors.get(route.split("_")[0])
     return f"[{color}]{title}[/{color}]" if color and f"[{color}]" not in title else title
+
+def prune_retired(current, additions, language):
+    for retired in native_events["retired"]:
+        prefix = f'SHIN_GETTER_EVENT_INVASION.{retired["entry"]}.'
+        owned = {prefix + suffix for suffix in retired["owned_suffixes"]}
+        present = {key for key in current if key.startswith(prefix)}
+        if present - owned:
+            raise SystemExit(f"{language}/events: unexpected retired keys; refusing cleanup: {sorted(present - owned)}")
+        for key in present:
+            replacement = f'SHIN_GETTER_EVENT_INVASION.{retired["replacement"]}.' + key[len(prefix):]
+            if replacement not in additions or current[key] != additions[replacement]:
+                raise SystemExit(f"{language}/events: retired value differs; refusing cleanup: {key}")
+            if replacement in current and current[replacement] != current[key]:
+                raise SystemExit(f"{language}/events: replacement collision; refusing cleanup: {replacement}")
+        if args.check and present:
+            raise SystemExit(f"{language}/events: {len(present)} retired generated keys remain under {retired['entry']}")
+        for key in present:
+            del current[key]
+
+# Validate all languages before writing any product table, and leave identical
+# cards/relics/potions byte-for-byte untouched.
+pending_writes = []
 for index, language in enumerate(source["languages"]):
     for table in ("cards", "relics", "potions", "events"):
         path = ROOT / f"ShinGetterMod/localization/{language}/{table}.json"
         current = json.loads(path.read_text(encoding="utf-8-sig"))
+        original = dict(current)
         additions = {key: values[index] for key, values in source["content"][table].items()}
         if table == "events":
             for event, locks in extra_locked.items():
@@ -93,11 +117,15 @@ for index, language in enumerate(source["languages"]):
                 additions[prefix + f"{name}_RESULT.description"] = route["result"][index]
                 if "prompt" in route:
                     additions[prefix + f"{name}.selectionPrompt"] = route["prompt"][index]
+            prune_retired(current, additions, language)
         if args.check:
             bad = [key for key, value in additions.items() if current.get(key) != value]
             if bad:
                 raise SystemExit(f"{language}/{table}: {len(bad)} mismatch: {bad[:3]}")
         else:
             current.update(additions)
-            path.write_text(json.dumps(current, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            if current != original:
+                pending_writes.append((path, current))
+for path, current in pending_writes:
+    path.write_text(json.dumps(current, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 print("issue#238 authored localization merge/check PASS")

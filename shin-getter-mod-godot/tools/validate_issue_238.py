@@ -3,6 +3,7 @@ from pathlib import Path
 import argparse
 import json
 import re
+import shutil
 import subprocess
 import sys
 from registered_card_contract import validate_registered_cards, ISSUE238_CARDS
@@ -15,10 +16,10 @@ ROUTES = {
     "AROMA_OF_CHAOS": ["HAYATO"], "SAPPHIRE_SEED": ["RYOMA"],
     "HUNGRY_FOR_MUSHROOMS": ["BENKEI"], "BRAIN_LEECH": ["TRIPLE_COORDINATION"],
     "FIELD_OF_MAN_SIZED_HOLES": ["HAYATO"], "DOLL_ROOM": ["HAYATO"],
-    "ZEN_WEAVER": ["BENKEI", "HAYATO"], "WATERLOGGED_VAULT": ["RYOMA"],
+    "ZEN_WEAVER": ["BENKEI", "HAYATO"], "SUNKEN_TREASURY": ["RYOMA"],
     "POTION_COURIER": ["RYOMA", "HAYATO"],
-    "FORGOTTEN_GRAVE": ["TRIPLE_COORDINATION", "RYOMA"],
-    "STONE_OF_ETERNITY": ["BENKEI"], "TABLET_OF_TRUTH": ["HAYATO", "BENKEI"],
+    "GRAVE_OF_THE_FORGOTTEN": ["TRIPLE_COORDINATION", "RYOMA"],
+    "STONE_OF_ALL_TIME": ["BENKEI"], "TABLET_OF_TRUTH": ["HAYATO", "BENKEI"],
     "SELF_HELP_BOOK": ["RYOMA"],
 }
 
@@ -61,6 +62,48 @@ def body(source, signature):
             depth -= 1
             if not depth: return source[opening:i + 1]
     raise AssertionError(f"unbalanced method: {signature}")
+
+
+def native_event_contracts(events):
+    config = json.loads(read("tools/issue238-native-events.json"))
+    shell = shutil.which("pwsh")
+    require(shell is not None, "pwsh is required for the actual native ModelDb identity gate")
+    result = subprocess.run([shell, "-NoLogo", "-NoProfile", "-NonInteractive", "-File",
+                             str(ROOT / "tools/read_issue238_native_event_ids.ps1"), "-ProjectRoot", str(ROOT)],
+                            check=True, capture_output=True, text=True, encoding="utf-8")
+    observed = json.loads(result.stdout)
+    require(observed["native_sha256"] == config["native_sha256"] and not observed["game_started"]
+            and not observed["mod_dll_loaded"], "native identity probe boundary drift")
+    by_type = {row["type"]: row["entry"] for row in observed["rows"]}
+    actual = set(by_type.values())
+    require(len(by_type) == len(actual) == 15, "native event identity quota")
+
+    def match(label, configured):
+        configured = set(configured)
+        require(configured == actual, f"{label}: native ID mismatch; unknown={sorted(configured - actual)}, missing={sorted(actual - configured)}")
+
+    # The authority is the actual DLL method, not a second copy of the product strings.
+    match("production FourthEvents", re.findall(r'"([A-Z_]+)"', body(events, "private static readonly HashSet<string> FourthEvents")))
+    match("Python ROUTES", ROUTES)
+    source = json.loads(read("tools/issue238-localization.json"))
+    match("authored routes", (r["event"] for r in source["routes"]))
+    match("authority metadata", (r["event"] for r in source["authority"]["routes"]))
+    for retired in config["retired"]:
+        require(retired["replacement"] == by_type[retired["type"]], "cleanup target differs from actual native ID")
+        require(f'"{retired["entry"]}"' not in events, "retired ID in production event dispatch")
+        # Reject each of the three historical bad configurations against the real DLL.
+        bad = actual - {by_type[retired["type"]]} | {retired["entry"]}
+        rejected = False
+        try:
+            match("retired ID negative baseline", bad)
+        except AssertionError:
+            rejected = True
+        require(rejected, "native ID gate accepted a known historical typo")
+        for lang in source["languages"]:
+            loc = json.loads(read(f"ShinGetterMod/localization/{lang}/events.json"))
+            prefix = f'SHIN_GETTER_EVENT_INVASION.{retired["entry"]}.'
+            require(not any(k.startswith(prefix) for k in loc), f"{lang}: retired generated keys remain")
+    print("issue#238: 15 actual native ModelDb IDs cross-checked; 3 historical bad IDs rejected (not registered-entry/game acceptance)")
 
 
 def persistence_contracts(events):
@@ -217,7 +260,7 @@ def november_contracts(events):
     holes = routes[("FIELD_OF_MAN_SIZED_HOLES", "HAYATO")]["result"][0]
     contains(holes, "二号机单独", "报废的测距探针")
     require("三号机" not in holes and "一号机" not in holes, "retired simultaneous Getter scene")
-    stone = routes[("STONE_OF_ETERNITY", "BENKEI")]["result"][0]
+    stone = routes[("STONE_OF_ALL_TIME", "BENKEI")]["result"][0]
     contains(stone, "整台机体", "石角终于卡进", "三处驾驶舱")
     require("先过去" not in stone and "药水" not in stone, "retired separate-pilot/potion scene")
     whisper = routes[("WHISPERING_HOLLOW", "BENKEI")]
@@ -321,6 +364,7 @@ def prose_contracts():
 
 def main():
     events = read("src/Events/ShinGetterEventInvasionService.Issue238.cs")
+    native_event_contracts(events)
     routes = ROUTES
     require(len(routes) == 15 and sum(map(len, routes.values())) == 20, "fourth batch route quota")
     require("owner.RunState.Players.Count != 1" in events, "single-player guard missing")

@@ -1,0 +1,119 @@
+{
+  "native_sha256": "C2D3E15310259957BA312F9D2362CBA193512EBE9819456A062366E6AF38B9B0",
+  "godot_sharp_version": "4.5.1",
+  "authority": "formal109 native classes / actual ModelDb.GetId(Type); identity only, not game-entry acceptance",
+  "events": [
+    {
+      "type": "WhisperingHollow",
+      "native_title_zhs": "低语空谷"
+    },
+    {
+      "type": "Symbiote",
+      "native_title_zhs": "共生体"
+    },
+    {
+      "type": "AromaOfChaos",
+      "native_title_zhs": "混沌芳香"
+    },
+    {
+      "type": "SapphireSeed",
+      "native_title_zhs": "蓝宝石种子"
+    },
+    {
+      "type": "HungryForMushrooms",
+      "native_title_zhs": "蘑菇饥渴"
+    },
+    {
+      "type": "BrainLeech",
+      "native_title_zhs": "脑蛭"
+    },
+    {
+      "type": "FieldOfManSizedHoles",
+      "native_title_zhs": "人形洞穴之地"
+    },
+    {
+      "type": "DollRoom",
+      "native_title_zhs": "玩偶室"
+    },
+    {
+      "type": "ZenWeaver",
+      "native_title_zhs": "修禅织网者"
+    },
+    {
+      "type": "SunkenTreasury",
+      "native_title_zhs": "淹水金库"
+    },
+    {
+      "type": "PotionCourier",
+      "native_title_zhs": "药水快递员"
+    },
+    {
+      "type": "GraveOfTheForgotten",
+      "native_title_zhs": "遗忘之墓"
+    },
+    {
+      "type": "StoneOfAllTime",
+      "native_title_zhs": "永恒之石"
+    },
+    {
+      "type": "TabletOfTruth",
+      "native_title_zhs": "真理石板"
+    },
+    {
+      "type": "SelfHelpBook",
+      "native_title_zhs": "自助指南"
+    }
+  ],
+  "retired": [
+    {
+      "entry": "WATERLOGGED_VAULT",
+      "type": "SunkenTreasury",
+      "replacement": "SUNKEN_TREASURY",
+      "owned_suffixes": [
+        "pages.INITIAL.options.RYOMA.title",
+        "pages.INITIAL.options.RYOMA.description",
+        "pages.INITIAL.options.RYOMA_LOCKED.title",
+        "pages.INITIAL.options.RYOMA_LOCKED.description",
+        "pages.RYOMA_RESULT.description",
+        "pages.INITIAL.options.RYOMA_ROLE_LOCKED.description",
+        "pages.INITIAL.options.RYOMA_ROLE_LOCKED.title",
+        "pages.INITIAL.options.RYOMA_HP_LOCKED.description",
+        "pages.INITIAL.options.RYOMA_HP_LOCKED.title"
+      ]
+    },
+    {
+      "entry": "FORGOTTEN_GRAVE",
+      "type": "GraveOfTheForgotten",
+      "replacement": "GRAVE_OF_THE_FORGOTTEN",
+      "owned_suffixes": [
+        "pages.INITIAL.options.TRIPLE_COORDINATION.title",
+        "pages.INITIAL.options.TRIPLE_COORDINATION.description",
+        "pages.INITIAL.options.TRIPLE_COORDINATION_LOCKED.title",
+        "pages.INITIAL.options.TRIPLE_COORDINATION_LOCKED.description",
+        "pages.TRIPLE_COORDINATION_RESULT.description",
+        "pages.TRIPLE_COORDINATION.selectionPrompt",
+        "pages.INITIAL.options.RYOMA.title",
+        "pages.INITIAL.options.RYOMA.description",
+        "pages.INITIAL.options.RYOMA_LOCKED.title",
+        "pages.INITIAL.options.RYOMA_LOCKED.description",
+        "pages.RYOMA_RESULT.description"
+      ]
+    },
+    {
+      "entry": "STONE_OF_ETERNITY",
+      "type": "StoneOfAllTime",
+      "replacement": "STONE_OF_ALL_TIME",
+      "owned_suffixes": [
+        "pages.INITIAL.options.BENKEI.title",
+        "pages.INITIAL.options.BENKEI.description",
+        "pages.INITIAL.options.BENKEI_LOCKED.title",
+        "pages.INITIAL.options.BENKEI_LOCKED.description",
+        "pages.BENKEI_RESULT.description",
+        "pages.INITIAL.options.BENKEI_HP_LOCKED.description",
+        "pages.INITIAL.options.BENKEI_HP_LOCKED.title",
+        "pages.INITIAL.options.BENKEI_ROLE_LOCKED.description",
+        "pages.INITIAL.options.BENKEI_ROLE_LOCKED.title"
+      ]
+    }
+  ]
+}

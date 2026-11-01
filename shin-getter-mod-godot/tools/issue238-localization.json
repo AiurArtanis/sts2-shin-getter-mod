@@ -446,7 +446,7 @@
       ]
     },
     {
-      "event": "WATERLOGGED_VAULT",
+      "event": "SUNKEN_TREASURY",
       "route": "RYOMA",
       "title": [
         "龙马",
@@ -528,7 +528,7 @@
       ]
     },
     {
-      "event": "FORGOTTEN_GRAVE",
+      "event": "GRAVE_OF_THE_FORGOTTEN",
       "route": "TRIPLE_COORDINATION",
       "title": [
         "三体协同",
@@ -557,7 +557,7 @@
       ]
     },
     {
-      "event": "FORGOTTEN_GRAVE",
+      "event": "GRAVE_OF_THE_FORGOTTEN",
       "route": "RYOMA",
       "title": [
         "龙马",
@@ -581,7 +581,7 @@
       ]
     },
     {
-      "event": "STONE_OF_ETERNITY",
+      "event": "STONE_OF_ALL_TIME",
       "route": "BENKEI",
       "title": [
         "弁庆",
@@ -777,7 +777,7 @@
         "result": "隼人没有和织网者比耐心。二号机贴着蛛网最低处加速，钻头转速越过安全线。丝线合拢的瞬间，钻头脱离机体，拖着白色尾迹贯穿整张巨网。\n\n[white]「这就是真盖塔狮虎的力量吗，把钻头的出力推到最大。」[/white]\n\n发射的反冲猛然砸进驾驶舱。警报灯接连亮起，远处只剩一截失去平衡的钻头残骸。"
       },
       {
-        "event": "WATERLOGGED_VAULT",
+        "event": "SUNKEN_TREASURY",
         "route": "RYOMA",
         "note": "游戏/杀戮尖塔2/事件笔记/事件：淹水金库.md",
         "input_sha256": "ba54f1148c3832a3d0c06b815f2b8d10b8f4339924c11b7e46d4df4f6a35843b",
@@ -801,7 +801,7 @@
         "result": "隼人把细长瓶子举到灯下，对照研究笔记扫过瓶底。快递员还在解释封条编号，七十枚金币已经被推到箱边。"
       },
       {
-        "event": "FORGOTTEN_GRAVE",
+        "event": "GRAVE_OF_THE_FORGOTTEN",
         "route": "TRIPLE_COORDINATION",
         "note": "游戏/杀戮尖塔2/事件笔记/事件：遗忘之墓.md",
         "input_sha256": "7a1e74b3587d38d9a4dbf4546e5b011129dbcb2b1d72d6e69c3f4b7ff42c19f5",
@@ -809,7 +809,7 @@
         "result": "墓穴里的低语轮番叫出三个名字。龙马把第一阵侵入顶了回去：[red]「别钻进来。」[/red]\n\n隼人从死者的回声中截下一段仍能用于战斗的经验。车弁庆没有回应那些声音，只让墓穴从三颗心脏中取走约定的份额。\n\n灰火缠上选中的战术记录，原本注定熄灭的部分重新稳定下来。"
       },
       {
-        "event": "FORGOTTEN_GRAVE",
+        "event": "GRAVE_OF_THE_FORGOTTEN",
         "route": "RYOMA",
         "note": "游戏/杀戮尖塔2/事件笔记/事件：遗忘之墓.md",
         "input_sha256": "7a1e74b3587d38d9a4dbf4546e5b011129dbcb2b1d72d6e69c3f4b7ff42c19f5",
@@ -817,7 +817,7 @@
         "result": "坟土底下有一簇余火。每次被灰烬盖住，它都会从另一道缝隙里重新透出红光。\n\n龙马伸手将它攥住。低语沿着手臂往上爬，他反而握得更紧：[red]「看来你也不甘心被囚禁，我带你继续燃烧。」[/red]\n\n火光没有变旺，只在掌心留下一个仍在跳动的红点。"
       },
       {
-        "event": "STONE_OF_ETERNITY",
+        "event": "STONE_OF_ALL_TIME",
         "route": "BENKEI",
         "note": "游戏/杀戮尖塔2/事件笔记/事件：永恒之石.md",
         "input_sha256": "1f9b17cbcee951bc5b5f6e19f2947f8c7faadc83c9df4edc7915677def6f3edc",

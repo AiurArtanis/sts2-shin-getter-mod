@@ -54,8 +54,8 @@ internal static partial class ShinGetterEventInvasionService
     private static readonly HashSet<string> FourthEvents = new(StringComparer.Ordinal)
     {
         "WHISPERING_HOLLOW", "SYMBIOTE", "AROMA_OF_CHAOS", "SAPPHIRE_SEED", "HUNGRY_FOR_MUSHROOMS",
-        "BRAIN_LEECH", "FIELD_OF_MAN_SIZED_HOLES", "DOLL_ROOM", "ZEN_WEAVER", "WATERLOGGED_VAULT",
-        "POTION_COURIER", "FORGOTTEN_GRAVE", "STONE_OF_ETERNITY", "TABLET_OF_TRUTH", "SELF_HELP_BOOK"
+        "BRAIN_LEECH", "FIELD_OF_MAN_SIZED_HOLES", "DOLL_ROOM", "ZEN_WEAVER", "SUNKEN_TREASURY",
+        "POTION_COURIER", "GRAVE_OF_THE_FORGOTTEN", "STONE_OF_ALL_TIME", "TABLET_OF_TRUTH", "SELF_HELP_BOOK"
     };
     private static readonly MethodInfo InitialFourthOptions = AccessTools.Method(typeof(EventModel), "GenerateInitialOptionsWrapper")
         ?? throw new MissingMethodException("GenerateInitialOptionsWrapper");
@@ -127,10 +127,10 @@ internal static partial class ShinGetterEventInvasionService
     {
         "SYMBIOTE" or "ZEN_WEAVER" => new[] { "BENKEI", "HAYATO" },
         "POTION_COURIER" => new[] { "RYOMA", "HAYATO" },
-        "FORGOTTEN_GRAVE" => new[] { "TRIPLE_COORDINATION", "RYOMA" },
+        "GRAVE_OF_THE_FORGOTTEN" => new[] { "TRIPLE_COORDINATION", "RYOMA" },
         "TABLET_OF_TRUTH" => new[] { "HAYATO", "BENKEI" },
         "BRAIN_LEECH" => new[] { "TRIPLE_COORDINATION" },
-        "WHISPERING_HOLLOW" or "HUNGRY_FOR_MUSHROOMS" or "STONE_OF_ETERNITY" => new[] { "BENKEI" },
+        "WHISPERING_HOLLOW" or "HUNGRY_FOR_MUSHROOMS" or "STONE_OF_ALL_TIME" => new[] { "BENKEI" },
         "AROMA_OF_CHAOS" or "FIELD_OF_MAN_SIZED_HOLES" or "DOLL_ROOM" => new[] { "HAYATO" },
         _ => new[] { "RYOMA" }
     };
@@ -174,12 +174,12 @@ internal static partial class ShinGetterEventInvasionService
             ("DOLL_ROOM", _) => HasAnyCard<SGC_Insight, SGC_BackupPlan>(owner) && owner.Gold >= 80,
             ("ZEN_WEAVER", "BENKEI") => HasAnyCard<SGC_Indomitable, SGC_IronWall, SGC_Guts>(owner) && owner.Creature.MaxHp > 4 && owner.Deck.Cards.Any(c => c.IsRemovable),
             ("ZEN_WEAVER", _) => HasCard<SGC_ShinForm>(owner) && !HasCard<SGC_DrillMissile>(owner) && owner.Creature.CurrentHp > 10,
-            ("WATERLOGGED_VAULT", _) => HasCard<SGC_Spirit>(owner) && owner.Creature.CurrentHp > 8,
+            ("SUNKEN_TREASURY", _) => HasCard<SGC_Spirit>(owner) && owner.Creature.CurrentHp > 8,
             ("POTION_COURIER", "RYOMA") => owner.GetRelic<SGR_GoodCitizenCard>() != null && owner.Gold >= 60 && owner.PotionSlots.Any(p => p == null) && FourthPotions(owner).Count >= 3,
             ("POTION_COURIER", _) => owner.GetRelic<SGR_ResearchNotes>() != null && owner.Gold >= 70,
-            ("FORGOTTEN_GRAVE", "TRIPLE_COORDINATION") => HasAnyCard<SGC_AwakenedSoul, SGC_SuperKi>(owner) && owner.Creature.MaxHp > 6 && owner.Deck.Cards.Any(FourthSoulsPower),
-            ("FORGOTTEN_GRAVE", _) => owner.GetRelic<SGR_Ember>() == null,
-            ("STONE_OF_ETERNITY", _) => HasAnyCard<SGC_IronWall, SGC_Guts>(owner) && owner.Creature.CurrentHp > 12,
+            ("GRAVE_OF_THE_FORGOTTEN", "TRIPLE_COORDINATION") => HasAnyCard<SGC_AwakenedSoul, SGC_SuperKi>(owner) && owner.Creature.MaxHp > 6 && owner.Deck.Cards.Any(FourthSoulsPower),
+            ("GRAVE_OF_THE_FORGOTTEN", _) => owner.GetRelic<SGR_Ember>() == null,
+            ("STONE_OF_ALL_TIME", _) => HasAnyCard<SGC_IronWall, SGC_Guts>(owner) && owner.Creature.CurrentHp > 12,
             ("TABLET_OF_TRUTH", "HAYATO") => HasAnyCard<SGC_Insight, SGC_BackupPlan>(owner) && owner.Creature.MaxHp > 5 && owner.Deck.Cards.Any(c => c.IsUpgradable),
             ("TABLET_OF_TRUTH", _) => !HasCard<SGC_TabletOfTruth>(owner),
             ("SELF_HELP_BOOK", _) => !HasCard<SGC_Annotations>(owner) && owner.Creature.CurrentHp > 3,
@@ -217,11 +217,11 @@ internal static partial class ShinGetterEventInvasionService
                 if (owner.Creature.CurrentHp <= 7) return route + "_HP";
                 if (!owner.Deck.Cards.Any(FourthAdaptation)) return route + "_TARGET";
                 break;
-            case ("WATERLOGGED_VAULT", _):
+            case ("SUNKEN_TREASURY", _):
                 if (!HasCard<SGC_Spirit>(owner)) return route + "_ROLE";
                 if (owner.Creature.CurrentHp <= 8) return route + "_HP";
                 break;
-            case ("STONE_OF_ETERNITY", _):
+            case ("STONE_OF_ALL_TIME", _):
                 if (!HasAnyCard<SGC_IronWall, SGC_Guts>(owner)) return route + "_ROLE";
                 break;
             case ("POTION_COURIER", "HAYATO"):
@@ -240,7 +240,7 @@ internal static partial class ShinGetterEventInvasionService
         }
         if (model.Id.Entry == "POTION_COURIER" && route == "HAYATO" && owner.GetRelic<SGR_ResearchNotes>() != null && owner.Gold < 70)
             return route + "_GOLD";
-        if (model.Id.Entry == "STONE_OF_ETERNITY" && HasAnyCard<SGC_IronWall, SGC_Guts>(owner) && owner.Creature.CurrentHp <= 12)
+        if (model.Id.Entry == "STONE_OF_ALL_TIME" && HasAnyCard<SGC_IronWall, SGC_Guts>(owner) && owner.Creature.CurrentHp <= 12)
             return route + "_HP";
         return route;
     }
@@ -265,7 +265,7 @@ internal static partial class ShinGetterEventInvasionService
     {
         ("AROMA_OF_CHAOS", _) => 6, ("HUNGRY_FOR_MUSHROOMS", _) => 15,
         ("FIELD_OF_MAN_SIZED_HOLES", _) => 7, ("ZEN_WEAVER", "HAYATO") => 10,
-        ("WATERLOGGED_VAULT", _) => 8, ("STONE_OF_ETERNITY", _) => 12,
+        ("SUNKEN_TREASURY", _) => 8, ("STONE_OF_ALL_TIME", _) => 12,
         ("SELF_HELP_BOOK", _) => 3, _ => 0
     };
     private static IEnumerable<IHoverTip> FourthHoverTips(string name, string route) => (name, route) switch
@@ -277,8 +277,8 @@ internal static partial class ShinGetterEventInvasionService
         ("SAPPHIRE_SEED", _) => HoverTipFactory.FromRelic<SGR_ActivatedSapphire>(),
         ("ZEN_WEAVER", "HAYATO") => HoverTipFactory.FromCardWithCardHoverTips<SGC_DrillMissile>(),
         ("POTION_COURIER", "HAYATO") => new[] { HoverTipFactory.FromPotion<SGR_MobilityCatalyst>() },
-        ("FORGOTTEN_GRAVE", "RYOMA") => HoverTipFactory.FromRelic<SGR_Ember>(),
-        ("FORGOTTEN_GRAVE", "TRIPLE_COORDINATION") => HoverTipFactory.FromEnchantment<SoulsPower>(),
+        ("GRAVE_OF_THE_FORGOTTEN", "RYOMA") => HoverTipFactory.FromRelic<SGR_Ember>(),
+        ("GRAVE_OF_THE_FORGOTTEN", "TRIPLE_COORDINATION") => HoverTipFactory.FromEnchantment<SoulsPower>(),
         ("TABLET_OF_TRUTH", "BENKEI") => HoverTipFactory.FromCardWithCardHoverTips<SGC_TabletOfTruth>(),
         ("SELF_HELP_BOOK", _) => HoverTipFactory.FromCardWithCardHoverTips<SGC_Annotations>(),
         _ => Array.Empty<IHoverTip>()
@@ -560,7 +560,7 @@ internal static partial class ShinGetterEventInvasionService
             }
             case ("ZEN_WEAVER", "BENKEI"):
             case ("TABLET_OF_TRUTH", "HAYATO"):
-            case ("FORGOTTEN_GRAVE", "TRIPLE_COORDINATION"):
+            case ("GRAVE_OF_THE_FORGOTTEN", "TRIPLE_COORDINATION"):
             {
                 bool legal(CardModel c) => name switch { "ZEN_WEAVER" => c.IsRemovable, "TABLET_OF_TRUTH" => c.IsUpgradable, _ => FourthSoulsPower(c) };
                 CardModel? target = await SelectFourthCard(model, route, legal);
@@ -576,7 +576,7 @@ internal static partial class ShinGetterEventInvasionService
             }
             case ("ZEN_WEAVER", "HAYATO"):
                 return await CommitFourth(model, route, async () => { await FourthDamage(owner, 10); await AddFourthCard<SGC_DrillMissile>(owner); });
-            case ("WATERLOGGED_VAULT", _):
+            case ("SUNKEN_TREASURY", _):
                 return await CommitFourth(model, route, async () => { await FourthDamage(owner, 8); await PlayerCmd.GainGold(150, owner); });
             case ("POTION_COURIER", "RYOMA"):
             {
@@ -617,9 +617,9 @@ internal static partial class ShinGetterEventInvasionService
                     if (!(await PotionCmd.TryToProcure(catalyst, owner, slot)).success) throw new InvalidOperationException("Catalyst delivery failed.");
                 });
             }
-            case ("FORGOTTEN_GRAVE", "RYOMA"):
+            case ("GRAVE_OF_THE_FORGOTTEN", "RYOMA"):
                 return await CommitFourth(model, route, async () => { await RelicCmd.Obtain<SGR_Ember>(owner); });
-            case ("STONE_OF_ETERNITY", _):
+            case ("STONE_OF_ALL_TIME", _):
                 return await CommitFourth(model, route, async () => { int hpBefore = owner.Creature.CurrentHp; await CreatureCmd.GainMaxHp(owner.Creature, 10); await CreatureCmd.SetCurrentHp(owner.Creature, hpBefore - 12); });
             case ("TABLET_OF_TRUTH", "BENKEI"):
                 return await CommitFourth(model, route, () => AddFourthCard<SGC_TabletOfTruth>(owner));
