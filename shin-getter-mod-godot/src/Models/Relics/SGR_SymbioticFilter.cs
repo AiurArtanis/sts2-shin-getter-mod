@@ -9,7 +9,7 @@ using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Relics;
 
-public sealed class SGR_SymbioticFilter : ShinGetterPlaceholderEventRelic
+public sealed class SGR_SymbioticFilter : ShinGetterEventRelic
 {
     private bool _used;
     public override Task BeforeCombatStart()
@@ -26,7 +26,8 @@ public sealed class SGR_SymbioticFilter : ShinGetterPlaceholderEventRelic
         _used = true; // Set before Exhaust's nested hooks.
         Status = RelicStatus.Disabled;
         Flash();
-        var context = new ThrowingPlayerChoiceContext();
+        // Exhaust can trigger draws and native card choices. This hook has no supplied context.
+        var context = new BlockingPlayerChoiceContext();
         await CardCmd.Exhaust(context, card);
         await PowerCmd.Apply<SGP_Evolution>(context, Owner.Creature, 1m, Owner.Creature, null);
     }

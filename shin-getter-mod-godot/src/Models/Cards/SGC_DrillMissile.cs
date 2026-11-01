@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.ValueProps;
 using MegaCrit.Sts2.Core.HoverTips;
+using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -22,11 +23,11 @@ public sealed class SGC_DrillMissile : ShinGetterEventCardBase
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        bool secondForm = HasForm(Owner, ShinGetterForm.Getter2);
+        bool isDragon = Owner.Creature.GetPower<SGP_ShinForm>() != null;
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
             .Execute(choiceContext);
-        if (secondForm)
-            await Transform(choiceContext, Owner, this);
+        if (isDragon)
+            await PowerCmd.Apply<SGP_Shade>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
         Plays.GetOrCreateValue(this).Played = true;
     }
 

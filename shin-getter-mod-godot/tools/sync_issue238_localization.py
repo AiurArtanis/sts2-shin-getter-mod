@@ -29,12 +29,12 @@ if args.normalize_glossary:
     print("normalized titles against shipped glossary")
 extra_locked = {
     "WHISPERING_HOLLOW": {
-        "BENKEI_FORM": ["[yellow]弁庆：[/yellow]「这风要真波塞冬才能接。」", "[yellow]Benkei:[/yellow]「This wind needs Shin Poseidon to catch it.」", "[yellow]弁慶：[/yellow]「この風は真ポセイドンでなきゃ受け止められねえ。」"],
-        "BENKEI_OWNED": ["[yellow]弁庆：[/yellow]「这招已经记下了。」", "[yellow]Benkei:[/yellow]「We've already recorded this move.」", "[yellow]弁慶：[/yellow]「この技はもう記録してある。」"],
-        "BENKEI_RELIC": ["[yellow]弁庆：[/yellow]「身上得有能留下的压舱物。」", "[yellow]Benkei:[/yellow]「We need something we can leave as ballast.」", "[yellow]弁慶：[/yellow]「重しにして置いていけるものが必要だ。」"]},
+        "BENKEI_FORM": ["[yellow]弁庆：[/yellow]这风仅靠三号机的力量可顶不住。", "[yellow]Benkei:[/yellow] Getter 3's power alone can't hold back this wind.", "[yellow]弁慶：[/yellow]この風はゲッター3の力だけじゃ支えきれねえ。"],
+        "BENKEI_OWNED": ["[yellow]弁庆：[/yellow]这招已经记下了。", "[yellow]Benkei:[/yellow] We've already recorded this move.", "[yellow]弁慶：[/yellow]この技はもう記録してある。"],
+        "BENKEI_RELIC": ["[yellow]弁庆：[/yellow]身上得有能留下的压舱物。", "[yellow]Benkei:[/yellow] We need something we can leave as ballast.", "[yellow]弁慶：[/yellow]重しにして置いていけるものが必要だ。"]},
     "SYMBIOTE": {
         "BENKEI_MAXHP": ["[yellow]弁庆：[/yellow]最大生命需要高于5。", "[yellow]Benkei:[/yellow] Requires more than 5 Max HP.", "[yellow]弁慶：[/yellow]最大HPが5より多い必要がある。"],
-        "BENKEI_TARGET": ["[yellow]弁庆：[/yellow]没有可附魔适应的攻击牌。", "[yellow]Benkei:[/yellow] No Attack can receive Adaptation.", "[yellow]弁慶：[/yellow]適応を付与できるアタックがない。"]},
+        "BENKEI_TARGET": ["[yellow]弁庆：[/yellow]没有可附魔退化的攻击牌。", "[yellow]Benkei:[/yellow] No Attack can receive Devolution.", "[yellow]弁慶：[/yellow]退化を付与できるアタックがない。"]},
     "AROMA_OF_CHAOS": {
         "HAYATO_ROLE": ["[white]隼人：[/white]需要识破／策略路线。", "[white]Hayato:[/white] Requires a Foresight / Strategy card.", "[white]隼人：[/white]見切り・戦略系のカードが必要。"],
         "HAYATO_TARGET": ["[white]隼人：[/white]没有可变化的牌。", "[white]Hayato:[/white] No card can be Transformed.", "[white]隼人：[/white]変化できるカードがない。"],
@@ -48,7 +48,7 @@ extra_locked = {
         "HAYATO_HP": ["[white]隼人：[/white]需要大于7点生命。", "[white]Hayato:[/white] Requires more than 7 HP.", "[white]隼人：[/white]HPが7より多い必要がある。"],
         "HAYATO_TARGET": ["[white]隼人：[/white]「没有能被洞口咬住的战斗记录。」", "[white]Hayato:[/white]「No combat record for the holes to bite into.」", "[white]隼人：[/white]「穴に食いつかせる戦闘記録がない。」"]},
     "WATERLOGGED_VAULT": {
-        "RYOMA_ROLE": ["[red]龙马：[/red]需要气魄。", "[red]Ryoma:[/red] Requires Spirit.", "[red]竜馬：[/red]気魄が必要。"],
+        "RYOMA_ROLE": ["[red]龙马：[/red]需要气魄。", "[red]Ryoma:[/red] Requires Drive.", "[red]竜馬：[/red]気魄が必要。"],
         "RYOMA_HP": ["[red]龙马：[/red]当前生命不足；这次冲击会致死，需要大于8点生命。", "[red]Ryoma:[/red] This impact would be fatal. Requires more than 8 HP.", "[red]竜馬：[/red]この衝撃は致命傷になる。HPが8より多い必要がある。"]},
     "POTION_COURIER": {
         "RYOMA_GOLD": ["[red]龙马：[/red]需要60金币。", "[red]Ryoma:[/red] Requires 60 Gold.", "[red]竜馬：[/red]60ゴールドが必要。"],
@@ -59,6 +59,9 @@ extra_locked = {
     "STONE_OF_ETERNITY": {
         "BENKEI_ROLE": ["[yellow]弁庆：[/yellow]需要铁壁或底力。", "[yellow]Benkei:[/yellow] Requires Wall or Prevail.", "[yellow]弁慶：[/yellow]鉄壁または底力が必要。"],
         "BENKEI_HP": ["[yellow]弁庆：[/yellow]需要大于12点当前生命。", "[yellow]Benkei:[/yellow] Requires more than 12 current HP.", "[yellow]弁慶：[/yellow]現在HPが12より多い必要がある。"]},
+    "SELF_HELP_BOOK": {
+        "RYOMA_HP": ["[red]龙马：[/red]当前生命需要高于3。", "[red]Ryoma:[/red] Requires more than 3 current HP.", "[red]竜馬：[/red]現在HPが3より多い必要がある。"],
+        "RYOMA_OWNED": ["[red]龙马：[/red]牌组已经有批注。", "[red]Ryoma:[/red] Annotations is already in the deck.", "[red]竜馬：[/red]デッキにはすでに書き込みがある。"]},
 }
 pilot_colors = {"RYOMA": "red", "HAYATO": "white", "BENKEI": "yellow"}
 def colored_title(route, title):
@@ -82,7 +85,7 @@ for index, language in enumerate(source["languages"]):
                 name = route["route"]
                 dialogue, rules = route["description"][index].split("\n", 1)
                 separator = ": " if language == "eng" else "："
-                title = colored_title(name, route["title"][index]) + separator + dialogue
+                title = colored_title(route.get("display_route", name), route["title"][index]) + separator + dialogue
                 additions[prefix + f"INITIAL.options.{name}.title"] = title
                 additions[prefix + f"INITIAL.options.{name}.description"] = rules
                 additions[prefix + f"INITIAL.options.{name}_LOCKED.title"] = title

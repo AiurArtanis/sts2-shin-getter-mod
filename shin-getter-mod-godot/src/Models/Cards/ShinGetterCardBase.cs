@@ -150,9 +150,9 @@ public abstract class ShinGetterCardBase : CardModel
             ["SGC_PressureBreath"] = new[] { "格挡", "覆甲", "三号机" },
             ["SGC_WispCoordinate"] = new[] { "抽牌", "辐射", "二号机" },
             ["SGC_TabletOfTruth"] = new[] { "消耗" },
-            ["SGC_TripleWhirlwind"] = new[] { "格挡", "真盖塔龙", "衰退" },
-            ["SGC_DrillMissile"] = new[] { "二号机", "变形" },
-            ["SGC_BrokenDrill"] = new[] { "衰退" },
+            ["SGC_TripleCyclone"] = new[] { "格挡", "真盖塔龙", "衰退" },
+            ["SGC_DrillMissile"] = new[] { "真盖塔龙", "分身" },
+            ["SGC_BrokenDrill"] = new[] { "衰退", "气力" },
             ["SGC_Annotations"] = new[] { "一号机", "活力", "消耗" },
         };
 

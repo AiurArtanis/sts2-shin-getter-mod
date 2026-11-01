@@ -4,7 +4,7 @@ using MegaCrit.Sts2.Core.Entities.Relics;
 
 namespace ShinGetterMod.Models.Relics;
 
-public sealed class SGR_ActivatedSapphire : ShinGetterPlaceholderEventRelic
+public sealed class SGR_ActivatedSapphire : ShinGetterEventRelic
 {
     private int _hits;
     public override bool ShowCounter => true;

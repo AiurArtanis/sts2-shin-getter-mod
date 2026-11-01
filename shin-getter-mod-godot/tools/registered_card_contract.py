@@ -19,7 +19,7 @@ SGC_Desperation SGC_StonerSunshine SGC_ShinForm SGC_SaintDragonRoar SGC_Radiated
 SGC_InsectVirus SGC_InfiniteEvolution SGC_PetalBreakthrough SGC_RescheduleTicket
 SGC_PressureBreath SGC_WispCoordinate SGC_GetterLanding
 """.split())
-ISSUE238_CARDS = frozenset({"SGC_TabletOfTruth", "SGC_TripleWhirlwind", "SGC_DrillMissile",
+ISSUE238_CARDS = frozenset({"SGC_TabletOfTruth", "SGC_TripleCyclone", "SGC_DrillMissile",
                            "SGC_BrokenDrill", "SGC_Annotations"})
 
 

@@ -159,11 +159,10 @@ internal static partial class ShinGetterEventInvasionService
             if (visit.Candidates.Any(c => !valid.Contains(c))
                 || model.Id.Entry is "BRAIN_LEECH" or "POTION_COURIER" && visit.Candidates.Count != 3) return false;
         }
-        bool attackAdaptation(CardModel c) => c.Type == CardType.Attack && ModelDb.Enchantment<SGE_Adaptation>().CanEnchant(c);
         return (model.Id.Entry, route) switch
         {
-            ("WHISPERING_HOLLOW", _) => HasCard<SGC_ShinForm>(owner) && !HasCard<SGC_TripleWhirlwind>(owner) && RemovableFourthRelics(owner).Any(),
-            ("SYMBIOTE", "BENKEI") => owner.Creature.MaxHp > 5 && owner.Deck.Cards.Any(attackAdaptation),
+            ("WHISPERING_HOLLOW", _) => HasCard<SGC_ShinForm>(owner) && !HasCard<SGC_TripleCyclone>(owner) && RemovableFourthRelics(owner).Any(),
+            ("SYMBIOTE", "BENKEI") => owner.Creature.MaxHp > 5 && owner.Deck.Cards.Any(FourthDevolution),
             ("SYMBIOTE", _) => HasAnyCard<SGC_Meltdown, SGC_Annihilation>(owner) && owner.GetRelic<SGR_SymbioticFilter>() == null,
             ("AROMA_OF_CHAOS", _) => HasRole(owner, ShinGetterCardRole.Strategy) && owner.Creature.CurrentHp > 6 && owner.Deck.Cards.Any(c => c.IsTransformable),
             ("SAPPHIRE_SEED", _) => owner.GetRelic<SGR_ActivatedSapphire>() == null,
@@ -182,7 +181,7 @@ internal static partial class ShinGetterEventInvasionService
             ("STONE_OF_ETERNITY", _) => HasAnyCard<SGC_IronWall, SGC_Guts>(owner) && owner.Creature.CurrentHp > 12,
             ("TABLET_OF_TRUTH", "HAYATO") => HasAnyCard<SGC_Insight, SGC_BackupPlan>(owner) && owner.Creature.MaxHp > 5 && owner.Deck.Cards.Any(c => c.IsUpgradable),
             ("TABLET_OF_TRUTH", _) => !HasCard<SGC_TabletOfTruth>(owner),
-            ("SELF_HELP_BOOK", _) => !HasCard<SGC_Annotations>(owner),
+            ("SELF_HELP_BOOK", _) => !HasCard<SGC_Annotations>(owner) && owner.Creature.CurrentHp > 3,
             _ => false
         };
     }
@@ -195,12 +194,12 @@ internal static partial class ShinGetterEventInvasionService
         {
             case ("WHISPERING_HOLLOW", _):
                 if (!HasCard<SGC_ShinForm>(owner)) return route + "_FORM";
-                if (HasCard<SGC_TripleWhirlwind>(owner)) return route + "_OWNED";
+                if (HasCard<SGC_TripleCyclone>(owner)) return route + "_OWNED";
                 if (!RemovableFourthRelics(owner).Any()) return route + "_RELIC";
                 break;
             case ("SYMBIOTE", "BENKEI"):
                 if (owner.Creature.MaxHp <= 5) return route + "_MAXHP";
-                if (!owner.Deck.Cards.Any(c => c.Type == CardType.Attack && FourthAdaptation(c))) return route + "_TARGET";
+                if (!owner.Deck.Cards.Any(FourthDevolution)) return route + "_TARGET";
                 break;
             case ("AROMA_OF_CHAOS", _):
                 if (!HasRole(owner, ShinGetterCardRole.Strategy)) return route + "_ROLE";
@@ -227,6 +226,10 @@ internal static partial class ShinGetterEventInvasionService
             case ("POTION_COURIER", "HAYATO"):
                 if (owner.GetRelic<SGR_ResearchNotes>() == null) return route + "_RELIC";
                 break;
+            case ("SELF_HELP_BOOK", _):
+                if (HasCard<SGC_Annotations>(owner)) return route + "_OWNED";
+                if (owner.Creature.CurrentHp <= 3) return route + "_HP";
+                break;
         }
         if (model.Id.Entry == "POTION_COURIER" && route == "RYOMA" && owner.GetRelic<SGR_GoodCitizenCard>() != null)
         {
@@ -243,6 +246,8 @@ internal static partial class ShinGetterEventInvasionService
     private static bool HasCard<T>(Player owner) where T : CardModel => owner.Deck.Cards.Any(c => c is T);
     private static bool FourthAdaptation(CardModel card) => card.Type is CardType.Attack or CardType.Skill or CardType.Power
         && ModelDb.Enchantment<SGE_Adaptation>().CanEnchant(card);
+    private static bool FourthDevolution(CardModel card) => card.Type == CardType.Attack
+        && ModelDb.Enchantment<SGE_Devolution>().CanEnchant(card);
     private static bool FourthSoulsPower(CardModel card) => card.Keywords.Contains(CardKeyword.Exhaust) && ModelDb.Enchantment<SoulsPower>().CanEnchant(card);
     private static IEnumerable<RelicModel> RemovableFourthRelics(Player owner) => owner.Relics.Where(r => !r.IsMelted && !r.SpawnsPets);
     private static List<CardModel> FourthColorless(Player owner) => ModelDb.CardPool<ColorlessCardPool>()
@@ -259,16 +264,20 @@ internal static partial class ShinGetterEventInvasionService
     {
         ("AROMA_OF_CHAOS", _) => 6, ("HUNGRY_FOR_MUSHROOMS", _) => 15,
         ("FIELD_OF_MAN_SIZED_HOLES", _) => 7, ("ZEN_WEAVER", "HAYATO") => 10,
-        ("WATERLOGGED_VAULT", _) => 8, ("STONE_OF_ETERNITY", _) => 12, _ => 0
+        ("WATERLOGGED_VAULT", _) => 8, ("STONE_OF_ETERNITY", _) => 12,
+        ("SELF_HELP_BOOK", _) => 3, _ => 0
     };
     private static IEnumerable<IHoverTip> FourthHoverTips(string name, string route) => (name, route) switch
     {
-        ("WHISPERING_HOLLOW", _) => HoverTipFactory.FromCardWithCardHoverTips<SGC_TripleWhirlwind>(),
+        ("WHISPERING_HOLLOW", _) => HoverTipFactory.FromCardWithCardHoverTips<SGC_TripleCyclone>(),
+        ("SYMBIOTE", "BENKEI") => HoverTipFactory.FromEnchantment<SGE_Devolution>(),
         ("SYMBIOTE", "HAYATO") => HoverTipFactory.FromRelic<SGR_SymbioticFilter>(),
+        ("FIELD_OF_MAN_SIZED_HOLES", _) => HoverTipFactory.FromEnchantment<SGE_Adaptation>(),
         ("SAPPHIRE_SEED", _) => HoverTipFactory.FromRelic<SGR_ActivatedSapphire>(),
         ("ZEN_WEAVER", "HAYATO") => HoverTipFactory.FromCardWithCardHoverTips<SGC_DrillMissile>(),
         ("POTION_COURIER", "HAYATO") => new[] { HoverTipFactory.FromPotion<SGR_MobilityCatalyst>() },
         ("FORGOTTEN_GRAVE", "RYOMA") => HoverTipFactory.FromRelic<SGR_Ember>(),
+        ("FORGOTTEN_GRAVE", "TRIPLE_COORDINATION") => HoverTipFactory.FromEnchantment<SoulsPower>(),
         ("TABLET_OF_TRUTH", "BENKEI") => HoverTipFactory.FromCardWithCardHoverTips<SGC_TabletOfTruth>(),
         ("SELF_HELP_BOOK", _) => HoverTipFactory.FromCardWithCardHoverTips<SGC_Annotations>(),
         _ => Array.Empty<IHoverTip>()
@@ -429,19 +438,20 @@ internal static partial class ShinGetterEventInvasionService
                 int index = await NShinGetterEventItemChoice.Select(owner, SelectionKey(name, route),
                     relics.Select(r => new NShinGetterEventItemChoice.Item(r.Title.GetFormattedText(), r.DynamicDescription.GetFormattedText(), r.IconPath)).ToArray(), true);
                 if (index < 0 || index >= relics.Length || !RemovableFourthRelics(owner).Contains(relics[index])) return false;
-                return await CommitFourth(model, route, async () => { await RelicCmd.Remove(relics[index]); await AddFourthCard<SGC_TripleWhirlwind>(owner); });
+                return await CommitFourth(model, route, async () => { await RelicCmd.Remove(relics[index]); await AddFourthCard<SGC_TripleCyclone>(owner); });
             }
             case ("SYMBIOTE", "BENKEI"):
             case ("FIELD_OF_MAN_SIZED_HOLES", _):
             {
-                bool legal(CardModel c) => FourthAdaptation(c) && (name != "SYMBIOTE" || c.Type == CardType.Attack);
+                bool legal(CardModel c) => name == "SYMBIOTE" ? FourthDevolution(c) : FourthAdaptation(c);
                 CardModel? target = await SelectFourthCard(model, route, legal);
                 if (target == null) return false;
                 return await CommitFourth(model, route, async () =>
                 {
-                    if (!legal(target) || target.Pile?.Type != PileType.Deck) throw new InvalidOperationException("Invalid adaptation target.");
+                    if (!legal(target) || target.Pile?.Type != PileType.Deck) throw new InvalidOperationException("Invalid event enchantment target.");
                     if (name == "SYMBIOTE") await FourthMaxHp(owner, 5); else await FourthDamage(owner, 7);
-                    FourthEnchant(target, ModelDb.Enchantment<SGE_Adaptation>());
+                    FourthEnchant(target, name == "SYMBIOTE"
+                        ? ModelDb.Enchantment<SGE_Devolution>() : ModelDb.Enchantment<SGE_Adaptation>());
                 });
             }
             case ("SYMBIOTE", "HAYATO"):
@@ -580,7 +590,11 @@ internal static partial class ShinGetterEventInvasionService
             case ("TABLET_OF_TRUTH", "BENKEI"):
                 return await CommitFourth(model, route, () => AddFourthCard<SGC_TabletOfTruth>(owner));
             case ("SELF_HELP_BOOK", _):
-                return await CommitFourth(model, route, () => AddFourthCard<SGC_Annotations>(owner));
+                return await CommitFourth(model, route, async () =>
+                {
+                    await FourthDamage(owner, 3);
+                    await AddFourthCard<SGC_Annotations>(owner);
+                });
             default: return false;
         }
     }

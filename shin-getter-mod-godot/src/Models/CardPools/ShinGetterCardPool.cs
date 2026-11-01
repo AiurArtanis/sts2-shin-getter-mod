@@ -99,7 +99,7 @@ public sealed class ShinGetterCardPool : CardPoolModel
 			ModelDb.Card<SGC_WispCoordinate>(),
 			ModelDb.Card<SGC_GetterLanding>(),
 			ModelDb.Card<SGC_TabletOfTruth>(),
-			ModelDb.Card<SGC_TripleWhirlwind>(),
+			ModelDb.Card<SGC_TripleCyclone>(),
 			ModelDb.Card<SGC_DrillMissile>(),
 			ModelDb.Card<SGC_BrokenDrill>(),
 			ModelDb.Card<SGC_Annotations>(),
@@ -119,7 +119,7 @@ public sealed class ShinGetterCardPool : CardPoolModel
 			and not SGC_PressureBreath
 			and not SGC_WispCoordinate
 			and not SGC_TabletOfTruth
-			and not SGC_TripleWhirlwind
+			and not SGC_TripleCyclone
 			and not SGC_DrillMissile
 			and not SGC_BrokenDrill
 			and not SGC_Annotations);

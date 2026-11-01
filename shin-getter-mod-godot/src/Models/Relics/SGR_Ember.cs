@@ -8,7 +8,7 @@ using ShinGetterMod.Services;
 
 namespace ShinGetterMod.Models.Relics;
 
-public sealed class SGR_Ember : ShinGetterPlaceholderEventRelic
+public sealed class SGR_Ember : ShinGetterEventRelic
 {
     private bool _used;
     public override Task BeforeCombatStart()

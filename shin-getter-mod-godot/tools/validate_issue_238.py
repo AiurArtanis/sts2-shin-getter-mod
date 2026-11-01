@@ -8,6 +8,8 @@ import sys
 from registered_card_contract import validate_registered_cards, ISSUE238_CARDS
 
 ROOT = Path(__file__).resolve().parents[1]
+# Current main before this v1.4.0 continuation. Older b0f76260 predates reviewed main fixes.
+BASELINE_COMMIT = "26c8da9a907fd9e12d41bf5bf17d24ca5975bfa8"
 ROUTES = {
     "WHISPERING_HOLLOW": ["BENKEI"], "SYMBIOTE": ["BENKEI", "HAYATO"],
     "AROMA_OF_CHAOS": ["HAYATO"], "SAPPHIRE_SEED": ["RYOMA"],
@@ -109,8 +111,9 @@ def content_contracts():
     require(tablet.index('decimal heal =') < tablet.index("upgrade: false") < tablet.index("CreatureCmd.Heal"),
             "Tablet heal must use pre-downgrade value")
     missile = read("src/Models/Cards/SGC_DrillMissile.cs")
-    contains(missile, "DamageVar(25m", "UpgradeValueBy(5m)", "ShinGetterForm.Getter2", "Plays.Remove(this)",
+    contains(missile, "DamageVar(25m", "UpgradeValueBy(5m)", "GetPower<SGP_ShinForm>() != null", "Apply<SGP_Shade>", "Plays.Remove(this)",
              "Pile?.IsCombatPile != true", "TransformTo<SGC_BrokenDrill>")
+    require("ShinGetterForm.Getter2" not in missile and "await Transform(" not in missile, "retired Getter 2 transform bonus")
     wrapper = read("src/Patches/ShinGetterDrillMissilePatch.cs")
     contains(wrapper, "nameof(CardModel.OnPlayWrapper)", "await original;", "await missile.ReplacePlayedCombatInstance()",
              "BeginPlaySequence", "finally { annotations.EndPlaySequence(); }")
@@ -118,7 +121,11 @@ def content_contracts():
             "Drill replacement must await complete replay/result/after-play wrapper")
     broken = read("src/Models/Cards/SGC_BrokenDrill.cs")
     contains(broken, "base(-1, CardType.Status", "MaxUpgradeLevel => 0", "CardKeyword.Unplayable",
-             "ReferenceEquals(card, this)", "oldPileType != PileType.Hand", "Pile?.Type == PileType.Hand", "2m")
+             "ReferenceEquals(card, this)", "AfterCardDrawn(PlayerChoiceContext choiceContext", "AfterCardExhausted(PlayerChoiceContext choiceContext",
+             "Pile?.Type == PileType.Hand", "PowerVar<SGP_Wane>(2m)", "PowerVar<SGP_Ki>(1m)",
+             "Apply<SGP_Wane>(choiceContext", "Apply<SGP_Ki>(choiceContext")
+    require("AfterCardChangedPiles" not in broken and "ThrowingPlayerChoiceContext" not in broken,
+            "Broken Drill must use actual draw/exhaust context, not every hand entry")
     require("CardKeyword.Exhaust" not in broken and "CardKeyword.Ethereal" not in broken, "Broken Drill keywords drift")
     annotations = read("src/Models/Cards/SGC_Annotations.cs")
     contains(annotations, "base(1, CardType.Skill", "CardKeyword.Exhaust", 'DynamicVar("Enchantment", 2m)',
@@ -132,6 +139,8 @@ def content_contracts():
     require("AfterCardExhausted" not in ember and "GainEnergy" not in ember, "retired Ember return/increased-cost effect")
     filter_code = read("src/Models/Relics/SGR_SymbioticFilter.cs")
     contains(filter_code, "AfterCardChangedPiles", "CardType.Status", "card.Owner != Owner", "oldPileType == PileType.Hand", "_used = false")
+    contains(filter_code, "new BlockingPlayerChoiceContext()")
+    require("ThrowingPlayerChoiceContext" not in filter_code, "nested Exhaust hooks may request native choices")
     require(filter_code.index("_used = true") < filter_code.index("await CardCmd.Exhaust") < filter_code.index("PowerCmd.Apply<SGP_Evolution>"), "Filter nested hook re-entry")
     catalyst = read("src/Models/Potions/SGR_MobilityCatalyst.cs")
     contains(catalyst, "PotionRarity.Event", "PotionUsage.CombatOnly", "GetPower<SGP_OpenGet>() == null", "Apply<SGP_OpenGet>")
@@ -140,12 +149,59 @@ def content_contracts():
     potion_pool = read("src/Models/PotionPools/ShinGetterPotionPool.cs")
     contains(potion_pool, "ModelDb.Potion<SGR_MobilityCatalyst>()")
     require("MobilityCatalyst" not in body(potion_pool, "public override IEnumerable<PotionModel> GetUnlockedPotions("), "Catalyst in ordinary potion pool")
-    for folder, atlas in (("potion_atlas.sprites", "sgr_atlas_shin_getter.png"), ("potion_outline_atlas.sprites", "sgr_outline_atlas_shin_getter.png")):
+    for folder, atlas in (("potion_atlas.sprites", "issue238_item_atlas.png"), ("potion_outline_atlas.sprites", "issue238_item_outline_atlas.png")):
         path = f"images/atlases/{folder}/s_g_r_mobility_catalyst.tres"
-        contains(read(path), atlas, "region = Rect2(640, 256, 128, 128)")
+        contains(read(path), atlas, "region = Rect2(384, 0, 128, 128)")
         contains(read("tools/validate-mod-resources.gd"), "res://" + path)
-    contains(read("src/Models/Cards/ShinGetterEventCardBase.cs"), "SGC_RescheduleTicket", "BetaPortraitPath => PortraitPath")
-    contains(read("src/Models/Relics/ShinGetterPlaceholderEventRelic.cs"), "SGR_ResearchNotes", "relic_outline_atlas.sprites", "images/relics/s_g_r_research_notes.png")
+    card_base = read("src/Models/Cards/ShinGetterEventCardBase.cs")
+    contains(card_base, "BetaPortraitPath => PortraitPath")
+    require("SGC_RescheduleTicket" not in card_base and "override string PortraitPath" not in card_base,
+            "event cards must use their own native resources")
+    relic_base = read("src/Models/Relics/ShinGetterEventRelic.cs")
+    contains(relic_base, "RelicRarity.Event")
+    require("SGR_ResearchNotes" not in relic_base and "override string" not in relic_base,
+            "event relics must use their own native resources")
+
+
+def november_contracts(events):
+    source = json.loads(read("tools/issue238-localization.json"))
+    authority = source["authority"]
+    require(authority["date"] == "2026-11-01" and len(authority["routes"]) == 20, "Nov 1 source scope")
+    routes = {(r["event"], r["route"]): r for r in source["routes"]}
+    require(set(routes) == {(e, r) for e, names in ROUTES.items() for r in names}, "Nov 1 route identity")
+    for expected in authority["routes"]:
+        route = routes[(expected["event"], expected["route"])]
+        require(route["description"][0] == expected["description"] and route["result"][0] == expected["result"],
+                f"Nov 1 Chinese source drift: {expected['event']}/{expected['route']}")
+        require(re.fullmatch(r"[a-f0-9]{64}", expected["input_sha256"]), "missing Nov 1 input provenance")
+    contains(events, '("SELF_HELP_BOOK", _) => !HasCard<SGC_Annotations>(owner) && owner.Creature.CurrentHp > 3',
+             '("SELF_HELP_BOOK", _) => 3', "await FourthDamage(owner, 3);", "FourthDevolution",
+             "ModelDb.Enchantment<SGE_Devolution>()")
+    devolution = events[events.index("private static bool FourthDevolution("):events.index("private static bool FourthSoulsPower(")]
+    contains(devolution, "CardType.Attack", "SGE_Devolution", "CanEnchant(card)")
+    brain = routes[("BRAIN_LEECH", "TRIPLE_COORDINATION")]
+    require(brain["display_route"] == "RYOMA" and brain["title"][0] == "龙马", "brain route display/save alias")
+    contains(read("src/Patches/ShinGetterEventInvasionPatch.cs"),
+             '.BRAIN_LEECH.pages.INITIAL.options.TRIPLE_COORDINATION', '!isBrainRyoma &&')
+    holes = routes[("FIELD_OF_MAN_SIZED_HOLES", "HAYATO")]["result"][0]
+    contains(holes, "二号机单独", "报废的测距探针")
+    require("三号机" not in holes and "一号机" not in holes, "retired simultaneous Getter scene")
+    stone = routes[("STONE_OF_ETERNITY", "BENKEI")]["result"][0]
+    contains(stone, "整台机体", "石角终于卡进", "三处驾驶舱")
+    require("先过去" not in stone and "药水" not in stone, "retired separate-pilot/potion scene")
+    whisper = routes[("WHISPERING_HOLLOW", "BENKEI")]
+    contains(whisper["result"][0], "真盖塔波塞冬", "选中的遗物")
+    for route in source["routes"]:
+        for field in ("description", "result", "locked"):
+            for value in route[field]:
+                require("三重旋风" not in value and "钻头导弹" not in value, "retired item names")
+    for lang in source["languages"]:
+        loc = json.loads(read(f"ShinGetterMod/localization/{lang}/events.json"))
+        title = loc["SHIN_GETTER_EVENT_INVASION.BRAIN_LEECH.pages.INITIAL.options.TRIPLE_COORDINATION.title"]
+        require(title.startswith("[red]"), "brain route must show Ryoma's color")
+        for suffix in ("RYOMA_HP_LOCKED", "RYOMA_OWNED_LOCKED"):
+            require(f"SHIN_GETTER_EVENT_INVASION.SELF_HELP_BOOK.pages.INITIAL.options.{suffix}.description" in loc,
+                    "self-help lock reason missing")
 
 
 def prose_contracts():
@@ -159,7 +215,7 @@ def prose_contracts():
         updated = legacy_strings(language)
         for table in ("events", "cards", "relics", "potions"):
             current = json.loads(read(f"ShinGetterMod/localization/{language}/{table}.json"))
-            baseline = json.loads(subprocess.check_output(["git", "show", f"b0f76260:shin-getter-mod-godot/ShinGetterMod/localization/{language}/{table}.json"], cwd=ROOT))
+            baseline = json.loads(subprocess.check_output(["git", "show", f"{BASELINE_COMMIT}:shin-getter-mod-godot/ShinGetterMod/localization/{language}/{table}.json"], cwd=ROOT))
             for key, value in baseline.items():
                 expected = updated[key] if table == "events" and key in updated else value
                 require(current.get(key) == expected, f"unapproved legacy text/mechanics change: {language}:{key}")
@@ -189,7 +245,7 @@ def main():
     require("CommitFourth" in events and "Rollback" in events, "transaction boundary missing")
     require("FinalHp" in read("src/Models/Relics/SGR_ActivatedSapphire.cs"), "final HP-loss boundary")
     require("AfterOsty" in read("src/Patches/ShinGetterActivatedSapphirePatch.cs"), "final mitigation stage")
-    triple = read("src/Models/Cards/SGC_TripleWhirlwind.cs")
+    triple = read("src/Models/Cards/SGC_TripleCyclone.cs")
     require("WithHitCount(3)" in triple and "i < 3" in triple, "three independent hit/block settlements")
     require("GetPower<SGP_ShinForm>" in triple, "Wane requires actual dragon, not compatible form")
     require("AfterCardDrawnEarly" in read("src/Models/Relics/SGR_Ember.cs"), "Ember must act on draw")
@@ -209,6 +265,7 @@ def main():
              "await CreatureCmd.SetCurrentHp(owner.Creature, hpBefore - 12)", "FourthLockedName", "DecipherCount")
     persistence_contracts(events)
     content_contracts()
+    november_contracts(events)
     prose_contracts()
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--probe", action="store_true", help="Run actual 109 CLR integration probe; no game scene/window")

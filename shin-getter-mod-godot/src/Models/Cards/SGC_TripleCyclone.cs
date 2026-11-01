@@ -11,9 +11,9 @@ using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Cards;
 
-public sealed class SGC_TripleWhirlwind : ShinGetterEventCardBase
+public sealed class SGC_TripleCyclone : ShinGetterEventCardBase
 {
-    public SGC_TripleWhirlwind() : base(3, CardType.Attack, TargetType.AllEnemies) { }
+    public SGC_TripleCyclone() : base(3, CardType.Attack, TargetType.AllEnemies) { }
     public override bool GainsBlock => true;
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {

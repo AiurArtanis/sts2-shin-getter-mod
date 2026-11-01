@@ -103,9 +103,11 @@ internal static class ShinGetterEventOptionIconPatch
             return;
         }
 
-        bool isTriple = key.Contains(".SPIRIT_GRAFTER.", StringComparison.Ordinal)
+        // The journal key stays stable for old test saves; this route now belongs to Ryoma.
+        bool isBrainRyoma = key.Contains(".BRAIN_LEECH.pages.INITIAL.options.TRIPLE_COORDINATION", StringComparison.Ordinal);
+        bool isTriple = !isBrainRyoma && (key.Contains(".SPIRIT_GRAFTER.", StringComparison.Ordinal)
             || key.Contains(".WOOD_CARVINGS.", StringComparison.Ordinal)
-            || key.Contains(".TRIPLE_", StringComparison.Ordinal);
+            || key.Contains(".TRIPLE_", StringComparison.Ordinal));
         Control icon = CreateIconLayer(key, isTriple);
         icon.Name = "ShinGetterOptionIcon";
         icon.ZIndex = 0;
