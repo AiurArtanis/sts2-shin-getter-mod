@@ -49,6 +49,7 @@ namespace ShinGetterMod.Events;
 internal static partial class ShinGetterEventInvasionService
 {
     private sealed class FourthRuntime { internal bool Busy; }
+    private sealed class FourthSelectionAbortedException : OperationCanceledException { }
     private static readonly ConditionalWeakTable<EventModel, FourthRuntime> FourthStates = new();
     private static readonly HashSet<string> FourthEvents = new(StringComparer.Ordinal)
     {
@@ -293,6 +294,11 @@ internal static partial class ShinGetterEventInvasionService
             bool committed = await ExecuteFourth(model, route);
             if (!committed && !model.IsFinished) ReturnFourthInitial(model);
         }
+        catch (FourthSelectionAbortedException)
+        {
+            // The selection belonged to an exited run/room. Do not reopen its event
+            // or show a transaction popup over the next room or main menu.
+        }
         catch (Exception ex)
         {
             Log.Error($"issue#238 {model.Id}/{route}: {ex}");
@@ -366,14 +372,42 @@ internal static partial class ShinGetterEventInvasionService
         return true;
     }
 
+    private static async Task<CardModel?> AwaitFourthSelection(EventModel model, Func<Task<CardModel?>> select)
+    {
+        Player owner = RequireOwner(model);
+        RunManager manager = RunManager.Instance;
+        var run = manager.DebugOnlyGetState();
+        var room = owner.RunState.CurrentRoom;
+        bool IsCurrent() => run != null && !manager.IsCleaningUp
+            && ReferenceEquals(manager.DebugOnlyGetState(), run) && ReferenceEquals(owner.RunState, run)
+            && room is EventRoom eventRoom && eventRoom.ModelId == model.Id
+            && ReferenceEquals(owner.RunState.CurrentRoom, room) && !model.IsFinished;
+        try
+        {
+            if (!IsCurrent()) throw new FourthSelectionAbortedException();
+            CardModel? selected = await select();
+            if (!IsCurrent()) throw new FourthSelectionAbortedException();
+            return selected;
+        }
+        catch (OperationCanceledException) when (IsCurrent())
+        {
+            // Native overlay removal cancels its task. In this same live event it
+            // means return to the original options, before any cost or reward.
+            return null;
+        }
+        catch (OperationCanceledException) { throw new FourthSelectionAbortedException(); }
+    }
+
     private static async Task<CardModel?> SelectFourthCard(EventModel model, string route, Func<CardModel, bool> legal, bool cancelable = true)
     {
         Player owner = RequireOwner(model);
-        CardModel[] cards = owner.Deck.Cards.Where(legal).ToArray();
-        if (cards.Length == 0) return null;
-        CardModel? selected = (await CardSelectCmd.FromSimpleGrid(new BlockingPlayerChoiceContext(), cards, owner,
-            new CardSelectorPrefs(SelectionKey(model.Id.Entry, route), 1) { Cancelable = cancelable, RequireManualConfirmation = true })).FirstOrDefault();
-        return selected != null && selected.Owner == owner && selected.Pile?.Type == PileType.Deck && legal(selected) ? selected : null;
+        if (!owner.Deck.Cards.Any(legal)) return null;
+        CardModel? selected = await AwaitFourthSelection(model, async () =>
+            (await CardSelectCmd.FromDeckGeneric(owner,
+                new CardSelectorPrefs(SelectionKey(model.Id.Entry, route), 1)
+                { Cancelable = cancelable, RequireManualConfirmation = true }, legal)).FirstOrDefault());
+        return selected != null && selected.Owner == owner && selected.Pile?.Type == PileType.Deck
+            && owner.Deck.Cards.Contains(selected) && legal(selected) ? selected : null;
     }
     private static string FourthCardIdentity(Player owner, CardModel card)
     {
@@ -475,8 +509,8 @@ internal static partial class ShinGetterEventInvasionService
                 if (canonical.Count == 0) return false;
                 CardModel[] choices = canonical.Select(c => c.ToMutable()).ToArray();
                 foreach (CardModel choice in choices) choice.Owner = owner;
-                CardModel? selected = (await CardSelectCmd.FromSimpleGrid(new BlockingPlayerChoiceContext(), choices, owner,
-                    new CardSelectorPrefs(SelectionKey(name, route), 1) { Cancelable = true, RequireManualConfirmation = true })).FirstOrDefault();
+                CardModel? selected = await AwaitFourthSelection(model, () => CardSelectCmd.FromChooseACardScreen(
+                    new BlockingPlayerChoiceContext(), choices, owner, canSkip: true));
                 if (selected == null || !choices.Contains(selected)) return false;
                 return await CommitFourth(model, route, async () =>
                 {

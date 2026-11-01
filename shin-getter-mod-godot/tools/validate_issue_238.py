@@ -254,6 +254,40 @@ def damage_template_contracts():
     # Native LocManager base/upgrade/target-preview execution belongs to the runtime review.
 
 
+def event_selection_contracts(events):
+    deck = body(events, "private static async Task<CardModel?> SelectFourthCard(")
+    contains(deck, "owner.Deck.Cards.Any(legal)", "CardSelectCmd.FromDeckGeneric(owner,",
+             "Cancelable = cancelable", "RequireManualConfirmation = true", "}, legal)",
+             "owner.Deck.Cards.Contains(selected)", "PileType.Deck", "legal(selected)")
+    require("FromSimpleGrid" not in deck, "cancelable Deck routes require a real native Back entry")
+    selection = body(events, "private static async Task<CardModel?> AwaitFourthSelection(")
+    contains(selection, "ReferenceEquals(manager.DebugOnlyGetState(), run)", "ReferenceEquals(owner.RunState, run)",
+             "manager.IsCleaningUp", "ReferenceEquals(owner.RunState.CurrentRoom, room)",
+             "eventRoom.ModelId == model.Id", "!model.IsFinished", "FourthSelectionAbortedException",
+             "catch (OperationCanceledException) when (IsCurrent())")
+    require(selection.count("if (!IsCurrent())") == 2, "event identity must be checked before and after selection")
+    run = body(events, "private static async Task RunFourth(")
+    aborted = run[run.index("catch (FourthSelectionAbortedException)"):run.index("catch (Exception ex)")]
+    require("ReturnFourthInitial" not in aborted and "ShowFourthError" not in aborted,
+            "an exited selection must not reopen the stale event or display a popup")
+    execute = body(events, "private static async Task<bool> ExecuteFourth(")
+    aroma = execute[execute.index('case ("AROMA_OF_CHAOS", _):'):execute.index('case ("HUNGRY_FOR_MUSHROOMS", _):')]
+    contains(aroma, "CardSelectCmd.FromChooseACardScreen(", "choices, owner, canSkip: true",
+             "if (selected == null || !choices.Contains(selected)) return false;")
+    require("FromDeckGeneric" not in aroma and "FromSimpleGrid" not in aroma,
+            "no-Pile Aroma candidates must not use the Deck preview or uncancelable grid")
+    require(aroma.index("visit.Target = FourthCardIdentity") < aroma.index("await SaveFourth(owner)")
+            < aroma.index("await CachedFourthChoices") < aroma.index("FromChooseACardScreen")
+            < aroma.index("return await CommitFourth") < aroma.index("await FourthDamage(owner, 6)"),
+            "Aroma must persist its target/candidates before selection and pay only on confirmation")
+    brain = execute[execute.index('case ("BRAIN_LEECH", _):'):execute.index('case ("DOLL_ROOM", _):')]
+    contains(brain, "FromSimpleGrid", "Cancelable = false", "RequireManualConfirmation = true")
+    require(events.count("CardSelectCmd.FromSimpleGrid(") == 1,
+            "only the deliberately noncancelable Brain Leech selection may retain SimpleGrid")
+    # These source/API/commit-boundary gates do not replace actual native input,
+    # same-run overlay cleanup, run exit, or persisted re-entry/restore execution.
+
+
 def prose_contracts():
     fixture = json.loads(read("tools/issue238-legacy-localization.json"))["entries"]
     require(len(fixture) == len({e["key"] for e in fixture}) == 46 and len({e["source"] for e in fixture}) == 32,
@@ -317,6 +351,7 @@ def main():
     content_contracts()
     november_contracts(events)
     damage_template_contracts()
+    event_selection_contracts(events)
     prose_contracts()
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--probe", action="store_true", help="Run actual 109 CLR integration probe; no game scene/window")
