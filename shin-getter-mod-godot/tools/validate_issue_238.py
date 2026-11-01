@@ -140,8 +140,9 @@ def content_contracts():
     contains(picker, "owner.PlayerCombatState.Hand", "hand.Cards.Where(legal).ToArray()", "cards.Length == 0",
              "new CardSelectorPrefs(prompt, 1)", "Cancelable = true", "RequireManualConfirmation = true",
              "NDeckCardSelectScreen.Create(cards, prefs)", "PlayerChoiceResult.FromMutableCombatCards(result)",
-             "SignalPlayerChoiceBegun(PlayerChoiceOptions.CancelPlayCardActions)", "ReferenceEquals(manager.State, run)",
+             "SignalPlayerChoiceBegun(PlayerChoiceOptions.CancelPlayCardActions)", "ReferenceEquals(manager.DebugOnlyGetState(), run)",
              "manager.IsCleaningUp", "RunAbortedException", "WaitForActionToResumeExecutingAfterPlayerChoice()")
+    require("manager.State" not in picker, "formal109 RunManager.State is private; retain identity via its public getter")
     require("FromDeckGeneric" not in picker and "CardSelectCmd.FromSimpleGrid" not in picker,
             "hand instances require the local native-UI adapter, not a permanent Deck query or SimpleGrid")
     require("cards.Length == 1" not in picker and "WaitAsync" not in picker and "Task.WhenAny" not in picker,

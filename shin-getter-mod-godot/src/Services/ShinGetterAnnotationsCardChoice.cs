@@ -46,7 +46,7 @@ internal static class ShinGetterAnnotationsCardChoice
             return Valid((await selector.GetSelectedCards(cards, prefs.MinSelect, prefs.MaxSelect)).FirstOrDefault());
 
         RunManager manager = RunManager.Instance;
-        var run = manager.State;
+        var run = manager.DebugOnlyGetState();
         var combat = owner.Creature.CombatState;
         GameAction? action = context switch
         {
@@ -54,7 +54,7 @@ internal static class ShinGetterAnnotationsCardChoice
             HookPlayerChoiceContext hook => hook.GameAction,
             _ => null,
         };
-        bool Live() => run != null && !manager.IsCleaningUp && ReferenceEquals(manager.State, run)
+        bool Live() => run != null && !manager.IsCleaningUp && ReferenceEquals(manager.DebugOnlyGetState(), run)
             && ReferenceEquals(owner.Creature.CombatState, combat)
             && action?.State is not (GameActionState.Canceled or GameActionState.Finished);
         void EnsureLive() { if (!Live()) throw new RunAbortedException(); }
