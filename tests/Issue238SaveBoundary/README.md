@@ -10,7 +10,9 @@ dotnet run --project tests/Issue238SaveBoundary/Issue238SaveBoundary.csproj -p:M
 
 夹具提供无场景的run/player/model对象、共享服务初始化需要的5件原生遗物目录、选项/提示显示替身及注入式保存故障。新增探针实际运行`SetUpSavedSinglePlayer`的patched MoveNext → `IncrementNumReloads` → `RunSaveManager.SaveRun(SerializableRun)`，保存后在`InitializeShared`前主动中止。`PeerInputSynchronizer`构造被跳过，以免独立CLR访问Godot logger；后续网络/场景初始化不执行。存储为内存DispatchProxy，绝不读写玩家磁盘存档。ToSave捕获使用明确的DTO直调夹具，未声称执行场景相关的ToSave完整方法。未启动游戏、走地图或完成真实Continue，不构成生产自动保存恢复、画面、输入或发布验收。
 
-现行默认静态门禁`shin-getter-mod-godot/tools/validate_issue_238.py`检查独立快照、明确v1戳、完整身份门、限域Hook、完整run读回与Saved分界。`--self-test-save-boundary`运行该源码合同和23种不安全变更负例，包括旧13种边界及实际pre-write捕获、地图归属/撤销/普通条件与reload输入身份削弱。旧“任何MarkPreFinished都禁止”的断言已由精确门禁替代，默认其他内容/原生ID/三语剧情门禁保留。
+现行默认静态门禁`shin-getter-mod-godot/tools/validate_issue_238.py`检查独立快照、明确v1戳、完整身份门、限域Hook、完整run读回与Saved分界。`--self-test-save-boundary`运行该源码合同和31种不安全变更负例，包括旧23种边界和本轮native history等待、缓存重入/Skip保存、展示保存、选择结果失败门及作用域撤销。旧“任何MarkPreFinished都禁止”的断言已由精确门禁替代，默认其他内容/原生ID/三语剧情门禁保留。
+
+R6新增探针安装实际native history/选择任务补丁，真正执行原生`SaveEventOptionToHistory`。以明确候选发现夹具及保存/选择TCS检查history顺序、展示时保存而非等选完、保存未完成不放行结果、缓存重入、native取消、失败清理/不自动重试与捕获上下文撤销。未执行Godot候选界面或真实MarkCardAsSeen，未证明磁盘SaveAndQuit/Continue；完整限制见`art_sources/issue238-v140-20261101/review-r6-owned-interaction-boundary-20261102.md`。
 
 `ShinGetterEventSaveVerification.DiagnosticSink`供隔离驱动接收`Comparison`：真正pre-write和direct readback的`NativeJson`/`StableJson`字节、显式`MapFlags`及完整`Differences`路径。驱动应只写自身evidence目录，日志/工单只给路径、长度及SHA，不内嵌原生编码字段。sink失败不改变事务裁定。
 

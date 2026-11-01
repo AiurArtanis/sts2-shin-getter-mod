@@ -360,10 +360,24 @@ internal static partial class ShinGetterEventInvasionService
         FourthRuntime runtime = FourthStates.GetOrCreateValue(model);
         if (runtime.Busy || !FourthAvailable(model, route)) return;
         runtime.Busy = true;
+        var interaction = ShinGetterEventInteractionCheckpoint.Find(model);
         try
         {
+            if (interaction != null)
+            {
+                await interaction.HistoryReady;
+                if (!interaction.IsCurrent) throw new FourthSelectionAbortedException();
+                await SaveFourth(model); // Native history is now complete, including cached re-entry.
+            }
+            else if (RunManager.Instance.ShouldSave)
+                throw new InvalidOperationException("Owned event option requires its native history boundary.");
             bool committed = await ExecuteFourth(model, route);
-            if (!committed && !model.IsFinished) ReturnFourthInitial(model);
+            if (!committed && !model.IsFinished)
+            {
+                if (interaction?.IsCurrent == false) throw new FourthSelectionAbortedException();
+                await SaveFourth(model); // Includes Skip/cancel and cached re-entry's native history.
+                ReturnFourthInitial(model);
+            }
         }
         catch (FourthSelectionAbortedException)
         {
@@ -373,10 +387,34 @@ internal static partial class ShinGetterEventInvasionService
         catch (Exception ex)
         {
             Log.Error($"issue#238 {model.Id}/{route}: {ex}");
+            if (interaction?.IsCurrent == false) return;
             if (!model.IsFinished) ReturnFourthInitial(model);
             ShowFourthError();
         }
-        finally { runtime.Busy = false; }
+        finally { interaction?.Dispose(); runtime.Busy = false; }
+    }
+
+    internal static ShinGetterEventInteractionCheckpoint? PrepareFourthInteraction(EventSynchronizer source, Player player, int optionIndex)
+    {
+        EventModel model = source.GetEventForPlayer(player);
+        if (model.Owner == null || !ReferenceEquals(model.Owner, player) || model.IsShared
+            || !ShinGetterPlayerEventState.IsShinGetter(player.Character.Id)
+            || RunManager.Instance.NetService.Type != NetGameType.Singleplayer
+            || player.RunState.Players.Count != 1 || !FourthEvents.Contains(model.Id.Entry)
+            || optionIndex < 0 || optionIndex >= model.CurrentOptions.Count
+            || FourthStates.GetOrCreateValue(model).Busy || ShinGetterEventInteractionCheckpoint.Find(model) != null) return null;
+        EventOption option = model.CurrentOptions[optionIndex];
+        string? route = FourthRouteNames(model.Id.Entry).FirstOrDefault(r => option.TextKey == Key(model.Id.Entry, r));
+        if (route == null || !FourthAvailable(model, route)) return null;
+        var run = player.RunState;
+        var room = run.CurrentRoom;
+        bool IsCurrent() => !RunManager.Instance.IsCleaningUp && ReferenceEquals(RunManager.Instance.DebugOnlyGetState(), run)
+            && ReferenceEquals(player.RunState, run) && ReferenceEquals(model.Owner, player) && !model.IsFinished
+            && room is EventRoom eventRoom && eventRoom.ModelId == model.Id
+            && ReferenceEquals(run.CurrentRoom, room) && ReferenceEquals(run.BaseRoom, room);
+        if (!IsCurrent()) return null;
+        return new(model, source, player, option, IsCurrent, () => SaveFourth(model),
+            error => Log.Error($"issue#238 presentation checkpoint failed: {error}"));
     }
     private static void ReturnFourthInitial(EventModel model) => SetEventStateMethod.Invoke(model,
         new object[] { model.InitialDescription, InitialFourthOptions.Invoke(model, null)! });
@@ -467,17 +505,21 @@ internal static partial class ShinGetterEventInvasionService
             && ReferenceEquals(manager.DebugOnlyGetState(), run) && ReferenceEquals(owner.RunState, run)
             && room is EventRoom eventRoom && eventRoom.ModelId == model.Id
             && ReferenceEquals(owner.RunState.CurrentRoom, room) && !model.IsFinished;
+        var interaction = ShinGetterEventInteractionCheckpoint.Find(model);
         try
         {
             if (!IsCurrent()) throw new FourthSelectionAbortedException();
+            using var presentation = interaction?.Select();
             CardModel? selected = await select();
             if (!IsCurrent()) throw new FourthSelectionAbortedException();
+            interaction?.ThrowPresentationFailure();
             return selected;
         }
         catch (OperationCanceledException) when (IsCurrent())
         {
             // Native overlay removal cancels its task. In this same live event it
             // means return to the original options, before any cost or reward.
+            interaction?.ThrowPresentationFailure();
             return null;
         }
         catch (OperationCanceledException) { throw new FourthSelectionAbortedException(); }
@@ -510,6 +552,7 @@ internal static partial class ShinGetterEventInvasionService
         if (visit.Candidates.Count != 0)
         {
             if (visit.Candidates.Any(c => !c.StartsWith(prefix, StringComparison.Ordinal))) return new();
+            // RunFourth already saved this invocation's completed native history.
             return visit.Candidates.Select(id => legal.FirstOrDefault(c => prefix + c.Id == id)).OfType<T>().ToList();
         }
         List<T> picked = new();
@@ -624,8 +667,9 @@ internal static partial class ShinGetterEventInvasionService
                 if (canonical.Count != 3) return false;
                 CardModel[] cards = canonical.Select(c => c.ToMutable()).ToArray();
                 foreach (CardModel card in cards) { card.Owner = owner; CardCmd.Upgrade(card, CardPreviewStyle.None); }
-                CardModel? selected = (await CardSelectCmd.FromSimpleGrid(new BlockingPlayerChoiceContext(), cards, owner,
-                    new CardSelectorPrefs(SelectionKey(name, route), 1) { Cancelable = false, RequireManualConfirmation = true })).FirstOrDefault();
+                CardModel? selected = await AwaitFourthSelection(model, async () =>
+                    (await CardSelectCmd.FromSimpleGrid(new BlockingPlayerChoiceContext(), cards, owner,
+                    new CardSelectorPrefs(SelectionKey(name, route), 1) { Cancelable = false, RequireManualConfirmation = true })).FirstOrDefault());
                 if (selected == null || !cards.Contains(selected)) return false;
                 return await CommitFourth(model, route, async () =>
                 {

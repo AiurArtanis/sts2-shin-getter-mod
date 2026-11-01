@@ -26,6 +26,22 @@ using ShinGetterMod.Models.Cards;
 // Offline CLR/native-109 contract checks. No SaveManager setup, file-save mutation,
 // game process, Godot scene, map traversal, or claimed production Continue acceptance.
 var mod=typeof(ShinGetterMod.Entry).Assembly;
+if (args.Contains("--inspect-interaction-api"))
+{
+ foreach (var name in new[]{"FromChooseACardScreen","FromSimpleGrid"})
+ {
+  var method=AccessTools.Method(typeof(MegaCrit.Sts2.Core.Commands.CardSelectCmd),name);
+  var machine=method.GetCustomAttribute<AsyncStateMachineAttribute>()!.StateMachineType;
+  foreach(var instruction in PatchProcessor.GetCurrentInstructions(AccessTools.Method(machine,"MoveNext")))
+   if(instruction.operand is MethodInfo call&&call.Name.Contains("CardsSelected"))Console.WriteLine(name+" -> "+call.DeclaringType!.FullName+" / "+call);
+ }
+ foreach(var typeName in new[]{"NChooseACardSelectionScreen","NSimpleCardSelectScreen"})
+ {
+  var type=typeof(RunManager).Assembly.GetType("MegaCrit.Sts2.Core.Nodes.Screens.CardSelection."+typeName,true)!;
+  Console.WriteLine(typeName+" reflection -> "+AccessTools.Method(type,"CardsSelected"));
+ }
+ return;
+}
 if (args.Contains("--inspect-save-api"))
 {
  foreach (var method in typeof(RunManager).GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Where(m => m.Name.Contains("Saved") || m.Name.Contains("Single")))
@@ -181,6 +197,8 @@ var reloadSave = MakeRun(); reloadSave.Players = new() { SavedPlayer() };
 Call(state, "Capture", owner, reloadSave.Players[0]);
 rooms.Clear();
 await ScopedMapSaveChecks.Run(mod, harmony, run, reloadSave, checkpoint);
+rooms.Add(live);
+await InteractionCheckpointChecks.Run(mod, harmony, run, owner, pending);
 Console.WriteLine("ALL_SAVE_BOUNDARY_CLR_CONTRACTS_PASS; REAL_AUTO_SAVE_CONTINUE_NOT_RUN");
 
 public class HostProxy:DispatchProxy

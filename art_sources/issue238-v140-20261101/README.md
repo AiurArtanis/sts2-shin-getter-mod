@@ -27,4 +27,4 @@ Godot import/resource loading, real display, gameplay and save/resume acceptance
 
 This branch carries the previously unmerged issue#238 implementation as well as the Nov 1 continuation. Review against `origin/main...HEAD`; integrating only the final incremental commit would omit required earlier implementation.
 
-Human review gallery: `游戏/杀戮尖塔2/开发工单/issue238-v1.4.0-美术审核清单.md` in the `all-in-one` Obsidian vault. Self-Help Book and Stone of Eternity's redesigned stories await separate Artanis content review.
+Human review gallery: `游戏/杀戮尖塔2/开发工单/issue238-v1.4.0-美术审核清单.md` in the `all-in-one` Obsidian vault. Artanis separately approved Self-Help Book and Stone of Eternity's redesigned stories on 2026-11-02. Real gameplay acceptance remains pending.

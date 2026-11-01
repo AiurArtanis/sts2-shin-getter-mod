@@ -1,5 +1,11 @@
 # issue#238 完整覆盖台账
 
+## 2026-11-02 R6交互保存修复待审核
+
+R5两次写读完全一致、首次Continue同房只为已观察子项；真实运行仍FAIL，丢失候选发现/缓存重入history已归为本功能保存边界遗漏。三项资源门禁P2独立复核已解除。R6增加真实native history完成后的保存、原生候选展示副作用后的保存及Skip结束保存，静态/CLR/编译通过，真实新实例待主开发准入。见`review-r6-owned-interaction-boundary-20261102.md`；原FAIL/NOT_RUN、人工及旧退出/资源边界保持。
+
+2026-11-02 Artanis明确“两篇通过”：自助指南与永恒之石的重设计内容人工批准完成，九件美术批准保持。技术运行/呈现与整单验收不由这项内容批准替代。
+
 ## 2026-11-02 R5更新
 
 本轮已完成owned地图false保存域、真实pre-write/direct readback捕获与完整差异诊断、Continue原生reload重存接入，并接入全部九件最终通过美术。正式109编译0w0e、CLR内存探针及静态/资源结构检查通过；尚未证明真实游戏恢复通过。具体范围见`review-r5-map-save-and-final-art-20261102.md`。

@@ -140,13 +140,16 @@ def persistence_contracts(events):
     require("SyncWithSerializedPlayer" not in rollback, "rollback must not replace complete Player or replay pickup hooks")
 
 
-def save_boundary_contracts(events, state=None, patches=None, verifier=None, scope=None, reload=None):
+def save_boundary_contracts(events, state=None, patches=None, verifier=None, scope=None, reload=None,
+                            interaction=None, interaction_patch=None):
     """Source guard for the new entered-room contract, not a production restore verdict."""
     state = read("src/Services/ShinGetterPlayerEventState.cs") if state is None else state
     patches = read("src/Patches/ShinGetterEventInvasionPatch.cs") if patches is None else patches
     verifier = read("src/Events/ShinGetterEventSaveVerification.cs") if verifier is None else verifier
     scope = read("src/Events/ShinGetterEventMapSaveScope.cs") if scope is None else scope
     reload = read("src/Patches/ShinGetterEventSaveScopePatch.cs") if reload is None else reload
+    interaction = read("src/Events/ShinGetterEventInteractionCheckpoint.cs") if interaction is None else interaction
+    interaction_patch = read("src/Patches/ShinGetterEventInteractionCheckpointPatch.cs") if interaction_patch is None else interaction_patch
     save = body(events, "private static async Task SaveFourth(EventModel model)")
     contains(save, "DebugOnlyGetState(), owner.RunState", "room.ModelId != model.Id",
              "FourthVisitKey(model) == null", "ReferenceEquals(owner.RunState.BaseRoom, room)",
@@ -237,7 +240,29 @@ def save_boundary_contracts(events, state=None, patches=None, verifier=None, sco
     confirmed = commit[commit.index("catch (ShinGetterEventSaveVerification.ConfirmedWriteReadbackException"):commit.index("catch { snapshot.Rollback()")]
     require("Rollback" not in confirmed and "return false" not in confirmed,
             "a confirmed native write must not reopen the reward transaction")
-    require(events.count("await SaveFourth(model)") == 4, "all four shared save call sites must retain model identity")
+    require(events.count("await SaveFourth(model)") == 6, "six direct save boundaries must retain model identity")
+    run = body(events, "private static async Task RunFourth(")
+    contains(run, "await interaction.HistoryReady", "await SaveFourth(model)", "interaction?.Dispose()")
+    require(run.index("await interaction.HistoryReady") < run.index("await SaveFourth(model)") < run.index("await ExecuteFourth"),
+            "native history must finish and save before any owned interaction executes")
+    canceled = body(run, "if (!committed && !model.IsFinished)")
+    require(canceled.index("await SaveFourth(model)") < canceled.index("ReturnFourthInitial(model)"),
+            "Skip/cancel must persist native effects before returning to initial page")
+    prepare = body(events, "internal static ShinGetterEventInteractionCheckpoint? PrepareFourthInteraction(")
+    contains(prepare, "ReferenceEquals(model.Owner, player)", "model.IsShared", "player.RunState.Players.Count != 1",
+             "IsShinGetter(player.Character.Id)", "NetService.Type != NetGameType.Singleplayer",
+             "option.TextKey == Key(model.Id.Entry, r)", "ReferenceEquals(run.BaseRoom, room)", "() => SaveFourth(model)")
+    selection = body(events, "private static async Task<CardModel?> AwaitFourthSelection(")
+    contains(selection, "using var presentation = interaction?.Select()", "interaction?.ThrowPresentationFailure()")
+    contains(interaction, "AsyncLocal<ShinGetterEventInteractionCheckpoint?>", "ReferenceEquals(session.source, source)",
+             "ReferenceEquals(session.player, player)", "ReferenceEquals(session.option, option)",
+             "await HistoryReady", "if (IsCurrent) await save()", "return await nativeSelection",
+             "ExceptionDispatchInfo.Capture(error)", "Interlocked.Exchange(ref active, 0)")
+    contains(interaction_patch, '"ChooseOptionForEvent"', '"SaveEventOptionToHistory"',
+             "HistoryFailed(__exception)", "HistoryCompleted(__instance.GetEventForPlayer(player)",
+             "nameof(CardSelectCmd.FromChooseACardScreen)", "nameof(CardSelectCmd.FromSimpleGrid)",
+             "code.Count(i => i.Calls(Choose) || i.Calls(Grid)) != 1",
+             "BeforeSelectionResult(screen.CardsSelected())")
 
 
 def save_boundary_negative_contracts(events):
@@ -246,7 +271,9 @@ def save_boundary_negative_contracts(events):
                "patches": read("src/Patches/ShinGetterEventInvasionPatch.cs"),
                 "verifier": read("src/Events/ShinGetterEventSaveVerification.cs"),
                 "scope": read("src/Events/ShinGetterEventMapSaveScope.cs"),
-                "reload": read("src/Patches/ShinGetterEventSaveScopePatch.cs")}
+                "reload": read("src/Patches/ShinGetterEventSaveScopePatch.cs"),
+                "interaction": read("src/Events/ShinGetterEventInteractionCheckpoint.cs"),
+                "interaction_patch": read("src/Patches/ShinGetterEventInteractionCheckpointPatch.cs")}
     mutations = [
         ("live room marking", "events", "EventRoom checkpoint = new(room.CanonicalEvent);", "EventRoom checkpoint = room;"),
         ("null save", "events", "manager.SaveRun(checkpoint,", "manager.SaveRun(null,"),
@@ -271,6 +298,14 @@ def save_boundary_negative_contracts(events):
         ("reload no stamp", "events", "&& visit.RoomCheckpoint is { Version: 1 }", "&& true"),
         ("reload wrong input state", "reload", "ReferenceEquals(runManager.DebugOnlyGetState(), state)", "true"),
         ("reload global scope", "reload", "!ShinGetterEventInvasionService.OwnsFourthReloadCheckpoint(state, save)", "false"),
+        ("history boundary skipped", "events", "await interaction.HistoryReady;", ""),
+        ("reentry history not saved", "events", "await SaveFourth(model); // Native history is now complete", "await Task.CompletedTask; // Native history is now complete"),
+        ("Skip effects not saved", "events", "await SaveFourth(model); // Includes Skip/cancel", "await Task.CompletedTask; // Includes Skip/cancel"),
+        ("foreign native option history", "interaction", "ReferenceEquals(session.option, option)", "true"),
+        ("presentation not saved", "interaction", "if (IsCurrent) await save()", "if (IsCurrent) await Task.CompletedTask"),
+        ("presentation save failure ignored", "events", "interaction?.ThrowPresentationFailure()", ""),
+        ("unscoped selection lifetime", "events", "using var presentation = interaction?.Select()", "using var presentation = (IDisposable?)null"),
+        ("interaction token not revoked", "interaction", "Interlocked.Exchange(ref active, 0)", "1"),
     ]
     for name, key, old, new in mutations:
         require(old in sources[key], f"negative contract fixture no longer matches: {name}")
