@@ -22,9 +22,9 @@
         "トリプルサイクロン"
       ],
       "S_G_C_TRIPLE_CYCLONE.description": [
-        "对所有敌人造成{CalculatedDamage:diff()}点伤害3次。获得{Block:diff()}点格挡3次。\n[getter_ray]真盖塔龙[/getter_ray]：给予所有敌人3层[gold]衰退[/gold]。",
-        "Deal {CalculatedDamage:diff()} damage to ALL enemies 3 times. Gain {Block:diff()} Block 3 times.\n[getter_ray]Shin Getter Dragon[/getter_ray]: Apply 3 [gold]Wane[/gold] to ALL enemies.",
-        "敵全体に{CalculatedDamage:diff()}ダメージを3回与える。{Block:diff()}ブロックを3回得る。\n[getter_ray]真ゲッタードラゴン[/getter_ray]：敵全体に[gold]衰退[/gold]3を与える。"
+        "对所有敌人造成{Damage:diff()}点伤害3次。获得{Block:diff()}点格挡3次。\n[getter_ray]真盖塔龙[/getter_ray]：给予所有敌人3层[gold]衰退[/gold]。",
+        "Deal {Damage:diff()} damage to ALL enemies 3 times. Gain {Block:diff()} Block 3 times.\n[getter_ray]Shin Getter Dragon[/getter_ray]: Apply 3 [gold]Wane[/gold] to ALL enemies.",
+        "敵全体に{Damage:diff()}ダメージを3回与える。{Block:diff()}ブロックを3回得る。\n[getter_ray]真ゲッタードラゴン[/getter_ray]：敵全体に[gold]衰退[/gold]3を与える。"
       ],
       "S_G_C_DRILL_MISSILE.title": [
         "钻头飞弹",
@@ -32,9 +32,9 @@
         "ドリルミサイル"
       ],
       "S_G_C_DRILL_MISSILE.description": [
-        "造成{CalculatedDamage:diff()}点伤害。\n本场战斗中，此牌变为[gold]破碎钻头[/gold]。\n[getter_ray]真盖塔龙[/getter_ray]：获得[gold]分身[/gold]。",
-        "Deal {CalculatedDamage:diff()} damage.\nThis card becomes [gold]Broken Drill[/gold] for this combat.\n[getter_ray]Shin Getter Dragon[/getter_ray]: Gain [gold]Shade[/gold].",
-        "{CalculatedDamage:diff()}ダメージを与える。\nこの戦闘中、このカードは[gold]壊れたドリル[/gold]になる。\n[getter_ray]真ゲッタードラゴン[/getter_ray]：[gold]分身[/gold]を得る。"
+        "造成{Damage:diff()}点伤害。\n本场战斗中，此牌变为[gold]破碎钻头[/gold]。\n[getter_ray]真盖塔龙[/getter_ray]：获得[gold]分身[/gold]。",
+        "Deal {Damage:diff()} damage.\nThis card becomes [gold]Broken Drill[/gold] for this combat.\n[getter_ray]Shin Getter Dragon[/getter_ray]: Gain [gold]Shade[/gold].",
+        "{Damage:diff()}ダメージを与える。\nこの戦闘中、このカードは[gold]壊れたドリル[/gold]になる。\n[getter_ray]真ゲッタードラゴン[/getter_ray]：[gold]分身[/gold]を得る。"
       ],
       "S_G_C_BROKEN_DRILL.title": [
         "破碎钻头",

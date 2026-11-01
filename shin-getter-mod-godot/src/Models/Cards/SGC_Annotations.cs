@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -40,8 +39,7 @@ public sealed class SGC_Annotations : ShinGetterEventCardBase
         choiceContext.PushModel(this);
         try
         {
-            _preparedTarget = (await CardSelectCmd.FromHand(choiceContext, Owner,
-                new CardSelectorPrefs(SelectionScreenPrompt, 1) { Cancelable = true }, IsLegalTarget, this)).FirstOrDefault();
+            _preparedTarget = await ShinGetterAnnotationsCardChoice.Select(choiceContext, Owner, SelectionScreenPrompt, IsLegalTarget);
             if (HasPreparedTarget) return true;
             CancelManualPreparation();
             return false;
@@ -85,8 +83,7 @@ public sealed class SGC_Annotations : ShinGetterEventCardBase
             // Auto-play, replay, or a target invalidated by native pre-play hooks is already
             // committed. Its cancellation cannot refund resources or remove the play's hooks.
             var prompt = new LocString("cards", Id.Entry + ".committedSelectionScreenPrompt");
-            target = (await CardSelectCmd.FromHand(choiceContext, Owner,
-                new CardSelectorPrefs(prompt, 1) { Cancelable = true }, IsLegalTarget, this)).FirstOrDefault();
+            target = await ShinGetterAnnotationsCardChoice.Select(choiceContext, Owner, prompt, IsLegalTarget);
         }
         if (target == null || target.Pile?.Type != PileType.Hand || !IsLegalTarget(target))
         {

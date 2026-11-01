@@ -130,11 +130,23 @@ def content_contracts():
     annotations = read("src/Models/Cards/SGC_Annotations.cs")
     contains(annotations, "base(1, CardType.Skill", "CardKeyword.Exhaust", 'DynamicVar("Enchantment", 2m)',
              "UpgradeValueBy(1m)", "CanEnchant(card)", "CardType.Skill when card.GainsBlock",
-             "card.Owner == Owner", "Cancelable = true", "if (_canceled) return", "PrepareManualPlay",
+             "card.Owner == Owner", "ShinGetterAnnotationsCardChoice.Select", "if (_canceled) return", "PrepareManualPlay",
              "ConsumeManualCancellation", "HasPreparedTarget", "committedSelectionScreenPrompt",
              "previousAmount", "PowerCmd.Apply<VigorPower>")
     require("GainEnergy" not in annotations and "CardPileCmd.Add(this, PileType.Hand)" not in annotations,
             "committed annotations must never refund/return after native hooks")
+    require("CardSelectCmd.FromHand" not in annotations, "Annotations must not use Hand's unsupported cancel flag")
+    picker = read("src/Services/ShinGetterAnnotationsCardChoice.cs")
+    contains(picker, "owner.PlayerCombatState.Hand", "hand.Cards.Where(legal).ToArray()", "cards.Length == 0",
+             "new CardSelectorPrefs(prompt, 1)", "Cancelable = true", "RequireManualConfirmation = true",
+             "NDeckCardSelectScreen.Create(cards, prefs)", "PlayerChoiceResult.FromMutableCombatCards(result)",
+             "SignalPlayerChoiceBegun(PlayerChoiceOptions.CancelPlayCardActions)", "ReferenceEquals(manager.State, run)",
+             "manager.IsCleaningUp", "RunAbortedException", "WaitForActionToResumeExecutingAfterPlayerChoice()")
+    require("FromDeckGeneric" not in picker and "CardSelectCmd.FromSimpleGrid" not in picker,
+            "hand instances require the local native-UI adapter, not a permanent Deck query or SimpleGrid")
+    require("cards.Length == 1" not in picker and "WaitAsync" not in picker and "Task.WhenAny" not in picker,
+            "no single-target auto-commit or abandoned wait race")
+    contains(wrapper, "ShinGetterAnnotationsCardChoice.RunAbortedException", "context.LastInvolvedModel", "context.PopModel(annotations)")
     preparation = read("src/Patches/ShinGetterAnnotationsPreparationPatch.cs")
     contains(preparation, "typeof(PlayCardAction)", '"MoveNext"', "AsyncStateMachineAttribute", "PrepareResources",
              "PlayPreparedCard", "new GameActionPlayerChoiceContext(action)", "ActionChoiceContext.SetValue(action, context)",
@@ -222,6 +234,25 @@ def november_contracts(events):
                     "self-help lock reason missing")
 
 
+def damage_template_contracts():
+    source = json.loads(read("tools/issue238-localization.json"))
+    for model, key, allowed in (
+        ("SGC_DrillMissile", "S_G_C_DRILL_MISSILE.description", {"Damage"}),
+        ("SGC_TripleCyclone", "S_G_C_TRIPLE_CYCLONE.description", {"Damage", "Block"}),
+    ):
+        code = read(f"src/Models/Cards/{model}.cs")
+        require(re.search(r"new DamageVar\(\d+m, ValueProp\.Move\)", code), "default DamageVar declaration drift")
+        for index, lang in enumerate(source["languages"]):
+            value = source["content"]["cards"][key][index]
+            require("{Damage:diff()}" in value and "CalculatedDamage" not in value, f"{lang}: missing native Damage variable")
+            selectors = set(re.findall(r"\{([A-Za-z_][A-Za-z_0-9]*)(?=[:}])", value))
+            require(selectors <= allowed, f"{lang}: unsupported selectors in {model}: {selectors - allowed}")
+            actual = json.loads(read(f"ShinGetterMod/localization/{lang}/cards.json"))[key]
+            require(actual == value, f"{lang}: synchronized damage template drift")
+    # This gate checks real source declarations and authored/synchronized selectors.
+    # Native LocManager base/upgrade/target-preview execution belongs to the runtime review.
+
+
 def prose_contracts():
     fixture = json.loads(read("tools/issue238-legacy-localization.json"))["entries"]
     require(len(fixture) == len({e["key"] for e in fixture}) == 46 and len({e["source"] for e in fixture}) == 32,
@@ -284,6 +315,7 @@ def main():
     persistence_contracts(events)
     content_contracts()
     november_contracts(events)
+    damage_template_contracts()
     prose_contracts()
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--probe", action="store_true", help="Run actual 109 CLR integration probe; no game scene/window")
