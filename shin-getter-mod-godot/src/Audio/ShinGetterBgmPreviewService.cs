@@ -87,7 +87,7 @@ internal static class ShinGetterBgmPreviewService
 
         StopInternal(restoreGameMusic: false);
         AudioStream stream = loadedStream.Duplicate() as AudioStream ?? loadedStream;
-        EnableLoop(stream);
+        EnableLoop(stream, playbackTrack.ResourcePath);
 
         float configuredBgmVolume = SaveManager.Instance.SettingsSave.VolumeBgm;
         float previewVolume = Mathf.Max(
@@ -147,15 +147,20 @@ internal static class ShinGetterBgmPreviewService
         Log.Info($"[ShinGetterBgmPreview] Stopped; restoreGameMusic={restoreGameMusic}.");
     }
 
-    internal static void EnableLoop(AudioStream stream)
+    internal static void EnableLoop(AudioStream stream, string resourcePath)
     {
+        float? loopOffset = ShinGetterBgmCatalog.GetLoopOffset(resourcePath);
         switch (stream)
         {
             case AudioStreamMP3 mp3:
                 mp3.Loop = true;
+                if (loopOffset is { } mp3Offset)
+                    mp3.LoopOffset = mp3Offset;
                 break;
             case AudioStreamOggVorbis ogg:
                 ogg.Loop = true;
+                if (loopOffset is { } oggOffset)
+                    ogg.LoopOffset = oggOffset;
                 break;
         }
     }

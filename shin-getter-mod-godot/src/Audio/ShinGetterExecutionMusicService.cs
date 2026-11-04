@@ -162,7 +162,7 @@ internal static class ShinGetterExecutionMusicService
         }
 
         AudioStream stream = loadedStream.Duplicate() as AudioStream ?? loadedStream;
-        ShinGetterBgmPreviewService.EnableLoop(stream);
+        ShinGetterBgmPreviewService.EnableLoop(stream, trackPath);
         bool replacedEncounterMusic = ShinGetterEncounterMusicService.SuspendForExecution();
         ExecutionMusicState? previousState = _activeState;
         _activeState = null;
