@@ -31,6 +31,9 @@ assert sync.index("sync._netService.SendMessage(message);") < sync.index("sync.S
 assert "_entryAttempted = true;" in sync, "claim entry before invoking native fire-and-forget"
 for token in ("MethodType.Constructor", "nameof(EventSynchronizer.BeginEvent)", "nameof(EventSynchronizer.Dispose)", '"ChooseOptionForEvent"', "nameof(RunManager.CleanUp)", "nameof(EventRoom.Exit)"):
     assert token in patch, token
+initializer = patch.split("[HarmonyPatch(typeof(EventSynchronizer), MethodType.Constructor,", 1)[1].split("internal static class ShinGetterTrialSyncInitPatch", 1)[0]
+signature = ("typeof(RunLocationTargetedMessageBuffer)", "typeof(INetGameService)", "typeof(IPlayerCollection)", "typeof(ulong)", "typeof(uint)")
+assert [initializer.index(token) for token in signature] == sorted(initializer.index(token) for token in signature), "constructor needs the exact five argument types in native order"
 for token in ("[HarmonyPatch(typeof(NEventRoom), nameof(NEventRoom.OptionButtonClicked))]", "TryRouteProceed(RunManager.Instance.EventSynchronizer, option, index)"):
     assert token in patch, token
 for token in ("!option.IsProceed", "option.IsLocked", "option.WasChosen", "ReferenceEquals(localEvent.CurrentOptions[index], option)", "synchronizer.ChooseLocalOption(index)"):
@@ -40,4 +43,4 @@ assert "Player? owner = eventModel.Owner;" in sync and "Player? owner = _localEv
 for token in ("ShouldBroadcast => false", "NetTransferMode.Reliable", "ShouldBuffer => true", "writer.WriteULong(OwnerId)", "reader.ReadULong()"):
     assert token in message, token
 assert "IsShared => true" not in source + sync, "do not replace individual choices with shared votes"
-print("issue#283 source wiring PASS; run tests/Issue283TrialSync for ordered CPU checks; gameplay NOT_RUN")
+print("issue#283 source wiring PASS; run Issue283TrialSync for CPU behavior and Issue283HarmonyTargets for real-library target resolution; gameplay NOT_RUN")

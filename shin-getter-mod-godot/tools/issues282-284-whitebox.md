@@ -42,6 +42,16 @@ BeginEvent, Request and current-event checks now cache/check nullable EventModel
 
 Routing this one multiplayer Proceed action through native normal selection causes its default ShouldSaveChoiceToHistory to be honored consistently on peers; the old local-only Proceed route did not save it. There is no synthetic history write, option deletion or global Proceed policy change. The earlier policy for a unique accepted owner, setup-before-entry and failure latching is retained. issue#282/issue#284 remain unchanged. No product compilation, game, PCK or deployment was performed by this development session.
 
+### issue#283 revision 4: real constructor target binding
+
+Actual candidate `4a70301b` is INIT_FAIL/BLOCKED, overriding its earlier runtime admission. The main automation stderr (`E:/StS2-Automation-Sandboxes/issues282-284-20261106/evidence/282-unused-resume-v1-stderr.log`) records Entry.Init throwing HarmonyException/Undefined target method for ShinGetterTrialSyncInitPatch.Postfix. Its previous code-review PASS is historical, not complete initialization proof. The old 31 business checks remain raw observations from partial initialization, not candidate PASS. Baseline RED is retained; this revision does not rerun it or expand the runtime matrix.
+
+The actual formal109 EventSynchronizer has only the public five-parameter constructor `(RunLocationTargetedMessageBuffer, INetGameService, IPlayerCollection, ulong, uint)`. `[HarmonyPatch(typeof(EventSynchronizer), MethodType.Constructor)]` omits its argument types and resolves the absent parameterless constructor. The sole production correction adds the exact five types to that attribute. Postfix still consumes only the arguments it needs. No controller behavior, protocol, issue#282/issue#284 code, or unrelated feature is changed.
+
+The new `tests/Issue283HarmonyTargets` probe compiles the actual production patch source with real pinned 0Harmony 2.4.2.0 and formal109 assemblies. It uses the real PatchClassProcessor's merged/defaulted description and PatchTools.GetOriginalMethod, not an attribute shim or manual Postfix call. Before the correction, the production init attribute returned no target (RED); afterward all 7 production targets and 9 hook parameter contracts resolve, while missing-signature and wrong-signature actual-attribute controls are rejected (GREEN). The earlier 27 modeled entry/controller checks remain PASS but do not replace this gate.
+
+The probe only resolves metadata; it never calls Patch/PatchAll, Entry.Init, a product callback, the engine or gameplay. The main developer still builds/reviews the new DLL and supplies the automation candidate. Complete initialization must additionally reject stderr mod-initializer/Harmony/Undefined-target exceptions; ModManager Loaded alone is insufficient. The test driver's gate is owned by the automation session, not changed here. Runtime checkboxes remain untouched.
+
 ## issue#284: missing native card capability metadata
 
 Original 109 `CardModel.GainsBlock` defaults to false. Native `Nimble.CanEnchant` requires both the original enchantment restrictions and GainsBlock; a BlockVar or Defend tag alone does not satisfy it. Fresnel Lens uses that same predicate for rewards, merchant creation and cards being added to the deck. Basic `SGC_Defend`, among other direct block skills, omitted the override.

@@ -22,7 +22,11 @@ internal static class ShinGetterTrialProceedRoutePatch
     }
 }
 
-[HarmonyPatch(typeof(EventSynchronizer), MethodType.Constructor)]
+[HarmonyPatch(typeof(EventSynchronizer), MethodType.Constructor, new Type[]
+{
+    typeof(RunLocationTargetedMessageBuffer), typeof(INetGameService), typeof(IPlayerCollection),
+    typeof(ulong), typeof(uint),
+})]
 internal static class ShinGetterTrialSyncInitPatch
 {
     private static void Postfix(EventSynchronizer __instance, RunLocationTargetedMessageBuffer messageBuffer,
