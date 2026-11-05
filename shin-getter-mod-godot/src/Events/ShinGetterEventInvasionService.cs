@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.CardSelection;
@@ -68,6 +69,7 @@ internal static partial class ShinGetterEventInvasionService
         }) ?? throw new MissingMethodException(typeof(EventModel).FullName, "EnterCombatWithoutExitingEvent");
 
     private static readonly HashSet<EventModel> EventsEnteringSinglePlayerCombat = new();
+    private static readonly ConditionalWeakTable<EventModel, EncounterModel> StartedTrialBattles = new();
     private static readonly Dictionary<Player, (PendingBattleSetup Setup, EncounterModel Encounter)>
         PendingBattleSetups = new();
 
@@ -877,22 +879,45 @@ internal static partial class ShinGetterEventInvasionService
         bool shouldResumeAfterCombat)
     {
         Player owner = RequireOwner(eventModel);
+        bool relayTrial = setup == PendingBattleSetup.Trial && owner.RunState.Players.Count > 1;
+        EventModel combatEvent = eventModel;
+        if (relayTrial)
+        {
+            // Individual event choices run on every peer; native combat entry is local-owner only.
+            combatEvent = RunManager.Instance.EventSynchronizer.GetLocalEvent();
+            if (combatEvent is not Trial)
+                throw new InvalidOperationException("Trial combat relay requires a local Trial event.");
+
+            if (StartedTrialBattles.TryGetValue(combatEvent, out EncounterModel? startedEncounter))
+            {
+                if (startedEncounter.Id != encounter.Id)
+                    throw new InvalidOperationException("Trial combat was already started with another encounter.");
+
+                PendingBattleSetups[owner] = (setup, startedEncounter);
+                return Task.CompletedTask;
+            }
+
+            StartedTrialBattles.Add(combatEvent, encounter);
+        }
+
         PendingBattleSetups[owner] = (setup, encounter);
-        EventsEnteringSinglePlayerCombat.Add(eventModel);
+        EventsEnteringSinglePlayerCombat.Add(combatEvent);
         try
         {
             EnterCombatWithoutExitingEventMethod.Invoke(
-                eventModel,
+                combatEvent,
                 new object[] { encounter, extraRewards, shouldResumeAfterCombat });
         }
         catch
         {
             PendingBattleSetups.Remove(owner);
+            if (relayTrial)
+                StartedTrialBattles.Remove(combatEvent);
             throw;
         }
         finally
         {
-            EventsEnteringSinglePlayerCombat.Remove(eventModel);
+            EventsEnteringSinglePlayerCombat.Remove(combatEvent);
         }
         return Task.CompletedTask;
     }
