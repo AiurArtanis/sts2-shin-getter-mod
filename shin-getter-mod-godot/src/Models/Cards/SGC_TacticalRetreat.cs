@@ -14,6 +14,8 @@ namespace ShinGetterMod.Models.Cards;
 
 public sealed class SGC_TacticalRetreat : ShinGetterCardBase
 {
+    public override bool GainsBlock => true;
+
     internal const float TransformSpeedScale = 0.75f;
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips => WithContextualHoverTips(new IHoverTip[]
