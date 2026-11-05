@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Events;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
@@ -15,6 +16,7 @@ namespace ShinGetterMod.Events;
 
 internal sealed class ShinGetterTrialCombatSync : IDisposable
 {
+    internal const string StartFightOptionKey = "SHIN_GETTER_EVENT_INVASION.TRIAL.pages.RYOMA.options.START_FIGHT";
     private static readonly ConditionalWeakTable<EventSynchronizer, ShinGetterTrialCombatSync> Instances = new();
     private readonly RunLocationTargetedMessageBuffer _buffer;
     private readonly INetGameService _netService;
@@ -52,29 +54,53 @@ internal sealed class ShinGetterTrialCombatSync : IDisposable
         sync._acceptedOwner = null;
         sync._entryAttempted = false;
         EventModel localEvent = synchronizer.GetLocalEvent();
-        if (!isPrefinished && localEvent is Trial && sync._players.Players.Count > 1)
+        Player? owner = localEvent.Owner;
+        if (!isPrefinished && localEvent is Trial && owner != null && sync._players.Players.Count > 1)
         {
             sync._localEvent = localEvent;
-            sync._location = localEvent.Owner.RunState.RunLocation;
+            sync._location = owner.RunState.RunLocation;
         }
+    }
+
+    internal static bool TryRouteProceed(EventSynchronizer synchronizer, EventOption option, int index)
+    {
+        if (!option.IsProceed || option.IsLocked || option.WasChosen
+            || option.TextKey != StartFightOptionKey
+            || !Instances.TryGetValue(synchronizer, out var sync) || !sync.IsCurrentTrial
+            || sync._netService.Type is not (NetGameType.Host or NetGameType.Client))
+            return false;
+
+        EventModel? localEvent = sync._localEvent;
+        Player? owner = localEvent?.Owner;
+        if (localEvent is not Trial || owner == null || !IsEligible(owner)
+            || sync._players.Players.Count <= 1
+            || !ReferenceEquals(synchronizer.GetLocalEvent(), localEvent)
+            || index < 0 || index >= localEvent.CurrentOptions.Count
+            || !ReferenceEquals(localEvent.CurrentOptions[index], option))
+            return false;
+
+        // Native Proceed buttons bypass ChooseLocalOption; route only this multiplayer challenge.
+        synchronizer.ChooseLocalOption(index);
+        return true;
     }
 
     internal static void Request(EventSynchronizer synchronizer, EventModel eventModel)
     {
         if (!Instances.TryGetValue(synchronizer, out var sync))
             throw new InvalidOperationException("Trial synchronization was not initialized.");
+        Player? owner = eventModel.Owner;
         if (!sync.IsCurrentTrial || sync._netService.Type != NetGameType.Host
             || sync._acceptedOwner.HasValue || sync._requestedOwner != null
-            || eventModel is not Trial || !IsEligible(eventModel.Owner)
-            || !ReferenceEquals(sync._choosingOwner, eventModel.Owner)
+            || eventModel is not Trial || owner == null || !IsEligible(owner)
+            || !ReferenceEquals(sync._choosingOwner, owner)
             || !synchronizer.Events.Any(current => ReferenceEquals(current, eventModel))
             || !eventModel.CurrentOptions.Any(option =>
-                option.TextKey == "SHIN_GETTER_EVENT_INVASION.TRIAL.pages.RYOMA.options.START_FIGHT"))
+                option.TextKey == StartFightOptionKey))
             return;
 
         // Only native ChooseOptionForEvent invokes this callback. Its sender selects this Owner's event.
         // Commit in that method's Postfix, after native option history has been recorded.
-        sync._requestedOwner = eventModel.Owner;
+        sync._requestedOwner = owner;
     }
 
     internal static void BeforeChoice(EventSynchronizer synchronizer, Player player)
@@ -116,8 +142,14 @@ internal sealed class ShinGetterTrialCombatSync : IDisposable
         }
     }
 
-    private bool IsCurrentTrial => !_disposed && _localEvent != null
-        && _localEvent.Owner.RunState.RunLocation == _location;
+    private bool IsCurrentTrial
+    {
+        get
+        {
+            Player? owner = _localEvent?.Owner;
+            return !_disposed && owner != null && owner.RunState.RunLocation == _location;
+        }
+    }
 
     private static bool IsEligible(Player owner) => owner.Character is ShinGetter
         && (owner.GetRelic<SGR_GetterFurnace>()?.EventInvasionEnabled

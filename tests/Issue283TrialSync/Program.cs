@@ -1,12 +1,15 @@
 using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Events;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Multiplayer.Serialization;
 using MegaCrit.Sts2.Core.Multiplayer.Transport;
 using MegaCrit.Sts2.Core.Runs;
+using MegaCrit.Sts2.Core.Nodes.Rooms;
 using ShinGetterMod.Events;
+using TrialFixture;
 
 int passed = 0;
 void Check(string name, Action action)
@@ -25,8 +28,107 @@ static void Consistent(Peer host, Peer client, ulong owner)
 {
     Assert(Entries(host) == 1 && Entries(client) == 1, "duplicate/missing local battle entry");
     Assert(Pending(host).SequenceEqual(new[] { owner }) && Pending(client).SequenceEqual(new[] { owner }), "pending owners disagree");
-    Assert(ShinGetterEventInvasionService.Entries.All(entry => entry.Event.Owner.NetId == (host.Players.Contains(entry.Owner) ? 11UL : 22UL)), "foreign event used for entry");
+    Assert(ShinGetterEventInvasionService.Entries.All(entry => entry.Event.Owner?.NetId == (host.Players.Contains(entry.Owner) ? 11UL : 22UL)), "foreign event used for entry");
 }
+
+Check("modeled native Proceed branch: Getter host click reaches synchronization once", () =>
+{
+    using var host = new Peer(true, 11);
+    using var client = new Peer(false, 22);
+    host.ClickStart();
+    Assert(host.Net.Sent.Count == 1 && host.Sync.OutgoingChoices.Count == 1 && Entries(host) == 1,
+        "IsProceed START_FIGHT bypassed the synchronized request/commit route");
+    Assert(host.Room.NativeProceedCalls == 0 && host.History.SequenceEqual(new[] { 11UL }), "routed click still used original local-only Proceed branch");
+    client.Deliver(host.Net.Sent.Single());
+    client.Choose(11); // Host option may arrive after the commit, but must still be recorded natively.
+    Consistent(host, client, 11);
+    Assert(host.History.SequenceEqual(client.History), "late original choice missing history");
+});
+
+Check("modeled native Proceed branch: Getter client sends one request to non-Getter host", () =>
+{
+    using var host = new Peer(true, 11, hostGetter: false);
+    using var client = new Peer(false, 22, hostGetter: false);
+    client.ClickStart();
+    Assert(client.Sync.OutgoingChoices.Count == 1 && client.Net.Sent.Count == 0 && Entries(client) == 0,
+        "client Proceed action was not sent as a native event choice");
+    var choice = client.Sync.OutgoingChoices.Single();
+    host.Choose(choice.Owner);
+    Assert(host.Net.Sent.Count == 1, "host failed to accept native client request");
+    client.Deliver(host.Net.Sent.Single());
+    client.ClickStart();
+    Consistent(host, client, 22);
+    Assert(host.History.SequenceEqual(client.History), "client-origin native history differs");
+});
+
+foreach (ulong firstAccepted in new[] { 11UL, 22UL })
+{
+    Check($"two Proceed clicks with reversed host arrival winner={firstAccepted}", () =>
+    {
+        using var host = new Peer(true, 11);
+        using var client = new Peer(false, 22);
+        client.ClickStart();
+        if (firstAccepted == 22)
+            host.Choose(22);
+        host.ClickStart();
+        if (firstAccepted == 11)
+            host.Choose(22);
+        Assert(host.Net.Sent.Count == 1, "opposite arrival order made multiple decisions");
+        client.Deliver(host.Net.Sent.Single());
+        Consistent(host, client, firstAccepted);
+        host.DrawFirstHand();
+        client.DrawFirstHand();
+        client.Choose(11); // Replicated original host option arrives after the first-hand hook.
+        host.ClickStart();
+        client.ClickStart();
+        client.Deliver(host.Net.Sent.Single());
+        Assert(host.Sync.OutgoingChoices.Count == 1 && client.Sync.OutgoingChoices.Count == 1, "repeated Proceed click resent an already-chosen option");
+        Assert(host.History.Order().SequenceEqual(client.History.Order()) && host.History.Count == 2,
+            "each native owner choice must be recorded once on every peer");
+        Assert(host.Played.SequenceEqual(new[] { firstAccepted }) && client.Played.SequenceEqual(new[] { firstAccepted })
+            && Pending(host).Length == 0 && Pending(client).Length == 0, "late original option changed setup");
+    });
+}
+
+Check("unrelated Proceed, ordinary choice and singleplayer keep native routing", () =>
+{
+    using var peer = new Peer(true, 11);
+    RunManager.Instance.EventSynchronizer = peer.Sync;
+    int callbacks = 0;
+    peer.Room.OptionButtonClicked(new EventOption("PROCEED", () => callbacks++), 0);
+    Assert(callbacks == 1 && peer.Room.NativeProceedCalls == 1 && peer.Sync.OutgoingChoices.Count == 0,
+        "unrelated Proceed was rerouted");
+    peer.Sync.Models[0].CurrentOptions[0] = new EventOption("TRIAL.pages.INITIAL.options.ACCEPT", () => callbacks++, isProceed: false);
+    peer.Room.OptionButtonClicked(peer.Sync.Models[0].CurrentOptions[0], 0);
+    Assert(callbacks == 2 && peer.Sync.OutgoingChoices.Count == 1 && peer.Net.Sent.Count == 0,
+        "ordinary event choice changed route");
+    using var single = new Peer(true, 11, singleplayer: true);
+    single.ClickStart();
+    Assert(single.Room.NativeProceedCalls == 1 && single.Sync.OutgoingChoices.Count == 0,
+        "singleplayer START_FIGHT no longer uses its original Proceed route");
+});
+
+Check("locked, mismatched option/index, wrong event and nullable Owner are rejected safely", () =>
+{
+    using var peer = new Peer(true, 11);
+    RunManager.Instance.EventSynchronizer = peer.Sync;
+    var original = peer.Sync.Models[0].CurrentOptions[0];
+    Assert(!ShinGetterTrialCombatSync.TryRouteProceed(peer.Sync, original, -1)
+        && !ShinGetterTrialCombatSync.TryRouteProceed(peer.Sync, original, 1), "out-of-range index accepted");
+    Assert(!ShinGetterTrialCombatSync.TryRouteProceed(peer.Sync, new EventOption(Peer.StartKey), 0), "foreign button option accepted");
+    var locked = new EventOption(Peer.StartKey) { IsLocked = true };
+    peer.Sync.Models[0].CurrentOptions[0] = locked;
+    peer.Room.OptionButtonClicked(locked, 0);
+    Assert(peer.Sync.OutgoingChoices.Count == 0 && peer.Net.Sent.Count == 0, "locked button selected");
+    peer.Sync.Models[0].CurrentOptions[0] = original;
+    peer.Sync.Models[0].Owner = null;
+    peer.Room.OptionButtonClicked(original, 0);
+    Assert(peer.Sync.OutgoingChoices.Count == 0 && Entries(peer) == 0, "unbound Owner was routed");
+    peer.Sync.Models[0].Owner = peer.Players[0];
+    peer.Sync.Models[0] = new EventModel(peer.Players[0]);
+    ProductionHook.Call("ShinGetterTrialSyncBeginPatch", "Postfix", peer.Sync, false);
+    Assert(!ShinGetterTrialCombatSync.TryRouteProceed(peer.Sync, original, 0), "non-Trial scope accepted");
+});
 
 foreach (ulong winner in new[] { 11UL, 22UL })
 foreach (int acceptedOptionDelay in new[] { 0, 1, 2 })
@@ -103,7 +205,9 @@ Check("host ignores received commit and rejects foreign/wrong-page requests", ()
     ShinGetterTrialCombatSync.Request(host.Sync, foreign);
     ShinGetterTrialCombatSync.AfterChoice(host.Sync, host.Players[0]);
     host.Sync.Models[0].CurrentOptions.Clear();
-    host.Choose(11);
+    ShinGetterTrialCombatSync.BeforeChoice(host.Sync, host.Players[0]);
+    ShinGetterTrialCombatSync.Request(host.Sync, host.Sync.Models[0]);
+    ShinGetterTrialCombatSync.AfterChoice(host.Sync, host.Players[0]);
     Assert(host.Net.Sent.Count == 0 && Entries(host) == 0, "unbound/invalid request accepted");
 });
 
@@ -187,7 +291,7 @@ Check("message fields round-trip through serialization API double", () =>
     Assert(actual.OwnerId == expected.OwnerId && actual.RunSeed == expected.RunSeed && actual.Location == expected.Location, "message fields lost");
     Assert(!actual.ShouldBroadcast && actual.ShouldBuffer, "client relay/buffering flags wrong");
 });
-Console.WriteLine($"issue#283 CPU controller regression: {passed} PASS; native transport/Harmony/history/reward cleanup/gameplay NOT_RUN");
+Console.WriteLine($"issue#283 CPU entry/controller regression: {passed} PASS; native transport/Harmony/history/reward cleanup/gameplay NOT_RUN");
 
 sealed class FakeNet(bool host) : INetClientGameService
 {
@@ -209,33 +313,35 @@ sealed class Peer : IPlayerCollection, IDisposable
     public FakeNet Net { get; }
     public RunLocationTargetedMessageBuffer Buffer { get; } = new();
     public EventSynchronizer Sync { get; }
-    public List<ulong> History { get; } = new();
+    public List<ulong> History => Sync.History;
+    public NEventRoom Room { get; }
     public List<ulong> Played { get; } = new();
-    public Peer(bool host, ulong localId, bool hostGetter = true)
+    public Peer(bool host, ulong localId, bool hostGetter = true, bool singleplayer = false)
     {
-        Players = new[] { new Player(11, State, hostGetter), new Player(22, State, true) };
+        Players = singleplayer
+            ? new[] { new Player(11, State, hostGetter) }
+            : new[] { new Player(11, State, hostGetter), new Player(22, State, true) };
         Net = new(host);
         Sync = new(this, localId);
         foreach (Player player in Players)
         {
             var model = new Trial(player);
-            model.CurrentOptions.Add(new EventOption(StartKey));
+            model.CurrentOptions.Add(new EventOption(StartKey, () => ShinGetterTrialCombatSync.Request(Sync, model)));
             Sync.Models.Add(model);
         }
-        ShinGetterTrialCombatSync.Attach(Sync, Buffer, Net, this, 123);
-        ShinGetterTrialCombatSync.BeginEvent(Sync, false);
+        ProductionHook.Call("ShinGetterTrialSyncInitPatch", "Postfix", Sync, Buffer, Net, this, 123U);
+        ProductionHook.Call("ShinGetterTrialSyncBeginPatch", "Postfix", Sync, false);
+        Room = new NEventRoom(Sync);
     }
     public Player? GetPlayer(ulong id) => Players.FirstOrDefault(player => player.NetId == id);
     public void Choose(ulong id)
     {
-        Player owner = GetPlayer(id)!;
-        ShinGetterTrialCombatSync.BeforeChoice(Sync, owner);
-        ShinGetterTrialCombatSync.Request(Sync, Sync.GetEventForPlayer(owner));
-        if (Net.Type == NetGameType.Host && Net.Sent.Count == 0
-            && ShinGetterEventInvasionService.Entries.Any(entry => Players.Contains(entry.Owner)))
-            throw new Exception("entry before native history boundary");
-        History.Add(id); // Models native SaveEventOptionToHistory, not a native-history acceptance proof.
-        ShinGetterTrialCombatSync.AfterChoice(Sync, owner);
+        Sync.DeliverChoice(id, 0);
+    }
+    public void ClickStart()
+    {
+        RunManager.Instance.EventSynchronizer = Sync;
+        Room.OptionButtonClicked(Sync.GetLocalEvent().CurrentOptions[0], 0);
     }
     public void DrawFirstHand()
     {
@@ -245,5 +351,5 @@ sealed class Peer : IPlayerCollection, IDisposable
     }
     public ShinGetterTrialChallengeMessage Commit(ulong owner) => new() { OwnerId = owner, RunSeed = 123, Location = State.RunLocation };
     public void Deliver(ShinGetterTrialChallengeMessage message, ulong sender = 11) => Buffer.Deliver(message, sender);
-    public void Dispose() => ShinGetterTrialCombatSync.Detach(Sync);
+    public void Dispose() => ProductionHook.Call("ShinGetterTrialSyncDisposePatch", "Postfix", Sync);
 }

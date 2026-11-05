@@ -4,9 +4,11 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../../shin-getter-mod-godot/src/Events/ShinGetterTrialCombatSync.cs" Link="Production/Sync.cs" />
     <Compile Include="../../shin-getter-mod-godot/src/Events/ShinGetterTrialChallengeMessage.cs" Link="Production/Message.cs" />
+    <Compile Include="../../shin-getter-mod-godot/src/Patches/ShinGetterTrialCombatSyncPatch.cs" Link="Production/Patches.cs" />
   </ItemGroup>
 </Project>

@@ -1,8 +1,51 @@
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Multiplayer.Serialization;
 using MegaCrit.Sts2.Core.Runs;
+using System.Reflection;
+using System.Runtime.ExceptionServices;
+
+namespace HarmonyLib
+{
+    public enum MethodType { Constructor }
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+    public sealed class HarmonyPatch : Attribute
+    {
+        public HarmonyPatch(params object[] args) { _ = args; }
+    }
+}
+
+namespace TrialFixture
+{
+    public static class ProductionHook
+    {
+        public static object? Call(string patch, string method, params object?[] args)
+        {
+            var type = typeof(ShinGetterMod.Events.ShinGetterTrialCombatSync).Assembly.GetType("ShinGetterMod.Patches." + patch);
+            var hook = type?.GetMethod(method, BindingFlags.NonPublic | BindingFlags.Static);
+            if (hook == null)
+                throw new InvalidOperationException("Missing production hook: " + patch + "." + method);
+            try { return hook.Invoke(null, args); }
+            catch (TargetInvocationException error) when (error.InnerException != null)
+            {
+                ExceptionDispatchInfo.Capture(error.InnerException).Throw();
+                throw;
+            }
+        }
+
+        public static bool RouteButton(EventOption option, int index)
+        {
+            // Before the production route exists, execute the unpatched native Proceed branch for RED.
+            if (typeof(ShinGetterMod.Events.ShinGetterTrialCombatSync).Assembly.GetType(
+                "ShinGetterMod.Patches.ShinGetterTrialProceedRoutePatch") == null)
+                return true;
+            return (bool)(Call("ShinGetterTrialProceedRoutePatch", "Prefix", option, index)
+                ?? throw new InvalidOperationException("Button prefix did not return a branch decision."));
+        }
+    }
+}
 
 namespace MegaCrit.Sts2.Core.Logging { public enum LogLevel { VeryDebug } }
 namespace MegaCrit.Sts2.Core.Multiplayer.Transport
@@ -70,12 +113,48 @@ namespace MegaCrit.Sts2.Core.Multiplayer.Game
         public IReadOnlyList<EventModel> Events => Models;
         public EventModel GetLocalEvent() => GetEventForPlayer(players.GetPlayer(localId)!);
         public EventModel GetEventForPlayer(Player player) => Models.Single(model => ReferenceEquals(model.Owner, player));
+        public List<ulong> History { get; } = new();
+        public List<(ulong Owner, int Index)> OutgoingChoices { get; } = new();
+        public void BeginEvent() { }
+        public void Dispose() { }
+        public void ChooseLocalOption(int index)
+        {
+            DeliverChoice(localId, index);
+            OutgoingChoices.Add((localId, index));
+        }
+        public void DeliverChoice(ulong senderId, int index)
+        {
+            Player player = players.GetPlayer(senderId) ?? throw new InvalidOperationException("unknown native sender");
+            EventOption option = GetEventForPlayer(player).CurrentOptions[index];
+            TrialFixture.ProductionHook.Call("ShinGetterTrialSyncChoicePatch", "Prefix", this, player);
+            Exception? failure = null;
+            try
+            {
+                option.Chosen().GetAwaiter().GetResult();
+                if (option.ShouldSaveChoiceToHistory)
+                    History.Add(player.NetId);
+                TrialFixture.ProductionHook.Call("ShinGetterTrialSyncChoicePatch", "Postfix", this, player);
+            }
+            catch (Exception error) { failure = error; throw; }
+            finally { TrialFixture.ProductionHook.Call("ShinGetterTrialSyncChoicePatch", "Finalizer", this, player, failure); }
+        }
     }
 }
 namespace MegaCrit.Sts2.Core.Runs
 {
     public readonly record struct RunLocation(int Act, int Floor, int Room);
     public sealed class RunState { public RunLocation RunLocation { get; set; } }
+    public sealed class RunManager
+    {
+        public static RunManager Instance { get; set; } = new();
+        private EventSynchronizer? _synchronizer;
+        public EventSynchronizer EventSynchronizer
+        {
+            get => _synchronizer ?? throw new InvalidOperationException("No current run synchronizer");
+            set => _synchronizer = value;
+        }
+        public void CleanUp() { }
+    }
     public interface IPlayerCollection
     {
         IReadOnlyList<Player> Players { get; }
@@ -95,14 +174,55 @@ namespace MegaCrit.Sts2.Core.Entities.Players
 }
 namespace MegaCrit.Sts2.Core.Models
 {
-    public class EventModel(Player owner)
+    public class EventModel(Player? owner)
     {
-        public Player Owner { get; } = owner;
+        public Player? Owner { get; set; } = owner;
         public List<EventOption> CurrentOptions { get; } = new();
     }
-    public sealed record EventOption(string TextKey);
 }
-namespace MegaCrit.Sts2.Core.Models.Events { public sealed class Trial(Player owner) : EventModel(owner) { } }
+namespace MegaCrit.Sts2.Core.Models.Events { public sealed class Trial(Player? owner) : EventModel(owner) { } }
+namespace MegaCrit.Sts2.Core.Events
+{
+    public sealed class EventOption(string textKey, Action? onChosen = null, bool isProceed = true)
+    {
+        public string TextKey { get; } = textKey;
+        public bool IsProceed { get; } = isProceed;
+        public bool IsLocked { get; init; }
+        public bool WasChosen { get; private set; }
+        public bool ShouldSaveChoiceToHistory { get; init; } = true;
+        public Task Chosen()
+        {
+            if (!WasChosen)
+            {
+                WasChosen = true;
+                onChosen?.Invoke();
+            }
+            return Task.CompletedTask;
+        }
+    }
+}
+namespace MegaCrit.Sts2.Core.Nodes.Rooms
+{
+    public sealed class NEventRoom(EventSynchronizer synchronizer)
+    {
+        public int NativeProceedCalls { get; private set; }
+        public void OptionButtonClicked(EventOption option, int index)
+        {
+            if (!TrialFixture.ProductionHook.RouteButton(option, index))
+                return;
+            if (option.IsLocked)
+                return;
+            if (option.IsProceed)
+            {
+                NativeProceedCalls++;
+                option.Chosen().GetAwaiter().GetResult();
+                return;
+            }
+            synchronizer.ChooseLocalOption(index);
+        }
+    }
+}
+namespace MegaCrit.Sts2.Core.Rooms { public sealed class EventRoom { public Task Exit() => Task.CompletedTask; } }
 namespace ShinGetterMod.Models.Characters { public sealed class ShinGetter { } }
 namespace ShinGetterMod.Models.Relics
 {

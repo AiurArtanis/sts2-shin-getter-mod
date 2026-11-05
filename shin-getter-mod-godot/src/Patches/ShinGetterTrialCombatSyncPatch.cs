@@ -2,12 +2,25 @@
 using System;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
+using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using ShinGetterMod.Events;
 
 namespace ShinGetterMod.Patches;
+
+[HarmonyPatch(typeof(NEventRoom), nameof(NEventRoom.OptionButtonClicked))]
+internal static class ShinGetterTrialProceedRoutePatch
+{
+    private static bool Prefix(EventOption option, int index)
+    {
+        if (!option.IsProceed || option.TextKey != ShinGetterTrialCombatSync.StartFightOptionKey)
+            return true;
+        return !ShinGetterTrialCombatSync.TryRouteProceed(RunManager.Instance.EventSynchronizer, option, index);
+    }
+}
 
 [HarmonyPatch(typeof(EventSynchronizer), MethodType.Constructor)]
 internal static class ShinGetterTrialSyncInitPatch
