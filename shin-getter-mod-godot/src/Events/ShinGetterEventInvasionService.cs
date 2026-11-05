@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.CardSelection;
@@ -24,6 +23,7 @@ using MegaCrit.Sts2.Core.Models.Enchantments;
 using MegaCrit.Sts2.Core.Models.Events;
 using MegaCrit.Sts2.Core.Models.Monsters;
 using MegaCrit.Sts2.Core.Models.Relics;
+using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Rewards;
 using MegaCrit.Sts2.Core.Rooms;
@@ -69,7 +69,6 @@ internal static partial class ShinGetterEventInvasionService
         }) ?? throw new MissingMethodException(typeof(EventModel).FullName, "EnterCombatWithoutExitingEvent");
 
     private static readonly HashSet<EventModel> EventsEnteringSinglePlayerCombat = new();
-    private static readonly ConditionalWeakTable<EventModel, EncounterModel> StartedTrialBattles = new();
     private static readonly Dictionary<Player, (PendingBattleSetup Setup, EncounterModel Encounter)>
         PendingBattleSetups = new();
 
@@ -880,27 +879,41 @@ internal static partial class ShinGetterEventInvasionService
     {
         Player owner = RequireOwner(eventModel);
         bool relayTrial = setup == PendingBattleSetup.Trial && owner.RunState.Players.Count > 1;
-        EventModel combatEvent = eventModel;
-        if (relayTrial)
+        if (relayTrial && RunManager.Instance.NetService.Type is NetGameType.Host or NetGameType.Client)
         {
-            // Individual event choices run on every peer; native combat entry is local-owner only.
-            combatEvent = RunManager.Instance.EventSynchronizer.GetLocalEvent();
-            if (combatEvent is not Trial)
-                throw new InvalidOperationException("Trial combat relay requires a local Trial event.");
-
-            if (StartedTrialBattles.TryGetValue(combatEvent, out EncounterModel? startedEncounter))
-            {
-                if (startedEncounter.Id != encounter.Id)
-                    throw new InvalidOperationException("Trial combat was already started with another encounter.");
-
-                PendingBattleSetups[owner] = (setup, startedEncounter);
-                return Task.CompletedTask;
-            }
-
-            StartedTrialBattles.Add(combatEvent, encounter);
+            ShinGetterTrialCombatSync.Request(RunManager.Instance.EventSynchronizer, eventModel);
+            return Task.CompletedTask;
         }
 
         PendingBattleSetups[owner] = (setup, encounter);
+        EnterEventCombat(eventModel, owner, encounter, extraRewards, shouldResumeAfterCombat);
+        return Task.CompletedTask;
+    }
+
+    internal static void StartCommittedTrialBattle(EventModel combatEvent, Player owner)
+    {
+        EncounterModel encounter = ModelDb.Encounter<KnightsElite>().ToMutable();
+        PendingBattleSetups[owner] = (PendingBattleSetup.Trial, encounter);
+        EnterEventCombat(combatEvent, owner, encounter, Array.Empty<Reward>(), false);
+    }
+
+    internal static void ClearPendingTrialSetup(IEnumerable<Player> players)
+    {
+        foreach (Player player in players)
+        {
+            if (PendingBattleSetups.TryGetValue(player, out var pending)
+                && pending.Setup == PendingBattleSetup.Trial)
+                PendingBattleSetups.Remove(player);
+        }
+    }
+
+    private static void EnterEventCombat(
+        EventModel combatEvent,
+        Player owner,
+        EncounterModel encounter,
+        IReadOnlyList<Reward> extraRewards,
+        bool shouldResumeAfterCombat)
+    {
         EventsEnteringSinglePlayerCombat.Add(combatEvent);
         try
         {
@@ -911,15 +924,12 @@ internal static partial class ShinGetterEventInvasionService
         catch
         {
             PendingBattleSetups.Remove(owner);
-            if (relayTrial)
-                StartedTrialBattles.Remove(combatEvent);
             throw;
         }
         finally
         {
             EventsEnteringSinglePlayerCombat.Remove(combatEvent);
         }
-        return Task.CompletedTask;
     }
 
     private static Task LoseHp(Player owner, int amount) =>

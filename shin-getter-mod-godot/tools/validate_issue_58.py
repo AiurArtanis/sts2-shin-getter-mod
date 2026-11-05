@@ -210,7 +210,7 @@ def validate_service() -> None:
         begin_event_battle,
         "shouldResumeAfterCombat)",
     )
-    start_event_battle = method_body(service, "private static Task StartEventBattle")
+    start_event_battle = method_body(service, "private static void EnterEventCombat")
     require(
         start_event_battle,
         "new object[] { encounter, extraRewards, shouldResumeAfterCombat }",
