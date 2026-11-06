@@ -13,7 +13,6 @@ using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Models.Enchantments;
 using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Nodes.Vfx;
@@ -146,7 +145,6 @@ public sealed class SGE_GetterMandala : EventModel
     {
         Player owner = EventOwner;
         CardModel card = owner.RunState.CreateCard<SGC_SaintDragonRoar>(owner);
-        CardCmd.Enchant<Corrupted>(card, 1m);
         CardCmd.PreviewCardPileAdd(await CardPileCmd.Add(card, PileType.Deck), 2f);
         Finish("SAINT_DRAGON");
     }

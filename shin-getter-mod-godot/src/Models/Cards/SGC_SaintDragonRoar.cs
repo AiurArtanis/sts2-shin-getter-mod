@@ -21,7 +21,7 @@ namespace ShinGetterMod.Models.Cards;
 
 public sealed class SGC_SaintDragonRoar : ShinGetterCardBase
 {
-    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Exhaust };
+    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Exhaust, CardKeyword.Eternal };
 
     public override string PortraitPath =>
         ImageHelper.GetImagePath("packed/card_single/shin_getter/s_g_c_saint_dragon_roar_card.png");
@@ -40,7 +40,7 @@ public sealed class SGC_SaintDragonRoar : ShinGetterCardBase
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new DynamicVar[]
         {
-            new DamageVar(15m, ValueProp.Move),
+            new DamageVar(20m, ValueProp.Move),
             new IntVar("BurnDamage", 5m),
         };
 
@@ -89,7 +89,7 @@ public sealed class SGC_SaintDragonRoar : ShinGetterCardBase
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(5m);
+        DynamicVars.Damage.UpgradeValueBy(8m);
         DynamicVars["BurnDamage"].UpgradeValueBy(3m);
     }
 

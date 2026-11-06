@@ -40,7 +40,8 @@ def validate_balance() -> None:
     )
     require("src/Models/Cards/SGC_SeizeFuture.cs", "new BlockVar(7m", "UpgradeValueBy(2m)")
     require("src/Models/Cards/SGC_TripleUnity.cs", "new PowerVar<SGP_TripleUnity>(3m)", "UpgradeValueBy(1m)")
-    require("src/Models/Cards/SGC_ChosenOne.cs", "new PowerVar<SGP_ChosenOne>(1m)", "new BlockVar(4m", "UpgradeValueBy(2m)")
+    # B1.4.0 lowers Chosen One from 4/6 to 3/5 Block; Ki and upgrade delta are unchanged.
+    require("src/Models/Cards/SGC_ChosenOne.cs", "new PowerVar<SGP_ChosenOne>(1m)", "new BlockVar(3m", "UpgradeValueBy(2m)")
     require("src/Models/Cards/SGC_IronWall.cs", "new PowerVar<SGP_IronWall>(7m)", "ShinGetterForm.Getter3")
     require("src/Models/Cards/SGC_LigerAssault.cs", "new PowerVar<SGP_Shade>(1m)", "new PowerVar<BufferPower>(1m)", "PowerCmd.Apply<BufferPower>")
     reject("src/Models/Cards/SGC_LigerAssault.cs", "if (x > 0 && HasForm")
