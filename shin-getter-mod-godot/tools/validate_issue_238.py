@@ -526,6 +526,20 @@ def prose_contracts():
             baseline = json.loads(subprocess.check_output(["git", "show", f"{BASELINE_COMMIT}:shin-getter-mod-godot/ShinGetterMod/localization/{language}/{table}.json"], cwd=ROOT))
             for key, value in baseline.items():
                 expected = updated[key] if table == "events" and key in updated else value
+                # A combined candidate also contains separately reviewed balance text.
+                overlay = "1d30b3815e96095572af3c016f6a105fac426646"
+                overlay_keys = {
+                    "events": {"S_G_E_GETTER_MANDALA.pages.INITIAL.options.SAINT_DRAGON.description"},
+                    "relics": {"S_G_R_MUSASHI_CLONE.title", "S_G_R_MUSASHI_CLONE.description"},
+                }
+                if key in overlay_keys.get(table, set()) and subprocess.run(
+                    ["git", "merge-base", "--is-ancestor", overlay, "HEAD"], cwd=ROOT,
+                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                ).returncode == 0:
+                    approved = json.loads(subprocess.check_output([
+                        "git", "show", f"{overlay}:shin-getter-mod-godot/ShinGetterMod/localization/{language}/{table}.json",
+                    ], cwd=ROOT))
+                    expected = approved[key]
                 require(current.get(key) == expected, f"unapproved legacy text/mechanics change: {language}:{key}")
     for tool in ("sync_issue238_localization.py", "sync_issue238_legacy_text.py"):
         subprocess.run([sys.executable, str(ROOT / "tools" / tool), "--check"], check=True)
