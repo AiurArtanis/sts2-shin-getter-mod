@@ -16,6 +16,8 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_Jammer : ShinGetterCardBase
 {
+    public override bool GainsBlock => true;
+
     public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Ethereal };
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new DynamicVar[] { new BlockVar(10m, ValueProp.Move) };

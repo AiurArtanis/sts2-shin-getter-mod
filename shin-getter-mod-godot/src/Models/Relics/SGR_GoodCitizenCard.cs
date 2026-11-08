@@ -56,7 +56,9 @@ public sealed class SGR_GoodCitizenCard : ShinGetterRelicBase
 
     public override decimal ModifyMerchantPrice(Player player, MerchantEntry entry, decimal originalPrice)
     {
-        if (player != Owner || player.RunState.CurrentRoom is not MerchantRoom || IsUsedThisAct || originalPrice <= 0m)
+        // Relic purchase reads Cost again after Obtain, before reporting goldSpent.
+        if (player != Owner || player.RunState.CurrentRoom is not MerchantRoom || IsUsedThisAct || originalPrice <= 0m
+            || entry is MerchantRelicEntry { Model: SGR_GoodCitizenCard })
             return originalPrice;
 
         return 0m;

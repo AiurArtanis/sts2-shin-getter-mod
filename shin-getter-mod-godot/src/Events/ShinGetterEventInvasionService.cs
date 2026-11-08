@@ -23,6 +23,7 @@ using MegaCrit.Sts2.Core.Models.Enchantments;
 using MegaCrit.Sts2.Core.Models.Events;
 using MegaCrit.Sts2.Core.Models.Monsters;
 using MegaCrit.Sts2.Core.Models.Relics;
+using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Rewards;
 using MegaCrit.Sts2.Core.Rooms;
@@ -876,12 +877,47 @@ internal static partial class ShinGetterEventInvasionService
         bool shouldResumeAfterCombat)
     {
         Player owner = RequireOwner(eventModel);
+        bool relayTrial = setup == PendingBattleSetup.Trial && owner.RunState.Players.Count > 1;
+        if (relayTrial && RunManager.Instance.NetService.Type is NetGameType.Host or NetGameType.Client)
+        {
+            ShinGetterTrialCombatSync.Request(RunManager.Instance.EventSynchronizer, eventModel);
+            return Task.CompletedTask;
+        }
+
         PendingBattleSetups[owner] = (setup, encounter);
-        EventsEnteringSinglePlayerCombat.Add(eventModel);
+        EnterEventCombat(eventModel, owner, encounter, extraRewards, shouldResumeAfterCombat);
+        return Task.CompletedTask;
+    }
+
+    internal static void StartCommittedTrialBattle(EventModel combatEvent, Player owner)
+    {
+        EncounterModel encounter = ModelDb.Encounter<KnightsElite>().ToMutable();
+        PendingBattleSetups[owner] = (PendingBattleSetup.Trial, encounter);
+        EnterEventCombat(combatEvent, owner, encounter, Array.Empty<Reward>(), false);
+    }
+
+    internal static void ClearPendingTrialSetup(IEnumerable<Player> players)
+    {
+        foreach (Player player in players)
+        {
+            if (PendingBattleSetups.TryGetValue(player, out var pending)
+                && pending.Setup == PendingBattleSetup.Trial)
+                PendingBattleSetups.Remove(player);
+        }
+    }
+
+    private static void EnterEventCombat(
+        EventModel combatEvent,
+        Player owner,
+        EncounterModel encounter,
+        IReadOnlyList<Reward> extraRewards,
+        bool shouldResumeAfterCombat)
+    {
+        EventsEnteringSinglePlayerCombat.Add(combatEvent);
         try
         {
             EnterCombatWithoutExitingEventMethod.Invoke(
-                eventModel,
+                combatEvent,
                 new object[] { encounter, extraRewards, shouldResumeAfterCombat });
         }
         catch
@@ -891,9 +927,8 @@ internal static partial class ShinGetterEventInvasionService
         }
         finally
         {
-            EventsEnteringSinglePlayerCombat.Remove(eventModel);
+            EventsEnteringSinglePlayerCombat.Remove(combatEvent);
         }
-        return Task.CompletedTask;
     }
 
     private static Task LoseHp(Player owner, int amount) =>
