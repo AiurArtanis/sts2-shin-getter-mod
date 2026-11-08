@@ -1,0 +1,67 @@
+{
+  "issue": 270,
+  "approved_on": "2026-11-08",
+  "approval_chat": "01a159be-6ee4-76a1-9d76-b0af8b7bd9e6",
+  "approval_manifest": "D:/AI/forChatGPT/voice-project/production/musashi-hat-issue270-20261108-approved/approval-final.json",
+  "runtime_encoding": "byte-identical 48 kHz mono PCM16 WAV, uncompressed Godot import",
+  "workbook": "D:/Library/Pictures/杀戮尖塔2-素材/sound/音频字幕.xlsx",
+  "sheet": "完整设计",
+  "rows": "A73:H76",
+  "workbook_sha256": "49eec3e8fecaf6feb9a7a39f1fcad1fe7ea9e842708f7a5702119cbd1cc398d0",
+  "workbook_backup": "D:/Library/Pictures/杀戮尖塔2-素材/sound/音频字幕.before-issue270-20261108.xlsx",
+  "workbook_backup_sha256": "2c42d958f14ef2840292ae2ec245118cecb5a8da45b0e562fe897feaaf65a060",
+  "assets": [
+    {
+      "code": "072",
+      "form": "Getter1",
+      "speaker": "ryoma",
+      "version": "V9",
+      "file": "ryoma_musashi_hat.wav",
+      "sha256": "8b8e283f83d32b4e0181fabb9a2a52425abf5e40a358ed32e9a6ad2c1b6779b3",
+      "duration": 4.45,
+      "key": "musashiHatOne",
+      "color": "red",
+      "jpn": "ムサシーッ！……ふぅ、また死んじまったかと思ったぜ。",
+      "zhs": "武藏——！……呼，差点以为他又死了一次。"
+    },
+    {
+      "code": "073",
+      "form": "Getter2",
+      "speaker": "hayato",
+      "version": "V9",
+      "file": "hayato_musashi_hat.wav",
+      "sha256": "1eafd82c37c905bcd846215f479c77f349ffe47d00a54b64ca4a78979e9cf83c",
+      "duration": 4.13,
+      "key": "musashiHatTwo",
+      "color": "white",
+      "jpn": "ムサシ！……待て、これ、ただの帽子だろ？",
+      "zhs": "武藏！……等等，这只是帽子吧？"
+    },
+    {
+      "code": "074",
+      "form": "Getter3",
+      "speaker": "benkei",
+      "version": "V7",
+      "file": "benkei_musashi_hat.wav",
+      "sha256": "e66a79ea0fbc9ce83575e0961d72b0e313697c1b5b6894c8b9b9840b83b26586",
+      "duration": 1.6,
+      "key": "musashiHatThree",
+      "color": "yellow",
+      "jpn": "ムサシ先輩！",
+      "zhs": "武藏前辈！"
+    },
+    {
+      "code": "075",
+      "form": "ShinDragon",
+      "speaker": "trio",
+      "version": "V5",
+      "file": "team_musashi_hat.wav",
+      "sha256": "690632bbf40f4137722fb0be3e35a846a0d819fa6b44a3c1c97a9c0bc4772cbb",
+      "duration": 1.63,
+      "key": "musashiHatDragon",
+      "color": "getter_ray",
+      "jpn": "ムサシーッ！",
+      "zhs": "武藏——！"
+    }
+  ]
+}
