@@ -18,6 +18,8 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_BackupPlan : ShinGetterCardBase
 {
+    public override bool GainsBlock => true;
+
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
         new BlockVar(5m, ValueProp.Move),

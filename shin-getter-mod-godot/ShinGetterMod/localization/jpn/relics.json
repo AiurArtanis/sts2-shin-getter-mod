@@ -14,8 +14,8 @@
   "S_G_R_RESEARCH_NOTES.title": "研究ノート",
   "S_G_R_RESEARCH_NOTES.description": "[gold]放射線[/gold]は、あなたが受けるダメージを増加させなくなる。",
   "S_G_R_RESEARCH_NOTES.flavor": "早乙女研究所に残された手稿。いくつかの数式は、読者を見返しているようだ。",
-  "S_G_R_MUSASHI_CLONE.title": "予備の武蔵クローン",
-  "S_G_R_MUSASHI_CLONE.description": "[gold]真ゲッター3[/gold]形態で致命傷を受ける時、HPを30%回復する。各戦闘1回まで。",
+  "S_G_R_MUSASHI_CLONE.title": "武蔵の帽子",
+  "S_G_R_MUSASHI_CLONE.description": "各戦闘で最初に受ける致命傷を無効にする。\n[gold]真ゲッター1[/gold]：[gold]熱血[/gold]を1得る。\n[gold]真ゲッター2[/gold]：[gold]加速[/gold]を1得る。\n[gold]真ゲッター3[/gold]：[gold]不屈[/gold]を1得る。\n[gold]真ゲッタードラゴン[/gold]：上記の順番で3つの効果をすべて得る。",
   "S_G_R_MUSASHI_CLONE.flavor": "今回も、彼は残ることを選んだ。",
   "S_G_R_GOOD_CITIZEN_CARD.title": "良き市民証",
   "S_G_R_GOOD_CITIZEN_CARD.description": "ショップでの最初の購入が無料になる。各マップ1回まで。",
@@ -38,5 +38,14 @@
   "S_G_R_BEACON_PRISM.flavor": "沈んだ灯台は海の異なる色を一筋の導光へ屈折させる。ゲッターの航路を外れたカードも、もう一度だけ照らし出される。",
   "S_G_R_MYCELIAL_SILENCER.title": "菌糸サイレンサー",
   "S_G_R_MYCELIAL_SILENCER.description": "各ターン最初にカードを廃棄した後、{Block:diff()}ブロックを得る。",
-  "S_G_R_MYCELIAL_SILENCER.flavor": "合唱から一拍を消せば、残りの雑音は操縦席まで届かない。"
+  "S_G_R_MYCELIAL_SILENCER.flavor": "合唱から一拍を消せば、残りの雑音は操縦席まで届かない。",
+  "S_G_R_ACTIVATED_SAPPHIRE.title": "活性化サファイア",
+  "S_G_R_ACTIVATED_SAPPHIRE.description": "各戦闘で、自分が実際に受ける4回目のHPダメージを0にする。各戦闘1回。",
+  "S_G_R_SYMBIOTIC_FILTER.title": "共生フィルター",
+  "S_G_R_SYMBIOTIC_FILTER.description": "各戦闘で、初めて状態異常カードが自分の手札に入った時、そのカードを廃棄し、その後[gold]進化[/gold]1を得る。",
+  "S_G_R_EMBER.title": "残り火",
+  "S_G_R_EMBER.description": "各戦闘で、初めて引いた廃棄付きのアタックかスキルは、この戦闘中廃棄を失う。他の種類のカードでは発動回数を消費しない。",
+  "S_G_R_ACTIVATED_SAPPHIRE.flavor": "結晶にはゲッター線の脈動が四つ残った。最後の一つが、操縦席を襲う衝撃を受け止める。",
+  "S_G_R_SYMBIOTIC_FILTER.flavor": "汚染を見分けることを覚え、ゲッター線に自らの痕跡を残すことも覚えた。",
+  "S_G_R_EMBER.flavor": "墓から持ち帰った火種は、再び燃える時を待っている。"
 }

@@ -1,27 +1,51 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using HarmonyLib;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Hooks;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Saves.Runs;
+using ShinGetterMod.Audio;
 using ShinGetterMod.Models.Cards;
+using ShinGetterMod.Models.Powers;
 
 namespace ShinGetterMod.Models.Relics;
 
 public sealed class SGR_MusashiClone : ShinGetterRelicBase
 {
     private bool _triggeredThisCombat;
+    private ShinGetterForm[] _pendingForms = Array.Empty<ShinGetterForm>();
+    private bool _pendingShinDragon;
 
     public override RelicRarity Rarity => RelicRarity.Rare;
 
     public override bool IsUsedUp => TriggeredThisCombat;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        new DynamicVar[] { new HealVar(30m) };
+        new DynamicVar[]
+        {
+            new PowerVar<SGP_HotBlood>(1m),
+            new PowerVar<SGP_Acceleration>(1m),
+            new PowerVar<SGP_Indomitable>(1m),
+        };
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
+        new IHoverTip[]
+        {
+            HoverTipFactory.FromPower<SGP_HotBlood>(),
+            HoverTipFactory.FromPower<SGP_Acceleration>(),
+            HoverTipFactory.FromPower<SGP_Indomitable>(),
+        };
 
     [SavedProperty(SerializationCondition.SaveIfNotTypeDefault)]
     public bool TriggeredThisCombat
@@ -38,30 +62,97 @@ public sealed class SGR_MusashiClone : ShinGetterRelicBase
     public override Task BeforeCombatStart()
     {
         TriggeredThisCombat = false;
+        _pendingForms = Array.Empty<ShinGetterForm>();
+        _pendingShinDragon = false;
         return Task.CompletedTask;
     }
 
-    public override bool ShouldDieLate(Creature creature)
+    internal decimal PreventFatalHpLoss(Creature target, decimal amount)
     {
-        if (creature != Owner.Creature
+        if (target != Owner.Creature
             || TriggeredThisCombat
-            || !ShinGetterCardBase.IsInForm(Owner, ShinGetterForm.Getter3))
-            return true;
+            || IsMelted
+            || !Owner.IsActiveForHooks
+            || target.CurrentHp <= 0
+            || amount < target.CurrentHp
+            || !CombatManager.Instance.IsInProgress
+            || CombatManager.Instance.IsOverOrEnding)
+            return amount;
 
-        return false;
+        _pendingShinDragon = target.HasPower<SGP_ShinForm>();
+        _pendingForms = new[] { ShinGetterForm.Getter1, ShinGetterForm.Getter2, ShinGetterForm.Getter3 }
+            .Where(form => ShinGetterCardBase.IsInForm(Owner, form))
+            .ToArray();
+        // Reserve the saved charge before any awaited reward can cause nested damage.
+        TriggeredThisCombat = true;
+        return 0m;
     }
 
-    public override async Task AfterPreventingDeath(Creature creature)
+    public override async Task AfterModifyingHpLostAfterOsty()
     {
+        ShinGetterForm[] forms = _pendingForms;
+        bool isShinDragon = _pendingShinDragon;
+        _pendingForms = Array.Empty<ShinGetterForm>();
+        _pendingShinDragon = false;
+        if (forms.Length == 0)
+            return;
+
         Flash();
-        TriggeredThisCombat = true;
-        decimal amount = Math.Max(1m, creature.MaxHp * (DynamicVars.Heal.BaseValue / 100m));
-        await CreatureCmd.Heal(creature, amount);
+        ShinGetterVoiceService.TryPlayMusashiHat(Owner, forms, isShinDragon);
+        var choiceContext = new ThrowingPlayerChoiceContext();
+        foreach (ShinGetterForm form in forms)
+        {
+            switch (form)
+            {
+                case ShinGetterForm.Getter1:
+                    await PowerCmd.Apply<SGP_HotBlood>(choiceContext, Owner.Creature,
+                        DynamicVars["SGP_HotBlood"].BaseValue, Owner.Creature, null);
+                    break;
+                case ShinGetterForm.Getter2:
+                    await PowerCmd.Apply<SGP_Acceleration>(choiceContext, Owner.Creature,
+                        DynamicVars["SGP_Acceleration"].BaseValue, Owner.Creature, null);
+                    break;
+                case ShinGetterForm.Getter3:
+                    await PowerCmd.Apply<SGP_Indomitable>(choiceContext, Owner.Creature,
+                        DynamicVars["SGP_Indomitable"].BaseValue, Owner.Creature, null);
+                    break;
+            }
+        }
     }
 
     public override Task AfterCombatEnd(CombatRoom room)
     {
         TriggeredThisCombat = false;
+        _pendingForms = Array.Empty<ShinGetterForm>();
+        _pendingShinDragon = false;
         return Task.CompletedTask;
+    }
+}
+
+[HarmonyPatch(typeof(Hook), nameof(Hook.ModifyHpLost))]
+internal static class MusashiHatFatalDamagePatch
+{
+    [HarmonyPostfix]
+    // -1 is Harmony's unspecified-priority sentinel; -2 follows the Last-priority counter cancellation.
+    [HarmonyPriority(Priority.Last - 2)]
+    private static void PreventFatalDamage(
+        Creature target,
+        HpLossHookPhase phases,
+        ref IEnumerable<AbstractModel> modifiers,
+        ref decimal __result)
+    {
+        if (!phases.HasFlag(HpLossHookPhase.AfterOsty)
+            || target.Player?.GetRelic<SGR_MusashiClone>() is not { } hat)
+            return;
+
+        decimal amount = hat.PreventFatalHpLoss(target, __result);
+        if (amount == __result)
+            return;
+
+        __result = amount;
+        List<AbstractModel> updatedModifiers = modifiers.ToList();
+        if (!updatedModifiers.Contains(hat))
+            updatedModifiers.Add(hat);
+        modifiers = updatedModifiers;
     }
 }

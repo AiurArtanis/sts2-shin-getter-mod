@@ -55,6 +55,7 @@
   "SHIN_GETTER_CHUNIBYO.BGM.TRACK.FORWARD": "前進",
   "SHIN_GETTER_CHUNIBYO.BGM.TRACK.ITS_TIME": "今がその時だ（slay the spire 2 ver.）",
   "SHIN_GETTER_CHUNIBYO.BGM.TRACK.BRAVERY_IRON_SAGA": "勇壮（機動戰隊Ver.）",
+  "SHIN_GETTER_CHUNIBYO.BGM.TRACK.EMPEROR_FRAGMENT": "皇帝の欠片",
   "SHIN_GETTER_CHUNIBYO.BGM.TRACK.DRAGON_STS2": "DRAGON（slay the spire 2 ver.）",
   "SHIN_GETTER_CHUNIBYO.BGM.TRACK.STORM_STS2": "STORM（slay the spire 2 ver.）",
   "SHIN_GETTER_CHUNIBYO.BGM.TRACK.HEATS_STS2": "HEATS（slay the spire 2 ver.）",
@@ -75,9 +76,5 @@
   "SHIN_GETTER_CHUNIBYO.UPDATE.v1_1_0": "機能：\n- イベント侵入を追加。\n- MOD設定用の「中二設定」入口を追加。\n- エリート戦とボス戦のBGM切り替えを追加。\n\n不具合修正：\n- 変形、カード処理、戦闘終了フローの不具合を修正。\n- イベント報酬、自動カード使用、イベント復帰の不具合を修正。\n- 設定画面の空白、レイアウト、スクロール、ホバーヒント、三言語表示を修正。\n- 戦闘BGMの発動タイミングとマルチプレイでの適用範囲を修正。\n\nQoL／バランス：\n- 変形攻撃、未来奪取、三位一体などの数値と形態報酬を強化。\n- 進化を常駐型の変換効果に再設計し、精神コマンドのルールを調整。\n- アニメーション切り替えの滑らかさとメモリ使用量を改善。",
   "SHIN_GETTER_CHUNIBYO.UPDATE.v1_0_7": "ゲッタービームの発射位置、カード文章、衰退の再帰問題を修正し、アニメーションの先読みを改善。",
   "SHIN_GETTER_CHUNIBYO.UPDATE.v1_0_6": "肉体のトリックと衰退の再帰問題を修正し、外部カードのアニメーション振り分けを改善。",
-  "SHIN_GETTER_CHUNIBYO.UPDATE.v1_0_5": "ゲッター2形態のハリケーン・スマッシュ報酬を分身に変更。",
-  "SHIN_GETTER_CHUNIBYO.UPDATE.v1_3_0_beta_111": "v1.3.0 / 0.111 Beta 対応候補\n- 正式v1.3.0のゲーム内容、カード画像、絆、音声、必殺技演出を同期。承認済みの標準会話UIと初回配布時の進行リセットを含みます。\n- 111 Beta専用APIとCardPlayを維持。関係は初回のみ0から開始し、その後の再起動やBeta版更新ではリセットしません。\n- 現在は検証候補で未公開です。正式109と混在させず、対応する4ファイルをまとめて使用してください。\n- 旧BaseLib 3.3.7ではカード使用時に停止する場合があります。BaseLib、QuickRestartと依存MODを更新または無効にしてください。\n- 建築家の保存失敗と従来会話への復帰修正、最新の演出・性能改善、BS2のコールドロード対応を同期。111実行回帰は未完了です。",
-  "SHIN_GETTER_CHUNIBYO.UPDATE.v1_2_2_beta_111": "v1.2.2 / 0.111 Beta\n- 正式v1.2.2のBGMスイッチ、23曲の選曲一覧、標準曲の変更、3言語の曲名を収録。\n- 111 Beta API対応を維持。4ファイルをまとめて置き換え、正式109と混在させないでください。\n- 旧版BaseLib 3.3.7と依存Modを更新または無効化してください。",
-  "SHIN_GETTER_CHUNIBYO.UPDATE.v1_2_0_beta_111": "0.111 Beta対応：\n- 正式版v1.2.0のカード77枚、形態、イベント、ボイス、アニメーション、中二設定の全機能を維持しています。\n- 0.111 Betaのカード処理、ダメージHook、マルチプレイのキャラクター選択、ブロック除去、ポーション生成APIに対応しました。\n- このパッケージはSlay the Spire 2 0.111 Beta専用です。現在の正式版ではv1.2.0正式パッケージを引き続き使用してください。",
-  "SHIN_GETTER_CHUNIBYO.UPDATE.v1_2_1_beta_111": "v1.2.1 / 0.111 Beta\n- v1.2.1正式版の適用可能な修正を同期し、111 Beta API対応を維持。\n- 4ファイルすべてを置き換え、正式109版と混在させないでください。\n- 旧版BaseLib 3.3.7は更新または無効化してください。"
+  "SHIN_GETTER_CHUNIBYO.UPDATE.v1_0_5": "ゲッター2形態のハリケーン・スマッシュ報酬を分身に変更。"
 }

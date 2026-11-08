@@ -51,6 +51,7 @@ public sealed class ShinGetterPotionPool : PotionPoolModel
             yield return ModelDb.Potion<SGR_LuminescentPulse>();
             yield return ModelDb.Potion<SGR_PhaseCoolant>();
             yield return ModelDb.Potion<SGR_AdaptiveInk>();
+            yield return ModelDb.Potion<SGR_MobilityCatalyst>();
         }
     }
 }

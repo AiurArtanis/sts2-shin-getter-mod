@@ -95,7 +95,7 @@ namespace MegaCrit.Sts2.Core.Commands
     public sealed class Attack(decimal damage)
     {
         private int count = 1;
-        public Attack FromCard(CardModel card, MegaCrit.Sts2.Core.Entities.Cards.CardPlay cardPlay) => this;
+        public Attack FromCard(CardModel card) => this;
         public Attack Targeting(Creature target) => this;
         public Attack TargetingRandomOpponents(object state) => this;
         public Attack WithNoAttackerAnim() => this;

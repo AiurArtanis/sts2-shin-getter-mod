@@ -18,9 +18,7 @@
 - 调整气势、换挡打击、斗志卡牌效果。
 - 更新8张卡面及紧凑卡牌图集，修正纹理定位与采样边界。
 
-正式包面向游戏0.109。2026-10-21追加0.111 Beta包，包含以上全部更新，并额外适配blacksouls2：盖塔曼陀罗接入SmokeForest事件池，先古羁绊兼容其统计标记。请勿混用四件套。
-
-兼容提示：blacksouls2为可选模组；请使用适配0.111的BaseLib及相关依赖。旧BaseLib 3.3.7可能造成出牌卡住。
+面向正式游戏0.109。0.111 Beta当前公开包仍为v1.2.2-beta.111，不包含本次新增内容；请勿混用四件套。
 
 ## English
 
@@ -40,9 +38,7 @@
 - Adjusted Drive, Shift Strike and Fighting Spirit card effects.
 - Updated eight card illustrations and the compact card atlas, correcting texture references and sampling boundaries.
 
-The stable package targets game 0.109. Added the 0.111 Beta package on 2026-10-21 with all updates above plus blacksouls2 compatibility: Getter Mandala joins the SmokeForest event pool, and Ancient bonds support its statistics modifier. Do not mix four-file packages.
-
-Compatibility: blacksouls2 is optional. Use 0.111-compatible versions of BaseLib and related dependencies; old BaseLib 3.3.7 may freeze card play.
+Targets stable game 0.109. The public 0.111 Beta package remains v1.2.2-beta.111 and does not contain these additions. Do not mix four-file packages.
 
 ## 日本語
 
@@ -62,15 +58,11 @@ Compatibility: blacksouls2 is optional. Use 0.111-compatible versions of BaseLib
 - 気迫、シフトストライク、闘志のカード効果を調整。
 - カードイラスト8枚とコンパクトなカードアトラスを更新し、テクスチャの参照とサンプリング境界を修正。
 
-正式版はゲーム0.109向けです。2026-10-21に0.111 Beta版を追加。上記の全更新に加え、ゲッターマンダラをblacksouls2のSmokeForestイベントプールに追加し、古の者との絆を統計用Modifierに対応。4ファイルを混在させないでください。
-
-互換性：blacksouls2の導入は任意です。BaseLibと関連依存MODは0.111対応版をご利用ください。旧BaseLib 3.3.7ではカード使用が停止する場合があります。
+正式ゲーム0.109向け。公開済み0.111 Beta版はv1.2.2-beta.111で、本更新は含みません。4ファイルを混在させないでください。
 
 ## Package Contract
 
 - Tag: `mod-v1.3.0`
-- Stable archive: `shin-getter-mod-v1.3.0.zip` (game 0.109)
-- Beta source tag: `mod-v1.3.0-beta.111`
-- Beta archive: `shin-getter-mod-v1.3.0-beta.111.zip` (game 0.111 Beta)
+- Stable archive: `shin-getter-mod-v1.3.0.zip`
 - Archive root: `ShinGetterMod.dll`, `ShinGetterMod.pck`, `ShinGetterMod.json`, `mod_image.png`
 - Public assets: https://github.com/AiurArtanis/sts2-shin-getter-mod/releases

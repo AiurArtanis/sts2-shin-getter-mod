@@ -9,7 +9,7 @@
 - 事件战默认播放《来袭》，巢穴精英战改为《前进》，处刑曲默认播放OVA版《勇壮》。
 - 已移除或无效的旧选曲自动回退为预设。
 
-正式109使用v1.2.2；0.111 Beta使用v1.2.2-beta.111，两者均包含本次BGM更新。同一Release提供正式包shin-getter-mod-v1.2.2.zip与Beta包shin-getter-mod-v1.2.2(111-beta).zip，四件套不可混用。
+本次 v1.2.2 面向正式109；0.111 Beta 仍使用 v1.2.1-beta.111，不包含本次 BGM 更新。
 
 [下载 v1.2.2](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2) · `shin-getter-mod-v1.2.2.zip`
 
@@ -26,7 +26,7 @@ v1.2.2：新增模组BGM总开关；更新23首可选曲目，新增5首BGM；�
 - Default event combat music is now Onslaught, Hive elite music is Forward, and the execution theme is the OVA version of Bravery.
 - Removed or invalid saved track choices now fall back to the default preset.
 
-Use v1.2.2 for stable 109 or v1.2.2-beta.111 for 0.111 Beta; both include these BGM changes. The same Release provides shin-getter-mod-v1.2.2.zip and shin-getter-mod-v1.2.2(111-beta).zip. Do not mix the four-file packages.
+v1.2.2 targets stable 109. The 0.111 Beta build remains v1.2.1-beta.111 and does not include these BGM changes.
 
 [Download v1.2.2](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2) · `shin-getter-mod-v1.2.2.zip`
 
@@ -43,7 +43,7 @@ v1.2.2: Added a master BGM switch; refreshed the 23-track selection with five ne
 - イベント戦の標準曲を「襲来」、巣窟のエリート戦を「前進」、処刑曲をOVA版「勇壮」に変更。
 - 削除済み・無効な保存済みの選曲は標準設定に戻ります。
 
-正式109はv1.2.2、0.111 Betaはv1.2.2-beta.111を使用してください。両方に今回のBGM更新を収録しています。同じReleaseにshin-getter-mod-v1.2.2.zipとshin-getter-mod-v1.2.2(111-beta).zipを用意しています。4ファイルを混在させないでください。
+v1.2.2は正式109向けです。0.111 Betaは引き続きv1.2.1-beta.111を使用し、今回のBGM更新は含みません。
 
 [v1.2.2をダウンロード](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2) · `shin-getter-mod-v1.2.2.zip`
 

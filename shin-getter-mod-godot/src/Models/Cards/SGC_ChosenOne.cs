@@ -13,7 +13,7 @@ namespace ShinGetterMod.Models.Cards;
 
 /// <summary>
 /// 天选之子 | 能力 | 罕见 | 2费 | 钢之魂流/变形流
-/// 每次变形获得 1 气力和 4 格挡
+/// 每次变形获得 1 气力和 3 格挡
 /// </summary>
 public sealed class SGC_ChosenOne : ShinGetterCardBase
 {
@@ -22,7 +22,7 @@ public sealed class SGC_ChosenOne : ShinGetterCardBase
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
         new PowerVar<SGP_ChosenOne>(1m),
-        new BlockVar(4m, ValueProp.Unpowered),
+        new BlockVar(3m, ValueProp.Unpowered),
     };
 
     public SGC_ChosenOne()

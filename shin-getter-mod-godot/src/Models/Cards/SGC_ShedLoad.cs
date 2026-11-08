@@ -18,6 +18,8 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_ShedLoad : ShinGetterCardBase
 {
+    public override bool GainsBlock => true;
+
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
         new BlockVar(10m, ValueProp.Move),

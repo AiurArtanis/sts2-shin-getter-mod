@@ -14,8 +14,8 @@
   "S_G_R_RESEARCH_NOTES.title": "Research Notes",
   "S_G_R_RESEARCH_NOTES.description": "[gold]Radiation[/gold] no longer increases the damage you take.",
   "S_G_R_RESEARCH_NOTES.flavor": "In the manuscripts left by the Saotome Institute, some formulas seem to stare back at the reader.",
-  "S_G_R_MUSASHI_CLONE.title": "Spare Musashi Clone",
-  "S_G_R_MUSASHI_CLONE.description": "While in [gold]Shin Getter 3[/gold], when you would take fatal damage, heal 30% HP. Once per combat.",
+  "S_G_R_MUSASHI_CLONE.title": "Musashi's Hat",
+  "S_G_R_MUSASHI_CLONE.description": "The first time you would take fatal damage each combat, prevent that damage.\n[gold]Shin Getter 1[/gold]: Gain 1 [gold]Valor[/gold].\n[gold]Shin Getter 2[/gold]: Gain 1 [gold]Accel[/gold].\n[gold]Shin Getter 3[/gold]: Gain 1 [gold]Persist[/gold].\n[gold]Shin Getter Dragon[/gold]: Gain all three effects in the order above.",
   "S_G_R_MUSASHI_CLONE.flavor": "This time, he still chooses to stay behind.",
   "S_G_R_GOOD_CITIZEN_CARD.title": "Good Citizen Card",
   "S_G_R_GOOD_CITIZEN_CARD.description": "Your first shop purchase is free. Once per act map.",
@@ -38,5 +38,14 @@
   "S_G_R_BEACON_PRISM.flavor": "The drowned beacon refracts every color of the sea into a single guide-light; even a card that strays from Getter's course is illuminated once more.",
   "S_G_R_MYCELIAL_SILENCER.title": "Mycelial Silencer",
   "S_G_R_MYCELIAL_SILENCER.description": "After the first card you Exhaust each turn, gain {Block:diff()} Block.",
-  "S_G_R_MYCELIAL_SILENCER.flavor": "Mute one beat of the chorus, and the rest can no longer press into the cockpit."
+  "S_G_R_MYCELIAL_SILENCER.flavor": "Mute one beat of the chorus, and the rest can no longer press into the cockpit.",
+  "S_G_R_ACTIVATED_SAPPHIRE.title": "Activated Sapphire",
+  "S_G_R_ACTIVATED_SAPPHIRE.description": "Each combat, the fourth instance of actual HP damage you would take is reduced to 0. Once per combat.",
+  "S_G_R_SYMBIOTIC_FILTER.title": "Symbiotic Filter",
+  "S_G_R_SYMBIOTIC_FILTER.description": "Each combat, the first time a Status enters your hand, Exhaust it, then gain 1 [gold]Evolution[/gold].",
+  "S_G_R_EMBER.title": "Ember",
+  "S_G_R_EMBER.description": "Each combat, the first Attack or Skill you draw with Exhaust loses Exhaust for this combat. Other card types do not consume this opportunity.",
+  "S_G_R_ACTIVATED_SAPPHIRE.flavor": "Getter Rays left four pulses in the crystal. The last took the blow meant for the cockpit.",
+  "S_G_R_SYMBIOTIC_FILTER.flavor": "It learned to recognize contamination—and to leave its own trace in the Getter Rays.",
+  "S_G_R_EMBER.flavor": "The spark carried out of the grave still waits to burn again."
 }

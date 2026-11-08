@@ -8,18 +8,18 @@
 
 Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter 1's explosive offense, Shin Getter 2's high-speed tactics, and Shin Getter 3's iron defense; then awaken Shin Getter Dragon and let the Getter Rays consume the tower. This is a gameplay character mod built around transformations, deckbuilding, and presentation, not a simple reskin.
 
-> 111 Beta `v1.3.0-beta.111` (game `0.111 Beta`) · stable `v1.3.0` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> Current source `v1.3.0` (stable game `0.109`) · published 0.111 Beta build `v1.2.2-beta.111` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
-[Stable downloads](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest) · [Published 0.111 Beta](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.3.0) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
-
+[Stable downloads](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest) · [Published 0.111 Beta](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
 ## 🧪 0.111 Beta support
 
-- **Current version:** `v1.3.0-beta.111` includes all stable v1.3.0 content plus 111 Beta and blacksouls2 compatibility.
-- **Packages/tags:** stable `shin-getter-mod-v1.3.0.zip` / `mod-v1.3.0`; Beta `shin-getter-mod-v1.3.0-beta.111.zip` / `mod-v1.3.0-beta.111`.
-- **Downloads:** separate stable and Beta packages are available in the [v1.3.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.3.0). [Download 111 Beta](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.3.0/shin-getter-mod-v1.3.0-beta.111.zip).
-- Replace all four matching DLL/PCK/JSON/mod_image files when changing game branches, then restart. Never mix channels.
-- **External compatibility risk:** old `BaseLib 3.3.7` can freeze card play on 111 Beta through its `CardPileCmd.Add` transpiler. Update or disable BaseLib, QuickRestart and dependent mods before acceptance; BaseLib is not a mandatory dependency of this mod.
+- **Stable 109:** use `shin-getter-mod-v1.2.2.zip`.
+- **Slay the Spire 2 0.111 Beta:** use `shin-getter-mod-v1.2.2.111-beta.zip`.
+- Stable: [v1.2.2 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2); 0.111 Beta: [v1.2.2 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2).
+- The v1.3.0 source additions target stable 109; download the version actually listed in Release assets. The currently published 111 Beta package remains v1.2.2 and does not include the v1.3.0 additions below.
+- Do not mix the stable and Beta four-file packages. After switching game branches, replace the DLL, PCK, JSON, and `mod_image.png` together, then restart the game.
+- Known external compatibility issue: old `BaseLib 3.3.7` fails its `CardPileCmd.Add` transpiler on 0.111 Beta and can freeze manual card play. Update BaseLib, or disable BaseLib and dependent mods in the Beta environment.
 
 ## ⚡ Combat at a glance
 
@@ -49,11 +49,11 @@ The content currently registered in the `v1.3.0` source includes:
 
 ## Ancient bonds
 
-In a standard single-player Shin Getter run, complete the shared first meeting, then choose separate conversations with Ryoma, Hayato or Benkei. Their stories progress independently and relationships persist across runs. Reloading the same room restores the current conversation, and a conversation failure automatically restores the legacy dialogue and original event progression. Familiar themes unlock as bonds develop, with dedicated Neow and Architect dialogue and story callbacks.
+In a standard single-player Shin Getter run, complete the shared first meeting, then choose separate conversations with Ryoma, Hayato or Benkei. Their stories progress independently and relationships persist across runs. Reloading the same room restores the current conversation. Familiar themes unlock as bonds develop, with dedicated Neow and Architect dialogue and story callbacks.
 
 These stories do not replace the original event's combat, rewards or scoring. The `sgd` console command inspects and constructs bond progress; changing progress is a debugging operation.
 
-## v1.3.0-beta.111 2026-10-21
+## v1.3.0 2026-10-12
 
 ### Gameplay
 
@@ -70,9 +70,8 @@ These stories do not replace the original event's combat, rewards or scoring. Th
 - Optimized animation loading and reduced animation data and package size.
 - Adjusted Drive, Shift Strike and Fighting Spirit card effects.
 - Updated eight card illustrations and the compact card atlas, correcting texture references and sampling boundaries.
-- Added blacksouls2 compatibility: Getter Mandala joins the SmokeForest event pool, and Ancient bonds support its statistics modifier.
 
-Targets 0.111 Beta. Do not mix stable and Beta four-file packages. Both packages are available in the v1.3.0 Release.
+These additions target stable 109; updated 111 Beta compatibility is a separate delivery. The fourth event-invasion batch and the unconfirmed fighter-separation animation report are not part of this version.
 
 ## v1.2.2 release notes
 
@@ -82,7 +81,6 @@ Targets 0.111 Beta. Do not mix stable and Beta four-file packages. Both packages
 - Removed or invalid saved track choices now fall back to the default preset.
 
 v1.2.2 provides separate stable-109 and 0.111-Beta packages. The Beta package also includes these BGM changes; use the matching asset and do not mix files.
-
 
 [Download v1.2.2](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2) · `shin-getter-mod-v1.2.2.zip`
 
@@ -119,7 +117,7 @@ For 0.111 Beta, use the separate v1.2.1-beta.111 build. Do not mix stable and Be
 
 ### Install the release
 
-1. Download `shin-getter-mod-v1.3.0.zip` from the [v1.3.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.3.0), then extract `ShinGetterMod.pck`, `ShinGetterMod.dll`, `ShinGetterMod.json`, and `mod_image.png`.
+1. Download `shin-getter-mod-v1.2.2.zip` from the [v1.2.2 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2), then extract `ShinGetterMod.pck`, `ShinGetterMod.dll`, `ShinGetterMod.json`, and `mod_image.png`.
 2. Create a `ShinGetterMod` folder inside the game's mod-loading directory and place all four files together.
 3. Launch the game, open **Settings → Mod Settings**, and enable “真盖塔模组” (Shin Getter Mod) under **Installed Mods**.
 4. Accept the load prompt, fully quit, and relaunch the game. Start a new run and select **Shin Getter**.
@@ -127,8 +125,7 @@ For 0.111 Beta, use the separate v1.2.1-beta.111 build. Do not mix stable and Be
 ### Install the 0.111 Beta build
 
 1. Confirm that the game is on **Slay the Spire 2 0.111 Beta**.
-2. Download `shin-getter-mod-v1.3.0-beta.111.zip` from the [v1.3.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.3.0).
-
+2. Download `shin-getter-mod-v1.2.2.111-beta.zip` from the [v1.2.2 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2).
 3. Replace all four files in the same `ShinGetterMod` directory. Do not combine a stable-build DLL with a Beta PCK, or vice versa.
 4. Fully quit and relaunch the game, enable the mod, and start a new run.
 

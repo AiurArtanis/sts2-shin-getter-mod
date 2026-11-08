@@ -13,6 +13,8 @@ namespace ShinGetterMod.Models.Cards;
 
 public sealed class SGC_BlackArmor : ShinGetterCardBase
 {
+    public override bool GainsBlock => true;
+
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new BlockVar(11m, ValueProp.Move) };
 
     public SGC_BlackArmor()

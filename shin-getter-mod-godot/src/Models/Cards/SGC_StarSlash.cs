@@ -101,7 +101,6 @@ public sealed class SGC_StarSlash : ShinGetterCardBase
     {
         // Other forms/non-rendered execution retain the previous animation and impact VFX.
         return NShinGetterStaticVisuals.PlayPhasedCreatureActionAnimation(
-
                 Owner.Creature,
                 GetActionAnimationTrigger() ?? "Attack",
                 1f,

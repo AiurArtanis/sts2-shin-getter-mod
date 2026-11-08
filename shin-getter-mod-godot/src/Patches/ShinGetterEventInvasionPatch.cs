@@ -5,12 +5,14 @@ using System.Threading.Tasks;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Events;
+using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Events;
 using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.Events;
 using MegaCrit.Sts2.Core.Rooms;
+using MegaCrit.Sts2.Core.Runs;
 using ShinGetterMod.Events;
 
 namespace ShinGetterMod.Patches;
@@ -20,10 +22,43 @@ internal static class ShinGetterEventInvasionPatch
 {
     private static void Prefix(
         EventModel __instance,
-        LocString description,
+        ref LocString description,
         ref IEnumerable<EventOption> eventOptions)
     {
+        description = ShinGetterEventReturnProse.Compose(__instance, description);
         eventOptions = ShinGetterEventInvasionService.AppendOptions(__instance, eventOptions);
+    }
+}
+
+[HarmonyPatch(typeof(LocString), nameof(LocString.GetRawText))]
+internal static class ShinGetterEventReturnProsePatch
+{
+    private static bool Prefix(LocString __instance, ref string __result)
+    {
+        if (!ShinGetterEventReturnProse.TryRawText(__instance, out string text)) return true;
+        __result = text;
+        return false;
+    }
+}
+
+[HarmonyPatch(typeof(EventModel), "SetInitialEventState")]
+internal static class ShinGetterFourthCompletedEventPatch
+{
+    private static bool Prefix(EventModel __instance, bool isPreFinished)
+        => !ShinGetterEventInvasionService.RestoreFourthState(__instance, isPreFinished);
+}
+
+// Native pre-finished rooms skip BeforeRoomEntered and visit tracking, but EventRoom
+// still calls AfterRoomEntered. Our persisted visit already contains that first entry.
+[HarmonyPatch(typeof(Hook), nameof(Hook.AfterRoomEntered))]
+internal static class ShinGetterFourthRoomRestoreHookPatch
+{
+    private static bool Prefix(IRunState runState, AbstractRoom room, ref Task __result)
+    {
+        if (room is not EventRoom { IsPreFinished: true }) return true;
+        if (!ShinGetterEventInvasionService.IsRestoringFourthRoom(runState, room)) return true;
+        __result = Task.CompletedTask;
+        return false;
     }
 }
 
@@ -85,9 +120,11 @@ internal static class ShinGetterEventOptionIconPatch
             return;
         }
 
-        bool isTriple = key.Contains(".SPIRIT_GRAFTER.", StringComparison.Ordinal)
+        // The journal key stays stable for old test saves; this route now belongs to Ryoma.
+        bool isBrainRyoma = key.Contains(".BRAIN_LEECH.pages.INITIAL.options.TRIPLE_COORDINATION", StringComparison.Ordinal);
+        bool isTriple = !isBrainRyoma && (key.Contains(".SPIRIT_GRAFTER.", StringComparison.Ordinal)
             || key.Contains(".WOOD_CARVINGS.", StringComparison.Ordinal)
-            || key.Contains(".TRIPLE_", StringComparison.Ordinal);
+            || key.Contains(".TRIPLE_", StringComparison.Ordinal));
         Control icon = CreateIconLayer(key, isTriple);
         icon.Name = "ShinGetterOptionIcon";
         icon.ZIndex = 0;

@@ -27,6 +27,12 @@ if (!File.Exists(gamePath))
 Assembly game = AssemblyLoadContext.Default.LoadFromAssemblyPath(gamePath);
 Console.WriteLine($"111 metadata input: {gamePath}; MVID={game.ManifestModule.ModuleVersionId}");
 
+if (args.Length == 2 && args[0] == "--issue286")
+{
+    Issue286Compatibility.Run(game, Path.GetFullPath(args[1]));
+    return;
+}
+
 if (args.Length == 2 && args[0] == "--bs2")
 {
     Assembly bs2 = AssemblyLoadContext.Default.LoadFromAssemblyPath(Path.GetFullPath(args[1]));
