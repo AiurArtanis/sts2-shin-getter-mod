@@ -1,0 +1,424 @@
+{
+  "issue": 238,
+  "version": "v1.4.0",
+  "source_date": "2026-11-01",
+  "human_approval": "approved_Artanis_all_nine_20261102",
+  "candidate_branch_only": true,
+  "shared_asset_library_modified": false,
+  "deployed": false,
+  "cards": [
+    {
+      "model": "SGC_TabletOfTruth",
+      "sequence": 78,
+      "job": "ART-007",
+      "portrait": "shin-getter-mod-godot/images/packed/card_portraits/shin_getter/s_g_c_tablet_of_truth.png",
+      "portrait_sha256": "0c2103ba31c4d58cf851b615af94c42abe6bab7859354894dbfb5de16fb69d7d",
+      "thumbnail_source": "E:/Work/outputs/issue238-v140-20261101/production-exports-20261102/cards/thumbnails/s_g_c_078.png",
+      "thumbnail_sha256": "de88055c24f238a5f2b5f12750cd68274a8c8048376f3f05982b4c661a789b7a",
+      "descriptor": "shin-getter-mod-godot/images/atlases/card_atlas.sprites/shin_getter/s_g_c_tablet_of_truth.tres",
+      "region": [
+        1750,
+        1330,
+        250,
+        190
+      ],
+      "thumbnail_rgb_sha256": "93f8591fd07715aa00f28b83b5d415ea1615114a5947250d20480a36bc8cdb2c",
+      "human_approval": "approved_Artanis",
+      "approved_source_sha256": "0c2103ba31c4d58cf851b615af94c42abe6bab7859354894dbfb5de16fb69d7d",
+      "production_export_ready": true,
+      "export_quality_band": "70-75"
+    },
+    {
+      "model": "SGC_TripleCyclone",
+      "sequence": 79,
+      "job": "ART-027",
+      "portrait": "shin-getter-mod-godot/images/packed/card_portraits/shin_getter/s_g_c_triple_cyclone.png",
+      "portrait_sha256": "9afb33bc4c58ff0d460c1490c14e92248ad768be1fadafa88473d60fea91623e",
+      "thumbnail_source": "E:/Work/outputs/issue238-v140-20261101/production-exports-20261102/cards/thumbnails/s_g_c_079.png",
+      "thumbnail_sha256": "ce1263c3736b3b55f9863b037e3a36c35ee1ad2c2028e790de481f5865feb02b",
+      "descriptor": "shin-getter-mod-godot/images/atlases/card_atlas.sprites/shin_getter/s_g_c_triple_cyclone.tres",
+      "region": [
+        2000,
+        1330,
+        250,
+        190
+      ],
+      "thumbnail_rgb_sha256": "5d03fe69781bb8a799277178a8efbcd7e3642c5295a460e4f8b538b118b03a29",
+      "human_approval": "approved_Artanis",
+      "approved_source_sha256": "9afb33bc4c58ff0d460c1490c14e92248ad768be1fadafa88473d60fea91623e",
+      "production_export_ready": true,
+      "export_quality_band": "65-70"
+    },
+    {
+      "model": "SGC_DrillMissile",
+      "sequence": 80,
+      "job": "ART-037",
+      "portrait": "shin-getter-mod-godot/images/packed/card_portraits/shin_getter/s_g_c_drill_missile.png",
+      "portrait_sha256": "d5b46d72ad4ec2f13dde8008be03904571173c5c0d7b9428b31114ce81ed42e0",
+      "thumbnail_source": "E:/Work/outputs/issue238-v140-20261101/production-exports-20261102/cards/thumbnails/s_g_c_080.png",
+      "thumbnail_sha256": "52c1f8fce981f548d8507df256c1beadd42347435336db9b5ea6e5d542b034c5",
+      "descriptor": "shin-getter-mod-godot/images/atlases/card_atlas.sprites/shin_getter/s_g_c_drill_missile.tres",
+      "region": [
+        2250,
+        1330,
+        250,
+        190
+      ],
+      "thumbnail_rgb_sha256": "3fde6ab50495e8661d27f279fe97d2f40f256c299181b30897513f973aaf8ef1",
+      "human_approval": "approved_Artanis",
+      "approved_source_sha256": "a51950ee82fd6bd75d6b340b4e8b7facc738712ab30584fe972cae9bd1047fbc",
+      "production_export_ready": true,
+      "export_quality_band": "75-80"
+    },
+    {
+      "model": "SGC_BrokenDrill",
+      "sequence": 81,
+      "job": "ART-001",
+      "portrait": "shin-getter-mod-godot/images/packed/card_portraits/shin_getter/s_g_c_broken_drill.png",
+      "portrait_sha256": "fef1a10c2857f93d4a7ee80c65640df9dd2f4d4a31866fb6513d1581f7428249",
+      "thumbnail_source": "E:/Work/outputs/issue238-v140-20261101/production-exports-20261102/cards/thumbnails/s_g_c_081.png",
+      "thumbnail_sha256": "154f35118355f2ca393e47bc059820f221187b5e484f70b4f72c48293593d547",
+      "descriptor": "shin-getter-mod-godot/images/atlases/card_atlas.sprites/shin_getter/s_g_c_broken_drill.tres",
+      "region": [
+        0,
+        1520,
+        250,
+        190
+      ],
+      "thumbnail_rgb_sha256": "5f0f818a23c476c21c201506f2322c7b506a7301c44b8f7de14e75d09beb92e1",
+      "human_approval": "approved_Artanis",
+      "approved_source_sha256": "fef1a10c2857f93d4a7ee80c65640df9dd2f4d4a31866fb6513d1581f7428249",
+      "production_export_ready": true,
+      "export_quality_band": "75-80"
+    },
+    {
+      "model": "SGC_Annotations",
+      "sequence": 82,
+      "job": "ART-016",
+      "portrait": "shin-getter-mod-godot/images/packed/card_portraits/shin_getter/s_g_c_annotations.png",
+      "portrait_sha256": "784820d43437a398809c4ce935a0415087b213e79c27094d618d3625bfeea61f",
+      "thumbnail_source": "E:/Work/outputs/issue238-v140-20261101/production-exports-20261102/cards/thumbnails/s_g_c_082.png",
+      "thumbnail_sha256": "8edd864a5b08a2dfbcb73bd088e72a628242706bb8fe1b25997ad5b2a8e980e9",
+      "descriptor": "shin-getter-mod-godot/images/atlases/card_atlas.sprites/shin_getter/s_g_c_annotations.tres",
+      "region": [
+        250,
+        1520,
+        250,
+        190
+      ],
+      "thumbnail_rgb_sha256": "4abf43c91bc40796eca3bd0fdbeee781bbd98e2944d8abea634a407b440151d4",
+      "human_approval": "approved_Artanis",
+      "approved_source_sha256": "784820d43437a398809c4ce935a0415087b213e79c27094d618d3625bfeea61f",
+      "production_export_ready": true,
+      "export_quality_band": "70-75"
+    }
+  ],
+  "icons": [
+    {
+      "model": "SGR_ActivatedSapphire",
+      "kind": "relic",
+      "job": "ART-005",
+      "slot": 0,
+      "icon_source": "E:/Work/outputs/issue238-v140-20261101/production-exports-20261102/icons/icon_128/SGR_ActivatedSapphire.png",
+      "outline_source": "E:/Work/outputs/issue238-v140-20261101/production-exports-20261102/icons/outline_128/SGR_ActivatedSapphire.png",
+      "master_source": "E:/Work/outputs/issue238-v140-20261101/assets/generated/ART-005/SGR_ActivatedSapphire_master_256.png",
+      "icon_source_sha256": "a7bc15b378daa212ceaaaa1d0a03becb168894a2028c11bf7fb9ac1081fa4c22",
+      "outline_source_sha256": "7ddd5489ec60e506e792ede6e4e425a5530cad47f10143ee5e3d0272041d6c95",
+      "selected_item_independent_qa": "approved",
+      "human_approval": "approved_Artanis",
+      "icon_descriptor": "shin-getter-mod-godot/images/atlases/relic_atlas.sprites/s_g_r_activated_sapphire.tres",
+      "outline_descriptor": "shin-getter-mod-godot/images/atlases/relic_outline_atlas.sprites/s_g_r_activated_sapphire.tres",
+      "big_icon": "shin-getter-mod-godot/images/relics/s_g_r_activated_sapphire.png",
+      "big_icon_sha256": "5a9f3d2b9673df1b2608efe74b654cc6f703db02b6004718803d6a8a9d21b0b8",
+      "approved_source_sha256": "5a9f3d2b9673df1b2608efe74b654cc6f703db02b6004718803d6a8a9d21b0b8"
+    },
+    {
+      "model": "SGR_SymbioticFilter",
+      "kind": "relic",
+      "job": "ART-009",
+      "slot": 1,
+      "icon_source": "E:/Work/outputs/issue238-v140-20261101/production-exports-20261102/icons/icon_128/SGR_SymbioticFilter.png",
+      "outline_source": "E:/Work/outputs/issue238-v140-20261101/production-exports-20261102/icons/outline_128/SGR_SymbioticFilter.png",
+      "master_source": "E:/Work/outputs/issue238-v140-20261101/assets/generated/ART-009/SGR_SymbioticFilter-master-256.png",
+      "icon_source_sha256": "6b5834794abe4e5598dfaeb82f1a1b8de0fd2682b5ccae46faed6e1724b4f3ac",
+      "outline_source_sha256": "0381adb26fdd2da674a8a53747213fb04fe602622812d43e12c79f467277edb4",
+      "selected_item_independent_qa": "approved",
+      "human_approval": "approved_Artanis",
+      "icon_descriptor": "shin-getter-mod-godot/images/atlases/relic_atlas.sprites/s_g_r_symbiotic_filter.tres",
+      "outline_descriptor": "shin-getter-mod-godot/images/atlases/relic_outline_atlas.sprites/s_g_r_symbiotic_filter.tres",
+      "big_icon": "shin-getter-mod-godot/images/relics/s_g_r_symbiotic_filter.png",
+      "big_icon_sha256": "c2b438ff2872d5e92bd45f6cf9b1afa170c081c62713322791376457d7394b65",
+      "approved_source_sha256": "c2b438ff2872d5e92bd45f6cf9b1afa170c081c62713322791376457d7394b65"
+    },
+    {
+      "model": "SGR_Ember",
+      "kind": "relic",
+      "job": "ART-017",
+      "slot": 2,
+      "icon_source": "E:/Work/outputs/issue238-v140-20261101/production-exports-20261102/icons/icon_128/SGR_Ember.png",
+      "outline_source": "E:/Work/outputs/issue238-v140-20261101/production-exports-20261102/icons/outline_128/SGR_Ember.png",
+      "master_source": "E:/Work/outputs/issue238-v140-20261101/assets/generated/ART-017/SGR_Ember_master_256_normalized.png",
+      "icon_source_sha256": "9dc911f82b116c5d4c6592cbb3afa3eb11454948abc7edf09584cbbba36f8654",
+      "outline_source_sha256": "214426329520fa04c85a334bc892c4e97153926ee9a7c290294099e6b328a08c",
+      "selected_item_independent_qa": "approved",
+      "human_approval": "approved_Artanis",
+      "icon_descriptor": "shin-getter-mod-godot/images/atlases/relic_atlas.sprites/s_g_r_ember.tres",
+      "outline_descriptor": "shin-getter-mod-godot/images/atlases/relic_outline_atlas.sprites/s_g_r_ember.tres",
+      "big_icon": "shin-getter-mod-godot/images/relics/s_g_r_ember.png",
+      "big_icon_sha256": "1bff3536d929ba223a8b3c2be481504677c02749dbc303dd637c473a5c6113ea",
+      "approved_source_sha256": "1bff3536d929ba223a8b3c2be481504677c02749dbc303dd637c473a5c6113ea"
+    },
+    {
+      "model": "SGR_MobilityCatalyst",
+      "kind": "potion",
+      "job": "ART-008",
+      "slot": 3,
+      "icon_source": "E:/Work/outputs/issue238-v140-20261101/production-exports-20261102/icons/icon_128/SGR_MobilityCatalyst.png",
+      "outline_source": "E:/Work/outputs/issue238-v140-20261101/production-exports-20261102/icons/outline_128/SGR_MobilityCatalyst.png",
+      "master_source": "E:/Work/outputs/issue238-v140-20261101/assets/generated/ART-008/SGR_MobilityCatalyst-master-256.png",
+      "icon_source_sha256": "7488b65c35a5dca516904f8f7e9d809aa63a849c5e558aa89274b3803f984006",
+      "outline_source_sha256": "1d7125e92497ea05b1e2e3408f7877e18b4ccb3dd1edbd21a705629b6033a4ec",
+      "selected_item_independent_qa": "approved",
+      "human_approval": "approved_Artanis",
+      "icon_descriptor": "shin-getter-mod-godot/images/atlases/potion_atlas.sprites/s_g_r_mobility_catalyst.tres",
+      "outline_descriptor": "shin-getter-mod-godot/images/atlases/potion_outline_atlas.sprites/s_g_r_mobility_catalyst.tres",
+      "approved_source_sha256": "d3176f435f227b2f25ccef0452478dbc64132810d073523ea53a9c06b044701f"
+    }
+  ],
+  "card_atlas": {
+    "path": "shin-getter-mod-godot/images/atlases/card_atlas_shin_getter_01.png",
+    "size": [
+      2500,
+      2470
+    ],
+    "baseline_sha256": "8fa1bbc0f3f168591664a7bc4a6ba4a11029c5d132c8902e9bfa8e1378f009a2",
+    "sha256": "3ba202708bc56d1ab6c78cae59ef175d1fdfd87c5eaa88dc68c7323cf0cb2ed9",
+    "other_slot_pixels_unchanged": true,
+    "ancient_fixed_slots_preserved": [
+      67,
+      68,
+      72,
+      77
+    ],
+    "baseline_commit": "26c8da9a907fd9e12d41bf5bf17d24ca5975bfa8",
+    "integration_baseline_head": "29da3ecc5d592b717263ec63b81f3c4ddb3f2ee3",
+    "outside_selected_slots_unchanged_from_integration_head": true
+  },
+  "item_atlases": {
+    "icon": {
+      "path": "shin-getter-mod-godot/images/atlases/issue238_item_atlas.png",
+      "size": [
+        512,
+        128
+      ],
+      "sha256": "9d38d4309960c9ca023afb74682c4c10ac396e136d0b756b85dcd5586cc2fbc8",
+      "selected_source_pixels_unchanged": true
+    },
+    "outline": {
+      "path": "shin-getter-mod-godot/images/atlases/issue238_item_outline_atlas.png",
+      "size": [
+        512,
+        128
+      ],
+      "sha256": "e61cd1d888fbd12ecbd535c0ac22983e8b02e2577688240ce601683502329c99",
+      "selected_source_pixels_unchanged": true
+    }
+  },
+  "historical_art_jobs": [
+    {
+      "job": "ART-001",
+      "result_path": "E:/Work/outputs/issue238-v140-20261101/art-control/jobs/ART-001/result.json",
+      "result_sha256": "aae0d67d3638ce804885b7a03aa5625fdca4c4f1c4bc4d18e06d5d12d70039db",
+      "review_path": "E:/Work/outputs/issue238-v140-20261101/art-control/jobs/ART-001/review.json",
+      "review_sha256": "545a2625963dd0067deb3c47cba2538ed07e49473ba5c31eb0ec1b335b7c8aad",
+      "independent_qa": "approved",
+      "human_approval": "pending_Artanis"
+    },
+    {
+      "job": "ART-002",
+      "result_path": "E:/Work/outputs/issue238-v140-20261101/art-control/jobs/ART-002/result.json",
+      "result_sha256": "ba446f378e6016667424f69095616d0f991cff2ee611b111239acf90279d20a3",
+      "review_path": "E:/Work/outputs/issue238-v140-20261101/art-control/jobs/ART-002/review.json",
+      "review_sha256": "c782a48e20a96defe1f242cd94c2f119548c6581402a9d858b14a8d2c753bee5",
+      "independent_qa": "approved",
+      "human_approval": "pending_Artanis"
+    },
+    {
+      "job": "ART-003",
+      "result_path": "E:/Work/outputs/issue238-v140-20261101/art-control/jobs/ART-003/result.json",
+      "result_sha256": "23275097e0bdf0de300e862274d1a02ac37fc2b6639e0eba52a480c5769fdf70",
+      "review_path": "E:/Work/outputs/issue238-v140-20261101/art-control/jobs/ART-003/review.json",
+      "review_sha256": "5eacba23d49d15a23c287ff4bcc34a689c242cb17bdf969d50384813d48c6c57",
+      "independent_qa": "approved-selected-item-only",
+      "selected_items": [
+        "SGR_SymbioticFilter"
+      ],
+      "source_job_overall_qa": "revision-requested",
+      "human_approval": "pending_Artanis"
+    },
+    {
+      "job": "ART-004",
+      "result_path": "E:/Work/outputs/issue238-v140-20261101/art-control/jobs/ART-004/result.json",
+      "result_sha256": "cdea04d5b5f3d7f9cbd910a26c4801b90ac97c5c285b5d23dcc5782e881f2a19",
+      "review_path": "E:/Work/outputs/issue238-v140-20261101/art-control/jobs/ART-004/review.json",
+      "review_sha256": "48c70b4428d1d8063154db12b1c4e6b3f434f1d56f9d9abf7051d50f2e3a0d6b",
+      "independent_qa": "approved",
+      "selected_items": [
+        "SGR_MobilityCatalyst"
+      ],
+      "source_job_overall_qa": "approved",
+      "human_approval": "pending_Artanis"
+    },
+    {
+      "job": "ART-005",
+      "result_path": "E:/Work/outputs/issue238-v140-20261101/art-control/jobs/ART-005/result.json",
+      "result_sha256": "b6814423e28ef18fc4aacd36a618e4d596e62b28eb713d5072ba17d3e507b07e",
+      "review_path": "E:/Work/outputs/issue238-v140-20261101/art-control/jobs/ART-005/review.json",
+      "review_sha256": "f160fa7e1502a9222f1bf5c3997108debd99d8c2cd11fd6f320ed9812c1d402f",
+      "independent_qa": "approved",
+      "selected_items": [
+        "SGR_ActivatedSapphire",
+        "SGR_Ember"
+      ],
+      "source_job_overall_qa": "approved",
+      "human_approval": "pending_Artanis"
+    }
+  ],
+  "art_jobs": [
+    {
+      "job": "ART-007",
+      "selected_items": [
+        "SGC_TabletOfTruth"
+      ],
+      "source_job_overall_qa": "approved",
+      "independent_qa": "approved",
+      "review_scope": "selected_asset",
+      "review_path": "E:/Work/outputs/issue238-v140-20261101/art-control/jobs/ART-007/review.json",
+      "review_sha256": "f939990438a0a78e3f66d5bbf99842f33f308f27c9a14669e9699a204b5600b1",
+      "result_path": "E:/Work/outputs/issue238-v140-20261101/art-control/jobs/ART-007/result.json",
+      "result_sha256": "a1cfc1b3ee4ec1848e9a2f4acc1852899f2f73b2f1bc35e5987c1eaf644283a3",
+      "human_approval": "approved_Artanis"
+    },
+    {
+      "job": "ART-009",
+      "selected_items": [
+        "SGR_SymbioticFilter"
+      ],
+      "source_job_overall_qa": "revision-requested",
+      "independent_qa": "approved-selected-item-only",
+      "review_scope": "selected_asset",
+      "review_path": "E:/Work/outputs/issue238-v140-20261101/art-control/jobs/ART-009/review.json",
+      "review_sha256": "dfdd3e8624d89845129fa50a7d755156fb3542b879b195f0ee420215ca332a1a",
+      "result_path": "E:/Work/outputs/issue238-v140-20261101/art-control/jobs/ART-009/result.json",
+      "result_sha256": "4e9f062663780a80516ca25794349869902a03e28553a262f6c55f561d02023d",
+      "human_approval": "approved_Artanis"
+    },
+    {
+      "job": "ART-008",
+      "selected_items": [
+        "SGR_MobilityCatalyst"
+      ],
+      "source_job_overall_qa": "approved",
+      "independent_qa": "approved",
+      "review_scope": "selected_asset",
+      "review_path": "E:/Work/outputs/issue238-v140-20261101/art-control/jobs/ART-008/review.json",
+      "review_sha256": "8039947e1d0dd5425eab436925597d994d1d76b1637b761434fc9713d4e4d1a1",
+      "result_path": "E:/Work/outputs/issue238-v140-20261101/art-control/jobs/ART-008/result.json",
+      "result_sha256": "a5a865183a6180b99ac005cc9991740c824155d34c8466c4bc89929fd07936ef",
+      "human_approval": "approved_Artanis"
+    },
+    {
+      "job": "ART-005",
+      "selected_items": [
+        "SGR_ActivatedSapphire"
+      ],
+      "source_job_overall_qa": "approved",
+      "independent_qa": "approved",
+      "review_scope": "selected_asset",
+      "review_path": "E:/Work/outputs/issue238-v140-20261101/art-control/jobs/ART-005/review.json",
+      "review_sha256": "f160fa7e1502a9222f1bf5c3997108debd99d8c2cd11fd6f320ed9812c1d402f",
+      "result_path": "E:/Work/outputs/issue238-v140-20261101/art-control/jobs/ART-005/result.json",
+      "result_sha256": "9d5e7bb9b3273e9758906221c6b22692212698c6daa7b28a23c90e69fc23f2ae",
+      "human_approval": "approved_Artanis"
+    },
+    {
+      "job": "ART-001",
+      "selected_items": [
+        "SGC_BrokenDrill"
+      ],
+      "source_job_overall_qa": "approved",
+      "independent_qa": "approved",
+      "review_scope": "selected_asset",
+      "review_path": "E:/Work/outputs/issue238-v140-20261101/art-control/jobs/ART-001/review.json",
+      "review_sha256": "545a2625963dd0067deb3c47cba2538ed07e49473ba5c31eb0ec1b335b7c8aad",
+      "result_path": "E:/Work/outputs/issue238-v140-20261101/art-control/jobs/ART-001/result.json",
+      "result_sha256": "aae0d67d3638ce804885b7a03aa5625fdca4c4f1c4bc4d18e06d5d12d70039db",
+      "human_approval": "approved_Artanis"
+    },
+    {
+      "job": "ART-016",
+      "selected_items": [
+        "SGC_Annotations"
+      ],
+      "source_job_overall_qa": "PASS_AGENT_PENDING_HUMAN",
+      "independent_qa": "approved",
+      "review_scope": "selected_asset",
+      "review_path": "E:/Work/outputs/issue238-v140-20261101/art-control/jobs/ART-016/review.json",
+      "review_sha256": "ac1d3d47f14ba94d7ce331739848803afe76908fb6d23306b56d8cb986a2b6f0",
+      "result_path": "E:/Work/outputs/issue238-v140-20261101/art-control/jobs/ART-016/result.json",
+      "result_sha256": "319aa4cb8a32ee28698602c72e8a012553eae49e04b08549a718db43b69e3686",
+      "human_approval": "approved_Artanis"
+    },
+    {
+      "job": "ART-017",
+      "selected_items": [
+        "SGR_Ember"
+      ],
+      "source_job_overall_qa": "approved",
+      "independent_qa": "approved",
+      "review_scope": "selected_asset",
+      "review_path": "E:/Work/outputs/issue238-v140-20261101/art-control/jobs/ART-017/review.json",
+      "review_sha256": "3fd0174bcb43768cfc8c793525367b57b43099351c621665fe63dde6ef2a2626",
+      "result_path": "E:/Work/outputs/issue238-v140-20261101/art-control/jobs/ART-017/result.json",
+      "result_sha256": "781e1258a23cc7a494a69f504525e46a0945b157da2b316609f43e90ad1b19d5",
+      "human_approval": "approved_Artanis"
+    },
+    {
+      "job": "ART-027",
+      "selected_items": [
+        "SGC_TripleCyclone"
+      ],
+      "source_job_overall_qa": "approved",
+      "independent_qa": "approved",
+      "review_scope": "selected_asset",
+      "review_path": "E:/Work/outputs/issue238-v140-20261101/art-control/jobs/ART-027/review.json",
+      "review_sha256": "6b37a729cead644d850c7988ea7ffdb8304406ccdaa85f45a692fe29838f1741",
+      "result_path": "E:/Work/outputs/issue238-v140-20261101/art-control/jobs/ART-027/result.json",
+      "result_sha256": "70cd7811cbd4ccefbf567f09b28f4bfd5a83e2ab1a859ee60ec0005495229ce8",
+      "human_approval": "approved_Artanis"
+    },
+    {
+      "job": "ART-037",
+      "selected_items": [
+        "SGC_DrillMissile"
+      ],
+      "source_job_overall_qa": "approved",
+      "independent_qa": "approved",
+      "review_scope": "visual_preview_only_plus_separate_production_export",
+      "review_path": "E:/Work/outputs/issue238-v140-20261101/art-control/jobs/ART-037/review.json",
+      "review_sha256": "64f2a8d12793317b97b165bc614a05c3f2a6ff27582f3df1b56d69bec90d96e2",
+      "result_path": "E:/Work/outputs/issue238-v140-20261101/art-control/jobs/ART-037/result.json",
+      "result_sha256": "d7473be6b0bd34b772ae33500ca2aa4b640106b3a14cffdc04fe142d23e0f84e",
+      "human_approval": "approved_Artanis"
+    }
+  ],
+  "human_approval_receipt_sha256": "b5d9b2b913e944dda03651bfda8ce0ed8cd408d828083484dff53316f1347359",
+  "production_export_ready": true,
+  "production_exports": {
+    "cards_manifest_sha256": "4ad369e88c80244e14a16071de3a77c415713c0e5307db7c51d7e5438239d4c3",
+    "icons_manifest_sha256": "50f1385d459aaf2bf7dcaad6a5fb307efcc6688e60cd3a43208aff6c6de1ddea"
+  },
+  "engineering_integration_date": "2026-11-02",
+  "runtime_acceptance": false,
+  "stories_human_approval": "approved_Artanis_both_20261102"
+}

@@ -3,6 +3,7 @@ using MegaCrit.Sts2.Core.Runs;
 using ShinGetterMod.Config;
 using ShinGetterMod.Models.Characters;
 using ShinGetterMod.Models.Relics;
+using ShinGetterMod.Services;
 
 namespace ShinGetterMod.Patches;
 
@@ -23,6 +24,8 @@ internal static class ShinGetterEventInvasionRunSettingsPatch
 
             if (player.GetRelic<SGR_EmperorsFragment>() is { } fragment)
                 fragment.EventInvasionEnabled = enabled;
+
+            ShinGetterPlayerEventState.InitializeNewRun(player, enabled);
         }
     }
 }
