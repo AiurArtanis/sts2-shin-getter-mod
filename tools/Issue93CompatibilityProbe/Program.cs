@@ -5,12 +5,17 @@ string sourceRoot = Environment.GetEnvironmentVariable("SHIN_GETTER_STS2_111_SOU
     ?? @"E:\Work\SlaytheSpare2-111-beta";
 string betaBin = Path.GetFullPath(Environment.GetEnvironmentVariable("SHIN_GETTER_STS2_111_BIN")
     ?? Path.Combine(sourceRoot, ".godot", "mono", "temp", "bin", "Debug"));
+string dependencyBin = Path.GetFullPath(Environment.GetEnvironmentVariable("SHIN_GETTER_STS2_111_DEPENDENCY_BIN")
+    ?? Path.Combine(sourceRoot, ".godot", "mono", "temp", "bin", "Debug"));
 AssemblyLoadContext.Default.Resolving += (_, name) =>
 {
-    string dependency = Path.Combine(betaBin, $"{name.Name}.dll");
-    return File.Exists(dependency)
-        ? AssemblyLoadContext.Default.LoadFromAssemblyPath(dependency)
-        : null;
+    foreach (string directory in new[] { betaBin, dependencyBin }.Distinct())
+    {
+        if (name.Name == "sts2" && directory != betaBin) continue;
+        string dependency = Path.Combine(directory, $"{name.Name}.dll");
+        if (File.Exists(dependency)) return AssemblyLoadContext.Default.LoadFromAssemblyPath(dependency);
+    }
+    return null;
 };
 
 if (args.Length == 2 && args[0] == "--inventory")

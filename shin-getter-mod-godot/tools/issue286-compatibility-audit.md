@@ -53,3 +53,23 @@ missing and wrong constructor signatures. The source game was only read.
   still under investigation; do not blame it on official111 without proof.
 - Hex exact package/source is missing. Startup-only no-Hex probes do not count
   toward the complete community group's victory/75-room acceptance.
+
+## Original Native Reference Recovered
+
+The 6896 input is a locally decompiled/recompiled Debug binary. Original111
+ExportRelease DLL 0861BFA1DF347538D932F22D580E75420F08082792EB914E53B4882764ACDBE9
+was recovered from the old Beta worktree reference: 9757184 bytes, MVID
+73b63ee0-6c0a-47bb-b0d1-b21f6d94222e, product commit41cef1ea. Its PE CodeView
+path is the publisher's ExportRelease build path. Historical native handshake
+and October19/20 v1.3.0 runtime identity records independently bind the same
+hash/MVID to v0.111.0; these records do not grant this candidate acceptance.
+
+Rebuilding against this original reference passes with zero warnings/errors;
+the 7-target actual-Harmony probe and production checkpoint/native RNG probe
+also pass against it. The target gate now pins this exact original reference.
+The metadata tool accepts a separate dependency directory but never falls back
+to a different sts2.dll. New runtime initialization still requires its own result.
+
+The currently installed BaseLib3.4.7 and St2bs2.3.0 DLL hashes match those
+October runtime records. Their failures with the old reconstructed runtime are
+not evidence that these packages fail on the recovered original game DLL.

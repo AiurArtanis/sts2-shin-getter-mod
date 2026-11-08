@@ -14,7 +14,7 @@ static void Require(bool value, string message)
 {
     if (!value) throw new InvalidOperationException(message);
 }
-Require(Hash(native) == "6896BBA91CEDDC661B3F789749E9F0AAC338F5DDBBB92C598FC344DEC822DC19", "Expected the pinned native111 reference assembly.");
+Require(Hash(native) == "0861BFA1DF347538D932F22D580E75420F08082792EB914E53B4882764ACDBE9", "Expected the retained native111 ExportRelease reference assembly.");
 Require(Hash(harmony) == "EF1898322C9F5C86DC1B0758B272A9C440823B4A41CA9A0B82A3AA6B3D206387", "Expected the actual reviewed 0Harmony assembly.");
 Console.WriteLine($"REAL_HARMONY {harmony.GetName().Version} SHA256={Hash(harmony)}");
 Console.WriteLine($"NATIVE111 SHA256={Hash(native)}");
