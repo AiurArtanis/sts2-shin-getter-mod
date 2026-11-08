@@ -12,7 +12,7 @@ internal static class ShinGetterTrialCombatSync
     private static InvalidOperationException NotInvoked() => new("Metadata probe must not execute a product callback.");
     internal static bool TryRouteProceed(EventSynchronizer sync, EventOption option, int index) => throw NotInvoked();
     internal static void Attach(EventSynchronizer sync, RunLocationTargetedMessageBuffer buffer,
-        INetGameService net, IPlayerCollection players, uint seed) => throw NotInvoked();
+        INetGameService net, IPlayerCollection players, ulong seed) => throw NotInvoked();
     internal static void BeginEvent(EventSynchronizer sync, bool prefinished) => throw NotInvoked();
     internal static void BeforeChoice(EventSynchronizer sync, Player player) => throw NotInvoked();
     internal static void AfterChoice(EventSynchronizer sync, Player player) => throw NotInvoked();

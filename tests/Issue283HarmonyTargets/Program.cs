@@ -14,10 +14,10 @@ static void Require(bool value, string message)
 {
     if (!value) throw new InvalidOperationException(message);
 }
-Require(Hash(native) == "C2D3E15310259957BA312F9D2362CBA193512EBE9819456A062366E6AF38B9B0", "Expected the pinned formal109 assembly.");
+Require(Hash(native) == "6896BBA91CEDDC661B3F789749E9F0AAC338F5DDBBB92C598FC344DEC822DC19", "Expected the pinned native111 reference assembly.");
 Require(Hash(harmony) == "EF1898322C9F5C86DC1B0758B272A9C440823B4A41CA9A0B82A3AA6B3D206387", "Expected the actual reviewed 0Harmony assembly.");
 Console.WriteLine($"REAL_HARMONY {harmony.GetName().Version} SHA256={Hash(harmony)}");
-Console.WriteLine($"FORMAL109 SHA256={Hash(native)}");
+Console.WriteLine($"NATIVE111 SHA256={Hash(native)}");
 
 // The real class processor merges attributes and defaults an unspecified method type to Normal.
 // Read its processed description, then use Harmony's own original-target resolver without Patch().
@@ -59,8 +59,8 @@ foreach (Type patch in patches)
         "Unexpected target for " + patch.FullName);
     if (original.IsConstructor)
     {
-        Type[] fullSignature = { typeof(RunLocationTargetedMessageBuffer), typeof(INetGameService), typeof(IPlayerCollection), typeof(ulong), typeof(uint) };
-        Require(Description(patch).argumentTypes?.SequenceEqual(fullSignature) == true, "Constructor attribute must state the exact five-parameter signature.");
+        Type[] fullSignature = { typeof(RunLocationTargetedMessageBuffer), typeof(INetGameService), typeof(IPlayerCollection), typeof(IRunState), typeof(ulong), typeof(ulong) };
+        Require(Description(patch).argumentTypes?.SequenceEqual(fullSignature) == true, "Constructor attribute must state the exact six-parameter signature.");
         Require(original.GetParameters().Select(parameter => parameter.ParameterType).SequenceEqual(fullSignature), "Resolved native constructor differs.");
     }
     foreach (MethodInfo hook in patch.GetMethods(StaticMethods | BindingFlags.DeclaredOnly)

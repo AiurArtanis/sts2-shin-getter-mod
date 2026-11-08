@@ -21,7 +21,7 @@ internal sealed class ShinGetterTrialCombatSync : IDisposable
     private readonly RunLocationTargetedMessageBuffer _buffer;
     private readonly INetGameService _netService;
     private readonly IPlayerCollection _players;
-    private readonly uint _runSeed;
+    private readonly ulong _runSeed;
     private EventModel? _localEvent;
     private RunLocation _location;
     private Player? _choosingOwner;
@@ -31,7 +31,7 @@ internal sealed class ShinGetterTrialCombatSync : IDisposable
     private bool _disposed;
 
     private ShinGetterTrialCombatSync(RunLocationTargetedMessageBuffer buffer, INetGameService netService,
-        IPlayerCollection players, uint runSeed)
+        IPlayerCollection players, ulong runSeed)
     {
         _buffer = buffer;
         _netService = netService;
@@ -43,7 +43,7 @@ internal sealed class ShinGetterTrialCombatSync : IDisposable
 
     internal static void Attach(EventSynchronizer synchronizer,
         RunLocationTargetedMessageBuffer buffer, INetGameService netService,
-        IPlayerCollection players, uint seed) =>
+        IPlayerCollection players, ulong seed) =>
         Instances.Add(synchronizer, new ShinGetterTrialCombatSync(buffer, netService, players, seed));
 
     internal static void BeginEvent(EventSynchronizer synchronizer, bool isPrefinished)

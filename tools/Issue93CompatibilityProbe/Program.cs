@@ -33,6 +33,14 @@ if (args.Length == 2 && args[0] == "--issue286")
     return;
 }
 
+if (args.Length == 2 && args[0] == "--issue283-targets")
+{
+    Assembly probe = AssemblyLoadContext.Default.LoadFromAssemblyPath(Path.GetFullPath(args[1]));
+    MethodInfo entry = probe.EntryPoint ?? throw new InvalidOperationException("Target probe has no entry point.");
+    entry.Invoke(null, entry.GetParameters().Length == 0 ? null : new object[] { Array.Empty<string>() });
+    return;
+}
+
 if (args.Length == 2 && args[0] == "--bs2")
 {
     Assembly bs2 = AssemblyLoadContext.Default.LoadFromAssemblyPath(Path.GetFullPath(args[1]));

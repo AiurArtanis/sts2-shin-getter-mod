@@ -25,12 +25,12 @@ internal static class ShinGetterTrialProceedRoutePatch
 [HarmonyPatch(typeof(EventSynchronizer), MethodType.Constructor, new Type[]
 {
     typeof(RunLocationTargetedMessageBuffer), typeof(INetGameService), typeof(IPlayerCollection),
-    typeof(ulong), typeof(uint),
+    typeof(IRunState), typeof(ulong), typeof(ulong),
 })]
 internal static class ShinGetterTrialSyncInitPatch
 {
     private static void Postfix(EventSynchronizer __instance, RunLocationTargetedMessageBuffer messageBuffer,
-        INetGameService netService, IPlayerCollection playerCollection, uint seed) =>
+        INetGameService netService, IPlayerCollection playerCollection, ulong seed) =>
         ShinGetterTrialCombatSync.Attach(__instance, messageBuffer, netService, playerCollection, seed);
 }
 
