@@ -165,7 +165,7 @@ def validate_config_and_runtime() -> None:
         "ShinGetterBgmCategory.Execution",
         "ShinGetterBgmCatalog.DefaultExecutionMusicPath",
         "ShinGetterBgmCatalog.ResolveForPlayback(configured)",
-        "ShinGetterBgmPreviewService.EnableLoop(stream)",
+        "ShinGetterBgmPreviewService.EnableLoop(stream, trackPath)",
     )
 
 

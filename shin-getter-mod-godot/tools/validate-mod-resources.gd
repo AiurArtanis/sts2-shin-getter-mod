@@ -95,6 +95,7 @@ const REQUIRED_RESOURCES := {
 	"res://audio/music/shin_getter/album/heats_sts2.mp3": false,
 	"res://audio/music/shin_getter/album/getter_robo_sts2.mp3": false,
 	"res://audio/music/shin_getter/album/bravery_iron_saga.mp3": false,
+	"res://audio/music/shin_getter/album/emperor_fragment.mp3": false,
 	"res://images/atlases/ui_atlas.png": false,
 	"res://images/atlases/ui_atlas.sprites/card/energy_shin_getter.tres": false,
 	"res://images/packed/sprite_fonts/shin_getter_energy_icon.png": false,

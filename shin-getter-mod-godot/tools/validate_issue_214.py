@@ -25,8 +25,10 @@ def main():
     args = parser.parse_args()
     manifest = json.loads(read("tools/issue214-bgm-manifest.json"))
     tracks = manifest["tracks"]
-    assert manifest["sheet"] == "BGM列表" and len(tracks) == 23
-    assert [t["row"] for t in tracks] == list(range(3, 26))
+    # issue#281 appends one DLC track to the current catalog; retain all 23 mappings.
+    assert manifest["sheet"] == "BGM列表" and len(tracks) == 24
+    assert manifest["range"] == "A3:E26"
+    assert [t["row"] for t in tracks] == list(range(3, 27))
     catalog = read("src/Audio/ShinGetterBgmCatalog.cs")
     constants = dict(re.findall(r'const string (\w+) = "([^"]*)";', catalog))
     entries = []

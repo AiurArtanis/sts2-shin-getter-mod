@@ -1,7 +1,7 @@
 {
   "sheet": "BGM列表",
-  "range": "A3:E25",
-  "workbook_sha256": "15f8b8987cd29a55458f6d36debebabbe477dc173b14d44bfc8d33351a444aea",
+  "range": "A3:E26",
+  "workbook_sha256": "65691c658373452d536f3fd42d1d61347ce9cb3797cba84e559c0e51bcb58fc6",
   "title_revision": {
     "date": "2026-09-21",
     "range": "C20:E20",
@@ -352,6 +352,57 @@
       },
       "bytes": 3019213,
       "sha256": "040ab21c25cfba350613da0ccb1192de212f7458b94e0a86267e516c1d82cf29"
+    },
+    {
+      "row": 26,
+      "id": "emperor_fragment",
+      "resource": "audio/music/shin_getter/album/emperor_fragment.mp3",
+      "source_file": "皇帝的碎片-皇帝の欠片-srw30-W_CGT_0.wav",
+      "sheet_file": "emperor_fragment.mp3",
+      "default_scene": "",
+      "titles": {
+        "zhs": "皇帝的碎片",
+        "jpn": "皇帝の欠片",
+        "eng": "Fragment of the Emperor"
+      },
+      "bytes": 2645037,
+      "sha256": "9909d2ff0e6e50fb3497386fe855e8ba10d29b6de6dcf4920b65d47ffa7b10e0",
+      "source_identity": {
+        "game": "Super Robot Wars 30",
+        "DLC": "Expansion Pack",
+        "series": "Getter Robo DEVOLUTION",
+        "cue": "W_CGT_0",
+        "BGM_ID": 155,
+        "cue_index": 6,
+        "stream_AWB_ID": 5,
+        "container_AWB": "103_011.awb",
+        "container_ACB": "103_012.acb",
+        "source_wav_sha256": "23f36f183bd78a894bab73989d221b2d107a6dc83f26e36d8ff1d44647dc9f8b",
+        "source_frames": 5289984,
+        "playable_frames": 5286857,
+        "official_japanese_title_reference": "https://srw30-thirty.suparobo.jp/spec/ (FAQ 34)",
+        "english_title_status": "Project adopted translation; not verified as an official BGM English title."
+      },
+      "audio_profile": {
+        "codec": "mp3",
+        "encoder": "libmp3lame",
+        "sample_rate": 48000,
+        "channels": 2,
+        "bit_rate": 192000,
+        "duration_seconds": 110.14285416666667,
+        "loop_offset_seconds": 21.0,
+        "trim": "Discard 3127 decoded padding frames after ACB playable length; preserve original WAV.",
+        "normalization": "None",
+        "runtime_and_audible_loop_acceptance": "Pending"
+      }
     }
-  ]
+  ],
+  "catalog_revision": {
+    "issue": "issue#281",
+    "date": "2026-11-04",
+    "previous_range": "A3:E25",
+    "previous_workbook_sha256": "15f8b8987cd29a55458f6d36debebabbe477dc173b14d44bfc8d33351a444aea",
+    "workbook_before_append_sha256": "580c8144619fe101ab8a3fde91f7abb462331e63c4e2919434a0210df0aefdb9",
+    "change": "Append one selectable track; all previous rows and default mappings retained."
+  }
 }

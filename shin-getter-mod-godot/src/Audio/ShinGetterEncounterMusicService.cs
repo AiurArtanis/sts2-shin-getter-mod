@@ -53,7 +53,7 @@ internal static class ShinGetterEncounterMusicService
             return;
 
         AudioStream stream = loadedStream.Duplicate() as AudioStream ?? loadedStream;
-        ShinGetterBgmPreviewService.EnableLoop(stream);
+        ShinGetterBgmPreviewService.EnableLoop(stream, trackPath);
 
         float configuredBgmVolume = SaveManager.Instance.SettingsSave.VolumeBgm;
         float encounterMusicVolume = Mathf.Max(
