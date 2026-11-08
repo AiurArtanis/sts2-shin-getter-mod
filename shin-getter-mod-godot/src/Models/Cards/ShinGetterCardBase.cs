@@ -727,7 +727,7 @@ public abstract class ShinGetterCardBase : CardModel
         }
 
         await NotifyTransform(creature);
-        if (cardSource is SGC_ChangeAttack)
+        if (cardSource is SGC_ChangeAttack or SGC_ShiftStrike)
             await transformVoiceTask;
     }
 

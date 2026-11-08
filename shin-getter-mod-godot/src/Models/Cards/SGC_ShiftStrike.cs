@@ -18,6 +18,8 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_ShiftStrike : ShinGetterCardBase
 {
+    internal const float TransformSpeedScale = 1.5f;
+
     protected override HashSet<CardTag> CanonicalTags => new() { CardTag.Strike };
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new DamageVar(6m, ValueProp.Move) };
 

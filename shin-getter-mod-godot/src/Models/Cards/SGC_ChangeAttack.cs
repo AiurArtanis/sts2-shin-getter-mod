@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Nodes.Combat;
 
 namespace ShinGetterMod.Models.Cards;
 
@@ -17,7 +18,7 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_ChangeAttack : ShinGetterCardBase
 {
-    internal const float TransformSpeedScale = 1.5f;
+    internal const float TransformSpeedScale = 2f;
 
     protected override bool HasEnergyCostX => true;
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new DamageVar(7m, ValueProp.Move) };
@@ -31,24 +32,29 @@ public sealed class SGC_ChangeAttack : ShinGetterCardBase
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
         int x = ResolveEnergyXValue() + (IsUpgraded ? 1 : 0);
+        var voicedForms = new HashSet<ShinGetterForm>();
         for (int i = 0; i < x; i++)
         {
             if (!CanContinueChangeAttack(cardPlay.Target))
                 break;
 
-            await Transform(choiceContext, Owner, this);
+            // Local to this play, including replays: Always voice mode must not repeat
+            // the same form's line within a long X-cost transformation chain.
+            ShinGetterForm[] forms = GetCurrentForms(Owner);
+            ShinGetterForm nextVoiceForm = forms.Length > 1 ? ShinGetterForm.None
+                : forms.Length == 1 && forms[0] == ShinGetterForm.Getter1 ? ShinGetterForm.Getter2
+                : forms.Length == 1 && forms[0] == ShinGetterForm.Getter2 ? ShinGetterForm.Getter3
+                : ShinGetterForm.Getter1;
+            await Transform(choiceContext, Owner, this, playVoice: voicedForms.Add(nextVoiceForm));
             if (!CanContinueChangeAttack(cardPlay.Target))
                 break;
 
-            if (i < x - 1)
-                await PlayAcceleratedFollowupAnimation();
-            else
-                await PlayNormalFollowupAnimation();
-            if (!CanContinueChangeAttack(cardPlay.Target))
-                break;
-
-            await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this)
-                .Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+            var attack = DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this)
+                .Targeting(cardPlay.Target).WithNoAttackerAnim().WithHitFx("vfx/vfx_attack_slash");
+            await NShinGetterStaticVisuals.PlayCompleteCreatureAttack(Owner.Creature,
+                () => CanContinueChangeAttack(cardPlay.Target)
+                    ? attack.Execute(choiceContext) : Task.CompletedTask,
+                speedScale: i < x - 1 ? 2f : 1f);
         }
     }
 
