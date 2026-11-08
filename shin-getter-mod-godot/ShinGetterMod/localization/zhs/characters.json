@@ -77,5 +77,9 @@
 	"SHIN_GETTER.voice.stonerArrivalThreeHearts": "三颗心合而为一！",
 	"SHIN_GETTER.voice.stonerArrivalOurWill": "我的、我们的意念会引出盖塔的力量！",
 	"SHIN_GETTER.voice.stonerArrivalUniteHearts": "让我们的心合而为一！",
-	"SHIN_GETTER.voice.stonerArrivalUseSunshine": "龙马！用[red]Stoner[/red] [yellow]Sunshine[/yellow]！"
+	"SHIN_GETTER.voice.stonerArrivalUseSunshine": "龙马！用[red]Stoner[/red] [yellow]Sunshine[/yellow]！",
+	"SHIN_GETTER.voice.musashiHatOne": "[red][jitter]武藏[/jitter]——！……呼，差点以为他又死了一次。[/red]",
+	"SHIN_GETTER.voice.musashiHatTwo": "[white][jitter]武藏[/jitter]！……等等，这只是帽子吧？[/white]",
+	"SHIN_GETTER.voice.musashiHatThree": "[yellow][jitter]武藏[/jitter]前辈！[/yellow]",
+	"SHIN_GETTER.voice.musashiHatDragon": "[getter_ray][jitter]武藏[/jitter]——！[/getter_ray]"
 }

@@ -107,6 +107,7 @@ internal static class ShinGetterVoiceService
         Opening,
         InterruptingNonCard,
         DamageResponse,
+        FatalDamageResponse,
         Card,
         StarSlashPreparation,
     }
@@ -187,6 +188,10 @@ internal static class ShinGetterVoiceService
         new("065", ShinGetterVoiceCue.StonerArrivalUseSunshine, "benkei_use_stoner_sunshine.wav", "SHIN_GETTER.voice.stonerArrivalUseSunshine", ShinGetterForm.Getter3),
         new("066", ShinGetterVoiceCue.StarSlashDragonPreparation, "ryoma_burn_shin_dragon.wav", "SHIN_GETTER.voice.starSlashDragonPreparation", Category: VoicePlaybackCategory.StarSlashPreparation),
         new("067", ShinGetterVoiceCue.StarSlashOnePreparation, "ryoma_go_shin_getter.wav", "SHIN_GETTER.voice.starSlashOnePreparation", Category: VoicePlaybackCategory.StarSlashPreparation),
+        new("072", null, "ryoma_musashi_hat.wav", "SHIN_GETTER.voice.musashiHatOne", Category: VoicePlaybackCategory.FatalDamageResponse),
+        new("073", null, "hayato_musashi_hat.wav", "SHIN_GETTER.voice.musashiHatTwo", Category: VoicePlaybackCategory.FatalDamageResponse),
+        new("074", null, "benkei_musashi_hat.wav", "SHIN_GETTER.voice.musashiHatThree", Category: VoicePlaybackCategory.FatalDamageResponse),
+        new("075", null, "team_musashi_hat.wav", "SHIN_GETTER.voice.musashiHatDragon", Category: VoicePlaybackCategory.FatalDamageResponse),
     };
 
     private static readonly IReadOnlyDictionary<ShinGetterVoiceCue, VoiceLine> Lines = VoiceLines
@@ -219,6 +224,34 @@ internal static class ShinGetterVoiceService
 
     internal static void TryPlayCardVoice(CardModel card) =>
         TryPlayCardVoice(card, requireCardPlayStart: false);
+
+    internal static void TryPlayMusashiHat(
+        Player player,
+        IReadOnlyCollection<ShinGetterForm> forms,
+        bool isShinDragon)
+    {
+        if (player.Character is not ShinGetter
+            || ShinGetterChunibyoConfigService.Current.VoiceMode == ShinGetterVoiceMode.Silent
+            || NonInteractiveMode.IsActive)
+            return;
+
+        string? code = isShinDragon ? "075"
+            : forms.Contains(ShinGetterForm.Getter1) ? "072"
+            : forms.Contains(ShinGetterForm.Getter2) ? "073"
+            : forms.Contains(ShinGetterForm.Getter3) ? "074" : null;
+        // The relic's saved combat charge owns repetition; do not allocate or alias history bits.
+        if (code != null)
+        {
+            try
+            {
+                TryPlayLine(player, LinesByCode[code], out _, ignoreRequiredForm: true);
+            }
+            catch (Exception exception)
+            {
+                GD.PushWarning($"Musashi's Hat voice unavailable: {exception.Message}");
+            }
+        }
+    }
 
     // Caller has checked the same candidate/manual-choice boundary as CardSelectCmd.
     internal static Task TryPlayStarSlashPreparation(CardModel card)
@@ -687,7 +720,7 @@ internal static class ShinGetterVoiceService
 
         if (!LinesByCode.TryGetValue(code, out VoiceLine? line))
         {
-            message = "Usage: sgs <001-047|049-050|052-067>";
+            message = "Usage: sgs <001-047|049-050|052-067|072-075>";
             return false;
         }
 
@@ -835,7 +868,8 @@ internal static class ShinGetterVoiceService
 
             StopAllVoiceAudio(state);
         }
-        else if (category is VoicePlaybackCategory.Opening or VoicePlaybackCategory.InterruptingNonCard)
+        else if (category is VoicePlaybackCategory.Opening or VoicePlaybackCategory.InterruptingNonCard
+                 or VoicePlaybackCategory.FatalDamageResponse)
         {
             StopAllVoiceAudio(state);
         }
@@ -869,7 +903,7 @@ internal static class ShinGetterVoiceService
                 completion.TrySetResult(false);
             };
         }
-        if (category == VoicePlaybackCategory.DamageResponse)
+        if (category is VoicePlaybackCategory.DamageResponse or VoicePlaybackCategory.FatalDamageResponse)
             state.ActiveDamageResponsePlayer = audioPlayer;
 
         audioPlayer.Finished += () =>

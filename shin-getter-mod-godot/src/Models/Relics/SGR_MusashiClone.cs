@@ -15,6 +15,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Saves.Runs;
+using ShinGetterMod.Audio;
 using ShinGetterMod.Models.Cards;
 using ShinGetterMod.Models.Powers;
 
@@ -24,6 +25,7 @@ public sealed class SGR_MusashiClone : ShinGetterRelicBase
 {
     private bool _triggeredThisCombat;
     private ShinGetterForm[] _pendingForms = Array.Empty<ShinGetterForm>();
+    private bool _pendingShinDragon;
 
     public override RelicRarity Rarity => RelicRarity.Rare;
 
@@ -61,6 +63,7 @@ public sealed class SGR_MusashiClone : ShinGetterRelicBase
     {
         TriggeredThisCombat = false;
         _pendingForms = Array.Empty<ShinGetterForm>();
+        _pendingShinDragon = false;
         return Task.CompletedTask;
     }
 
@@ -76,6 +79,7 @@ public sealed class SGR_MusashiClone : ShinGetterRelicBase
             || CombatManager.Instance.IsOverOrEnding)
             return amount;
 
+        _pendingShinDragon = target.HasPower<SGP_ShinForm>();
         _pendingForms = new[] { ShinGetterForm.Getter1, ShinGetterForm.Getter2, ShinGetterForm.Getter3 }
             .Where(form => ShinGetterCardBase.IsInForm(Owner, form))
             .ToArray();
@@ -87,8 +91,14 @@ public sealed class SGR_MusashiClone : ShinGetterRelicBase
     public override async Task AfterModifyingHpLostAfterOsty()
     {
         ShinGetterForm[] forms = _pendingForms;
+        bool isShinDragon = _pendingShinDragon;
         _pendingForms = Array.Empty<ShinGetterForm>();
+        _pendingShinDragon = false;
+        if (forms.Length == 0)
+            return;
+
         Flash();
+        ShinGetterVoiceService.TryPlayMusashiHat(Owner, forms, isShinDragon);
         var choiceContext = new ThrowingPlayerChoiceContext();
         foreach (ShinGetterForm form in forms)
         {
@@ -114,6 +124,7 @@ public sealed class SGR_MusashiClone : ShinGetterRelicBase
     {
         TriggeredThisCombat = false;
         _pendingForms = Array.Empty<ShinGetterForm>();
+        _pendingShinDragon = false;
         return Task.CompletedTask;
     }
 }

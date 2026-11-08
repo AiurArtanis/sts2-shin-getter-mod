@@ -77,5 +77,9 @@
   "SHIN_GETTER.voice.stonerArrivalThreeHearts": "三つの心を一つに！",
   "SHIN_GETTER.voice.stonerArrivalOurWill": "俺の、俺たちの意志がゲッターの力を引き出す！",
   "SHIN_GETTER.voice.stonerArrivalUniteHearts": "俺たちの心を一つにするんだ！",
-  "SHIN_GETTER.voice.stonerArrivalUseSunshine": "竜馬！[red]Stoner[/red] [yellow]Sunshine[/yellow]を使え！"
+  "SHIN_GETTER.voice.stonerArrivalUseSunshine": "竜馬！[red]Stoner[/red] [yellow]Sunshine[/yellow]を使え！",
+  "SHIN_GETTER.voice.musashiHatOne": "[red][jitter]ムサシ[/jitter]ーッ！……ふぅ、また死んじまったかと思ったぜ。[/red]",
+  "SHIN_GETTER.voice.musashiHatTwo": "[white][jitter]ムサシ[/jitter]！……待て、これ、ただの帽子だろ？[/white]",
+  "SHIN_GETTER.voice.musashiHatThree": "[yellow][jitter]ムサシ[/jitter]先輩！[/yellow]",
+  "SHIN_GETTER.voice.musashiHatDragon": "[getter_ray][jitter]ムサシ[/jitter]ーッ！[/getter_ray]"
 }

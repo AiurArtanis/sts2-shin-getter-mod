@@ -72,7 +72,7 @@ def validate_sources(sources: dict[str, str]) -> None:
             "[SavedProperty(SerializationCondition.SaveIfNotTypeDefault)]",
             "Status = _triggeredThisCombat ? RelicStatus.Disabled : RelicStatus.Normal",
             "public override bool IsUsedUp => TriggeredThisCombat")
-    for forbidden in ("ShouldDieLate", "AfterPreventingDeath", "CreatureCmd.Heal", "HealVar(", "ShinGetterVoiceService"):
+    for forbidden in ("ShouldDieLate", "AfterPreventingDeath", "CreatureCmd.Heal", "HealVar("):
         assert forbidden not in hat, f"Stale/unauthorized behavior: {forbidden}"
     prevent = block(hat, "internal decimal PreventFatalHpLoss(")
     require(prevent, "target != Owner.Creature", "|| TriggeredThisCombat", "|| IsMelted",
@@ -85,6 +85,7 @@ def validate_sources(sources: dict[str, str]) -> None:
     assert "await " not in prevent
     after = block(hat, "public override async Task AfterModifyingHpLostAfterOsty()")
     ordered(after, "ShinGetterForm[] forms = _pendingForms;", "_pendingForms = Array.Empty<ShinGetterForm>();",
+            "ShinGetterVoiceService.TryPlayMusashiHat(Owner, forms, isShinDragon);",
             "await PowerCmd.Apply<SGP_HotBlood>", "await PowerCmd.Apply<SGP_Acceleration>",
             "await PowerCmd.Apply<SGP_Indomitable>")
     for name in ("HotBlood", "Acceleration", "Indomitable"):

@@ -82,6 +82,10 @@ EXPECTED_LATER_AUDIO = {
     "065": "benkei_use_stoner_sunshine.wav",
     "066": "ryoma_burn_shin_dragon.wav",
     "067": "ryoma_go_shin_getter.wav",
+    "072": "ryoma_musashi_hat.wav",
+    "073": "hayato_musashi_hat.wav",
+    "074": "benkei_musashi_hat.wav",
+    "075": "team_musashi_hat.wav",
 }
 ALL_EXPECTED_AUDIO = EXPECTED_AUDIO | EXPECTED_LATER_AUDIO
 
@@ -99,7 +103,7 @@ require(
 )
 require(
     rows == ALL_EXPECTED_AUDIO,
-    "voice mapping must contain only 001-047, issue#169 codes 049-050 and 052-057, and issue#10 codes 058-065",
+    "voice mapping must retain legacy codes and include approved issue#270 codes 072-075",
 )
 
 for code, file_name in EXPECTED_AUDIO.items():
@@ -326,12 +330,12 @@ console_patch = (ROOT / "src" / "Patches" / "ShinGetterConsoleCommandPatch.cs").
 console_cmd = (ROOT / "src" / "Diagnostics" / "ShinGetterChunibyoConsoleCmd.cs").read_text(encoding="utf-8")
 require('ShinGetterSoundCommandName = "sgs"' in console_patch, "sgs command routing is missing")
 require(
-    'Args => "<001-047|049-050|052-067>"' in console_cmd and "TryPlayCode" in console_cmd,
-    "sgs 001-047, 049-050, and 052-067 command is incomplete",
+    'Args => "<001-047|049-050|052-067|072-075>"' in console_cmd and "TryPlayCode" in console_cmd,
+    "sgs original and issue#270 command ranges are incomplete",
 )
 
 service_keys = set(re.findall(r'"(SHIN_GETTER\.voice\.[A-Za-z0-9]+)"', service))
-require(len(service_keys) == 64, f"expected 64 subtitle keys, found {len(service_keys)}")
+require(len(service_keys) == 68, f"expected 68 subtitle keys, found {len(service_keys)}")
 language_voice_keys: dict[str, set[str]] = {}
 language_data: dict[str, dict[str, str]] = {}
 for language in ("zhs", "eng", "jpn"):
@@ -390,4 +394,4 @@ require(
     "existing black effects must be removed before the mod black effect is installed",
 )
 
-print("issue#21/#31 static validation PASS: 47 original codes, 049-050/052-057, issue#10 058-065 and issue#124 066-067")
+print("issue#21/#31 static validation PASS: legacy codes retained; issue#124 066-067 and approved issue#270 072-075 included")
