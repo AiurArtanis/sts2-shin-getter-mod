@@ -8,7 +8,7 @@
   },
   "semanticFingerprint": {
     "algorithm": "SHA-256 over canonical sorted binding graph; excludes product SHA/MVID/tokens/time/SourceRevisionId",
-    "aggregateSha256": "E10D946E56D1EF0FF74093C8F589853ACDE17D1A7BC691EB6EB672100139281C",
+    "aggregateSha256": "FE9D74850F3EB6967EC2D62966D4E88BDC864A14A3ADFC79404EC7085C13C806",
     "groups": [
       {
         "category": "dynamicBindings",
@@ -17,8 +17,8 @@
       },
       {
         "category": "gameMemberReferences",
-        "count": 1002,
-        "sha256": "446089751792E56736DB2080B09D755B4D681E80465D3EACA99B4B413AB31E46"
+        "count": 1005,
+        "sha256": "5C162A99F3CD56F7C5A5C5173CCAE7CC4B028501F0918BF8F8EAA579CAE8D164"
       },
       {
         "category": "gameOverrides",
@@ -27,8 +27,8 @@
       },
       {
         "category": "gameTypeReferences",
-        "count": 463,
-        "sha256": "8DD5E60EA92D74D6AFD76BBDDA9CCBEF18421AE468E190C1FA3C3C96622A4E02"
+        "count": 464,
+        "sha256": "1ECF171B5CA92D01E95062E862CA7795E2539C8F4E83EE43B345FC586EE9F633"
       },
       {
         "category": "harmonyCallbackEdges",
@@ -260,6 +260,7 @@
       "MegaCrit.Sts2.Core.Entities.Players.Player MegaCrit.Sts2.Core.Entities.Creatures.Creature::get_PetOwner()",
       "MegaCrit.Sts2.Core.Entities.Players.Player MegaCrit.Sts2.Core.Entities.Creatures.Creature::get_Player()",
       "MegaCrit.Sts2.Core.Entities.Players.Player MegaCrit.Sts2.Core.Entities.Merchant.MerchantInventory::get_Player()",
+      "MegaCrit.Sts2.Core.Entities.Players.Player MegaCrit.Sts2.Core.GameActions.PlayCardAction::get_Player()",
       "MegaCrit.Sts2.Core.Entities.Players.Player MegaCrit.Sts2.Core.Models.CardModel::get_Owner()",
       "MegaCrit.Sts2.Core.Entities.Players.Player MegaCrit.Sts2.Core.Models.EventModel::get_Owner()",
       "MegaCrit.Sts2.Core.Entities.Players.Player MegaCrit.Sts2.Core.Models.PotionModel::get_Owner()",
@@ -393,6 +394,7 @@
       "MegaCrit.Sts2.Core.Multiplayer.Game.NetGameType MegaCrit.Sts2.Core.Multiplayer.Game.INetGameService::get_Type()",
       "MegaCrit.Sts2.Core.Multiplayer.Transport.NetClient MegaCrit.Sts2.Core.Multiplayer.Game.INetClientGameService::get_NetClient()",
       "MegaCrit.Sts2.Core.Nodes.Audio.NAudioManager MegaCrit.Sts2.Core.Nodes.Audio.NAudioManager::get_Instance()",
+      "MegaCrit.Sts2.Core.Nodes.Combat.NCardPlayQueue MegaCrit.Sts2.Core.Nodes.Combat.NCardPlayQueue::get_Instance()",
       "MegaCrit.Sts2.Core.Nodes.Combat.NCreature MegaCrit.Sts2.Core.Nodes.Rooms.NCombatRoom::GetCreatureNode(MegaCrit.Sts2.Core.Entities.Creatures.Creature)",
       "MegaCrit.Sts2.Core.Nodes.Combat.NCreatureVisuals MegaCrit.Sts2.Core.Nodes.Combat.NCreature::get_Visuals()",
       "MegaCrit.Sts2.Core.Nodes.Combat.NPlayerHand MegaCrit.Sts2.Core.Nodes.Combat.NPlayerHand::get_Instance()",
@@ -904,7 +906,6 @@
       "System.Void MegaCrit.Sts2.Core.Events.EventOption::.ctor(MegaCrit.Sts2.Core.Models.EventModel,System.Func\u00601\u003CSystem.Threading.Tasks.Task\u003E,System.String,MegaCrit.Sts2.Core.HoverTips.IHoverTip[])",
       "System.Void MegaCrit.Sts2.Core.Events.EventOption::.ctor(MegaCrit.Sts2.Core.Models.EventModel,System.Func\u00601\u003CSystem.Threading.Tasks.Task\u003E,System.String,System.Boolean,System.Boolean,MegaCrit.Sts2.Core.HoverTips.IHoverTip[])",
       "System.Void MegaCrit.Sts2.Core.Events.EventOption::.ctor(MegaCrit.Sts2.Core.Models.EventModel,System.Func\u00601\u003CSystem.Threading.Tasks.Task\u003E,System.String,System.Collections.Generic.IEnumerable\u00601\u003CMegaCrit.Sts2.Core.HoverTips.IHoverTip\u003E)",
-      "System.Void MegaCrit.Sts2.Core.GameActions.GameAction::Cancel()",
       "System.Void MegaCrit.Sts2.Core.GameActions.Multiplayer.ActionQueueSynchronizer::RequestResumeActionAfterPlayerChoice(MegaCrit.Sts2.Core.GameActions.GameAction)",
       "System.Void MegaCrit.Sts2.Core.GameActions.Multiplayer.BlockingPlayerChoiceContext::.ctor()",
       "System.Void MegaCrit.Sts2.Core.GameActions.Multiplayer.GameActionPlayerChoiceContext::.ctor(MegaCrit.Sts2.Core.GameActions.GameAction)",
@@ -1033,9 +1034,11 @@
       "System.Void MegaCrit.Sts2.Core.Nodes.Cards.NCard::UpdateVisuals(MegaCrit.Sts2.Core.Entities.Cards.PileType,MegaCrit.Sts2.Core.Entities.Cards.CardPreviewMode)",
       "System.Void MegaCrit.Sts2.Core.Nodes.Cards.NCard::set_Model(MegaCrit.Sts2.Core.Models.CardModel)",
       "System.Void MegaCrit.Sts2.Core.Nodes.Cards.NCard::set_Visibility(MegaCrit.Sts2.Core.Entities.UI.ModelVisibility)",
+      "System.Void MegaCrit.Sts2.Core.Nodes.Combat.NCardPlayQueue::RemoveCardFromQueueForCancellation(MegaCrit.Sts2.Core.GameActions.PlayCardAction)",
       "System.Void MegaCrit.Sts2.Core.Nodes.Combat.NCreature::HideHoverTips()",
       "System.Void MegaCrit.Sts2.Core.Nodes.Combat.NCreature::ShowHoverTips(System.Collections.Generic.IEnumerable\u00601\u003CMegaCrit.Sts2.Core.HoverTips.IHoverTip\u003E)",
       "System.Void MegaCrit.Sts2.Core.Nodes.Combat.NPlayerHand::CancelAllCardPlay()",
+      "System.Void MegaCrit.Sts2.Core.Nodes.Combat.NPlayerHand::TryCancelCardPlay(MegaCrit.Sts2.Core.Models.CardModel)",
       "System.Void MegaCrit.Sts2.Core.Nodes.Combat.NPower::set_Model(MegaCrit.Sts2.Core.Models.PowerModel)",
       "System.Void MegaCrit.Sts2.Core.Nodes.CommonUi.NDropdownContainer::RefreshLayout()",
       "System.Void MegaCrit.Sts2.Core.Nodes.CommonUi.NDropdownItem::set_Text(System.String)",
@@ -2526,6 +2529,7 @@
       "MegaCrit.Sts2.Core.Nodes.Cards.Holders.NCardHolder",
       "MegaCrit.Sts2.Core.Nodes.Cards.Holders.NHandCardHolder",
       "MegaCrit.Sts2.Core.Nodes.Cards.NCard",
+      "MegaCrit.Sts2.Core.Nodes.Combat.NCardPlayQueue",
       "MegaCrit.Sts2.Core.Nodes.Combat.NCreature",
       "MegaCrit.Sts2.Core.Nodes.Combat.NCreatureVisuals",
       "MegaCrit.Sts2.Core.Nodes.Combat.NIntent",
@@ -2982,8 +2986,8 @@
     },
     {
       "category": "member-ref",
-      "total": 1002,
-      "pass": 1002,
+      "total": 1005,
+      "pass": 1005,
       "fail": 0,
       "unresolved": 0,
       "scopedOut": 0
@@ -3062,8 +3066,8 @@
     },
     {
       "category": "type-ref",
-      "total": 463,
-      "pass": 463,
+      "total": 464,
+      "pass": 464,
       "fail": 0,
       "unresolved": 0,
       "scopedOut": 0
@@ -3077,7 +3081,7 @@
     "owner": "Artanis.ShinGetterMod",
     "status": "ALL_DECLARED_TARGETS_RESOLVED",
     "gameSha256": "A6CC282C52B96AD2E01D5692B1144B33AA8E3BA4E969582F648ECB13B2F751D7",
-    "semanticSha256": "E10D946E56D1EF0FF74093C8F589853ACDE17D1A7BC691EB6EB672100139281C",
+    "semanticSha256": "FE9D74850F3EB6967EC2D62966D4E88BDC864A14A3ADFC79404EC7085C13C806",
     "originalCount": 138,
     "callbackEdges": 168,
     "offlineParameterFailures": 0,
@@ -4155,7 +4159,7 @@
               "genericArity": 0,
               "canonicalSignature": "System.Collections.Generic.IEnumerable\u00601\u003CHarmonyLib.CodeInstruction\u003E ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch::Transpiler(System.Collections.Generic.IEnumerable\u00601\u003CHarmonyLib.CodeInstruction\u003E,System.Reflection.MethodBase)"
             },
-            "source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:39"
+            "source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:43"
           }
         ],
         "finalizer": []
@@ -9144,7 +9148,7 @@
       "Id": "System.Boolean ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch/\u003C\u003Ec::\u003CTranspiler\u003Eb__6_0(System.Reflection.FieldInfo):IL_000B",
       "Status": "PASS",
       "Target": "System.Type System.Type::GetTypeFromHandle(System.RuntimeTypeHandle)",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:44",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:48",
       "Detail": "Compiler typeof(RuntimeTypeHandle) bridge, not a string-named lookup. TypeRef binding is audited separately.",
       "Evidence": null
     },
@@ -9549,7 +9553,7 @@
       "Id": "System.Reflection.MethodBase ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch::TargetMethod():IL_0006",
       "Status": "PASS",
       "Target": "System.Type System.Type::GetTypeFromHandle(System.RuntimeTypeHandle)",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:32",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:36",
       "Detail": "Compiler typeof(RuntimeTypeHandle) bridge, not a string-named lookup. TypeRef binding is audited separately.",
       "Evidence": null
     },
@@ -9990,7 +9994,7 @@
       "Id": "System.Void ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch::.cctor():IL_0005",
       "Status": "PASS",
       "Target": "System.Type System.Type::GetTypeFromHandle(System.RuntimeTypeHandle)",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:24",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:28",
       "Detail": "Compiler typeof(RuntimeTypeHandle) bridge, not a string-named lookup. TypeRef binding is audited separately.",
       "Evidence": null
     },
@@ -9999,7 +10003,7 @@
       "Id": "System.Void ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch::.cctor():IL_0020",
       "Status": "PASS",
       "Target": "System.Type System.Type::GetTypeFromHandle(System.RuntimeTypeHandle)",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:25",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:29",
       "Detail": "Compiler typeof(RuntimeTypeHandle) bridge, not a string-named lookup. TypeRef binding is audited separately.",
       "Evidence": null
     },
@@ -10008,7 +10012,7 @@
       "Id": "System.Void ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch::.cctor():IL_003B",
       "Status": "PASS",
       "Target": "System.Type System.Type::GetTypeFromHandle(System.RuntimeTypeHandle)",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:26",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:30",
       "Detail": "Compiler typeof(RuntimeTypeHandle) bridge, not a string-named lookup. TypeRef binding is audited separately.",
       "Evidence": null
     },
@@ -10017,7 +10021,7 @@
       "Id": "System.Void ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch::.cctor():IL_0056",
       "Status": "PASS",
       "Target": "System.Type System.Type::GetTypeFromHandle(System.RuntimeTypeHandle)",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:27",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:31",
       "Detail": "Compiler typeof(RuntimeTypeHandle) bridge, not a string-named lookup. TypeRef binding is audited separately.",
       "Evidence": null
     },
@@ -10026,7 +10030,7 @@
       "Id": "System.Void ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch::.cctor():IL_0071",
       "Status": "PASS",
       "Target": "System.Type System.Type::GetTypeFromHandle(System.RuntimeTypeHandle)",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:28",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:32",
       "Detail": "Compiler typeof(RuntimeTypeHandle) bridge, not a string-named lookup. TypeRef binding is audited separately.",
       "Evidence": null
     },
@@ -10844,7 +10848,7 @@
       "Id": "D059",
       "Status": "PASS",
       "Target": "MegaCrit.Sts2.Core.Models.CardModel.SpendResources",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:24",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:28",
       "Detail": "Actual AccessTools name lookup resolved unambiguously; absence of explicit Type[] is recorded, not an asserted caller signature.",
       "Evidence": {
         "code": "AccessTools.Method(typeof(CardModel), nameof(CardModel.SpendResources))",
@@ -10865,7 +10869,7 @@
       "Id": "D060",
       "Status": "PASS",
       "Target": "MegaCrit.Sts2.Core.Models.CardModel.OnPlayWrapper",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:25",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:29",
       "Detail": "Actual AccessTools name lookup resolved unambiguously; absence of explicit Type[] is recorded, not an asserted caller signature.",
       "Evidence": {
         "code": "AccessTools.Method(typeof(CardModel), nameof(CardModel.OnPlayWrapper))",
@@ -10886,7 +10890,7 @@
       "Id": "D061",
       "Status": "PASS",
       "Target": "ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch.PrepareResources",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:26",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:30",
       "Detail": "Actual AccessTools name lookup resolved unambiguously; absence of explicit Type[] is recorded, not an asserted caller signature.",
       "Evidence": {
         "code": "AccessTools.Method(typeof(ShinGetterAnnotationsPreparationPatch), nameof(PrepareResources))",
@@ -10907,7 +10911,7 @@
       "Id": "D062",
       "Status": "PASS",
       "Target": "ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch.PlayPreparedCard",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:27",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:31",
       "Detail": "Actual AccessTools name lookup resolved unambiguously; absence of explicit Type[] is recorded, not an asserted caller signature.",
       "Evidence": {
         "code": "AccessTools.Method(typeof(ShinGetterAnnotationsPreparationPatch), nameof(PlayPreparedCard))",
@@ -10928,7 +10932,7 @@
       "Id": "D063",
       "Status": "PASS",
       "Target": "MegaCrit.Sts2.Core.GameActions.PlayCardAction.PlayerChoiceContext",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:28",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:32",
       "Detail": "Actual AccessTools name lookup resolved unambiguously; absence of explicit Type[] is recorded, not an asserted caller signature.",
       "Evidence": {
         "code": "AccessTools.Property(typeof(PlayCardAction), nameof(PlayCardAction.PlayerChoiceContext))",
@@ -10949,7 +10953,7 @@
       "Id": "D064",
       "Status": "PASS",
       "Target": "MegaCrit.Sts2.Core.GameActions.PlayCardAction.ExecuteAction",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:32",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:36",
       "Detail": "Actual AccessTools name lookup resolved unambiguously; absence of explicit Type[] is recorded, not an asserted caller signature.",
       "Evidence": {
         "code": "AccessTools.Method(typeof(PlayCardAction), \u0022ExecuteAction\u0022)",
@@ -10970,7 +10974,7 @@
       "Id": "D065",
       "Status": "PASS",
       "Target": "MegaCrit.Sts2.Core.GameActions.PlayCardAction\u002B\u003CExecuteAction\u003Ed__25.MoveNext",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:35",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:39",
       "Detail": "Actual AccessTools name lookup resolved unambiguously; absence of explicit Type[] is recorded, not an asserted caller signature.",
       "Evidence": {
         "code": "AccessTools.Method(stateMachine, \u0022MoveNext\u0022)",
@@ -10991,7 +10995,7 @@
       "Id": "D066",
       "Status": "PASS",
       "Target": "MegaCrit.Sts2.Core.GameActions.PlayCardAction\u002B\u003CExecuteAction\u003Ed__25.",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:43",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:47",
       "Detail": "Bounded reflection enumeration resolved; instance values/callbacks not executed. Exact transpiler field use is separately checked.",
       "Evidence": {
         "code": "original.DeclaringType!.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)",
@@ -12653,7 +12657,7 @@
       "Id": "A067",
       "Status": "PASS",
       "Target": "ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:21",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:25",
       "Detail": "HarmonyPatch declaration linked to actual class-processor and per-hook target records; see harmony-target/harmony-parameters/transpiler gates.",
       "Evidence": {
         "code": "HarmonyPatch",
@@ -14484,7 +14488,7 @@
       "Id": "System.Boolean ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch/\u003CTranspiler\u003Ed__6::MoveNext():IL_00DF",
       "Status": "PASS",
       "Target": "System.Reflection.FieldInfo[] System.Type::GetFields(System.Reflection.BindingFlags)",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:43",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:47",
       "Detail": "Compiled reflection/AccessTools IL call linked to source inventory; link does not override target verdict.",
       "Evidence": {
         "caller": "System.Boolean ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch/\u003CTranspiler\u003Ed__6::MoveNext()",
@@ -14722,7 +14726,7 @@
       "Id": "System.Reflection.MethodBase ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch::TargetMethod():IL_0012",
       "Status": "PASS",
       "Target": "System.Reflection.MethodInfo HarmonyLib.AccessTools::Method(System.Type,System.String,System.Type[],System.Type[])",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:32",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:36",
       "Detail": "Compiled reflection/AccessTools IL call linked to source inventory; link does not override target verdict.",
       "Evidence": {
         "caller": "System.Reflection.MethodBase ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch::TargetMethod()",
@@ -14736,7 +14740,7 @@
       "Id": "System.Reflection.MethodBase ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch::TargetMethod():IL_0042",
       "Status": "PASS",
       "Target": "System.Reflection.MethodInfo HarmonyLib.AccessTools::Method(System.Type,System.String,System.Type[],System.Type[])",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:35",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:39",
       "Detail": "Compiled reflection/AccessTools IL call linked to source inventory; link does not override target verdict.",
       "Evidence": {
         "caller": "System.Reflection.MethodBase ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch::TargetMethod()",
@@ -15338,7 +15342,7 @@
       "Id": "System.Void ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch/\u003CPrepareAnnotationsResources\u003Ed__9::MoveNext():IL_003E",
       "Status": "PASS",
       "Target": "System.Void System.Reflection.PropertyInfo::SetValue(System.Object,System.Object)",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:85",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:89",
       "Detail": "Compiled reflection/AccessTools IL call linked to source inventory; link does not override target verdict.",
       "Evidence": {
         "caller": "System.Void ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch/\u003CPrepareAnnotationsResources\u003Ed__9::MoveNext()",
@@ -15352,7 +15356,7 @@
       "Id": "System.Void ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch::.cctor():IL_0011",
       "Status": "PASS",
       "Target": "System.Reflection.MethodInfo HarmonyLib.AccessTools::Method(System.Type,System.String,System.Type[],System.Type[])",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:24",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:28",
       "Detail": "Compiled reflection/AccessTools IL call linked to source inventory; link does not override target verdict.",
       "Evidence": {
         "caller": "System.Void ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch::.cctor()",
@@ -15366,7 +15370,7 @@
       "Id": "System.Void ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch::.cctor():IL_002C",
       "Status": "PASS",
       "Target": "System.Reflection.MethodInfo HarmonyLib.AccessTools::Method(System.Type,System.String,System.Type[],System.Type[])",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:25",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:29",
       "Detail": "Compiled reflection/AccessTools IL call linked to source inventory; link does not override target verdict.",
       "Evidence": {
         "caller": "System.Void ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch::.cctor()",
@@ -15380,7 +15384,7 @@
       "Id": "System.Void ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch::.cctor():IL_0047",
       "Status": "PASS",
       "Target": "System.Reflection.MethodInfo HarmonyLib.AccessTools::Method(System.Type,System.String,System.Type[],System.Type[])",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:26",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:30",
       "Detail": "Compiled reflection/AccessTools IL call linked to source inventory; link does not override target verdict.",
       "Evidence": {
         "caller": "System.Void ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch::.cctor()",
@@ -15394,7 +15398,7 @@
       "Id": "System.Void ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch::.cctor():IL_0062",
       "Status": "PASS",
       "Target": "System.Reflection.MethodInfo HarmonyLib.AccessTools::Method(System.Type,System.String,System.Type[],System.Type[])",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:27",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:31",
       "Detail": "Compiled reflection/AccessTools IL call linked to source inventory; link does not override target verdict.",
       "Evidence": {
         "caller": "System.Void ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch::.cctor()",
@@ -15408,7 +15412,7 @@
       "Id": "System.Void ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch::.cctor():IL_007B",
       "Status": "PASS",
       "Target": "System.Reflection.PropertyInfo HarmonyLib.AccessTools::Property(System.Type,System.String)",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:28",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:32",
       "Detail": "Compiled reflection/AccessTools IL call linked to source inventory; link does not override target verdict.",
       "Evidence": {
         "caller": "System.Void ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch::.cctor()",
@@ -16258,7 +16262,7 @@
       "Id": "ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch",
       "Status": "PASS",
       "Target": "ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:31",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:35",
       "Detail": "Actual class processor recognized 1 hooks; .Patch() NOT called.",
       "Evidence": null
     },
@@ -17365,7 +17369,7 @@
       "Id": "ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch",
       "Status": "PASS",
       "Target": "TargetMethod",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:31",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:35",
       "Detail": "Actual production helper executed/enumerated after reflection-only IL safety review. No callback or patch application.",
       "Evidence": [
         "MegaCrit.Sts2.Core.GameActions.PlayCardAction\u002B\u003CExecuteAction\u003Ed__25::Void MoveNext()"
@@ -17813,7 +17817,7 @@
       "Id": "ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch.Transpiler-\u003EMegaCrit.Sts2.Core.GameActions.PlayCardAction\u002B\u003CExecuteAction\u003Ed__25::Void MoveNext()",
       "Status": "PASS",
       "Target": "MegaCrit.Sts2.Core.GameActions.PlayCardAction\u002B\u003CExecuteAction\u003Ed__25::Void MoveNext()",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:39",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:43",
       "Detail": "2 injection parameters checked; this is not Harmony wrapper emission/PatchAll.",
       "Evidence": [
         {
@@ -21156,7 +21160,7 @@
       "Id": "ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch::Transpiler-\u003EMegaCrit.Sts2.Core.GameActions.PlayCardAction\u002B\u003CExecuteAction\u003Ed__25::Void MoveNext()",
       "Status": "PASS",
       "Target": "MegaCrit.Sts2.Core.GameActions.PlayCardAction\u002B\u003CExecuteAction\u003Ed__25::Void MoveNext()",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:39",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:43",
       "Detail": "Actual production TargetMethod(s) returned this method.",
       "Evidence": {
         "patch": "ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch",
@@ -25597,7 +25601,7 @@
           "shin-getter-mod-godot/src/Services/ShinGetterAnnotationsCardChoice.cs:145",
           "shin-getter-mod-godot/src/Services/ShinGetterCheatService.cs:96",
           "shin-getter-mod-godot/src/Services/ShinGetterCombatCardChanges.cs:28",
-          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:91",
+          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:95",
           "shin-getter-mod-godot/src/Models/Relics/SGR_BeaconPrism.cs:76",
           "shin-getter-mod-godot/src/Models/Relics/SGR_Ember.cs:23",
           "shin-getter-mod-godot/src/Models/Relics/SGR_SymbioticFilter.cs:30",
@@ -25695,7 +25699,7 @@
           "shin-getter-mod-godot/src/Services/ShinGetterAnnotationsCardChoice.cs:103",
           "shin-getter-mod-godot/src/Services/ShinGetterAnnotationsCardChoice.cs:145",
           "shin-getter-mod-godot/src/Services/ShinGetterCheatService.cs:96",
-          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:91",
+          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:95",
           "shin-getter-mod-godot/src/Models/Relics/SGR_BeaconPrism.cs:76",
           "shin-getter-mod-godot/src/Models/Relics/SGR_Ember.cs:23",
           "shin-getter-mod-godot/src/Models/Relics/SGR_SymbioticFilter.cs:30",
@@ -26344,13 +26348,13 @@
       "Id": "MegaCrit.Sts2.Core.Entities.Creatures.Creature MegaCrit.Sts2.Core.GameActions.PlayCardAction::get_Target()",
       "Status": "PASS",
       "Target": "MegaCrit.Sts2.Core.Entities.Creatures.Creature MegaCrit.Sts2.Core.GameActions.PlayCardAction::get_Target()",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:91",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:95",
       "Detail": "Cecil signature resolution \u002B actual CLR ResolveMember succeeded; not invocation proof.",
       "Evidence": {
         "resolved": "MegaCrit.Sts2.Core.Entities.Creatures.Creature get_Target()",
         "declaringType": "MegaCrit.Sts2.Core.GameActions.PlayCardAction",
         "sources": [
-          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:91"
+          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:95"
         ]
       }
     },
@@ -26659,6 +26663,22 @@
     },
     {
       "Category": "member-ref",
+      "Id": "MegaCrit.Sts2.Core.Entities.Players.Player MegaCrit.Sts2.Core.GameActions.PlayCardAction::get_Player()",
+      "Status": "PASS",
+      "Target": "MegaCrit.Sts2.Core.Entities.Players.Player MegaCrit.Sts2.Core.GameActions.PlayCardAction::get_Player()",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:121",
+      "Detail": "Cecil signature resolution \u002B actual CLR ResolveMember succeeded; not invocation proof.",
+      "Evidence": {
+        "resolved": "MegaCrit.Sts2.Core.Entities.Players.Player get_Player()",
+        "declaringType": "MegaCrit.Sts2.Core.GameActions.PlayCardAction",
+        "sources": [
+          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:121",
+          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:129"
+        ]
+      }
+    },
+    {
+      "Category": "member-ref",
       "Id": "MegaCrit.Sts2.Core.Entities.Players.Player MegaCrit.Sts2.Core.Models.CardModel::get_Owner()",
       "Status": "PASS",
       "Target": "MegaCrit.Sts2.Core.Entities.Players.Player MegaCrit.Sts2.Core.Models.CardModel::get_Owner()",
@@ -26679,6 +26699,7 @@
           "shin-getter-mod-godot/src/Services/ShinGetterStonerSunshineService.cs:65",
           "shin-getter-mod-godot/src/Services/ShinGetterStonerSunshineService.cs:146",
           "shin-getter-mod-godot/src/Patches/ShinGetterAncientRewardPatch.cs:119",
+          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:121",
           "shin-getter-mod-godot/src/Patches/ShinGetterCardFramePatch.cs:270",
           "shin-getter-mod-godot/src/Patches/ShinGetterCardPlayVoicePatch.cs:19",
           "shin-getter-mod-godot/src/Patches/ShinGetterCardPlayVoicePatch.cs:32",
@@ -30035,6 +30056,21 @@
     },
     {
       "Category": "member-ref",
+      "Id": "MegaCrit.Sts2.Core.Nodes.Combat.NCardPlayQueue MegaCrit.Sts2.Core.Nodes.Combat.NCardPlayQueue::get_Instance()",
+      "Status": "PASS",
+      "Target": "MegaCrit.Sts2.Core.Nodes.Combat.NCardPlayQueue MegaCrit.Sts2.Core.Nodes.Combat.NCardPlayQueue::get_Instance()",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:123",
+      "Detail": "Cecil signature resolution \u002B actual CLR ResolveMember succeeded; not invocation proof.",
+      "Evidence": {
+        "resolved": "MegaCrit.Sts2.Core.Nodes.Combat.NCardPlayQueue get_Instance()",
+        "declaringType": "MegaCrit.Sts2.Core.Nodes.Combat.NCardPlayQueue",
+        "sources": [
+          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:123"
+        ]
+      }
+    },
+    {
+      "Category": "member-ref",
       "Id": "MegaCrit.Sts2.Core.Nodes.Combat.NCreature MegaCrit.Sts2.Core.Nodes.Rooms.NCombatRoom::GetCreatureNode(MegaCrit.Sts2.Core.Entities.Creatures.Creature)",
       "Status": "PASS",
       "Target": "MegaCrit.Sts2.Core.Nodes.Combat.NCreature MegaCrit.Sts2.Core.Nodes.Rooms.NCombatRoom::GetCreatureNode(MegaCrit.Sts2.Core.Entities.Creatures.Creature)",
@@ -30134,6 +30170,7 @@
         "declaringType": "MegaCrit.Sts2.Core.Nodes.Combat.NPlayerHand",
         "sources": [
           "shin-getter-mod-godot/src/Services/ShinGetterAnnotationsCardChoice.cs:90",
+          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:124",
           "shin-getter-mod-godot/src/Nodes/Combat/NShinGetterFormChoice.cs:183"
         ]
       }
@@ -31208,6 +31245,7 @@
           "shin-getter-mod-godot/src/Services/ShinGetterStonerSunshineService.cs:100",
           "shin-getter-mod-godot/src/Patches/EventConsoleAliasPatch.cs:53",
           "shin-getter-mod-godot/src/Patches/ShinGetterAncientRewardPatch.cs:119",
+          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:121",
           "shin-getter-mod-godot/src/Patches/ShinGetterByrdpipRewardPatch.cs:43",
           "shin-getter-mod-godot/src/Nodes/Screens/Shops/ShinGetterMerchantReactions.cs:39",
           "shin-getter-mod-godot/src/Nodes/Screens/Shops/ShinGetterMerchantReactions.cs:159",
@@ -31362,6 +31400,7 @@
           "shin-getter-mod-godot/src/Services/ShinGetterCheatService.cs:67",
           "shin-getter-mod-godot/src/Patches/EventConsoleAliasPatch.cs:40",
           "shin-getter-mod-godot/src/Patches/EventConsoleAliasPatch.cs:57",
+          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:120",
           "shin-getter-mod-godot/src/Patches/ShinGetterBs2MandalaPatch.cs:73",
           "shin-getter-mod-godot/src/Patches/ShinGetterTrialCombatSyncPatch.cs:21",
           "shin-getter-mod-godot/src/Patches/ShinGetterTrialCombatSyncPatch.cs:64",
@@ -31448,6 +31487,7 @@
           "shin-getter-mod-godot/src/Services/ShinGetterAnnotationsCardChoice.cs:57",
           "shin-getter-mod-godot/src/Services/ShinGetterAnnotationsCardChoice.cs:49",
           "shin-getter-mod-godot/src/Services/ShinGetterCheatService.cs:29",
+          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:121",
           "shin-getter-mod-godot/src/Patches/ShinGetterBs2MandalaPatch.cs:73",
           "shin-getter-mod-godot/src/Patches/ShinGetterEventSaveScopePatch.cs:67",
           "shin-getter-mod-godot/src/Nodes/Screens/Shops/ShinGetterMerchantVisuals.cs:91",
@@ -32165,6 +32205,7 @@
         "declaringType": "MegaCrit.Sts2.Core.Context.LocalContext",
         "sources": [
           "shin-getter-mod-godot/src/Services/ShinGetterAnnotationsCardChoice.cs:70",
+          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:129",
           "shin-getter-mod-godot/src/Nodes/Combat/NShinGetterFormChoice.cs:221",
           "shin-getter-mod-godot/src/Models/Cards/SGC_StarSlash.cs:48"
         ]
@@ -32621,13 +32662,13 @@
       "Id": "System.Boolean MegaCrit.Sts2.Core.Models.CardModel::CanPlay(MegaCrit.Sts2.Core.Entities.Cards.UnplayableReason\u0026,MegaCrit.Sts2.Core.Models.AbstractModel\u0026)",
       "Status": "PASS",
       "Target": "System.Boolean MegaCrit.Sts2.Core.Models.CardModel::CanPlay(MegaCrit.Sts2.Core.Entities.Cards.UnplayableReason\u0026,MegaCrit.Sts2.Core.Models.AbstractModel\u0026)",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:91",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:95",
       "Detail": "Cecil signature resolution \u002B actual CLR ResolveMember succeeded; not invocation proof.",
       "Evidence": {
         "resolved": "Boolean CanPlay(MegaCrit.Sts2.Core.Entities.Cards.UnplayableReason ByRef, MegaCrit.Sts2.Core.Models.AbstractModel ByRef)",
         "declaringType": "MegaCrit.Sts2.Core.Models.CardModel",
         "sources": [
-          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:91"
+          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:95"
         ]
       }
     },
@@ -32636,13 +32677,13 @@
       "Id": "System.Boolean MegaCrit.Sts2.Core.Models.CardModel::IsValidTarget(MegaCrit.Sts2.Core.Entities.Creatures.Creature)",
       "Status": "PASS",
       "Target": "System.Boolean MegaCrit.Sts2.Core.Models.CardModel::IsValidTarget(MegaCrit.Sts2.Core.Entities.Creatures.Creature)",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:91",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:95",
       "Detail": "Cecil signature resolution \u002B actual CLR ResolveMember succeeded; not invocation proof.",
       "Evidence": {
         "resolved": "Boolean IsValidTarget(MegaCrit.Sts2.Core.Entities.Creatures.Creature)",
         "declaringType": "MegaCrit.Sts2.Core.Models.CardModel",
         "sources": [
-          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:91"
+          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:95"
         ]
       }
     },
@@ -33574,6 +33615,7 @@
         "declaringType": "MegaCrit.Sts2.Core.Runs.RunManager",
         "sources": [
           "shin-getter-mod-godot/src/Services/ShinGetterAnnotationsCardChoice.cs:57",
+          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:121",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:521",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:421"
         ]
@@ -37602,13 +37644,13 @@
       "Id": "System.Threading.Tasks.Task MegaCrit.Sts2.Core.Models.CardModel::OnPlayWrapper(MegaCrit.Sts2.Core.GameActions.Multiplayer.PlayerChoiceContext,MegaCrit.Sts2.Core.Entities.Creatures.Creature,System.Boolean,MegaCrit.Sts2.Core.Entities.Cards.ResourceInfo,System.Boolean)",
       "Status": "PASS",
       "Target": "System.Threading.Tasks.Task MegaCrit.Sts2.Core.Models.CardModel::OnPlayWrapper(MegaCrit.Sts2.Core.GameActions.Multiplayer.PlayerChoiceContext,MegaCrit.Sts2.Core.Entities.Creatures.Creature,System.Boolean,MegaCrit.Sts2.Core.Entities.Cards.ResourceInfo,System.Boolean)",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:71",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:75",
       "Detail": "Cecil signature resolution \u002B actual CLR ResolveMember succeeded; not invocation proof.",
       "Evidence": {
         "resolved": "System.Threading.Tasks.Task OnPlayWrapper(MegaCrit.Sts2.Core.GameActions.Multiplayer.PlayerChoiceContext, MegaCrit.Sts2.Core.Entities.Creatures.Creature, Boolean, MegaCrit.Sts2.Core.Entities.Cards.ResourceInfo, Boolean)",
         "declaringType": "MegaCrit.Sts2.Core.Models.CardModel",
         "sources": [
-          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:71"
+          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:75"
         ]
       }
     },
@@ -38489,14 +38531,14 @@
       "Id": "System.Threading.Tasks.Task\u00601\u003CSystem.ValueTuple\u00602\u003CSystem.Int32,System.Int32\u003E\u003E MegaCrit.Sts2.Core.Models.CardModel::SpendResources()",
       "Status": "PASS",
       "Target": "System.Threading.Tasks.Task\u00601\u003CSystem.ValueTuple\u00602\u003CSystem.Int32,System.Int32\u003E\u003E MegaCrit.Sts2.Core.Models.CardModel::SpendResources()",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:76",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:80",
       "Detail": "Cecil signature resolution \u002B actual CLR ResolveMember succeeded; not invocation proof.",
       "Evidence": {
         "resolved": "System.Threading.Tasks.Task\u00601[System.ValueTuple\u00602[System.Int32,System.Int32]] SpendResources()",
         "declaringType": "MegaCrit.Sts2.Core.Models.CardModel",
         "sources": [
-          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:76",
-          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:98"
+          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:80",
+          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:102"
         ]
       }
     },
@@ -39570,22 +39612,6 @@
     },
     {
       "Category": "member-ref",
-      "Id": "System.Void MegaCrit.Sts2.Core.GameActions.GameAction::Cancel()",
-      "Status": "PASS",
-      "Target": "System.Void MegaCrit.Sts2.Core.GameActions.GameAction::Cancel()",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:95",
-      "Detail": "Cecil signature resolution \u002B actual CLR ResolveMember succeeded; not invocation proof.",
-      "Evidence": {
-        "resolved": "Void Cancel()",
-        "declaringType": "MegaCrit.Sts2.Core.GameActions.GameAction",
-        "sources": [
-          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:95",
-          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:103"
-        ]
-      }
-    },
-    {
-      "Category": "member-ref",
       "Id": "System.Void MegaCrit.Sts2.Core.GameActions.Multiplayer.ActionQueueSynchronizer::RequestResumeActionAfterPlayerChoice(MegaCrit.Sts2.Core.GameActions.GameAction)",
       "Status": "PASS",
       "Target": "System.Void MegaCrit.Sts2.Core.GameActions.Multiplayer.ActionQueueSynchronizer::RequestResumeActionAfterPlayerChoice(MegaCrit.Sts2.Core.GameActions.GameAction)",
@@ -39625,13 +39651,13 @@
       "Id": "System.Void MegaCrit.Sts2.Core.GameActions.Multiplayer.GameActionPlayerChoiceContext::.ctor(MegaCrit.Sts2.Core.GameActions.GameAction)",
       "Status": "PASS",
       "Target": "System.Void MegaCrit.Sts2.Core.GameActions.Multiplayer.GameActionPlayerChoiceContext::.ctor(MegaCrit.Sts2.Core.GameActions.GameAction)",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:84",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:88",
       "Detail": "Cecil signature resolution \u002B actual CLR ResolveMember succeeded; not invocation proof.",
       "Evidence": {
         "resolved": "Void .ctor(MegaCrit.Sts2.Core.GameActions.GameAction)",
         "declaringType": "MegaCrit.Sts2.Core.GameActions.Multiplayer.GameActionPlayerChoiceContext",
         "sources": [
-          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:84"
+          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:88"
         ]
       }
     },
@@ -42074,6 +42100,21 @@
     },
     {
       "Category": "member-ref",
+      "Id": "System.Void MegaCrit.Sts2.Core.Nodes.Combat.NCardPlayQueue::RemoveCardFromQueueForCancellation(MegaCrit.Sts2.Core.GameActions.PlayCardAction)",
+      "Status": "PASS",
+      "Target": "System.Void MegaCrit.Sts2.Core.Nodes.Combat.NCardPlayQueue::RemoveCardFromQueueForCancellation(MegaCrit.Sts2.Core.GameActions.PlayCardAction)",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:128",
+      "Detail": "Cecil signature resolution \u002B actual CLR ResolveMember succeeded; not invocation proof.",
+      "Evidence": {
+        "resolved": "Void RemoveCardFromQueueForCancellation(MegaCrit.Sts2.Core.GameActions.PlayCardAction)",
+        "declaringType": "MegaCrit.Sts2.Core.Nodes.Combat.NCardPlayQueue",
+        "sources": [
+          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:128"
+        ]
+      }
+    },
+    {
+      "Category": "member-ref",
       "Id": "System.Void MegaCrit.Sts2.Core.Nodes.Combat.NCreature::HideHoverTips()",
       "Status": "PASS",
       "Target": "System.Void MegaCrit.Sts2.Core.Nodes.Combat.NCreature::HideHoverTips()",
@@ -42114,6 +42155,21 @@
         "declaringType": "MegaCrit.Sts2.Core.Nodes.Combat.NPlayerHand",
         "sources": [
           "shin-getter-mod-godot/src/Services/ShinGetterAnnotationsCardChoice.cs:90"
+        ]
+      }
+    },
+    {
+      "Category": "member-ref",
+      "Id": "System.Void MegaCrit.Sts2.Core.Nodes.Combat.NPlayerHand::TryCancelCardPlay(MegaCrit.Sts2.Core.Models.CardModel)",
+      "Status": "PASS",
+      "Target": "System.Void MegaCrit.Sts2.Core.Nodes.Combat.NPlayerHand::TryCancelCardPlay(MegaCrit.Sts2.Core.Models.CardModel)",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:129",
+      "Detail": "Cecil signature resolution \u002B actual CLR ResolveMember succeeded; not invocation proof.",
+      "Evidence": {
+        "resolved": "Void TryCancelCardPlay(MegaCrit.Sts2.Core.Models.CardModel)",
+        "declaringType": "MegaCrit.Sts2.Core.Nodes.Combat.NPlayerHand",
+        "sources": [
+          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:129"
         ]
       }
     },
@@ -59706,7 +59762,7 @@
       "Id": "R281",
       "Status": "PASS",
       "Target": "MegaCrit.Sts2.Core.GameActions.PlayCardAction::MegaCrit.Sts2.Core.GameActions.Multiplayer.PlayerChoiceContext PlayerChoiceContext",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:85",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:89",
       "Detail": "Source reflection invocation argument count/types or field/property operation checked against actual target metadata; instance state/behavior not executed.",
       "Evidence": {
         "code": "ActionChoiceContext.SetValue(action, context)",
@@ -64134,8 +64190,8 @@
       "Detail": "Current source bytes equal compiled PDB document checksum.",
       "Evidence": {
         "algorithm": "8829d00f-11b8-4213-878b-770e8597ac16",
-        "pdbHash": "457B344261373CE6865F42B30D2D12AE0B7BBE80849F7AADBAB7B7724D561490",
-        "actualHash": "457B344261373CE6865F42B30D2D12AE0B7BBE80849F7AADBAB7B7724D561490"
+        "pdbHash": "AB5E94690C18AED065F4AD12E7BC2783A15EB5784D1C9E829A6D71A46D74C7D1",
+        "actualHash": "AB5E94690C18AED065F4AD12E7BC2783A15EB5784D1C9E829A6D71A46D74C7D1"
       }
     },
     {
@@ -64988,7 +65044,7 @@
       "Id": "ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch.Transpiler-\u003EMegaCrit.Sts2.Core.GameActions.PlayCardAction\u002B\u003CExecuteAction\u003Ed__25::Void MoveNext()",
       "Status": "PASS",
       "Target": "MegaCrit.Sts2.Core.GameActions.PlayCardAction\u002B\u003CExecuteAction\u003Ed__25::Void MoveNext()",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:39",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:43",
       "Detail": "Actual production transpiler enumerated: 2 calls replaced; no silent skip; every other native instruction, branch operand, label and exception-block marker preserved in order. No emitted wrapper or gameplay executed.",
       "Evidence": {
         "originalInstructions": 357,
@@ -65185,7 +65241,7 @@
       "Id": "ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch.Transpiler-\u003EMegaCrit.Sts2.Core.GameActions.PlayCardAction\u002B\u003CExecuteAction\u003Ed__25::Void MoveNext()",
       "Status": "PASS",
       "Target": "MegaCrit.Sts2.Core.GameActions.PlayCardAction\u002B\u003CExecuteAction\u003Ed__25::Void MoveNext()",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:39",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:43",
       "Detail": "Official original IL decoded by actual Harmony; this record alone does not mean transformation passed.",
       "Evidence": {
         "nativeIlCalls": [
@@ -70017,14 +70073,14 @@
       "Id": "MegaCrit.Sts2.Core.GameActions.PlayCardAction",
       "Status": "PASS",
       "Target": "MegaCrit.Sts2.Core.GameActions.PlayCardAction",
-      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:32",
+      "Source": "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:36",
       "Detail": "Cecil and actual CLR ResolveType bind official sts2.",
       "Evidence": {
         "resolved": "MegaCrit.Sts2.Core.GameActions.PlayCardAction",
         "sources": [
+          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:36",
           "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:32",
-          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:28",
-          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:44"
+          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:48"
         ]
       }
     },
@@ -70778,8 +70834,8 @@
         "resolved": "MegaCrit.Sts2.Core.Models.CardModel",
         "sources": [
           "shin-getter-mod-godot/src/Services/ShinGetterCheatService.cs:101",
-          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:24",
-          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:25",
+          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:28",
+          "shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:29",
           "shin-getter-mod-godot/src/Models/Powers/SGP_HotBlood.cs:35",
           "shin-getter-mod-godot/src/Models/Characters/ShinGetter.cs:33",
           "shin-getter-mod-godot/src/Models/Cards/SGC_Specialization.cs:64",
@@ -72567,6 +72623,18 @@
         "sources": [
           "shin-getter-mod-godot/src/Patches/ShinGetterCardFramePatch.cs:370"
         ]
+      }
+    },
+    {
+      "Category": "type-ref",
+      "Id": "MegaCrit.Sts2.Core.Nodes.Combat.NCardPlayQueue",
+      "Status": "PASS",
+      "Target": "MegaCrit.Sts2.Core.Nodes.Combat.NCardPlayQueue",
+      "Source": "\u003Cmetadata-only\u003E",
+      "Detail": "Cecil and actual CLR ResolveType bind official sts2.",
+      "Evidence": {
+        "resolved": "MegaCrit.Sts2.Core.Nodes.Combat.NCardPlayQueue",
+        "sources": []
       }
     },
     {

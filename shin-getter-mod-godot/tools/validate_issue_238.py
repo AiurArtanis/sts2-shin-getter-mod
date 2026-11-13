@@ -394,8 +394,12 @@ def content_contracts():
     preparation = read("src/Patches/ShinGetterAnnotationsPreparationPatch.cs")
     contains(preparation, "typeof(PlayCardAction)", '"MoveNext"', "AsyncStateMachineAttribute", "PrepareResources",
              "PlayPreparedCard", "new GameActionPlayerChoiceContext(action)", "ActionChoiceContext.SetValue(action, context)",
-             "card.CanPlay(out _, out _)", "card.IsValidTarget(action.Target)", "action.Cancel();", "return (0, 0)",
+             "card.CanPlay(out _, out _)", "card.IsValidTarget(action.Target)", "RestorePreparationPresentation(card, action)", "return (0, 0)",
              "annotations.ConsumeManualCancellation()", "return Task.CompletedTask")
+    contains(preparation, "RemoveCardFromQueueForCancellation(action)", "LocalContext.IsMe(action.Player)",
+             "TryCancelCardPlay(card)")
+    require("action.Cancel()" not in preparation and not re.search(r"action\.State\s*=", preparation),
+            "manual cancellation must not invalidate an already executing native action")
     preparing = body(preparation, "private static async Task<(int, int)> PrepareAnnotationsResources(")
     require(preparing.index("await annotations.PrepareManualPlay(context)") < preparing.index("card.CanPlay(")
             < preparing.index("await card.SpendResources()"), "manual choice must precede native recheck and cost")

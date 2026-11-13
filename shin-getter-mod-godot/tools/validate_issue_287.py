@@ -85,6 +85,25 @@ class Issue287SourceContracts(unittest.TestCase):
         self.assertIn("new[] { typeof(MerchantInventory), typeof(bool) }", source)
         self.assertNotIn("OnTryPurchaseWrapper", source)
 
+    def test_manual_annotations_cancel_keeps_native_action_lifecycle(self):
+        source = read("Patches/ShinGetterAnnotationsPreparationPatch.cs")
+        self.assertIn("RestorePreparationPresentation(card, action)", source)
+        self.assertIn("RemoveCardFromQueueForCancellation(action)", source)
+        self.assertIn("LocalContext.IsMe(action.Player)", source)
+        self.assertIn("TryCancelCardPlay(card)", source)
+        self.assertIn("manager.IsCleaningUp", source)
+        self.assertIn("ReferenceEquals(card.Owner, action.Player)", source)
+        self.assertIn("ReferenceEquals(manager.DebugOnlyGetState(), action.Player.RunState)", source)
+        self.assertIn("GodotObject.IsInstanceValid(queue)", source)
+        self.assertIn("GodotObject.IsInstanceValid(hand)", source)
+        self.assertIn("catch (Exception cleanupError)", source)
+        self.assertIn("Console.Error.WriteLine", source)
+        self.assertIn("annotations.ConsumeManualCancellation()", source)
+        self.assertIn("return Task.CompletedTask", source)
+        self.assertNotIn("action.Cancel()", source)
+        self.assertNotRegex(source, r"action\.State\s*=")
+        self.assertNotIn("GameActionState.Canceled", source)
+
     def test_welcome_async_owner(self):
         source = read("Patches/ShinGetterMerchantReactionPatch.cs")
         self.assertIn("nameof(NMerchantInventory.ShowOpenInventory)", source)

@@ -8,7 +8,7 @@ Offline evidence only. `Entry.Init`, native `PatchClassProcessor.Patch` / `Patch
 
 - Official 113 DLL SHA-256 (strict pin): `A6CC282C52B96AD2E01D5692B1144B33AA8E3BA4E969582F648ECB13B2F751D7`
 - Actual Harmony SHA-256 (strict pin): `EF1898322C9F5C86DC1B0758B272A9C440823B4A41CA9A0B82A3AA6B3D206387`
-- Normalized binding graph SHA-256: `E10D946E56D1EF0FF74093C8F589853ACDE17D1A7BC691EB6EB672100139281C`
+- Normalized binding graph SHA-256: `FE9D74850F3EB6967EC2D62966D4E88BDC864A14A3ADFC79404EC7085C13C806`
 
 Product DLL SHA/MVID/tokens, PDB SHA, timestamps, absolute input paths and raw per-run evidence are external engineering facts, not future semantic equality gates. Run reports are written under `E:/Work/outputs/issue113-beta-20261113/dynamic-probe-run/` by default. `--check` compares only the normalized binding graph and never updates this baseline.
 
@@ -31,7 +31,7 @@ Grid attribution: the temporary derived-type reflection lookup was introduced du
 | harmony-target | 168 | 168 | 0 | 0 | 0 |
 | history-boundary | 1 | 1 | 0 | 0 | 0 |
 | isolation | 1 | 1 | 0 | 0 | 0 |
-| member-ref | 1002 | 1002 | 0 | 0 | 0 |
+| member-ref | 1005 | 1005 | 0 | 0 | 0 |
 | negative-control | 4 | 4 | 0 | 0 | 0 |
 | non-game-override | 88 | 88 | 0 | 0 | 0 |
 | override | 1082 | 1082 | 0 | 0 | 0 |
@@ -41,7 +41,7 @@ Grid attribution: the temporary derived-type reflection lookup was introduced du
 | source-checksum | 386 | 386 | 0 | 0 | 0 |
 | transpiler | 6 | 6 | 0 | 0 | 0 |
 | transpiler-native-layout | 6 | 6 | 0 | 0 | 0 |
-| type-ref | 463 | 463 | 0 | 0 | 0 |
+| type-ref | 464 | 464 | 0 | 0 | 0 |
 
 ## Findings and Boundaries
 
@@ -124,15 +124,15 @@ JSON `expectedHarmonyRegistry`: ALL_DECLARED_TARGETS_RESOLVED; 138 unique origin
 | A056 | PASS | `shin-getter-mod-godot/src/Patches/ShinGetterAncientRewardPatch.cs:47` | `ShinGetterMod.Patches.ShinGetterTouchOfOrobasAfterObtainedPatch` | HarmonyPatch declaration linked to actual class-processor and per-hook target records; see harmony-target/harmony-parameters/transpiler gates. |
 | A057 | PASS | `shin-getter-mod-godot/src/Patches/ShinGetterAncientRewardPatch.cs:61` | `ShinGetterMod.Patches.ShinGetterArchaicToothSetupPatch` | HarmonyPatch declaration linked to actual class-processor and per-hook target records; see harmony-target/harmony-parameters/transpiler gates. |
 | A058 | PASS | `shin-getter-mod-godot/src/Patches/ShinGetterAncientRewardPatch.cs:83` | `ShinGetterMod.Patches.ShinGetterArchaicToothAfterObtainedPatch` | HarmonyPatch declaration linked to actual class-processor and per-hook target records; see harmony-target/harmony-parameters/transpiler gates. |
-| D059 | PASS | `shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:24` | `MegaCrit.Sts2.Core.Models.CardModel.SpendResources` | Actual AccessTools name lookup resolved unambiguously; absence of explicit Type[] is recorded, not an asserted caller signature. |
-| D060 | PASS | `shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:25` | `MegaCrit.Sts2.Core.Models.CardModel.OnPlayWrapper` | Actual AccessTools name lookup resolved unambiguously; absence of explicit Type[] is recorded, not an asserted caller signature. |
-| D061 | PASS | `shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:26` | `ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch.PrepareResources` | Actual AccessTools name lookup resolved unambiguously; absence of explicit Type[] is recorded, not an asserted caller signature. |
-| D062 | PASS | `shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:27` | `ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch.PlayPreparedCard` | Actual AccessTools name lookup resolved unambiguously; absence of explicit Type[] is recorded, not an asserted caller signature. |
-| D063 | PASS | `shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:28` | `MegaCrit.Sts2.Core.GameActions.PlayCardAction.PlayerChoiceContext` | Actual AccessTools name lookup resolved unambiguously; absence of explicit Type[] is recorded, not an asserted caller signature. |
-| D064 | PASS | `shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:32` | `MegaCrit.Sts2.Core.GameActions.PlayCardAction.ExecuteAction` | Actual AccessTools name lookup resolved unambiguously; absence of explicit Type[] is recorded, not an asserted caller signature. |
-| D065 | PASS | `shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:35` | `MegaCrit.Sts2.Core.GameActions.PlayCardAction+<ExecuteAction>d__25.MoveNext` | Actual AccessTools name lookup resolved unambiguously; absence of explicit Type[] is recorded, not an asserted caller signature. |
-| D066 | PASS | `shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:43` | `MegaCrit.Sts2.Core.GameActions.PlayCardAction+<ExecuteAction>d__25.` | Bounded reflection enumeration resolved; instance values/callbacks not executed. Exact transpiler field use is separately checked. |
-| A067 | PASS | `shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:21` | `ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch` | HarmonyPatch declaration linked to actual class-processor and per-hook target records; see harmony-target/harmony-parameters/transpiler gates. |
+| D059 | PASS | `shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:28` | `MegaCrit.Sts2.Core.Models.CardModel.SpendResources` | Actual AccessTools name lookup resolved unambiguously; absence of explicit Type[] is recorded, not an asserted caller signature. |
+| D060 | PASS | `shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:29` | `MegaCrit.Sts2.Core.Models.CardModel.OnPlayWrapper` | Actual AccessTools name lookup resolved unambiguously; absence of explicit Type[] is recorded, not an asserted caller signature. |
+| D061 | PASS | `shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:30` | `ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch.PrepareResources` | Actual AccessTools name lookup resolved unambiguously; absence of explicit Type[] is recorded, not an asserted caller signature. |
+| D062 | PASS | `shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:31` | `ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch.PlayPreparedCard` | Actual AccessTools name lookup resolved unambiguously; absence of explicit Type[] is recorded, not an asserted caller signature. |
+| D063 | PASS | `shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:32` | `MegaCrit.Sts2.Core.GameActions.PlayCardAction.PlayerChoiceContext` | Actual AccessTools name lookup resolved unambiguously; absence of explicit Type[] is recorded, not an asserted caller signature. |
+| D064 | PASS | `shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:36` | `MegaCrit.Sts2.Core.GameActions.PlayCardAction.ExecuteAction` | Actual AccessTools name lookup resolved unambiguously; absence of explicit Type[] is recorded, not an asserted caller signature. |
+| D065 | PASS | `shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:39` | `MegaCrit.Sts2.Core.GameActions.PlayCardAction+<ExecuteAction>d__25.MoveNext` | Actual AccessTools name lookup resolved unambiguously; absence of explicit Type[] is recorded, not an asserted caller signature. |
+| D066 | PASS | `shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:47` | `MegaCrit.Sts2.Core.GameActions.PlayCardAction+<ExecuteAction>d__25.` | Bounded reflection enumeration resolved; instance values/callbacks not executed. Exact transpiler field use is separately checked. |
+| A067 | PASS | `shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:25` | `ShinGetterMod.Patches.ShinGetterAnnotationsPreparationPatch` | HarmonyPatch declaration linked to actual class-processor and per-hook target records; see harmony-target/harmony-parameters/transpiler gates. |
 | D068 | PASS | `shin-getter-mod-godot/src/Patches/ShinGetterArchitectAttackPatch.cs:24` | `MegaCrit.Sts2.Core.Models.Events.TheArchitect._architectCreature` | Actual AccessTools FieldRef delegate constructed and field type checked; delegate not invoked. |
 | D069 | PASS | `shin-getter-mod-godot/src/Patches/ShinGetterArchitectAttackPatch.cs:27` | `MegaCrit.Sts2.Core.Models.Events.TheArchitect._score` | Actual AccessTools FieldRef delegate constructed and field type checked; delegate not invoked. |
 | D070 | PASS | `shin-getter-mod-godot/src/Patches/ShinGetterArchitectAttackPatch.cs:30` | `MegaCrit.Sts2.Core.Models.Events.TheArchitect._speechBubble` | Actual AccessTools FieldRef delegate constructed and field type checked; delegate not invoked. |
@@ -346,7 +346,7 @@ JSON `expectedHarmonyRegistry`: ALL_DECLARED_TARGETS_RESOLVED; 138 unique origin
 | R278 | PASS | `shin-getter-mod-godot/src/Nodes/Vfx/NShinGetterSparkSubtitleFollower.cs:146` | `MegaCrit.Sts2.Core.Nodes.Vfx.NSpeechBubbleVfx::MegaCrit.Sts2.Core.Nodes.GodotExtensions.OwnerFreeingTween _tween` | Source reflection invocation argument count/types or field/property operation checked against actual target metadata; instance state/behavior not executed. |
 | R279 | PASS | `shin-getter-mod-godot/src/Nodes/Vfx/NShinGetterSparkSubtitleFollower.cs:165` | `MegaCrit.Sts2.Core.Nodes.Vfx.NSpeechBubbleVfx::MegaCrit.Sts2.Core.Nodes.GodotExtensions.OwnerFreeingTween _tween` | Source reflection invocation argument count/types or field/property operation checked against actual target metadata; instance state/behavior not executed. |
 | R280 | PASS | `shin-getter-mod-godot/src/Nodes/Vfx/NShinGetterSparkSubtitleFollower.cs:180` | `MegaCrit.Sts2.Core.Nodes.Vfx.NSpeechBubbleVfx::MegaCrit.Sts2.Core.Nodes.GodotExtensions.OwnerFreeingTween _tween` | Source reflection invocation argument count/types or field/property operation checked against actual target metadata; instance state/behavior not executed. |
-| R281 | PASS | `shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:85` | `MegaCrit.Sts2.Core.GameActions.PlayCardAction::MegaCrit.Sts2.Core.GameActions.Multiplayer.PlayerChoiceContext PlayerChoiceContext` | Source reflection invocation argument count/types or field/property operation checked against actual target metadata; instance state/behavior not executed. |
+| R281 | PASS | `shin-getter-mod-godot/src/Patches/ShinGetterAnnotationsPreparationPatch.cs:89` | `MegaCrit.Sts2.Core.GameActions.PlayCardAction::MegaCrit.Sts2.Core.GameActions.Multiplayer.PlayerChoiceContext PlayerChoiceContext` | Source reflection invocation argument count/types or field/property operation checked against actual target metadata; instance state/behavior not executed. |
 | R282 | PASS | `shin-getter-mod-godot/src/Patches/ShinGetterBondDialoguePatch.cs:293` | `MegaCrit.Sts2.Core.Models.Events.TheArchitect::MegaCrit.Sts2.Core.Events.EventOption CreateProceedOption()` | Source reflection invocation argument count/types or field/property operation checked against actual target metadata; instance state/behavior not executed. |
 | R283 | PASS | `shin-getter-mod-godot/src/Patches/ShinGetterBondDialoguePatch.cs:294` | `MegaCrit.Sts2.Core.Models.EventModel::Void SetEventState(MegaCrit.Sts2.Core.Localization.LocString, System.Collections.Generic.IEnumerable`1[MegaCrit.Sts2.Core.Events.EventOption])` | Source reflection invocation argument count/types or field/property operation checked against actual target metadata; instance state/behavior not executed. |
 | R284 | PASS | `shin-getter-mod-godot/src/Patches/ShinGetterBondDialoguePatch.cs:304` | `MegaCrit.Sts2.Core.Models.Events.TheArchitect::Void LoadDialogue()` | Source reflection invocation argument count/types or field/property operation checked against actual target metadata; instance state/behavior not executed. |

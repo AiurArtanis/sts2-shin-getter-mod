@@ -44,7 +44,7 @@ Additional incompatibilities found beyond the original eleven compile sites:
 
 The independent mode/save review is in `issue287-modes-and-save-audit.md`. No unresolved, confirmed mode/save P1 or P2 remained after these source changes. Standard non-custom solo bond rules are retained; Dread ordinary events, Mandala, shops and Continue are not disabled. Default Blitz maps have no ordinary event nodes, so those paths are naturally unreachable rather than failed patches. New character/rotating selection and exact native save behavior still require the focused runtime cases; source/metadata conclusions are not gameplay acceptance.
 
-Source/reference gates: `python -B tools/validate_issue_287.py` (16 checks). These include the pinned official DLL, source/manifest contracts, per-owner selection, both event-selection adapters, custom guards, Blitz boundaries and native event reward ownership. They are not native gameplay tests.
+Source/reference gates: `python -B tools/validate_issue_287.py` (17 checks). These include the pinned official DLL, source/manifest contracts, per-owner selection, both event-selection adapters, custom guards, Blitz boundaries, native event reward ownership and manual cancellation lifecycle. They are not native gameplay tests.
 
 ## Native Event Save Verification Finding
 
@@ -88,6 +88,22 @@ hooks such as FresnelLens can legitimately replace the input with an enchanted c
 The canonical cache, native selection, costs, transaction, RNG and other routes are
 unchanged. Source review and compilation do not replace the pending native replay,
 FresnelLens replacement case or rollback verification.
+
+## Native Manual Annotations Cancellation Finding
+
+The original cancellation run preserved resources and the hand but logged a native
+PlayCardAction completion error: the mod canceled an already-resumed executing action
+and then allowed its execution Task to complete. Native GameAction.Execute requires
+that completion to occur in Executing state; the same check exists in 111.
+
+The preparation adapter now cancels only the card effect: zero resources, skip the
+entire OnPlayWrapper, restore native queued-card/hand presentation, and let the native
+action finish normally. It neither sets State nor cancels the executing action.
+UI cleanup is guarded by current run/owner identity, shutdown state and valid nodes.
+If selection throws and cleanup also throws, the secondary error is diagnosed but
+cannot replace the original exception. Confirmed play and committed replay/auto-play
+retain their original protocols. Independent source review is not native cancellation,
+retry, shutdown or multiplayer acceptance; those remain separately recorded.
 
 An independently packed candidate PCK was loaded in an empty Godot 4.5.1 project: 1008 files, 207 textures, 94 audio streams, 167 binary atlases and 52 JSON files, `failed=false`. No game was launched for this asset verification. Assets retain the previous approved runtime payload; no new artwork or sound was made or approved here.
 

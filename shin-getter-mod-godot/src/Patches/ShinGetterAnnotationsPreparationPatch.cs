@@ -6,12 +6,16 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes.Combat;
+using MegaCrit.Sts2.Core.Runs;
 using ShinGetterMod.Models.Cards;
 
 namespace ShinGetterMod.Patches;
@@ -92,7 +96,7 @@ internal static class ShinGetterAnnotationsPreparationPatch
                 || !card.CanPlay(out _, out _) || !card.IsValidTarget(action.Target))
             {
                 annotations.CancelManualPreparation();
-                action.Cancel();
+                RestorePreparationPresentation(card, action);
                 return (0, 0);
             }
             return await card.SpendResources();
@@ -100,8 +104,28 @@ internal static class ShinGetterAnnotationsPreparationPatch
         catch
         {
             annotations.CancelManualPreparation();
-            action.Cancel();
+            try { RestorePreparationPresentation(card, action); }
+            catch (Exception cleanupError)
+            {
+                // Native logging may already be disposed; preserve the original failure.
+                try { Console.Error.WriteLine($"[ERROR] issue#287 annotations presentation cleanup failed: {cleanupError}"); }
+                catch { /* Diagnostic failure must not replace the original exception. */ }
+            }
             throw;
         }
+    }
+
+    private static void RestorePreparationPresentation(CardModel card, PlayCardAction action)
+    {
+        RunManager manager = RunManager.Instance;
+        if (manager.IsCleaningUp || !ReferenceEquals(card.Owner, action.Player)
+            || !ReferenceEquals(manager.DebugOnlyGetState(), action.Player.RunState)) return;
+        var queue = NCardPlayQueue.Instance;
+        var hand = NPlayerHand.Instance;
+        if (queue == null || hand == null || !GodotObject.IsInstanceValid(queue) || !GodotObject.IsInstanceValid(hand)) return;
+        // The choice has resumed this action. Canceling its state here would make
+        // native Execute reject its completed Task; only undo the queued visuals.
+        queue.RemoveCardFromQueueForCancellation(action);
+        if (LocalContext.IsMe(action.Player)) hand.TryCancelCardPlay(card);
     }
 }
