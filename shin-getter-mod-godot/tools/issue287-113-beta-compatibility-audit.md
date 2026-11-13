@@ -44,7 +44,7 @@ Additional incompatibilities found beyond the original eleven compile sites:
 
 The independent mode/save review is in `issue287-modes-and-save-audit.md`. No unresolved, confirmed mode/save P1 or P2 remained after these source changes. Standard non-custom solo bond rules are retained; Dread ordinary events, Mandala, shops and Continue are not disabled. Default Blitz maps have no ordinary event nodes, so those paths are naturally unreachable rather than failed patches. New character/rotating selection and exact native save behavior still require the focused runtime cases; source/metadata conclusions are not gameplay acceptance.
 
-Source/reference gates: `python -B tools/validate_issue_287.py` (15 checks). These include the pinned official DLL, source/manifest contracts, per-owner selection, both event-selection adapters, custom guards and Blitz boundaries. They are not native gameplay tests.
+Source/reference gates: `python -B tools/validate_issue_287.py` (16 checks). These include the pinned official DLL, source/manifest contracts, per-owner selection, both event-selection adapters, custom guards, Blitz boundaries and native event reward ownership. They are not native gameplay tests.
 
 ## Native Event Save Verification Finding
 
@@ -70,6 +70,24 @@ No DTO normalization roundtrip, save-file change or global serializer patch is a
 The new `tests/Issue287EventSaveVariables` is RED on the original candidate and GREEN
 after this fix with positive/negative official-serialization and JSON contract checks.
 That is not a native event, Continue, rollback or full compatibility pass.
+
+## Native Event Reward Ownership Finding
+
+The save-verification fix passed three actual native comparisons, and the same H04
+case then reached the real maximum-HP cost and card selection. The reward failed
+because its preview card already had an owner, while `RunState.AddCard` requires an
+unowned card and binds the owner itself. The transaction restored the economy; this
+does not prove every reflected rollback field. The 111 setter also rejects this
+double assignment, so the finding is not attributed to a new 113 setter change.
+
+BrainLeech now creates candidates with the standard native `RunState.CreateCard`
+path before upgrading and selecting. The selected card is already registered and
+is passed directly to `CardPileCmd.Add`. Its returned success and actual `cardAdded`
+owner/deck membership are checked, not the original candidate's membership: native
+hooks such as FresnelLens can legitimately replace the input with an enchanted clone.
+The canonical cache, native selection, costs, transaction, RNG and other routes are
+unchanged. Source review and compilation do not replace the pending native replay,
+FresnelLens replacement case or rollback verification.
 
 An independently packed candidate PCK was loaded in an empty Godot 4.5.1 project: 1008 files, 207 textures, 94 audio streams, 167 binary atlases and 52 JSON files, `failed=false`. No game was launched for this asset verification. Assets retain the previous approved runtime payload; no new artwork or sound was made or approved here.
 

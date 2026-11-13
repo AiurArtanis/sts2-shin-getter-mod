@@ -8,7 +8,7 @@ Offline evidence only. `Entry.Init`, native `PatchClassProcessor.Patch` / `Patch
 
 - Official 113 DLL SHA-256 (strict pin): `A6CC282C52B96AD2E01D5692B1144B33AA8E3BA4E969582F648ECB13B2F751D7`
 - Actual Harmony SHA-256 (strict pin): `EF1898322C9F5C86DC1B0758B272A9C440823B4A41CA9A0B82A3AA6B3D206387`
-- Normalized binding graph SHA-256: `A96A6B16226D7613E951DF0AC6A8B294C483F935CA817AAAA7DCDE951CC9C09D`
+- Normalized binding graph SHA-256: `E10D946E56D1EF0FF74093C8F589853ACDE17D1A7BC691EB6EB672100139281C`
 
 Product DLL SHA/MVID/tokens, PDB SHA, timestamps, absolute input paths and raw per-run evidence are external engineering facts, not future semantic equality gates. Run reports are written under `E:/Work/outputs/issue113-beta-20261113/dynamic-probe-run/` by default. `--check` compares only the normalized binding graph and never updates this baseline.
 

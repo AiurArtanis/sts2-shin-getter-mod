@@ -8,7 +8,7 @@
   },
   "semanticFingerprint": {
     "algorithm": "SHA-256 over canonical sorted binding graph; excludes product SHA/MVID/tokens/time/SourceRevisionId",
-    "aggregateSha256": "A96A6B16226D7613E951DF0AC6A8B294C483F935CA817AAAA7DCDE951CC9C09D",
+    "aggregateSha256": "E10D946E56D1EF0FF74093C8F589853ACDE17D1A7BC691EB6EB672100139281C",
     "groups": [
       {
         "category": "dynamicBindings",
@@ -18,7 +18,7 @@
       {
         "category": "gameMemberReferences",
         "count": 1002,
-        "sha256": "73B02C102CEE36ED3DB3DC5DE5657386534A88B8AB37F666BAC611B2459F06D9"
+        "sha256": "446089751792E56736DB2080B09D755B4D681E80465D3EACA99B4B413AB31E46"
       },
       {
         "category": "gameOverrides",
@@ -337,6 +337,7 @@
       "MegaCrit.Sts2.Core.Models.ActModel MegaCrit.Sts2.Core.Runs.RunState::get_Act()",
       "MegaCrit.Sts2.Core.Models.CardModel MegaCrit.Sts2.Core.Combat.ICombatState::CreateCard(MegaCrit.Sts2.Core.Models.CardModel,MegaCrit.Sts2.Core.Entities.Players.Player)",
       "MegaCrit.Sts2.Core.Models.CardModel MegaCrit.Sts2.Core.Entities.Cards.CardCreationResult::get_Card()",
+      "MegaCrit.Sts2.Core.Models.CardModel MegaCrit.Sts2.Core.Entities.Cards.CardPileAddResult::cardAdded",
       "MegaCrit.Sts2.Core.Models.CardModel MegaCrit.Sts2.Core.Entities.Cards.CardPlay::get_Card()",
       "MegaCrit.Sts2.Core.Models.CardModel MegaCrit.Sts2.Core.Models.CardModel::ToMutable()",
       "MegaCrit.Sts2.Core.Models.CardModel MegaCrit.Sts2.Core.Models.CardModel::get_DeckVersion()",
@@ -1116,7 +1117,6 @@
       "System.Void MegaCrit.Sts2.Core.Rooms.EventRoom::.ctor(MegaCrit.Sts2.Core.Models.EventModel)",
       "System.Void MegaCrit.Sts2.Core.Rooms.EventRoom::MarkPreFinished()",
       "System.Void MegaCrit.Sts2.Core.Runs.History.CardEnchantmentHistoryEntry::.ctor(MegaCrit.Sts2.Core.Models.CardModel,MegaCrit.Sts2.Core.Models.ModelId)",
-      "System.Void MegaCrit.Sts2.Core.Runs.ICardScope::AddCard(MegaCrit.Sts2.Core.Models.CardModel,MegaCrit.Sts2.Core.Entities.Players.Player)",
       "System.Void MegaCrit.Sts2.Core.Runs.IRunState::AppendToMapPointHistory(MegaCrit.Sts2.Core.Map.MapPointType,MegaCrit.Sts2.Core.Rooms.RoomType,MegaCrit.Sts2.Core.Models.ModelId)",
       "System.Void MegaCrit.Sts2.Core.Runs.RelicGrabBag::LoadFromSerializable(MegaCrit.Sts2.Core.Saves.Runs.SerializableRelicGrabBag)",
       "System.Void MegaCrit.Sts2.Core.Runs.RunState::AddModifierDebug(MegaCrit.Sts2.Core.Models.ModifierModel)",
@@ -3077,7 +3077,7 @@
     "owner": "Artanis.ShinGetterMod",
     "status": "ALL_DECLARED_TARGETS_RESOLVED",
     "gameSha256": "A6CC282C52B96AD2E01D5692B1144B33AA8E3BA4E969582F648ECB13B2F751D7",
-    "semanticSha256": "A96A6B16226D7613E951DF0AC6A8B294C483F935CA817AAAA7DCDE951CC9C09D",
+    "semanticSha256": "E10D946E56D1EF0FF74093C8F589853ACDE17D1A7BC691EB6EB672100139281C",
     "originalCount": 138,
     "callbackEdges": 168,
     "offlineParameterFailures": 0,
@@ -9612,7 +9612,7 @@
       "Id": "System.Type ShinGetterMod.Events.ShinGetterEventSaveVerification/Comparison::get_EqualityContract():IL_0005",
       "Status": "PASS",
       "Target": "System.Type System.Type::GetTypeFromHandle(System.RuntimeTypeHandle)",
-      "Source": "shin-getter-mod-godot/src/Events/ShinGetterEventSaveVerification.cs:24",
+      "Source": "shin-getter-mod-godot/src/Events/ShinGetterEventSaveVerification.cs:25",
       "Detail": "Compiler typeof(RuntimeTypeHandle) bridge, not a string-named lookup. TypeRef binding is audited separately.",
       "Evidence": null
     },
@@ -9621,7 +9621,7 @@
       "Id": "System.Type ShinGetterMod.Events.ShinGetterEventSaveVerification/Difference::get_EqualityContract():IL_0005",
       "Status": "PASS",
       "Target": "System.Type System.Type::GetTypeFromHandle(System.RuntimeTypeHandle)",
-      "Source": "shin-getter-mod-godot/src/Events/ShinGetterEventSaveVerification.cs:24",
+      "Source": "shin-getter-mod-godot/src/Events/ShinGetterEventSaveVerification.cs:25",
       "Detail": "Compiler typeof(RuntimeTypeHandle) bridge, not a string-named lookup. TypeRef binding is audited separately.",
       "Evidence": null
     },
@@ -9630,7 +9630,7 @@
       "Id": "System.Type ShinGetterMod.Events.ShinGetterEventSaveVerification/MapFlag::get_EqualityContract():IL_0005",
       "Status": "PASS",
       "Target": "System.Type System.Type::GetTypeFromHandle(System.RuntimeTypeHandle)",
-      "Source": "shin-getter-mod-godot/src/Events/ShinGetterEventSaveVerification.cs:24",
+      "Source": "shin-getter-mod-godot/src/Events/ShinGetterEventSaveVerification.cs:25",
       "Detail": "Compiler typeof(RuntimeTypeHandle) bridge, not a string-named lookup. TypeRef binding is audited separately.",
       "Evidence": null
     },
@@ -9639,7 +9639,7 @@
       "Id": "System.Type ShinGetterMod.Events.ShinGetterEventSaveVerification/Snapshot::get_EqualityContract():IL_0005",
       "Status": "PASS",
       "Target": "System.Type System.Type::GetTypeFromHandle(System.RuntimeTypeHandle)",
-      "Source": "shin-getter-mod-godot/src/Events/ShinGetterEventSaveVerification.cs:24",
+      "Source": "shin-getter-mod-godot/src/Events/ShinGetterEventSaveVerification.cs:25",
       "Detail": "Compiler typeof(RuntimeTypeHandle) bridge, not a string-named lookup. TypeRef binding is audited separately.",
       "Evidence": null
     },
@@ -25515,7 +25515,7 @@
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:562",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue89.cs:686",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue89.cs:816",
-          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:696",
+          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:695",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:589",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:592",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:204",
@@ -27036,6 +27036,7 @@
           "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_23.cs:27",
           "shin-getter-mod-godot/src/Models/Cards/ShinGetterCard_41.cs:39",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:839",
+          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:695",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:553",
           "shin-getter-mod-godot/src/Audio/ShinGetterExecutionMusicService.cs:63",
           "shin-getter-mod-godot/src/Audio/ShinGetterVoiceService.cs:259",
@@ -28939,6 +28940,21 @@
     },
     {
       "Category": "member-ref",
+      "Id": "MegaCrit.Sts2.Core.Models.CardModel MegaCrit.Sts2.Core.Entities.Cards.CardPileAddResult::cardAdded",
+      "Status": "PASS",
+      "Target": "MegaCrit.Sts2.Core.Models.CardModel MegaCrit.Sts2.Core.Entities.Cards.CardPileAddResult::cardAdded",
+      "Source": "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:695",
+      "Detail": "Cecil signature resolution \u002B actual CLR ResolveMember succeeded; not invocation proof.",
+      "Evidence": {
+        "resolved": "MegaCrit.Sts2.Core.Models.CardModel cardAdded",
+        "declaringType": "MegaCrit.Sts2.Core.Entities.Cards.CardPileAddResult",
+        "sources": [
+          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:695"
+        ]
+      }
+    },
+    {
+      "Category": "member-ref",
       "Id": "MegaCrit.Sts2.Core.Models.CardModel MegaCrit.Sts2.Core.Entities.Cards.CardPlay::get_Card()",
       "Status": "PASS",
       "Target": "MegaCrit.Sts2.Core.Models.CardModel MegaCrit.Sts2.Core.Entities.Cards.CardPlay::get_Card()",
@@ -28969,7 +28985,6 @@
         "declaringType": "MegaCrit.Sts2.Core.Models.CardModel",
         "sources": [
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:655",
-          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:685",
           "shin-getter-mod-godot/src/Diagnostics/CardExport/ShinGetterCardPngExporter.cs:220"
         ]
       }
@@ -29064,12 +29079,13 @@
       "Id": "MegaCrit.Sts2.Core.Models.CardModel MegaCrit.Sts2.Core.Runs.ICardScope::CreateCard(MegaCrit.Sts2.Core.Models.CardModel,MegaCrit.Sts2.Core.Entities.Players.Player)",
       "Status": "PASS",
       "Target": "MegaCrit.Sts2.Core.Models.CardModel MegaCrit.Sts2.Core.Runs.ICardScope::CreateCard(MegaCrit.Sts2.Core.Models.CardModel,MegaCrit.Sts2.Core.Entities.Players.Player)",
-      "Source": "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:663",
+      "Source": "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:685",
       "Detail": "Cecil signature resolution \u002B actual CLR ResolveMember succeeded; not invocation proof.",
       "Evidence": {
         "resolved": "MegaCrit.Sts2.Core.Models.CardModel CreateCard(MegaCrit.Sts2.Core.Models.CardModel, MegaCrit.Sts2.Core.Entities.Players.Player)",
         "declaringType": "MegaCrit.Sts2.Core.Runs.ICardScope",
         "sources": [
+          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:685",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:663",
           "shin-getter-mod-godot/src/Diagnostics/ShinGetterAddAllCardsConsoleCmd.cs:89"
         ]
@@ -31226,8 +31242,8 @@
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue89.cs:94",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue89.cs:97",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:521",
+          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:685",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:663",
-          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:694",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue89.cs:850",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:421",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue89.cs:882",
@@ -32214,7 +32230,8 @@
         "declaringType": "MegaCrit.Sts2.Core.Entities.Cards.CardPileAddResult",
         "sources": [
           "shin-getter-mod-godot/src/Services/ShinGetterStonerSunshineService.cs:106",
-          "shin-getter-mod-godot/src/Models/Cards/SGC_SteelSpirit.cs:42"
+          "shin-getter-mod-godot/src/Models/Cards/SGC_SteelSpirit.cs:42",
+          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:695"
         ]
       }
     },
@@ -33635,13 +33652,13 @@
       "Id": "System.Boolean MegaCrit.Sts2.Core.Saves.Runs.SerializableMapPoint::get_CanBeModified()",
       "Status": "PASS",
       "Target": "System.Boolean MegaCrit.Sts2.Core.Saves.Runs.SerializableMapPoint::get_CanBeModified()",
-      "Source": "shin-getter-mod-godot/src/Events/ShinGetterEventSaveVerification.cs:30",
+      "Source": "shin-getter-mod-godot/src/Events/ShinGetterEventSaveVerification.cs:31",
       "Detail": "Cecil signature resolution \u002B actual CLR ResolveMember succeeded; not invocation proof.",
       "Evidence": {
         "resolved": "Boolean get_CanBeModified()",
         "declaringType": "MegaCrit.Sts2.Core.Saves.Runs.SerializableMapPoint",
         "sources": [
-          "shin-getter-mod-godot/src/Events/ShinGetterEventSaveVerification.cs:30"
+          "shin-getter-mod-godot/src/Events/ShinGetterEventSaveVerification.cs:31"
         ]
       }
     },
@@ -34556,7 +34573,7 @@
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:562",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue89.cs:686",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue89.cs:816",
-          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:696",
+          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:695",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:589",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:592",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:204",
@@ -37847,7 +37864,7 @@
           "shin-getter-mod-godot/src/Models/Cards/SGC_RescheduleTicket.cs:41",
           "shin-getter-mod-godot/src/Models/Cards/SGC_WispCoordinate.cs:57",
           "shin-getter-mod-godot/src/Models/Cards/SGC_WispCoordinate.cs:79",
-          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:695",
+          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:694",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue89.cs:883",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:588",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:630",
@@ -40955,7 +40972,7 @@
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:427",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:507",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:399",
-          "shin-getter-mod-godot/src/Events/ShinGetterEventSaveVerification.cs:61",
+          "shin-getter-mod-godot/src/Events/ShinGetterEventSaveVerification.cs:81",
           "shin-getter-mod-godot/src/Audio/ShinGetterBgmPreviewService.cs:78",
           "shin-getter-mod-godot/src/Audio/ShinGetterBgmPreviewService.cs:84"
         ]
@@ -41267,8 +41284,7 @@
         "resolved": "Void set_Owner(MegaCrit.Sts2.Core.Entities.Players.Player)",
         "declaringType": "MegaCrit.Sts2.Core.Models.CardModel",
         "sources": [
-          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:656",
-          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:686"
+          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:656"
         ]
       }
     },
@@ -43377,21 +43393,6 @@
         "declaringType": "MegaCrit.Sts2.Core.Runs.History.CardEnchantmentHistoryEntry",
         "sources": [
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:839"
-        ]
-      }
-    },
-    {
-      "Category": "member-ref",
-      "Id": "System.Void MegaCrit.Sts2.Core.Runs.ICardScope::AddCard(MegaCrit.Sts2.Core.Models.CardModel,MegaCrit.Sts2.Core.Entities.Players.Player)",
-      "Status": "PASS",
-      "Target": "System.Void MegaCrit.Sts2.Core.Runs.ICardScope::AddCard(MegaCrit.Sts2.Core.Models.CardModel,MegaCrit.Sts2.Core.Entities.Players.Player)",
-      "Source": "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:694",
-      "Detail": "Cecil signature resolution \u002B actual CLR ResolveMember succeeded; not invocation proof.",
-      "Evidence": {
-        "resolved": "Void AddCard(MegaCrit.Sts2.Core.Models.CardModel, MegaCrit.Sts2.Core.Entities.Players.Player)",
-        "declaringType": "MegaCrit.Sts2.Core.Runs.ICardScope",
-        "sources": [
-          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:694"
         ]
       }
     },
@@ -60181,8 +60182,8 @@
       "Detail": "Current source bytes equal compiled PDB document checksum.",
       "Evidence": {
         "algorithm": "8829d00f-11b8-4213-878b-770e8597ac16",
-        "pdbHash": "57BEFDF5371FC2903EFB8A9C4A897A61710385632EFD66C9A32B5F8C75B80703",
-        "actualHash": "57BEFDF5371FC2903EFB8A9C4A897A61710385632EFD66C9A32B5F8C75B80703"
+        "pdbHash": "D80598226662823CEFCF648F162AE6343B5B6E01AB7513D358CE3996D93D8C62",
+        "actualHash": "D80598226662823CEFCF648F162AE6343B5B6E01AB7513D358CE3996D93D8C62"
       }
     },
     {
@@ -60246,8 +60247,8 @@
       "Detail": "Current source bytes equal compiled PDB document checksum.",
       "Evidence": {
         "algorithm": "8829d00f-11b8-4213-878b-770e8597ac16",
-        "pdbHash": "E1330E1A5D4D12E078ABBC06C67F8858459BBF6FB34D8D6CBB520FE87A9CBDD6",
-        "actualHash": "E1330E1A5D4D12E078ABBC06C67F8858459BBF6FB34D8D6CBB520FE87A9CBDD6"
+        "pdbHash": "A35CB495610D6E27E432114372A71E8D2F55C05F1A4CB3CFDB69135D1147DB4E",
+        "actualHash": "A35CB495610D6E27E432114372A71E8D2F55C05F1A4CB3CFDB69135D1147DB4E"
       }
     },
     {
@@ -69370,6 +69371,9 @@
           "shin-getter-mod-godot/src/Models/Events/SGE_GetterMandala.cs:168",
           "shin-getter-mod-godot/src/Models/Cards/SGC_SteelSpirit.cs:41",
           "shin-getter-mod-godot/src/Models/Cards/SGC_SteelSpirit.cs:44",
+          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:694",
+          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:696",
+          "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue238.cs:697",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.Issue89.cs:883",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:630",
           "shin-getter-mod-godot/src/Events/ShinGetterEventInvasionService.cs:631",

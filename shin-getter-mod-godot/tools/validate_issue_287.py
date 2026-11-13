@@ -44,6 +44,21 @@ class Issue287SourceContracts(unittest.TestCase):
             self.assertEqual(len(calls), expected, relative)
             self.assertTrue(all("cardSource: null" in call for call in calls), relative)
 
+    def test_brain_reward_native_ownership(self):
+        source = read("Events/ShinGetterEventInvasionService.Issue238.cs")
+        route = source.split('case ("BRAIN_LEECH", _):', 1)[1].split('case ("DOLL_ROOM", _):', 1)[0]
+        self.assertIn("canonical.Select(c => owner.RunState.CreateCard(c, owner))", route)
+        self.assertIn("CardCmd.Upgrade(card, CardPreviewStyle.None)", route)
+        self.assertIn("CardPileCmd.Add(selected, PileType.Deck)", route)
+        self.assertIn("!result.success", route)
+        self.assertIn("ReferenceEquals(result.cardAdded.Owner, owner)", route)
+        self.assertIn("owner.Deck.Cards.Contains(result.cardAdded)", route)
+        self.assertNotIn("owner.Deck.Cards.Contains(selected)", route)
+        self.assertNotIn(".Owner =", route)
+        self.assertNotIn(".AddCard(", route)
+        self.assertLess(route.index("RunState.CreateCard"), route.index("CardCmd.Upgrade"))
+        self.assertLess(route.index("CardCmd.Upgrade"), route.index("CardSelectCmd.FromSimpleGrid"))
+
     def test_owner_selector(self):
         source = read("Services/ShinGetterAnnotationsCardChoice.cs")
         self.assertIn("CardSelectorStack.GetSelector(owner)", source)
