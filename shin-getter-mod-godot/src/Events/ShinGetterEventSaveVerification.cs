@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Saves;
 
@@ -23,8 +24,8 @@ internal static class ShinGetterEventSaveVerification
     // The sink must not write saves; failure cannot mask the original transaction result.
     internal static Action<Comparison>? DiagnosticSink { get; set; }
 
-    // Native ToSave is called again by SaveRun. Only these two clocks may advance
-    // between the expected snapshot and that write; all gameplay fields must match.
+    // Native ToSave is called again by SaveRun. Only the two clocks may advance;
+    // empty event-history variable objects also have an omitted native equivalent.
     internal static Snapshot Capture(SerializableRun save)
     {
         MapFlag[] flags = ShinGetterEventMapSaveScope.MapPoints(save).Select(p => new MapFlag(p.Path, p.Point.CanBeModified)).ToArray();
@@ -32,17 +33,36 @@ internal static class ShinGetterEventSaveVerification
         // serialize/deserialize normalization of expected or readback.
         using var scope = ShinGetterEventMapSaveScope.InspectSnapshot(save);
         byte[] native = JsonSerializer.SerializeToUtf8Bytes(save, JsonSerializationUtility.GetTypeInfo<SerializableRun>());
-        using JsonDocument document = JsonDocument.Parse(native);
-        JsonElement root = document.RootElement;
+        return new Snapshot(native, StabilizeNativeJson(native), flags);
+    }
+
+    internal static byte[] StabilizeNativeJson(byte[] native)
+    {
+        JsonObject root = JsonNode.Parse(native)!.AsObject();
+        root.Remove("save_time");
+        root.Remove("run_time");
+        // The native converter can filter a nonempty dictionary into {}. On readback
+        // its empty dictionary is omitted. No persisted member may be discarded.
+        if (root["map_point_history"] is JsonArray acts)
+            foreach (JsonNode? act in acts)
+            {
+                if (act is not JsonArray points) continue;
+                foreach (JsonNode? point in points)
+                {
+                    if (point is not JsonObject history || history["player_stats"] is not JsonArray players) continue;
+                    foreach (JsonNode? player in players)
+                    {
+                        if (player is not JsonObject stats || stats["event_choices"] is not JsonArray choices) continue;
+                        foreach (JsonNode? choice in choices)
+                            if (choice is JsonObject entry && entry["variables"] is JsonObject { Count: 0 })
+                                entry.Remove("variables");
+                    }
+                }
+            }
         using MemoryStream stream = new();
         using (Utf8JsonWriter writer = new(stream))
-        {
-            writer.WriteStartObject();
-            foreach (JsonProperty property in root.EnumerateObject())
-                if (property.Name is not ("save_time" or "run_time")) property.WriteTo(writer);
-            writer.WriteEndObject();
-        }
-        return new Snapshot(native, stream.ToArray(), flags);
+            root.WriteTo(writer);
+        return stream.ToArray();
     }
 
     internal static string StableRunSnapshot(SerializableRun save) => Encoding.UTF8.GetString(Capture(save).StableJson);

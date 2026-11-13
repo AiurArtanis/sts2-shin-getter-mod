@@ -154,11 +154,17 @@ def save_boundary_contracts(events, state=None, patches=None, verifier=None, sco
     contains(save, "DebugOnlyGetState(), owner.RunState", "room.ModelId != model.Id",
              "FourthVisitKey(model) == null", "ReferenceEquals(owner.RunState.BaseRoom, room)",
              "EventRoom checkpoint = new(room.CanonicalEvent);", "checkpoint.MarkPreFinished();",
-             "visit.RoomCheckpoint = new()", "RngCounter = model.Rng.Counter",
+             "visit.RoomCheckpoint = new()",
              "Extra = previousCheckpoint?.Extra", "BeginCheckpoint(owner.RunState, checkpoint)",
              "manager.SaveRun(checkpoint, saveProgress: false)", "Capture(readback.SaveData)",
              "scope.Expected ?? throw", "Compare(expected, actualReadback)",
              "catch when (!saved) { visit.RoomCheckpoint = previousCheckpoint; throw; }")
+    native_rng_state = "RngState111" in state
+    if native_rng_state:
+        contains(save, "var rng = model.Rng.ToSerializable()", "RngCounter = rng.counter",
+                 "RngState111 = new[] { rng.state0, rng.state1, rng.state2, rng.state3 }")
+    else:
+        contains(save, "RngCounter = model.Rng.Counter")
     require(events.count(".MarkPreFinished(") == 1 and save.count("manager.SaveRun(") == 1,
             "only the detached checkpoint may be pre-finished; only its native save may run")
     require("SaveRun(null" not in save and "checkpoint = room" not in save,
@@ -183,8 +189,12 @@ def save_boundary_contracts(events, state=None, patches=None, verifier=None, sco
     contains(restored, "ReferenceEquals(model.Owner, model.Owner.RunState.Players[0])",
              "isPreFinished && model.Owner.RunState.CurrentRoom?.ModelId != model.Id",
              "var visit = isPreFinished", "? RestoredFourthVisit(", ": FourthVisit(model)", "if (visit == null) return false",
-             "FourthRouteNames", "Finish(model", "else if (isPreFinished) ReturnFourthInitial(model)",
-             "model.Rng.FastForwardCounter(visit.RoomCheckpoint!.RngCounter)")
+             "FourthRouteNames", "Finish(model", "else if (isPreFinished) ReturnFourthInitial(model)")
+    if native_rng_state:
+        contains(restored, "checkpoint.RngState111", "model.Rng.LoadFromSerializable(new SerializableRng",
+                 "counter = checkpoint.RngCounter", "state0 = rng[0], state1 = rng[1], state2 = rng[2], state3 = rng[3]")
+    else:
+        contains(restored, "model.Rng.FastForwardCounter(visit.RoomCheckpoint!.RngCounter)")
     for token in ("AddFourthCard", "Obtain", "LoseGold", "FourthDamage", "SaveFourth", "NextInt"):
         require(token not in restored, f"restoring a room must not replay {token}")
     contains(patches, "RestoreFourthState(__instance, isPreFinished)")
@@ -208,11 +218,14 @@ def save_boundary_contracts(events, state=None, patches=None, verifier=None, sco
     stable = body(verifier, "internal static Snapshot Capture(")
     contains(stable, "InspectSnapshot(save)", "MapFlag(p.Path, p.Point.CanBeModified)",
              "SerializeToUtf8Bytes(save, JsonSerializationUtility.GetTypeInfo<SerializableRun>())",
-             "root.EnumerateObject()", "property.WriteTo(writer)")
-    filters = re.findall(r'property.Name is not \(([^)]+)\)', stable)
-    require(len(filters) == 1 and re.findall(r'"([^"]+)"', filters[0]) == ["save_time", "run_time"]
-            and stable.count("if (") == 1,
-            "complete run readback may exclude only the two native clocks")
+             "new Snapshot(native, StabilizeNativeJson(native), flags)")
+    normalized = body(verifier, "internal static byte[] StabilizeNativeJson(")
+    contains(normalized, 'root["map_point_history"] is JsonArray acts', "act is not JsonArray points",
+             'history["player_stats"] is not JsonArray players', 'stats["event_choices"] is not JsonArray choices',
+             'entry["variables"] is JsonObject { Count: 0 }', 'entry.Remove("variables")', "root.WriteTo(writer)")
+    require(re.findall(r'\w+\.Remove\("([^"]+)"\)', normalized) == ["save_time", "run_time", "variables"]
+            and "Deserialize" not in stable + normalized,
+            "only two clocks and exact-path empty native event variables may be normalized")
     contains(body(verifier, "internal static async Task Verify("), "await write()", "if (!wasSaved())",
              "readback()", "catch (Exception ex) when (wasSaved())")
     contains(scope, "AsyncLocal<ShinGetterEventMapSaveScope?>", "ReferenceEqualityComparer.Instance",
@@ -224,9 +237,13 @@ def save_boundary_contracts(events, state=None, patches=None, verifier=None, sco
     contains(capture, "ReferenceEquals(manager.DebugOnlyGetState(), scope.run)",
              "ReferenceEquals(preFinishedRoom, scope.checkpoint)", "room.EventId != scope.checkpoint!.ModelId",
              "scope.RegisterPoints(save)", "scope.Expected = ShinGetterEventSaveVerification.Capture(save)")
-    contains(reload, 'nameof(RunManager.SetUpSavedSinglePlayer)', '"MoveNext"', "code.Count(i => i.Calls(NativeReload)) != 1",
+    contains(reload, '"MoveNext"', "code.Count(i => i.Calls(NativeReload)) != 1",
              "ReferenceEquals(runManager.DebugOnlyGetState(), state)", "OwnsFourthReloadCheckpoint(state, save)",
-             "InspectSnapshot(save)", "await manager.IncrementNumReloads(save, isMultiplayer)")
+             "InspectSnapshot(save)")
+    if native_rng_state:
+        contains(reload, "nameof(RunManager.SetUpSavedSingleplayer)", "await manager.IncrementNumReloads(save, type, forceInTest)")
+    else:
+        contains(reload, "nameof(RunManager.SetUpSavedSinglePlayer)", "await manager.IncrementNumReloads(save, isMultiplayer)")
     owns = body(events, "internal static bool OwnsFourthReloadCheckpoint(")
     contains(owns, "run.CurrentRoom != null", "run.Players.Count != 1", "save.Players.Count != 1",
              "player.NetId != owner.NetId", "save.SerializableRng.Seed != run.Rng.StringSeed",
@@ -286,7 +303,9 @@ def save_boundary_negative_contracts(events):
         ("global Hook skip", "patches", "if (!ShinGetterEventInvasionService.IsRestoringFourthRoom(runState, room)) return true;", ""),
         ("future stamp admitted", "state", "checkpoint.Version != 1", "false"),
         ("player-only readback", "events", "Capture(readback.SaveData)", "Capture(expectedPlayerOnly)"),
-        ("hidden pool mismatch", "verifier", '"save_time" or "run_time"', '"save_time" or "run_time" or "acts"'),
+        ("hidden pool mismatch", "verifier", 'root.Remove("run_time");', 'root.Remove("run_time"); root.Remove("acts");'),
+        ("nonempty variables ignored", "verifier", 'JsonObject { Count: 0 }', 'JsonObject'),
+        ("wrong variable path", "verifier", 'stats["event_choices"]', 'stats["card_choices"]'),
         ("Saved boundary inverted", "verifier", "catch (Exception ex) when (wasSaved())", "catch (Exception ex) when (!wasSaved())"),
         ("uncaptured pre-write expected", "events", "scope.Expected ?? throw", "otherExpected ?? throw"),
         ("wrong native checkpoint reference", "scope", "ReferenceEquals(preFinishedRoom, scope.checkpoint)", "true"),

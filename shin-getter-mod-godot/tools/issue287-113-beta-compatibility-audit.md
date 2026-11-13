@@ -44,7 +44,32 @@ Additional incompatibilities found beyond the original eleven compile sites:
 
 The independent mode/save review is in `issue287-modes-and-save-audit.md`. No unresolved, confirmed mode/save P1 or P2 remained after these source changes. Standard non-custom solo bond rules are retained; Dread ordinary events, Mandala, shops and Continue are not disabled. Default Blitz maps have no ordinary event nodes, so those paths are naturally unreachable rather than failed patches. New character/rotating selection and exact native save behavior still require the focused runtime cases; source/metadata conclusions are not gameplay acceptance.
 
-Source/reference gates: `python -B tools/validate_issue_287.py` (13 checks). These include the pinned official DLL, source/manifest contracts, per-owner selection, both event-selection adapters, custom guards and Blitz boundaries. They are not native gameplay tests.
+Source/reference gates: `python -B tools/validate_issue_287.py` (15 checks). These include the pinned official DLL, source/manifest contracts, per-owner selection, both event-selection adapters, custom guards and Blitz boundaries. They are not native gameplay tests.
+
+## Native Event Save Verification Finding
+
+The first BrainLeech fourth-option native attempt reached the real option but failed
+the complete-run save readback gate at event-history `variables`. Its exact comparison
+snapshots were not captured; the original failure is retained, not reconstructed.
+The original written file contains an empty variable object. A later diagnostic-only
+repeat with the unchanged old candidate captured the exact same Comparison: expected
+has `variables:{}`, direct native readback omits it, and that is the sole difference.
+The first attempt's missing snapshots are not retroactively filled in.
+
+An official-DLL CLR reproduction confirms a native representation instability:
+the history condition sees a nonempty dictionary, but the native converter filters
+unsupported values and non-string derived DynamicVars to `{}`. After reading that
+object, the empty dictionary is omitted on the next serialization. The same converter
+and history condition exist in 111; this is not proven to be a new 113 regression.
+
+The scoped fix only canonicalizes an empty JSON object to omission in comparison-only
+StableJson at `map_point_history/[act]/[point]/player_stats/[player]/event_choices/[choice]/variables`.
+Original NativeJson, nonempty variables, wrong types, unrelated names/paths, clocks,
+map-false preservation and transaction/write/readback boundaries retain their rules.
+No DTO normalization roundtrip, save-file change or global serializer patch is added.
+The new `tests/Issue287EventSaveVariables` is RED on the original candidate and GREEN
+after this fix with positive/negative official-serialization and JSON contract checks.
+That is not a native event, Continue, rollback or full compatibility pass.
 
 An independently packed candidate PCK was loaded in an empty Godot 4.5.1 project: 1008 files, 207 textures, 94 audio streams, 167 binary atlases and 52 JSON files, `failed=false`. No game was launched for this asset verification. Assets retain the previous approved runtime payload; no new artwork or sound was made or approved here.
 
