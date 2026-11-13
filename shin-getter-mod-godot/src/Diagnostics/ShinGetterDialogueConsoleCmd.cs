@@ -33,7 +33,8 @@ public sealed class ShinGetterDialogueConsoleCmd : AbstractConsoleCmd
             if (RunManager.Instance.IsInProgress)
             {
                 var state = RunManager.Instance.DebugOnlyGetState();
-                if (state == null || state.Players.Count != 1 || state.GameMode != GameMode.Standard || state.Modifiers.Count != 0
+                if (state == null || state.Players.Count != 1 || state.GameMode != GameMode.Standard || state.IsCustomGame
+                    || state.Modifiers.Count != 0
                     || RunManager.Instance.DailyTime.HasValue || !RunManager.Instance.ShouldSave
                     || issuingPlayer?.Character is not ShinGetter)
                     return new(false, "Use a saved standard solo Shin Getter run (or the main menu). Multiplayer/daily/custom runs cannot edit solo progress.");

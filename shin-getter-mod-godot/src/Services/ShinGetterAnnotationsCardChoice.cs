@@ -41,11 +41,11 @@ internal static class ShinGetterAnnotationsCardChoice
             Cancelable = true,
             RequireManualConfirmation = true,
         };
-        // Preserve selectors supplied by native automatic effects; never install one here.
-        if (CardSelectCmd.Selector is { } selector)
+        RunManager manager = RunManager.Instance;
+        // Native automatic effects now use an owner-specific selector stack.
+        if (manager.CardSelectorStack.GetSelector(owner) is { } selector)
             return Valid((await selector.GetSelectedCards(cards, prefs.MinSelect, prefs.MaxSelect)).FirstOrDefault());
 
-        RunManager manager = RunManager.Instance;
         var run = manager.DebugOnlyGetState();
         var combat = owner.Creature.CombatState;
         GameAction? action = context switch
@@ -76,7 +76,16 @@ internal static class ShinGetterAnnotationsCardChoice
         {
             CardModel[] result;
             SceneTree? tree = null;
-            if (local)
+            if (local && manager.CardSelectorStack.LocalSelector is { } localSelector)
+            {
+                tree = NOverlayStack.Instance?.GetTree();
+                result = (await localSelector.GetSelectedCards(cards, prefs.MinSelect, prefs.MaxSelect)).ToArray();
+                EnsureLive();
+                result = result.Length == 1 && cards.Contains(result[0]) && Valid(result[0]) != null
+                    ? result : Array.Empty<CardModel>();
+                synchronizer.SyncLocalChoice(owner, choiceId, PlayerChoiceResult.FromMutableCombatCards(result));
+            }
+            else if (local)
             {
                 NPlayerHand.Instance?.CancelAllCardPlay();
                 var activeStack = NOverlayStack.Instance ?? throw new InvalidOperationException("Annotations has no overlay stack.");

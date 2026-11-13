@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Entities.Merchant;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Rooms;
+using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using ShinGetterMod.Nodes.Screens.Shops;
 
@@ -57,7 +58,9 @@ public sealed class SGR_GoodCitizenCard : ShinGetterRelicBase
     public override decimal ModifyMerchantPrice(Player player, MerchantEntry entry, decimal originalPrice)
     {
         // Relic purchase reads Cost again after Obtain, before reporting goldSpent.
-        if (player != Owner || player.RunState.CurrentRoom is not MerchantRoom || IsUsedThisAct || originalPrice <= 0m
+        if (player != Owner || player.RunState.CurrentRoom is not MerchantRoom
+            || player.RunState.GameMode == GameMode.Blitz || entry is BlitzMerchantEntry
+            || IsUsedThisAct || originalPrice <= 0m
             || entry is MerchantRelicEntry { Model: SGR_GoodCitizenCard })
             return originalPrice;
 
@@ -66,7 +69,9 @@ public sealed class SGR_GoodCitizenCard : ShinGetterRelicBase
 
     public override Task AfterItemPurchased(Player player, MerchantEntry itemPurchased, int goldSpent)
     {
-        if (player != Owner || player.RunState.CurrentRoom is not MerchantRoom || IsUsedThisAct || goldSpent != 0)
+        if (player != Owner || player.RunState.CurrentRoom is not MerchantRoom
+            || player.RunState.GameMode == GameMode.Blitz || itemPurchased is BlitzMerchantEntry
+            || IsUsedThisAct || goldSpent != 0)
             return Task.CompletedTask;
 
         Flash();

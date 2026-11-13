@@ -8,16 +8,15 @@
 
 让真盖塔穿越时空登上高塔。切换一号机的爆发、二号机的高速战术与三号机的钢铁防线，最终唤醒真盖塔龙，用盖塔射线吞没高塔。这里不是换一张角色皮肤，而是一套围绕变形、卡组与演出共同运转的玩法型角色 Mod。
 
-> 当前源码 `v1.3.0`（正式游戏 `0.109`）· 已发布0.111 Beta版 `v1.2.2-beta.111` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> 当前适配源码 `v1.4.0-beta.113`（游戏 `0.113.0`，尚未发布）· Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
-[正式版下载](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest) · [已发布0.111 Beta](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+[已发布版本](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest) · [113适配进度：issue#287](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues/287) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
-## 🧪 0.111 Beta 适配
+## 🧪 Beta维护目标
 
-- **正式109：**使用 `shin-getter-mod-v1.2.2.zip`。
-- **Slay the Spire 2 0.111 Beta：**使用 `shin-getter-mod-v1.2.2.111-beta.zip`。
-- 正式版：[v1.2.2 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2)；0.111 Beta：[v1.2.2 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2)。
-- 当前源码新增的v1.3.0内容面向正式109；下载版本以Release实际资产为准。111 Beta当前已发布版本仍为v1.2.2，不包含下方v1.3.0新增内容。
+- **当前维护目标：0.113 Beta。** 本支线正在适配验证，尚无113发布包；进度见issue#287，不把编译通过等同运行兼容通过。
+- 自2026-11-13起，111-beta仅保留历史，不再追加开发、验证或发布，不删除旧分支和证据。
+- 已发布的历史正式109包 `shin-getter-mod-v1.3.0.zip` 与111 Beta包 `shin-getter-mod-v1.3.0-beta.111.zip` 均在[v1.3.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.3.0)；它们不是113兼容包。
 - 正式版与 Beta 版四件套不能混用。切换游戏分支后，请完整覆盖 DLL、PCK、JSON 与 `mod_image.png`，然后重启游戏。
 - 已知外部兼容问题：旧版 `BaseLib 3.3.7` 在 0.111 Beta 中会因 `CardPileCmd.Add` transpiler 失败导致出牌卡住。请更新 BaseLib，或在 Beta 环境中禁用 BaseLib 及依赖它的模组。
 
@@ -122,10 +121,10 @@ v1.2.2同时提供正式109与0.111 Beta独立四件套；Beta版也包含本次
 3. 启动游戏，从主菜单进入**设置 → 模组设置**，在**已下载的模组**中启用“真盖塔模组”。
 4. 确认加载提示后完全退出并重新启动游戏。新开一局，选择**真盖塔**即可开始。
 
-### 安装 0.111 Beta 专用版
+### 历史0.111 Beta包（已停止维护，不适用于113）
 
 1. 确认游戏已切换到 **Slay the Spire 2 0.111 Beta**。
-2. 从 [v1.2.2 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2) 下载 `shin-getter-mod-v1.2.2.111-beta.zip`。
+2. 从 [v1.3.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.3.0) 下载历史包 `shin-getter-mod-v1.3.0-beta.111.zip`。
 3. 将 ZIP 内四个文件完整覆盖到同一个 `ShinGetterMod` 目录；不要与正式版的 DLL／PCK 混搭。
 4. 完全退出并重新启动游戏，再启用模组并新开一局。
 
@@ -156,7 +155,7 @@ v1.2.2同时提供正式109与0.111 Beta独立四件套；Beta版也包含本次
 
 ### 环境要求
 
-- 《杀戮尖塔 2》正式 `0.107.0+`线，本源码面向 `0.109`；`0.111.0` Beta须使用对应兼容支线与独立发布包，不直接使用本正式源码。
+- 本适配支线面向《杀戮尖塔2》`0.113.0` Beta，仍在验证，未发布。历史109与111发布包不可当作113兼容包。
 - Godot `4.5.1 Mono`
 - .NET SDK `9`
 - 本机可供 Godot 加载验证的游戏工程目录

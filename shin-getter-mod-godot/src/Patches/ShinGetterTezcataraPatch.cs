@@ -7,7 +7,7 @@ using ShinGetterMod.Models.Relics;
 
 namespace ShinGetterMod.Patches;
 
-[HarmonyPatch(typeof(AncientEventModel), "RelicOption", new[] { typeof(RelicModel), typeof(string), typeof(string) })]
+[HarmonyPatch(typeof(AncientEventModel), "RelicOption", new[] { typeof(RelicModel), typeof(string) })]
 internal static class ShinGetterTezcataraPatch
 {
     private static void Prefix(AncientEventModel __instance, ref RelicModel relic)

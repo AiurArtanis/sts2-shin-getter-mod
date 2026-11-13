@@ -888,7 +888,7 @@ internal static partial class ShinGetterEventInvasionService
             new ThrowingPlayerChoiceContext(),
             owner.Creature,
             amount,
-            isFromCard: false);
+            cardSource: null);
 
     private static Task OfferPotion<T>(Player owner) where T : PotionModel =>
         RewardsCmd.OfferCustom(owner, new List<Reward>

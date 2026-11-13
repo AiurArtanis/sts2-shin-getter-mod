@@ -48,6 +48,8 @@ internal static class ShinGetterFourthOptionHistoryPatch
 internal static class ShinGetterFourthSelectionPresentationPatch
 {
     private static readonly MethodInfo Choose = AccessTools.Method(typeof(NChooseACardSelectionScreen), nameof(NChooseACardSelectionScreen.CardsSelected));
+    // The concrete 113 screen is NSimpleCardSelectScreen, but the IL calls this
+    // declaring base method. A derived ReflectedType does not compare equal.
     private static readonly MethodInfo Grid = AccessTools.Method(typeof(NCardGridSelectionScreen), nameof(NCardGridSelectionScreen.CardsSelected));
     private static IEnumerable<MethodBase> TargetMethods()
     {

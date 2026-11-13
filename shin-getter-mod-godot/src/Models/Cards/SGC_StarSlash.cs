@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
@@ -46,7 +47,9 @@ public sealed class SGC_StarSlash : ShinGetterCardBase
         // Same auto-select boundary as the native command; do not add a forced manual prompt.
         bool willChoose = !CombatManager.Instance.IsOverOrEnding && pile.Cards.Count > 0
             && (prefs.RequireManualConfirmation || pile.Cards.Count > prefs.MinSelect)
-            && CardSelectCmd.Selector == null && !NonInteractiveMode.IsActive
+            && RunManager.Instance.CardSelectorStack.GetSelector(Owner) == null
+            && (!LocalContext.IsMe(Owner) || RunManager.Instance.CardSelectorStack.LocalSelector == null)
+            && !NonInteractiveMode.IsActive
             && RunManager.Instance.NetService.Type != NetGameType.Replay;
         NShinGetterStarSlashSequence sequence = NShinGetterStarSlashSequence.TryCreate(Owner);
         try

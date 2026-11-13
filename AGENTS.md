@@ -1,5 +1,12 @@
 # Project Working Agreements
 
+## Beta Maintenance Target
+
+- Effective 2026-11-13, 113-beta replaces 111-beta as the only actively maintained Beta target. Retain 111 branches, releases, and evidence as historical records; do not add new 111 development, validation, or releases.
+- Track each Beta adaptation as a real GitHub sub-issue of issue#93. issue#287 tracks the v1.4.0 / game v0.113.0 adaptation.
+- Before changing code, compare the previous and new Beta APIs and audit direct calls, overrides, Harmony targets, and reflection against the official target DLL. Decompiled builds are analysis aids, not official runtime substitutes.
+- Record compilation, native runtime checks, human acceptance, and publishing separately. This development authorization does not permit shared deployment or release publication.
+
 ## Release Version Naming
 
 - Starting with the version after `v1.0.0`, name the release tag branch `mod-<version>`.

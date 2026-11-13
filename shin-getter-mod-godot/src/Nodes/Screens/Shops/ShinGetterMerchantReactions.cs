@@ -15,6 +15,7 @@ using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Nodes.Screens.Shops;
 using MegaCrit.Sts2.Core.Rooms;
+using MegaCrit.Sts2.Core.Runs;
 using ShinGetterMod.Models.Relics;
 
 namespace ShinGetterMod.Nodes.Screens.Shops;
@@ -35,7 +36,7 @@ internal static class ShinGetterMerchantReactions
         // Presentation errors must never escape back into the purchase hook.
         try
         {
-            if (player.RunState.CurrentRoom is not MerchantRoom ||
+            if (player.RunState.CurrentRoom is not MerchantRoom || player.RunState.GameMode == GameMode.Blitz ||
                 !ReferenceEquals(LocalContext.GetMe(player.RunState), player))
                 return;
             FreePurchases.Remove(entry);
@@ -156,7 +157,8 @@ internal static class ShinGetterMerchantReactions
     {
         Player? player = inventory.Inventory?.Player;
         if (inventory.GetType() != typeof(NMerchantInventory) || player == null ||
-            player.RunState.CurrentRoom is not MerchantRoom || player.Creature.IsDead ||
+            player.RunState.CurrentRoom is not MerchantRoom || player.RunState.GameMode == GameMode.Blitz
+            || player.Creature.IsDead ||
             NMerchantRoom.Instance?.Inventory != inventory ||
             !ReferenceEquals(LocalContext.GetMe(player.RunState), player))
             return null;

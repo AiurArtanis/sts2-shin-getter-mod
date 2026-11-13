@@ -573,7 +573,7 @@ internal static partial class ShinGetterEventInvasionService
     {
         Player owner = RequireOwner(eventModel);
         await PlayerCmd.LoseGold(75, owner, GoldLossType.Spent);
-        RelicModel relic = RelicFactory.PullNextRelicFromFront(owner).ToMutable();
+        RelicModel relic = RelicFactory.PullNextRelicFromFront(owner, eventModel.Rng).ToMutable();
         await RelicCmd.Obtain(relic, owner);
         Finish(eventModel, PageKey("THIS_OR_THAT", "HAYATO"));
     }
@@ -669,7 +669,7 @@ internal static partial class ShinGetterEventInvasionService
             new ThrowingPlayerChoiceContext(),
             owner.Creature,
             4,
-            isFromCard: false);
+            cardSource: null);
 
         IReadOnlyList<CardPoolModel> pools = new[] { owner.Character.CardPool };
         CardCreationOptions powerOptions = CardCreationOptions.ForNonCombatWithDefaultOdds(
@@ -735,7 +735,7 @@ internal static partial class ShinGetterEventInvasionService
             new ThrowingPlayerChoiceContext(),
             owner.Creature,
             7,
-            isFromCard: false);
+            cardSource: null);
         decimal gold = Math.Round(
             eventModel.DynamicVars.Gold.BaseValue * 1.8m,
             MidpointRounding.AwayFromZero);
@@ -781,7 +781,7 @@ internal static partial class ShinGetterEventInvasionService
         CardModel? card = eventModel.Rng.NextItem(candidates);
         if (card != null)
             CardCmd.Upgrade(card, CardPreviewStyle.EventLayout);
-        await RelicCmd.Obtain(RelicFactory.PullNextRelicFromFront(owner).ToMutable(), owner);
+        await RelicCmd.Obtain(RelicFactory.PullNextRelicFromFront(owner, eventModel.Rng).ToMutable(), owner);
         Finish(eventModel, PageKey("ROUND_TEA_PARTY", "RYOMA"));
     }
 
@@ -815,8 +815,8 @@ internal static partial class ShinGetterEventInvasionService
 
         RelicModel[] choices =
         {
-            RelicFactory.PullNextRelicFromFront(owner).ToMutable(),
-            RelicFactory.PullNextRelicFromFront(owner).ToMutable(),
+            RelicFactory.PullNextRelicFromFront(owner, eventModel.Rng).ToMutable(),
+            RelicFactory.PullNextRelicFromFront(owner, eventModel.Rng).ToMutable(),
         };
         RelicModel? selected;
         do

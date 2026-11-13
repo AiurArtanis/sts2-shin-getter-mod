@@ -597,7 +597,7 @@ internal static partial class ShinGetterEventInvasionService
     private static async Task FourthMaxHp(Player owner, int amount)
     {
         if (owner.Creature.MaxHp <= amount) throw new InvalidOperationException("Maximum HP cost would be fatal.");
-        await CreatureCmd.LoseMaxHp(new ThrowingPlayerChoiceContext(), owner.Creature, amount, isFromCard: false);
+        await CreatureCmd.LoseMaxHp(new ThrowingPlayerChoiceContext(), owner.Creature, amount, cardSource: null);
     }
     private static void FourthEnchant(CardModel card, EnchantmentModel canonical)
     {

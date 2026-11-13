@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Merchant;
@@ -15,13 +16,6 @@ namespace ShinGetterMod.Patches;
 [HarmonyPatch]
 internal static class ShinGetterMerchantReactionPatch
 {
-    [HarmonyPatch(typeof(NMerchantInventory), nameof(NMerchantInventory.Open))]
-    [HarmonyTranspiler]
-    private static IEnumerable<CodeInstruction> OpenTranspiler(IEnumerable<CodeInstruction> instructions)
-    {
-        return ReplacePresentation(instructions, opening: true);
-    }
-
     [HarmonyPatch(typeof(NMerchantInventory), "OnPurchaseCompleted")]
     [HarmonyTranspiler]
     private static IEnumerable<CodeInstruction> PurchaseTranspiler(IEnumerable<CodeInstruction> instructions)
@@ -29,7 +23,8 @@ internal static class ShinGetterMerchantReactionPatch
         return ReplacePresentation(instructions, opening: false);
     }
 
-    [HarmonyPatch(typeof(MerchantEntry), nameof(MerchantEntry.OnTryPurchaseWrapper))]
+    [HarmonyPatch(typeof(MerchantEntry), nameof(MerchantEntry.OnTryPurchaseUnsynchronized),
+        new[] { typeof(MerchantInventory), typeof(bool) })]
     [HarmonyPrefix]
     private static void BeforePurchase(MerchantEntry __instance)
     {
@@ -45,7 +40,8 @@ internal static class ShinGetterMerchantReactionPatch
         return __exception;
     }
 
-    private static IEnumerable<CodeInstruction> ReplacePresentation(IEnumerable<CodeInstruction> instructions, bool opening)
+    internal static IEnumerable<CodeInstruction> ReplacePresentation(IEnumerable<CodeInstruction> instructions,
+        bool opening, FieldInfo? inventoryField = null)
     {
         List<CodeInstruction> original = instructions.ToList();
         MethodInfo? sound = AccessTools.Method(typeof(SfxCmd), nameof(SfxCmd.Play), new[] { typeof(string), typeof(float) });
@@ -82,6 +78,8 @@ internal static class ShinGetterMerchantReactionPatch
             self.labels.AddRange(original[i].labels);
             self.blocks.AddRange(original[i].blocks);
             result.Add(self);
+            if (inventoryField != null)
+                result.Add(new CodeInstruction(OpCodes.Ldfld, inventoryField));
             if (!opening)
                 result.Add(new CodeInstruction(OpCodes.Ldarg_2));
             result.Add(new CodeInstruction(OpCodes.Call, isSound ? soundReplacement : dialogueReplacement));
@@ -93,5 +91,26 @@ internal static class ShinGetterMerchantReactionPatch
     {
         ShinGetterMerchantReactions.WarnOnce($"Native {(opening ? "open" : "purchase")} call layout changed; presentation patch skipped.");
         return original;
+    }
+}
+
+[HarmonyPatch]
+internal static class ShinGetterMerchantWelcomePatch
+{
+    private static MethodBase TargetMethod()
+    {
+        MethodInfo show = AccessTools.Method(typeof(NMerchantInventory), nameof(NMerchantInventory.ShowOpenInventory));
+        Type machine = show.GetCustomAttribute<AsyncStateMachineAttribute>()?.StateMachineType
+            ?? throw new MissingMemberException("NMerchantInventory.ShowOpenInventory async state machine");
+        return AccessTools.Method(machine, "MoveNext")
+            ?? throw new MissingMethodException(machine.FullName, "MoveNext");
+    }
+
+    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions,
+        MethodBase __originalMethod)
+    {
+        FieldInfo inventory = AccessTools.GetDeclaredFields(__originalMethod.DeclaringType!)
+            .Single(field => field.FieldType == typeof(NMerchantInventory));
+        return ShinGetterMerchantReactionPatch.ReplacePresentation(instructions, opening: true, inventory);
     }
 }

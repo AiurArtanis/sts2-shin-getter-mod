@@ -49,6 +49,7 @@ internal sealed class ShinGetterBondSession
     internal static bool IsEligible(EventModel model) => model.Owner is { Character: ShinGetter } owner
         && owner.RunState.Players.Count == 1
         && owner.RunState.GameMode == GameMode.Standard
+        && !owner.RunState.IsCustomGame
         && ShinGetterBondRunCompatibility.IsStandardModifiers(owner.RunState.Modifiers)
         && RunManager.Instance.IsInProgress && RunManager.Instance.ShouldSave
         && !RunManager.Instance.DailyTime.HasValue && !TestMode.IsOn && !NonInteractiveMode.IsActive
@@ -235,7 +236,8 @@ internal sealed class ShinGetterBondSession
             var result = SaveManager.Instance.LoadRunHistory(file);
             // Repaired/data-loss history is not proof of an outcome or a gap.
             if (result.Status != ReadSaveStatus.Success || result.SaveData is not { } history) continue;
-            if (history.StartTime <= 0 || history.StartTime >= _run || history.GameMode != GameMode.Standard || !ShinGetterBondRunCompatibility.IsStandardHistoryModifiers(history.Modifiers)
+            if (history.StartTime <= 0 || history.StartTime >= _run || history.GameMode != GameMode.Standard || history.IsCustomGame
+                || !ShinGetterBondRunCompatibility.IsStandardHistoryModifiers(history.Modifiers)
                 || history.Players.Count != 1 || history.Players[0].Character != ModelDb.Character<ShinGetter>().Id) continue;
             histories.Add(history);
         }

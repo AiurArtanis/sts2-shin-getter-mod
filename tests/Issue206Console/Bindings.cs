@@ -49,7 +49,7 @@ namespace MegaCrit.Sts2.Core.Runs
     public sealed class RunRng { public string Seed { get; } = "fixture"; }
     public sealed class RunState
     {
-        public List<Player> Players { get; } = new(); public GameMode GameMode { get; set; }
+        public List<Player> Players { get; } = new(); public GameMode GameMode { get; set; } public bool IsCustomGame { get; set; }
         public List<string> Modifiers { get; } = new(); public int CurrentActIndex { get; set; }
         public List<List<MapPoint>> MapPointHistory { get; } = new(); public AbstractRoom? CurrentRoom { get; set; }
         public AbstractRoom? BaseRoom { get; set; } public MapCoord? CurrentMapCoord { get; set; } = new(0, 0);
@@ -58,7 +58,7 @@ namespace MegaCrit.Sts2.Core.Runs
     public sealed class HistoryPlayer { public ModelId Character { get; set; } = new("CHARACTER", "SHIN_GETTER"); }
     public sealed class RunHistory
     {
-        public long StartTime { get; set; } public GameMode GameMode { get; set; } public List<string> Modifiers { get; } = new();
+        public long StartTime { get; set; } public GameMode GameMode { get; set; } public bool IsCustomGame { get; set; } public List<string> Modifiers { get; } = new();
         public List<HistoryPlayer> Players { get; } = new() { new() }; public bool Win { get; set; } public bool WasAbandoned { get; set; }
         public ModelId KilledByEncounter { get; set; } = ModelId.none; public ModelId KilledByEvent { get; set; } = ModelId.none;
         public List<List<MapPoint>> MapPointHistory { get; } = new();

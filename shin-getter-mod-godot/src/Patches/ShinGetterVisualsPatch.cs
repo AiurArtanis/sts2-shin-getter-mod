@@ -21,12 +21,12 @@ internal static class ShinGetterBgPatch
     }
 }
 
-[HarmonyPatch(typeof(NCharacterSelectScreen), nameof(NCharacterSelectScreen.SelectCharacter))]
+[HarmonyPatch(typeof(NCharacterSelectScreen), nameof(NCharacterSelectScreen.SelectCharacter), new[] { typeof(NCharacterSelectButton) })]
 internal static class ShinGetterCharacterSelectBgLayoutPatch
 {
-    private static void Postfix(NCharacterSelectScreen __instance, CharacterModel characterModel)
+    private static void Postfix(NCharacterSelectScreen __instance, NCharacterSelectButton charSelectButton)
     {
-        if (characterModel is ShinGetter)
+        if (charSelectButton.Character is ShinGetter)
             ShinGetterCharacterSelectBgPatchHelpers.Refresh(__instance);
     }
 }
@@ -36,10 +36,9 @@ internal static class ShinGetterRandomCharacterSelectBgLayoutPatch
 {
     private static void Postfix(
         NCharacterSelectScreen __instance,
-        StartRunLobbyPlayer player,
-        bool isRandomCharacterResolution)
+        StartRunLobbyPlayer player)
     {
-        if (isRandomCharacterResolution && player.character is ShinGetter)
+        if (player.character is ShinGetter)
             ShinGetterCharacterSelectBgPatchHelpers.Refresh(__instance);
     }
 }
