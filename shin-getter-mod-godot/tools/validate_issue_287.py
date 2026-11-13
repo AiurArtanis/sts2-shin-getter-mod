@@ -33,6 +33,12 @@ class Issue287SourceContracts(unittest.TestCase):
         self.assertEqual(source.count("PullNextRelicFromFront(owner, eventModel.Rng)"), 4)
         self.assertNotRegex(source, r"PullNextRelicFromFront\(owner\)")
 
+    def test_native_dread_character_short_title(self):
+        for language in ("eng", "zhs", "jpn"):
+            path = PROJECT / "ShinGetterMod/localization" / language / "characters.json"
+            entries = json.loads(path.read_text(encoding="utf-8-sig"))
+            self.assertEqual(entries["SHIN_GETTER.shortTitle"], entries["SHIN_GETTER.title"], language)
+
     def test_event_hp_sources(self):
         for relative, expected in (
             ("Events/ShinGetterEventInvasionService.cs", 2),

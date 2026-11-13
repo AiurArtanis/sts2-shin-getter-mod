@@ -161,3 +161,7 @@ Continue 读回保存的 BlitzActMap（`N/src/Core/Runs/RunManager.cs:872`），
 上文Grid描述反映子审计回传时的工作中源码，不应解读为原111基线在113必然失配。后续全量官方IL探针确认：`FromSimpleGrid.MoveNext`在`IL_031B`调用`0x06008470`，实际声明类型仍为`NCardGridSelectionScreen.CardsSelected`，即使界面实例是`NSimpleCardSelectScreen`。主开发一度改为派生类MethodInfo，因ReflectedType不同导致Equals/Calls计数失败；已恢复基类绑定/适配器，保留失败证据。这个失败由本次开发判断引入，不是游戏BUG或原基线Grid兼容缺陷。原生结果Task的检查点包装没有移除。
 
 本文件中的“没有游戏启动授权”限定于该只读子审计的权限。Artanis已授权主开发在适配核对后启动独立113自动化验证；实际准入、运行和结论须另行记录，不能由本文件推定已通过。
+
+## 2026-11-14 Dread原生短名读取补充
+
+`M-dread-annotations-113-v1`原始stderr实际包含`LocException: SHIN_GETTER.shortTitle`，不能归入worker错误。113新增的`CharacterModel.ShortTitle`由`NDreadNameText.SetNameText(CharacterModel)`直接读取；三语`characters.json`均缺键。补齐与既有角色title相同的短名，不新增Harmony或改写原生Dread行为。新增三语静态门禁，但必须重建PCK并在新候选上复验真实选角；旧attempt保留FAIL，商店使用Ironclad不代表真盖塔Dread开局通过。
