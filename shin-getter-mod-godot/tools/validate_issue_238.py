@@ -208,11 +208,17 @@ def save_boundary_contracts(events, state=None, patches=None, verifier=None, sco
     stable = body(verifier, "internal static Snapshot Capture(")
     contains(stable, "InspectSnapshot(save)", "MapFlag(p.Path, p.Point.CanBeModified)",
              "SerializeToUtf8Bytes(save, JsonSerializationUtility.GetTypeInfo<SerializableRun>())",
-             "root.EnumerateObject()", "property.WriteTo(writer)")
-    filters = re.findall(r'property.Name is not \(([^)]+)\)', stable)
-    require(len(filters) == 1 and re.findall(r'"([^"]+)"', filters[0]) == ["save_time", "run_time"]
-            and stable.count("if (") == 1,
-            "complete run readback may exclude only the two native clocks")
+             "new Snapshot(native, StabilizeNativeJson(native), flags)")
+    stable_json = body(verifier, "internal static byte[] StabilizeNativeJson(")
+    contains(stable_json, 'JsonNode.Parse(native)!.AsObject()',
+             'root["map_point_history"] is JsonArray acts', 'act is not JsonArray points',
+             'point is not JsonObject history', 'history["player_stats"] is not JsonArray players',
+             'player is not JsonObject stats', 'stats["event_choices"] is not JsonArray choices',
+             'choice is JsonObject entry', 'entry["variables"] is JsonObject { Count: 0 }',
+             'entry.Remove("variables")', 'root.WriteTo(writer)')
+    require(re.findall(r'root.Remove\("([^"]+)"\)', stable_json) == ["save_time", "run_time"]
+            and stable_json.count('entry.Remove("variables")') == 1,
+            "only root clocks and exact-path empty history variables may be stabilized")
     contains(body(verifier, "internal static async Task Verify("), "await write()", "if (!wasSaved())",
              "readback()", "catch (Exception ex) when (wasSaved())")
     contains(scope, "AsyncLocal<ShinGetterEventMapSaveScope?>", "ReferenceEqualityComparer.Instance",
@@ -286,7 +292,9 @@ def save_boundary_negative_contracts(events):
         ("global Hook skip", "patches", "if (!ShinGetterEventInvasionService.IsRestoringFourthRoom(runState, room)) return true;", ""),
         ("future stamp admitted", "state", "checkpoint.Version != 1", "false"),
         ("player-only readback", "events", "Capture(readback.SaveData)", "Capture(expectedPlayerOnly)"),
-        ("hidden pool mismatch", "verifier", '"save_time" or "run_time"', '"save_time" or "run_time" or "acts"'),
+        ("hidden pool mismatch", "verifier", 'root.Remove("run_time");', 'root.Remove("run_time"); root.Remove("acts");'),
+        ("nonempty variables ignored", "verifier", 'JsonObject { Count: 0 }', 'JsonObject'),
+        ("wrong variable path", "verifier", 'stats["event_choices"]', 'stats["card_choices"]'),
         ("Saved boundary inverted", "verifier", "catch (Exception ex) when (wasSaved())", "catch (Exception ex) when (!wasSaved())"),
         ("uncaptured pre-write expected", "events", "scope.Expected ?? throw", "otherExpected ?? throw"),
         ("wrong native checkpoint reference", "scope", "ReferenceEquals(preFinishedRoom, scope.checkpoint)", "true"),
