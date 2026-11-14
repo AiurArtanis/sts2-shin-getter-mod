@@ -615,12 +615,55 @@ def brain_reward_negative_contracts(events):
     print(f"issue#238: Brain native ownership/receipt source contracts and {len(variants)} negatives PASS (not gameplay)")
 
 
+def item_choice_font_contracts(source):
+    ready = body(source, "public override void _Ready()")
+    font_load = 'FontVariation font = PreloadManager.Cache.GetAsset<FontVariation>("res://themes/kreon_regular_glyph_space_one.tres");'
+    contains(source, "using MegaCrit.Sts2.Core.Assets;")
+    contains(ready, font_load)
+    for name, parent in (("header", "column"), ("text", "content")):
+        creation = f"MegaRichTextLabel {name} = new()"
+        font_override = f'{name}.AddThemeFontOverride("normal_font", font);'
+        add_child = f"{parent}.AddChild({name});"
+        require(ready.count(creation) == ready.count(font_override) == ready.count(add_child) == 1,
+                f"{name}: missing native normal_font override or unique construction/attachment")
+        require(ready.index(font_load) < ready.index(creation) < ready.index(font_override) < ready.index(add_child),
+                f"{name}: explicit font must exist before AddChild triggers native _Ready")
+    for forbidden in ("override void RefreshFont", "FontManager.", "ApplyLocaleFontSubstitution", "catch ("):
+        require(forbidden not in source, f"do not bypass native font assertion or locale substitution: {forbidden}")
+
+
+def item_choice_font_negative_contracts(source):
+    mutations = []
+    for name, parent in (("header", "column"), ("text", "content")):
+        statement = f'{name}.AddThemeFontOverride("normal_font", font);'
+        attachment = f"{parent}.AddChild({name});"
+        mutations.extend((
+            (f"{name} missing font", source.replace(statement, "", 1)),
+            (f"{name} wrong font key", source.replace(statement, statement.replace("normal_font", "bold_font"), 1)),
+            (f"{name} font after _Ready", source.replace(statement, "", 1).replace(attachment, attachment + "\n" + statement, 1)),
+        ))
+    for name, mutant in mutations:
+        require(mutant != source, f"mutation did not touch the intended site: {name}")
+        try:
+            item_choice_font_contracts(mutant)
+        except AssertionError:
+            continue
+        raise AssertionError(f"Item choice font regression admitted: {name}")
+    print(f"issue#238: item-choice pre-Ready native font source contract and {len(mutations)} negatives PASS (not runtime or glyph rendering)")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--probe", action="store_true", help="Run actual 109 CLR integration probe; no game scene/window")
     parser.add_argument("--self-test-save-boundary", action="store_true", help="Check only entered-room source guards and negative mutations; no game/save writes")
     parser.add_argument("--self-test-brain-owner", action="store_true", help="Check only Brain native ownership/receipt source contracts and negatives; no game")
+    parser.add_argument("--self-test-item-choice-fonts", action="store_true", help="Check only item-choice pre-Ready native font source contracts and negatives; no game")
     args = parser.parse_args()
+    if args.self_test_item_choice_fonts:
+        choice = read("src/Nodes/Events/NShinGetterEventItemChoice.cs")
+        item_choice_font_contracts(choice)
+        item_choice_font_negative_contracts(choice)
+        return
     events = read("src/Events/ShinGetterEventInvasionService.Issue238.cs")
     if args.self_test_brain_owner:
         brain_reward_contracts(events)
@@ -663,6 +706,9 @@ def main():
     november_contracts(events)
     damage_template_contracts()
     event_selection_contracts(events)
+    choice = read("src/Nodes/Events/NShinGetterEventItemChoice.cs")
+    item_choice_font_contracts(choice)
+    item_choice_font_negative_contracts(choice)
     prose_contracts()
     if args.probe:
         subprocess.run(["dotnet", "run", "--project", str(ROOT / "tools/issue238-probe/issue238-probe.csproj"), "--verbosity", "quiet"], check=True)
