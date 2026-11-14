@@ -665,8 +665,8 @@ internal static partial class ShinGetterEventInvasionService
             {
                 List<CardModel> canonical = await CachedFourthChoices(model, route, FourthColorless(owner));
                 if (canonical.Count != 3) return false;
-                CardModel[] cards = canonical.Select(c => c.ToMutable()).ToArray();
-                foreach (CardModel card in cards) { card.Owner = owner; CardCmd.Upgrade(card, CardPreviewStyle.None); }
+                CardModel[] cards = canonical.Select(c => owner.RunState.CreateCard(c, owner)).ToArray();
+                foreach (CardModel card in cards) CardCmd.Upgrade(card, CardPreviewStyle.None);
                 CardModel? selected = await AwaitFourthSelection(model, async () =>
                     (await CardSelectCmd.FromSimpleGrid(new BlockingPlayerChoiceContext(), cards, owner,
                     new CardSelectorPrefs(SelectionKey(name, route), 1) { Cancelable = false, RequireManualConfirmation = true })).FirstOrDefault());
@@ -674,9 +674,9 @@ internal static partial class ShinGetterEventInvasionService
                 return await CommitFourth(model, route, async () =>
                 {
                     await FourthMaxHp(owner, 5);
-                    owner.RunState.AddCard(selected, owner);
-                    await CardPileCmd.Add(selected, PileType.Deck);
-                    if (!owner.Deck.Cards.Contains(selected)) throw new InvalidOperationException("Colorless reward failed.");
+                    CardPileAddResult result = await CardPileCmd.Add(selected, PileType.Deck);
+                    if (!result.success || result.cardAdded == null || !ReferenceEquals(result.cardAdded.Owner, owner)
+                        || !owner.Deck.Cards.Contains(result.cardAdded)) throw new InvalidOperationException("Colorless reward failed.");
                 });
             }
             case ("DOLL_ROOM", _):

@@ -565,16 +565,73 @@ def prose_contracts():
              "finally", "stack.Remove(screen)", "SignalPlayerChoiceEnded")
 
 
+def brain_reward_section(events):
+    return events.split('case ("BRAIN_LEECH", _):', 1)[1].split('case ("DOLL_ROOM", _):', 1)[0]
+
+
+def brain_reward_contracts(events):
+    route = brain_reward_section(events)
+    contains(route, "CachedFourthChoices(model, route, FourthColorless(owner))",
+             "if (canonical.Count != 3) return false;",
+             "canonical.Select(c => owner.RunState.CreateCard(c, owner))",
+             "CardCmd.Upgrade(card, CardPreviewStyle.None)", "AwaitFourthSelection(model",
+             "CardSelectCmd.FromSimpleGrid", "Cancelable = false", "RequireManualConfirmation = true",
+             "if (selected == null || !cards.Contains(selected)) return false;",
+             "CommitFourth(model, route", "await FourthMaxHp(owner, 5)",
+             "CardPileAddResult result = await CardPileCmd.Add(selected, PileType.Deck)",
+             "!result.success", "result.cardAdded == null", "ReferenceEquals(result.cardAdded.Owner, owner)",
+             "owner.Deck.Cards.Contains(result.cardAdded)")
+    for forbidden in (".Owner =", ".AddCard(", ".ToMutable(", ".Rng.",
+                      "owner.Deck.Cards.Contains(selected)", "ReferenceEquals(result.cardAdded, selected)"):
+        require(forbidden not in route, f"Brain native ownership/receipt invariant: {forbidden}")
+    order = [route.index(token) for token in ("RunState.CreateCard", "CardCmd.Upgrade", "CardSelectCmd.FromSimpleGrid",
+                                             "CommitFourth", "FourthMaxHp", "CardPileCmd.Add", "!result.success")]
+    require(order == sorted(order), "Brain creation/upgrade/selection/cost/receipt order must stay native")
+
+
+def brain_reward_negative_contracts(events):
+    route = brain_reward_section(events)
+    variants = [
+        ("unregistered preview", "canonical.Select(c => owner.RunState.CreateCard(c, owner))", "canonical.Select(c => c.ToMutable())"),
+        ("manual Owner", "foreach (CardModel card in cards) CardCmd.Upgrade(card, CardPreviewStyle.None);", "foreach (CardModel card in cards) { card.Owner = owner; CardCmd.Upgrade(card, CardPreviewStyle.None); }"),
+        ("duplicate registration", "CardPileAddResult result = await", "owner.RunState.AddCard(selected, owner); CardPileAddResult result = await"),
+        ("ignored success", "!result.success || ", ""),
+        ("missing receipt", "result.cardAdded == null || ", ""),
+        ("wrong receipt Owner", "ReferenceEquals(result.cardAdded.Owner, owner)", "true"),
+        ("input deck identity", "owner.Deck.Cards.Contains(result.cardAdded)", "owner.Deck.Cards.Contains(selected)"),
+        ("reject legitimate replacement", "if (!result.success", "if (!ReferenceEquals(result.cardAdded, selected) || !result.success"),
+        ("changed cost", "await FourthMaxHp(owner, 5)", "await FourthMaxHp(owner, 0)"),
+        ("changed candidate count", "canonical.Count != 3", "canonical.Count == 0"),
+        ("changed cancel rule", "Cancelable = false", "Cancelable = true"),
+        ("foreign selection admitted", "selected == null || !cards.Contains(selected)", "selected == null"),
+    ]
+    for name, old, new in variants:
+        require(route.count(old) == 1, f"Brain mutation must change exactly one site: {name}")
+        try:
+            brain_reward_contracts(events.replace(route, route.replace(old, new, 1), 1))
+        except AssertionError:
+            continue
+        raise AssertionError(f"Unsafe Brain regression admitted: {name}")
+    print(f"issue#238: Brain native ownership/receipt source contracts and {len(variants)} negatives PASS (not gameplay)")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--probe", action="store_true", help="Run actual 109 CLR integration probe; no game scene/window")
     parser.add_argument("--self-test-save-boundary", action="store_true", help="Check only entered-room source guards and negative mutations; no game/save writes")
+    parser.add_argument("--self-test-brain-owner", action="store_true", help="Check only Brain native ownership/receipt source contracts and negatives; no game")
     args = parser.parse_args()
     events = read("src/Events/ShinGetterEventInvasionService.Issue238.cs")
+    if args.self_test_brain_owner:
+        brain_reward_contracts(events)
+        brain_reward_negative_contracts(events)
+        return
     save_boundary_contracts(events)
     save_boundary_negative_contracts(events)
     if args.self_test_save_boundary:
         return
+    brain_reward_contracts(events)
+    brain_reward_negative_contracts(events)
     native_event_contracts(events)
     routes = ROUTES
     require(len(routes) == 15 and sum(map(len, routes.values())) == 20, "fourth batch route quota")
