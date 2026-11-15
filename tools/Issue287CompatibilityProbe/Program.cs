@@ -15,7 +15,7 @@ internal sealed record Finding(string Category, string Id, string Status, string
 
 internal sealed class Audit
 {
-    public const string OfficialSha = "A6CC282C52B96AD2E01D5692B1144B33AA8E3BA4E969582F648ECB13B2F751D7";
+    public const string OfficialSha = "62ECBE91093E1FA862DE4329AAC865209DCB297804CAF0F0520D92D8C0B4A9C3";
     public const string HarmonySha = "EF1898322C9F5C86DC1B0758B272A9C440823B4A41CA9A0B82A3AA6B3D206387";
     public const BindingFlags All = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
     public required string Root { get; init; }

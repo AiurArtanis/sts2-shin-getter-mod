@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Godot;
 using MegaCrit.Sts2.addons.mega_text;
+using MegaCrit.Sts2.Core.Assets;
 using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions;
@@ -67,7 +68,10 @@ public partial class NShinGetterEventItemChoice : Control, IOverlayScreen
         VBoxContainer column = new();
         column.AddThemeConstantOverride("separation", 12);
         panel.AddChild(column);
+        // MegaRichTextLabel requires an explicit font before AddChild invokes its _Ready.
+        FontVariation font = PreloadManager.Cache.GetAsset<FontVariation>("res://themes/kreon_regular_glyph_space_one.tres");
         MegaRichTextLabel header = new() { Text = _prompt, BbcodeEnabled = true, FitContent = true, MouseFilter = MouseFilterEnum.Ignore };
+        header.AddThemeFontOverride("normal_font", font);
         header.AddThemeFontSizeOverride("normal_font_size", 26);
         column.AddChild(header);
         ScrollContainer scroll = new() { SizeFlagsVertical = SizeFlags.ExpandFill };
@@ -90,6 +94,7 @@ public partial class NShinGetterEventItemChoice : Control, IOverlayScreen
             content.AddChild(icon);
             MegaRichTextLabel text = new() { Text = item.Title + "\n" + item.Description, BbcodeEnabled = true,
                 FitContent = true, SizeFlagsHorizontal = SizeFlags.ExpandFill, MouseFilter = MouseFilterEnum.Ignore };
+            text.AddThemeFontOverride("normal_font", font);
             text.AddThemeFontSizeOverride("normal_font_size", 22);
             content.AddChild(text);
             button.Pressed += () => _completion.TrySetResult(index);
