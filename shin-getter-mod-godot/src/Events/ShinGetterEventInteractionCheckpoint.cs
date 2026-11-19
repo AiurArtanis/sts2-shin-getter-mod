@@ -83,6 +83,10 @@ internal sealed class ShinGetterEventInteractionCheckpoint : IDisposable
         }
     }
 
+    internal static bool IsAromaCandidateSelection => Selection.Value is { } session && session.IsCurrent
+        && session.model.Id.Entry == "AROMA_OF_CHAOS"
+        && session.option.TextKey == "SHIN_GETTER_EVENT_INVASION.AROMA_OF_CHAOS.pages.INITIAL.options.HAYATO";
+
     // Native command call sites invoke this only after the screen has been pushed
     // and (for choose-a-card) the native MarkCardAsSeen loop has finished.
     internal static Task<T> BeforeSelectionResult<T>(Task<T> nativeSelection)

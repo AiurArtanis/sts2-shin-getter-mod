@@ -7,9 +7,11 @@ using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using HarmonyLib;
+using MegaCrit.Sts2.addons.mega_text;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Events;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Nodes.Screens.CardSelection;
@@ -78,7 +80,12 @@ internal static class ShinGetterFourthSelectionPresentationPatch
     }
 
     private static Task<IEnumerable<CardModel>> ChooseAfterPresentation(NChooseACardSelectionScreen screen)
-        => ShinGetterEventInteractionCheckpoint.BeforeSelectionResult(screen.CardsSelected());
+    {
+        if (ShinGetterEventInteractionCheckpoint.IsAromaCandidateSelection)
+            screen.GetNode<MegaLabel>("SkipButton/Label").SetTextAutoSize(
+                new LocString("card_reward_ui", "OPTION_SKIP.name").GetFormattedText());
+        return ShinGetterEventInteractionCheckpoint.BeforeSelectionResult(screen.CardsSelected());
+    }
     private static Task<IEnumerable<CardModel>> GridAfterPresentation(NCardGridSelectionScreen screen)
         => ShinGetterEventInteractionCheckpoint.BeforeSelectionResult(screen.CardsSelected());
 }
