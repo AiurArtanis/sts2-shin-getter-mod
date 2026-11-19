@@ -40,7 +40,7 @@ public partial class NShinGetterEventItemChoice : Control, IOverlayScreen
         var context = new BlockingPlayerChoiceContext();
         var synchronizer = RunManager.Instance.PlayerChoiceSynchronizer;
         uint id = synchronizer.ReserveChoiceId(owner);
-        await context.SignalPlayerChoiceBegun(PlayerChoiceOptions.None);
+        await context.SignalPlayerChoiceBegun(owner, PlayerChoiceOptions.None);
         NShinGetterEventItemChoice screen = new() { _items = items, _prompt = prompt.GetFormattedText(), _cancelable = cancelable };
         try
         {

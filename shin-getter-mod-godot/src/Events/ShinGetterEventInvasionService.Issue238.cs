@@ -165,6 +165,10 @@ internal static partial class ShinGetterEventInvasionService
             ? RestoredFourthVisit(model.Owner.RunState, model.Owner.RunState.CurrentRoom)
             : FourthVisit(model);
         if (visit == null) return false;
+        var checkpoint = visit.RoomCheckpoint;
+        ulong[]? rng = isPreFinished
+            ? checkpoint!.RngState111 ?? throw new JsonException("This event checkpoint predates the native 0.111 RNG state and cannot be resumed.")
+            : null;
         if (visit.CompletedRoute.Length != 0)
         {
             if (!FourthRouteNames(model.Id.Entry).Contains(visit.CompletedRoute)) throw new JsonException("Unknown completed event route.");
@@ -172,8 +176,13 @@ internal static partial class ShinGetterEventInvasionService
         }
         else if (isPreFinished) ReturnFourthInitial(model); // Pending target/candidates remain selectable.
         else return false;
-        if (isPreFinished) model.Rng.FastForwardCounter(visit.RoomCheckpoint!.RngCounter);
-        return true; // No cost, selection, or reward replay; only restore the event RNG cursor.
+        if (rng != null)
+            model.Rng.LoadFromSerializable(new SerializableRng
+            {
+                counter = checkpoint!.RngCounter,
+                state0 = rng[0], state1 = rng[1], state2 = rng[2], state3 = rng[3],
+            });
+        return true; // No cost, selection, or reward replay; restore the native event RNG state.
     }
 
     private static IEnumerable<EventOption> BuildFourthOptions(EventModel model)
@@ -455,7 +464,14 @@ internal static partial class ShinGetterEventInvasionService
         native.Saved += OnSaved;
         try
         {
-            visit.RoomCheckpoint = new() { RngCounter = model.Rng.Counter, Extra = previousCheckpoint?.Extra };
+            // The 0.111 RNG needs its full state; a counter alone cannot reproduce it.
+            var rng = model.Rng.ToSerializable();
+            visit.RoomCheckpoint = new()
+            {
+                RngCounter = rng.counter,
+                RngState111 = new[] { rng.state0, rng.state1, rng.state2, rng.state3 },
+                Extra = previousCheckpoint?.Extra,
+            };
             using var scope = ShinGetterEventMapSaveScope.BeginCheckpoint(owner.RunState, checkpoint);
             await ShinGetterEventSaveVerification.Verify(() => manager.SaveRun(checkpoint, saveProgress: false), () => saved, () =>
             {

@@ -68,9 +68,11 @@ def native_event_contracts(events):
     config = json.loads(read("tools/issue238-native-events.json"))
     shell = shutil.which("pwsh")
     require(shell is not None, "pwsh is required for the actual native ModelDb identity gate")
+    script = Path(__file__).absolute().with_name("read_issue238_native_event_ids.ps1")
     result = subprocess.run([shell, "-NoLogo", "-NoProfile", "-NonInteractive", "-File",
-                             str(ROOT / "tools/read_issue238_native_event_ids.ps1"), "-ProjectRoot", str(ROOT)],
-                            check=True, capture_output=True, text=True, encoding="utf-8")
+                             str(script), "-ProjectRoot", str(script.parents[1])],
+                            capture_output=True, text=True, encoding="utf-8")
+    require(result.returncode == 0, result.stderr.strip() or "native identity gate failed")
     observed = json.loads(result.stdout)
     require(observed["native_sha256"] == config["native_sha256"] and not observed["game_started"]
             and not observed["mod_dll_loaded"], "native identity probe boundary drift")
@@ -154,7 +156,8 @@ def save_boundary_contracts(events, state=None, patches=None, verifier=None, sco
     contains(save, "DebugOnlyGetState(), owner.RunState", "room.ModelId != model.Id",
              "FourthVisitKey(model) == null", "ReferenceEquals(owner.RunState.BaseRoom, room)",
              "EventRoom checkpoint = new(room.CanonicalEvent);", "checkpoint.MarkPreFinished();",
-             "visit.RoomCheckpoint = new()", "RngCounter = model.Rng.Counter",
+             "visit.RoomCheckpoint = new()", "RngCounter = rng.counter",
+             "RngState111 = new[] { rng.state0, rng.state1, rng.state2, rng.state3 }",
              "Extra = previousCheckpoint?.Extra", "BeginCheckpoint(owner.RunState, checkpoint)",
              "manager.SaveRun(checkpoint, saveProgress: false)", "Capture(readback.SaveData)",
              "scope.Expected ?? throw", "Compare(expected, actualReadback)",
@@ -184,7 +187,9 @@ def save_boundary_contracts(events, state=None, patches=None, verifier=None, sco
              "isPreFinished && model.Owner.RunState.CurrentRoom?.ModelId != model.Id",
              "var visit = isPreFinished", "? RestoredFourthVisit(", ": FourthVisit(model)", "if (visit == null) return false",
              "FourthRouteNames", "Finish(model", "else if (isPreFinished) ReturnFourthInitial(model)",
-             "model.Rng.FastForwardCounter(visit.RoomCheckpoint!.RngCounter)")
+             "model.Rng.LoadFromSerializable(new SerializableRng", "counter = checkpoint!.RngCounter",
+             "state0 = rng[0], state1 = rng[1], state2 = rng[2], state3 = rng[3]")
+    require("FastForwardCounter" not in restored, "formal 111 restoration must use the full native RNG state")
     for token in ("AddFourthCard", "Obtain", "LoseGold", "FourthDamage", "SaveFourth", "NextInt"):
         require(token not in restored, f"restoring a room must not replay {token}")
     contains(patches, "RestoreFourthState(__instance, isPreFinished)")
@@ -196,14 +201,15 @@ def save_boundary_contracts(events, state=None, patches=None, verifier=None, sco
             "AfterRoomEntered may be skipped only after the exact checkpoint/identity gate")
 
     checkpoint = body(state, "internal sealed class EnteredRoomCheckpoint")
-    contains(checkpoint, "Version { get; set; } = 1", "RngCounter", "[JsonExtensionData]")
+    contains(checkpoint, "Version { get; set; } = 1", "RngCounter", "ulong[]? RngState111", "[JsonExtensionData]")
     require(checkpoint.count("[JsonRequired]") == 2, "checkpoint version and RNG counter must be explicit")
     visit = body(state, "internal sealed class Visit")
     contains(visit, "[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]",
              "EnteredRoomCheckpoint? RoomCheckpoint", "[JsonExtensionData]")
     contains(body(state, "internal sealed class Data"), "[JsonExtensionData]")
     contains(body(state, "private static void Validate("), "checkpoint.Version != 1",
-             "checkpoint.RngCounter is < 0 or > 100000")
+             "checkpoint.RngCounter is < 0 or > 100000",
+             "checkpoint.RngState111 is { } rng", "rng.Length != 4", "rng.All(word => word == 0)")
 
     stable = body(verifier, "internal static Snapshot Capture(")
     contains(stable, "InspectSnapshot(save)", "MapFlag(p.Path, p.Point.CanBeModified)",
@@ -230,9 +236,9 @@ def save_boundary_contracts(events, state=None, patches=None, verifier=None, sco
     contains(capture, "ReferenceEquals(manager.DebugOnlyGetState(), scope.run)",
              "ReferenceEquals(preFinishedRoom, scope.checkpoint)", "room.EventId != scope.checkpoint!.ModelId",
              "scope.RegisterPoints(save)", "scope.Expected = ShinGetterEventSaveVerification.Capture(save)")
-    contains(reload, 'nameof(RunManager.SetUpSavedSinglePlayer)', '"MoveNext"', "code.Count(i => i.Calls(NativeReload)) != 1",
+    contains(reload, 'nameof(RunManager.SetUpSavedSingleplayer)', '"MoveNext"', "code.Count(i => i.Calls(NativeReload)) != 1",
              "ReferenceEquals(runManager.DebugOnlyGetState(), state)", "OwnsFourthReloadCheckpoint(state, save)",
-             "InspectSnapshot(save)", "await manager.IncrementNumReloads(save, isMultiplayer)")
+             "InspectSnapshot(save)", "await manager.IncrementNumReloads(save, type, forceInTest)")
     owns = body(events, "internal static bool OwnsFourthReloadCheckpoint(")
     contains(owns, "run.CurrentRoom != null", "run.Players.Count != 1", "save.Players.Count != 1",
              "player.NetId != owner.NetId", "save.SerializableRng.Seed != run.Rng.StringSeed",
@@ -372,9 +378,9 @@ def content_contracts():
     contains(picker, "owner.PlayerCombatState.Hand", "hand.Cards.Where(legal).ToArray()", "cards.Length == 0",
              "new CardSelectorPrefs(prompt, 1)", "Cancelable = true", "RequireManualConfirmation = true",
              "NDeckCardSelectScreen.Create(cards, prefs)", "PlayerChoiceResult.FromMutableCombatCards(result)",
-             "SignalPlayerChoiceBegun(PlayerChoiceOptions.CancelPlayCardActions)", "ReferenceEquals(manager.DebugOnlyGetState(), run)",
+             "SignalPlayerChoiceBegun(owner, PlayerChoiceOptions.CancelPlayCardActions)", "ReferenceEquals(manager.DebugOnlyGetState(), run)",
              "manager.IsCleaningUp", "RunAbortedException", "WaitForActionToResumeExecutingAfterPlayerChoice()")
-    require("manager.State" not in picker, "formal109 RunManager.State is private; retain identity via its public getter")
+    require("manager.State" not in picker, "RunManager.State is private; retain identity via its public getter")
     require("FromDeckGeneric" not in picker and "CardSelectCmd.FromSimpleGrid" not in picker,
             "hand instances require the local native-UI adapter, not a permanent Deck query or SimpleGrid")
     require("cards.Length == 1" not in picker and "WaitAsync" not in picker and "Task.WhenAny" not in picker,
@@ -654,7 +660,7 @@ def item_choice_font_negative_contracts(source):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--probe", action="store_true", help="Run actual 109 CLR integration probe; no game scene/window")
+    parser.add_argument("--probe", action="store_true", help="Also run the legacy 109 CLR probe; no game scene/window")
     parser.add_argument("--self-test-save-boundary", action="store_true", help="Check only entered-room source guards and negative mutations; no game/save writes")
     parser.add_argument("--self-test-brain-owner", action="store_true", help="Check only Brain native ownership/receipt source contracts and negatives; no game")
     parser.add_argument("--self-test-item-choice-fonts", action="store_true", help="Check only item-choice pre-Ready native font source contracts and negatives; no game")

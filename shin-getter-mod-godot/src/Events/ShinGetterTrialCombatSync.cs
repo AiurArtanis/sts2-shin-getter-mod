@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using MegaCrit.Sts2.Core.Entities.Multiplayer;
@@ -17,11 +18,13 @@ namespace ShinGetterMod.Events;
 internal sealed class ShinGetterTrialCombatSync : IDisposable
 {
     internal const string StartFightOptionKey = "SHIN_GETTER_EVENT_INVASION.TRIAL.pages.RYOMA.options.START_FIGHT";
+    private const string ByrdonisStartFightOptionKey = "SHIN_GETTER_EVENT_INVASION.BYRDONIS_NEST.pages.RYOMA.options.START_FIGHT";
     private static readonly ConditionalWeakTable<EventSynchronizer, ShinGetterTrialCombatSync> Instances = new();
+    private readonly EventSynchronizer _synchronizer;
     private readonly RunLocationTargetedMessageBuffer _buffer;
     private readonly INetGameService _netService;
     private readonly IPlayerCollection _players;
-    private readonly uint _runSeed;
+    private readonly ulong _runSeed;
     private EventModel? _localEvent;
     private RunLocation _location;
     private Player? _choosingOwner;
@@ -30,9 +33,11 @@ internal sealed class ShinGetterTrialCombatSync : IDisposable
     private bool _entryAttempted;
     private bool _disposed;
 
-    private ShinGetterTrialCombatSync(RunLocationTargetedMessageBuffer buffer, INetGameService netService,
-        IPlayerCollection players, uint runSeed)
+    private ShinGetterTrialCombatSync(EventSynchronizer synchronizer,
+        RunLocationTargetedMessageBuffer buffer, INetGameService netService,
+        IPlayerCollection players, ulong runSeed)
     {
+        _synchronizer = synchronizer;
         _buffer = buffer;
         _netService = netService;
         _players = players;
@@ -43,8 +48,8 @@ internal sealed class ShinGetterTrialCombatSync : IDisposable
 
     internal static void Attach(EventSynchronizer synchronizer,
         RunLocationTargetedMessageBuffer buffer, INetGameService netService,
-        IPlayerCollection players, uint seed) =>
-        Instances.Add(synchronizer, new ShinGetterTrialCombatSync(buffer, netService, players, seed));
+        IPlayerCollection players, ulong seed) =>
+        Instances.Add(synchronizer, new ShinGetterTrialCombatSync(synchronizer, buffer, netService, players, seed));
 
     internal static void BeginEvent(EventSynchronizer synchronizer, bool isPrefinished)
     {
@@ -55,24 +60,35 @@ internal sealed class ShinGetterTrialCombatSync : IDisposable
         sync._entryAttempted = false;
         EventModel localEvent = synchronizer.GetLocalEvent();
         Player? owner = localEvent.Owner;
-        if (!isPrefinished && localEvent is Trial && owner != null && sync._players.Players.Count > 1)
+        if (!isPrefinished && GetStartFightOptionKey(localEvent) != null
+            && owner != null && sync._players.Players.Count > 1)
         {
             sync._localEvent = localEvent;
             sync._location = owner.RunState.RunLocation;
         }
     }
 
+    private static string? GetStartFightOptionKey(EventModel? eventModel) => eventModel switch
+    {
+        Trial => StartFightOptionKey,
+        ByrdonisNest => ByrdonisStartFightOptionKey,
+        _ => null,
+    };
+
+    internal static bool IsChallengeOption(EventOption option) => option.IsProceed
+        && option.TextKey is StartFightOptionKey or ByrdonisStartFightOptionKey;
+
     internal static bool TryRouteProceed(EventSynchronizer synchronizer, EventOption option, int index)
     {
-        if (!option.IsProceed || option.IsLocked || option.WasChosen
-            || option.TextKey != StartFightOptionKey
-            || !Instances.TryGetValue(synchronizer, out var sync) || !sync.IsCurrentTrial
+        if (!IsChallengeOption(option) || option.IsLocked || option.WasChosen
+            || !Instances.TryGetValue(synchronizer, out var sync) || !sync.IsCurrentEventBattle
             || sync._netService.Type is not (NetGameType.Host or NetGameType.Client))
             return false;
 
         EventModel? localEvent = sync._localEvent;
         Player? owner = localEvent?.Owner;
-        if (localEvent is not Trial || owner == null || !IsEligible(owner)
+        if (localEvent == null || option.TextKey != GetStartFightOptionKey(localEvent)
+            || owner == null || !IsEligible(owner)
             || sync._players.Players.Count <= 1
             || !ReferenceEquals(synchronizer.GetLocalEvent(), localEvent)
             || index < 0 || index >= localEvent.CurrentOptions.Count
@@ -87,15 +103,16 @@ internal sealed class ShinGetterTrialCombatSync : IDisposable
     internal static void Request(EventSynchronizer synchronizer, EventModel eventModel)
     {
         if (!Instances.TryGetValue(synchronizer, out var sync))
-            throw new InvalidOperationException("Trial synchronization was not initialized.");
+            throw new InvalidOperationException("Event combat synchronization was not initialized.");
         Player? owner = eventModel.Owner;
-        if (!sync.IsCurrentTrial || sync._netService.Type != NetGameType.Host
+        string? optionKey = GetStartFightOptionKey(eventModel);
+        if (!sync.IsCurrentEventBattle || sync._netService.Type != NetGameType.Host
             || sync._acceptedOwner.HasValue || sync._requestedOwner != null
-            || eventModel is not Trial || owner == null || !IsEligible(owner)
+            || optionKey == null || optionKey != GetStartFightOptionKey(sync._localEvent)
+            || owner == null || !IsEligible(owner)
             || !ReferenceEquals(sync._choosingOwner, owner)
-            || !synchronizer.Events.Any(current => ReferenceEquals(current, eventModel))
-            || !eventModel.CurrentOptions.Any(option =>
-                option.TextKey == StartFightOptionKey))
+            || !ReferenceEquals(synchronizer.GetEventForPlayer(owner), eventModel)
+            || !eventModel.CurrentOptions.Any(option => option.IsProceed && option.TextKey == optionKey))
             return;
 
         // Only native ChooseOptionForEvent invokes this callback. Its sender selects this Owner's event.
@@ -114,7 +131,7 @@ internal sealed class ShinGetterTrialCombatSync : IDisposable
         if (!Instances.TryGetValue(synchronizer, out var sync))
             return;
         sync._choosingOwner = null;
-        if (!sync.IsCurrentTrial
+        if (!sync.IsCurrentEventBattle
             || sync._netService.Type != NetGameType.Host || sync._acceptedOwner.HasValue
             || !ReferenceEquals(sync._requestedOwner, player))
             return;
@@ -142,7 +159,7 @@ internal sealed class ShinGetterTrialCombatSync : IDisposable
         }
     }
 
-    private bool IsCurrentTrial
+    private bool IsCurrentEventBattle
     {
         get
         {
@@ -157,7 +174,7 @@ internal sealed class ShinGetterTrialCombatSync : IDisposable
 
     private void ReceiveCommit(ShinGetterTrialChallengeMessage message, ulong senderId)
     {
-        if (!IsCurrentTrial || _netService.Type != NetGameType.Client
+        if (!IsCurrentEventBattle || _netService.Type != NetGameType.Client
             || _netService is not INetClientGameService client
             || client.NetClient?.HostNetId != senderId
             || message.RunSeed != _runSeed || message.Location != _location
@@ -176,8 +193,26 @@ internal sealed class ShinGetterTrialCombatSync : IDisposable
         // This is an attempt latch, not an asynchronous completion receipt. Never reopen after broadcast.
         _entryAttempted = true;
         Player owner = _players.GetPlayer(_acceptedOwner.Value)
-            ?? throw new InvalidOperationException("Accepted Trial challenger left the run.");
-        ShinGetterEventInvasionService.StartCommittedTrialBattle(_localEvent, owner);
+            ?? throw new InvalidOperationException("Accepted event challenger left the run.");
+        EventModel[] events = ResolveCombatEvents(_synchronizer, _localEvent, _players.Players);
+        ShinGetterEventInvasionService.StartCommittedEventBattle(_localEvent, events, owner);
+    }
+
+    internal static EventModel[] ResolveCombatEvents(EventSynchronizer synchronizer, EventModel activeEvent,
+        IReadOnlyList<Player> players)
+    {
+        // v0.111 waits for every native player slot before creating the room.
+        var events = new EventModel[players.Count];
+        for (int i = 0; i < players.Count; i++)
+        {
+            Player player = players[i];
+            EventModel playerEvent = synchronizer.GetEventForPlayer(player);
+            if (!ReferenceEquals(playerEvent.Owner, player)
+                || !ReferenceEquals(playerEvent.CanonicalInstance, activeEvent.CanonicalInstance))
+                throw new InvalidOperationException("Event combat has an inconsistent native player slot.");
+            events[i] = playerEvent;
+        }
+        return events;
     }
 
     internal static void EndEvent(EventSynchronizer synchronizer)
@@ -191,7 +226,7 @@ internal sealed class ShinGetterTrialCombatSync : IDisposable
         _localEvent = null;
         _choosingOwner = null;
         _requestedOwner = null;
-        ShinGetterEventInvasionService.ClearPendingTrialSetup(_players.Players);
+        ShinGetterEventInvasionService.ClearPendingEventBattleSetup(_players.Players);
     }
 
     internal static void Detach(EventSynchronizer synchronizer)

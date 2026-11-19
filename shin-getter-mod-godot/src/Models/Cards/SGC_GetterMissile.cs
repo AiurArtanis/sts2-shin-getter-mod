@@ -44,7 +44,8 @@ public sealed class SGC_GetterMissile : ShinGetterCardBase
                 DynamicVars.Damage.BaseValue,
                 ValueProp.Move,
                 dealer,
-                this);
+                this,
+                cardPlay);
             if (CombatManager.Instance.IsOverOrEnding || Owner.Creature.IsDead)
                 break;
 

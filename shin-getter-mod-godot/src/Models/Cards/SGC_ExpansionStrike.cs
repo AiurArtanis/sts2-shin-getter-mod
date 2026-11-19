@@ -40,7 +40,7 @@ public sealed class SGC_ExpansionStrike : ShinGetterCardBase
             await Cmd.CustomScaledWait(Math.Min(0.86f, duration), Math.Min(0.86f, duration));
         await PlayMovementVfx(() => ShinGetterCombatVfx.PlayExpansionRush(
             Owner.Creature, cardPlay.Target,
-            async () => await DamageCmd.Attack(DynamicVars.Damage.BaseValue * debuffTypes).FromCard(this)
+            async () => await DamageCmd.Attack(DynamicVars.Damage.BaseValue * debuffTypes).FromCard(this, cardPlay)
                 .Targeting(cardPlay.Target).WithNoAttackerAnim()
                 .WithHitFx("vfx/vfx_attack_blunt").Execute(choiceContext)));
         if (debuffTypes > 0 && HasForm(Owner, ShinGetterForm.Getter3))

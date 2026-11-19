@@ -29,6 +29,8 @@ static void Consistent(Peer host, Peer client, ulong owner)
     Assert(Entries(host) == 1 && Entries(client) == 1, "duplicate/missing local battle entry");
     Assert(Pending(host).SequenceEqual(new[] { owner }) && Pending(client).SequenceEqual(new[] { owner }), "pending owners disagree");
     Assert(ShinGetterEventInvasionService.Entries.All(entry => entry.Event.Owner?.NetId == (host.Players.Contains(entry.Owner) ? 11UL : 22UL)), "foreign event used for entry");
+    Assert(ShinGetterEventInvasionService.Entries.All(entry => entry.Slots.SequenceEqual(
+        (host.Players.Contains(entry.Owner) ? host : client).Sync.Models)), "native slots must all be registered exactly once");
 }
 
 Check("modeled native Proceed branch: Getter host click reaches synchronization once", () =>
@@ -291,6 +293,53 @@ Check("message fields round-trip through serialization API double", () =>
     Assert(actual.OwnerId == expected.OwnerId && actual.RunSeed == expected.RunSeed && actual.Location == expected.Location, "message fields lost");
     Assert(!actual.ShouldBroadcast && actual.ShouldBuffer, "client relay/buffering flags wrong");
 });
+Check("four peers with two original characters register all native Trial slots for a single challenger", () =>
+{
+    using var host = new Peer(true, 11, fourPlayers: true);
+    using var challenger = new Peer(false, 22, fourPlayers: true);
+    using var originalA = new Peer(false, 33, fourPlayers: true);
+    using var originalB = new Peer(false, 44, fourPlayers: true);
+    challenger.ClickStart();
+    host.Choose(challenger.Sync.OutgoingChoices.Single().Owner);
+    var commit = host.Net.Sent.Single();
+    Assert(commit.RunSeed == Peer.Seed && commit.OwnerId == 22, "host did not commit the actual challenger and native seed");
+    foreach (Peer client in new[] { challenger, originalA, originalB })
+    {
+        client.Deliver(commit with { RunSeed = unchecked((uint)Peer.Seed) });
+        Assert(Entries(client) == 0, "truncated run seed accepted");
+        client.Deliver(commit);
+        client.Deliver(commit);
+    }
+    foreach (Peer peer in new[] { host, challenger, originalA, originalB })
+    {
+        var entry = ShinGetterEventInvasionService.Entries.Single(entry => peer.Players.Contains(entry.Owner));
+        Assert(entry.Slots.SequenceEqual(peer.Sync.Models) && entry.Slots.Count == 4, "missing or duplicate native ready slot");
+        Assert(entry.Owner.NetId == 22 && Pending(peer).SequenceEqual(new ulong[] { 22 }), "setup leaked beyond the accepted owner");
+    }
+});
+Check("Byrdonis Proceed shares the ready flow but rejects the Trial option key", () =>
+{
+    using var host = new Peer(true, 11, byrdonis: true);
+    using var client = new Peer(false, 22, byrdonis: true);
+    var real = host.Sync.Models[0].CurrentOptions[0];
+    var wrong = new EventOption(Peer.StartKey);
+    host.Sync.Models[0].CurrentOptions[0] = wrong;
+    Assert(!ShinGetterTrialCombatSync.TryRouteProceed(host.Sync, wrong, 0), "Trial choice admitted to Byrdonis event");
+    host.Sync.Models[0].CurrentOptions[0] = real;
+    host.ClickStart();
+    client.Deliver(host.Net.Sent.Single());
+    Consistent(host, client, 11);
+    Assert(ShinGetterEventInvasionService.Entries.All(entry => entry.Event is ByrdonisNest), "Byrdonis picked wrong event");
+});
+Check("inconsistent slot is rejected before any setup or native ready registration", () =>
+{
+    using var client = new Peer(false, 22);
+    client.Sync.Models[0] = new EventModel(client.Players[0]);
+    bool rejected = false;
+    try { client.Deliver(client.Commit(22)); }
+    catch (InvalidOperationException ex) when (ex.Message.Contains("inconsistent native player slot")) { rejected = true; }
+    Assert(rejected && Entries(client) == 0 && Pending(client).Length == 0, "invalid event slots caused a partial entry");
+});
 Console.WriteLine($"issue#283 CPU entry/controller regression: {passed} PASS; native transport/Harmony/history/reward cleanup/gameplay NOT_RUN");
 
 sealed class FakeNet(bool host) : INetClientGameService
@@ -308,6 +357,8 @@ sealed class FakeNet(bool host) : INetClientGameService
 sealed class Peer : IPlayerCollection, IDisposable
 {
     public const string StartKey = "SHIN_GETTER_EVENT_INVASION.TRIAL.pages.RYOMA.options.START_FIGHT";
+    public const string ByrdonisStartKey = "SHIN_GETTER_EVENT_INVASION.BYRDONIS_NEST.pages.RYOMA.options.START_FIGHT";
+    public const ulong Seed = 0x1_0000_007BUL;
     public RunState State { get; } = new() { RunLocation = new(1, 4, 6) };
     public IReadOnlyList<Player> Players { get; }
     public FakeNet Net { get; }
@@ -316,20 +367,26 @@ sealed class Peer : IPlayerCollection, IDisposable
     public List<ulong> History => Sync.History;
     public NEventRoom Room { get; }
     public List<ulong> Played { get; } = new();
-    public Peer(bool host, ulong localId, bool hostGetter = true, bool singleplayer = false)
+    public Peer(bool host, ulong localId, bool hostGetter = true, bool singleplayer = false,
+        bool fourPlayers = false, bool byrdonis = false)
     {
-        Players = singleplayer
-            ? new[] { new Player(11, State, hostGetter) }
-            : new[] { new Player(11, State, hostGetter), new Player(22, State, true) };
+        var players = new List<Player> { new(11, State, hostGetter) };
+        if (!singleplayer) players.Add(new(22, State, true));
+        if (fourPlayers) players.AddRange(new Player[] { new(33, State, false), new(44, State, false) });
+        Players = players;
         Net = new(host);
         Sync = new(this, localId);
+        EventModel canonical = byrdonis ? new ByrdonisNest(null) : new Trial(null);
         foreach (Player player in Players)
         {
-            var model = new Trial(player);
-            model.CurrentOptions.Add(new EventOption(StartKey, () => ShinGetterTrialCombatSync.Request(Sync, model)));
+            EventModel model = byrdonis
+                ? new ByrdonisNest(player) { CanonicalInstance = canonical }
+                : new Trial(player) { CanonicalInstance = canonical };
+            model.CurrentOptions.Add(new EventOption(byrdonis ? ByrdonisStartKey : StartKey,
+                () => ShinGetterTrialCombatSync.Request(Sync, model)));
             Sync.Models.Add(model);
         }
-        ProductionHook.Call("ShinGetterTrialSyncInitPatch", "Postfix", Sync, Buffer, Net, this, 123U);
+        ProductionHook.Call("ShinGetterTrialSyncInitPatch", "Postfix", Sync, Buffer, Net, this, Seed);
         ProductionHook.Call("ShinGetterTrialSyncBeginPatch", "Postfix", Sync, false);
         Room = new NEventRoom(Sync);
     }
@@ -349,7 +406,7 @@ sealed class Peer : IPlayerCollection, IDisposable
             if (ShinGetterEventInvasionService.Pending.Remove(player))
                 Played.Add(player.NetId);
     }
-    public ShinGetterTrialChallengeMessage Commit(ulong owner) => new() { OwnerId = owner, RunSeed = 123, Location = State.RunLocation };
+    public ShinGetterTrialChallengeMessage Commit(ulong owner) => new() { OwnerId = owner, RunSeed = Seed, Location = State.RunLocation };
     public void Deliver(ShinGetterTrialChallengeMessage message, ulong sender = 11) => Buffer.Deliver(message, sender);
     public void Dispose() => ProductionHook.Call("ShinGetterTrialSyncDisposePatch", "Postfix", Sync);
 }

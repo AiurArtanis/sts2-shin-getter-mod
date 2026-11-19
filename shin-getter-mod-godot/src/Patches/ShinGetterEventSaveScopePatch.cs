@@ -7,6 +7,7 @@ using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves;
@@ -31,8 +32,8 @@ internal static class ShinGetterEventReloadSavePatch
 
     private static MethodBase TargetMethod()
     {
-        MethodInfo setup = AccessTools.Method(typeof(RunManager), nameof(RunManager.SetUpSavedSinglePlayer))
-            ?? throw new MissingMethodException("RunManager.SetUpSavedSinglePlayer");
+        MethodInfo setup = AccessTools.Method(typeof(RunManager), nameof(RunManager.SetUpSavedSingleplayer))
+            ?? throw new MissingMethodException("RunManager.SetUpSavedSingleplayer");
         Type machine = setup.GetCustomAttribute<AsyncStateMachineAttribute>()?.StateMachineType
             ?? throw new MissingMemberException("Singleplayer setup async state machine");
         return AccessTools.Method(machine, "MoveNext");
@@ -60,16 +61,16 @@ internal static class ShinGetterEventReloadSavePatch
         }
     }
 
-    private static async Task SaveReloadCheckpoint(SaveManager manager, SerializableRun save, bool isMultiplayer,
+    private static async Task SaveReloadCheckpoint(SaveManager manager, SerializableRun save, NetGameType type, bool forceInTest,
         RunManager runManager, RunState state)
     {
-        if (isMultiplayer || !ReferenceEquals(runManager.DebugOnlyGetState(), state)
+        if (type != NetGameType.Singleplayer || !ReferenceEquals(runManager.DebugOnlyGetState(), state)
             || !ShinGetterEventInvasionService.OwnsFourthReloadCheckpoint(state, save))
         {
-            await manager.IncrementNumReloads(save, isMultiplayer);
+            await manager.IncrementNumReloads(save, type, forceInTest);
             return;
         }
         using var scope = ShinGetterEventMapSaveScope.InspectSnapshot(save);
-        await manager.IncrementNumReloads(save, isMultiplayer);
+        await manager.IncrementNumReloads(save, type, forceInTest);
     }
 }

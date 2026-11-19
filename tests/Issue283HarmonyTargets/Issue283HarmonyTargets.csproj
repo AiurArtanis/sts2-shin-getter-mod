@@ -11,9 +11,11 @@
     <PackageReference Include="GodotSharp" Version="4.5.1" />
     <Reference Include="sts2"><HintPath>$(Sts2ReferenceDir)/sts2.dll</HintPath></Reference>
     <Reference Include="0Harmony"><HintPath>$(Sts2ReferenceDir)/0Harmony.dll</HintPath></Reference>
+    <Reference Include="Sentry"><HintPath>$(Sts2ReferenceDir)/Sentry.dll</HintPath></Reference>
+    <Reference Include="Sentry.Godot"><HintPath>$(Sts2ReferenceDir)/Sentry.Godot.dll</HintPath></Reference>
     <Compile Include="../../shin-getter-mod-godot/src/Patches/ShinGetterTrialCombatSyncPatch.cs" Link="Production/Patches.cs" />
   </ItemGroup>
   <Target Name="CheckPinnedInputs" BeforeTargets="ResolveReferences">
-    <Error Condition="!Exists('$(Sts2ReferenceDir)/sts2.dll') Or !Exists('$(Sts2ReferenceDir)/0Harmony.dll')" Text="Supply -p:Sts2ReferenceDir with the read-only formal109 sts2.dll and actual 0Harmony.dll." />
+    <Error Condition="!Exists('$(Sts2ReferenceDir)/sts2.dll') Or !Exists('$(Sts2ReferenceDir)/0Harmony.dll') Or !Exists('$(Sts2ReferenceDir)/Sentry.dll') Or !Exists('$(Sts2ReferenceDir)/Sentry.Godot.dll')" Text="Supply -p:Sts2ReferenceDir with the read-only v0.111.1 game data directory." />
   </Target>
 </Project>

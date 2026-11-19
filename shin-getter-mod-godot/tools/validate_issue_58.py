@@ -112,7 +112,7 @@ def validate_service() -> None:
         "owner.Creature.MaxHp > 4",
         "HasAnyCard<SGC_Jammer, SGC_Insight>(owner)",
         "await LoseHp(owner, 6)",
-        "ModelDb.Encounter<ByrdonisElite>().ToMutable()",
+        "ModelDb.Encounter<ByrdonisElite>()",
         "using ByrdpipRelic = MegaCrit.Sts2.Core.Models.Relics.Byrdpip;",
         "CardFactory.CreateForReward(owner, 2, powerOptions)",
         "CardFactory.CreateForReward(owner, 2, zeroCostOptions)",
@@ -132,13 +132,13 @@ def validate_service() -> None:
         ".OrderBy(card => card.IsUpgraded)",
         "PendingBattleSetup.ByrdonisNest",
         "PendingBattleSetup.Trial",
-        "ReferenceEquals(combatState.Encounter, pending.Encounter)",
-        "PendingBattleSetups[owner] = (setup, encounter)",
-        "bool shouldResumeAfterCombat = false",
-        "shouldResumeAfterCombat: true",
+        "ReferenceEquals(combatState.Encounter?.CanonicalInstance, pending.Encounter)",
+        "PendingBattleSetups[owner] = (battle.Setup, battle.Encounter)",
+        "foreach (EventModel playerEvent in events)",
+        "battle.ShouldResume",
         "combatState.Encounter is not ByrdonisElite",
         "combatState.Encounter is not KnightsElite",
-        "ModelDb.Encounter<KnightsElite>().ToMutable()",
+        "ModelDb.Encounter<KnightsElite>()",
         "await CreatureCmd.Stun(byrdonis",
         "ReferenceEquals(combatCard.DeckVersion, deckCard)",
         "card.SetToFreeThisCombat()",
@@ -189,9 +189,7 @@ def validate_service() -> None:
         "owner.RunState.CreateCard<ByrdonisEgg>(owner)",
         "CardPileCmd.Add(byrdonisEgg, PileType.Deck)",
         "CardCmd.PreviewCardPileAdd",
-        "Array.Empty<Reward>()",
-        "PendingBattleSetup.ByrdonisNest",
-        "shouldResumeAfterCombat: true",
+        'BeginEventBattle(eventModel, "BYRDONIS_NEST", "RYOMA")',
     )
     for forbidden_reward in (
         "RelicReward",
@@ -208,8 +206,11 @@ def validate_service() -> None:
     begin_event_battle = method_body(service, "private static void BeginEventBattle")
     require(
         begin_event_battle,
-        "shouldResumeAfterCombat)",
+        "() => StartEventBattle(eventModel)",
     )
+    committed_battle = method_body(service, "internal static void StartCommittedEventBattle")
+    require(committed_battle, "PendingBattleSetup.ByrdonisNest, ModelDb.Encounter<ByrdonisElite>(), true",
+            "Array.Empty<Reward>()")
     start_event_battle = method_body(service, "private static void EnterEventCombat")
     require(
         start_event_battle,
@@ -226,6 +227,7 @@ def validate_service() -> None:
         "combatRoom.ParentEventId != eventModel.Id",
         "combatRoom.Encounter is not ByrdonisElite",
         "owner.Deck.Cards.Any(card => card is ByrdonisEgg)",
+        "EventChoices.Any(",
         'Finish(eventModel, PageKey("BYRDONIS_NEST", "RYOMA_HATCH"))',
         "await RelicCmd.Obtain<ByrdpipRelic>(owner)",
     )
@@ -327,7 +329,7 @@ def validate_service() -> None:
         "combatState.Encounter is not KnightsElite",
         "playerCombatState == null",
         "playerCombatState.TurnNumber != 1",
-        "ReferenceEquals(combatState.Encounter, pending.Encounter)",
+        "ReferenceEquals(combatState.Encounter?.CanonicalInstance, pending.Encounter)",
         "await CardCmd.AutoPlay(\n                choiceContext,",
     )
     if "ThrowingPlayerChoiceContext" in trial_after_draw:

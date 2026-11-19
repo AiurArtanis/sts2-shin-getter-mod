@@ -15,7 +15,7 @@ def change_contract(text):
                    "if (!CanContinueChangeAttack(cardPlay.Target)) break;",
                    "await Transform(choiceContext, Owner, this, playVoice: voicedForms.Add(nextVoiceForm));",
                    "if (!CanContinueChangeAttack(cardPlay.Target)) break;",
-                   "var attack = DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this)",
+                   "var attack = DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this, cardPlay)",
                    '.WithNoAttackerAnim().WithHitFx("vfx/vfx_attack_slash")',
                    "await NShinGetterStaticVisuals.PlayCompleteCreatureAttack(Owner.Creature,",
                    "() => CanContinueChangeAttack(cardPlay.Target)",

@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Entities.Rngs;
 using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
+using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Events;
@@ -23,7 +24,7 @@ using MegaCrit.Sts2.Core.Saves.Runs;
 using ShinGetterMod.Models.Characters;
 using ShinGetterMod.Models.Cards;
 
-// Offline CLR/native-109 contract checks. No SaveManager setup, file-save mutation,
+// Offline CLR/native 0.111.1 contract checks. No file-save mutation,
 // game process, Godot scene, map traversal, or claimed production Continue acceptance.
 var mod=typeof(ShinGetterMod.Entry).Assembly;
 if (args.Contains("--inspect-interaction-api"))
@@ -63,13 +64,18 @@ var decoded=Call(state,"Decode",legacy)!;
 string roundtrip=(string)Call(state,"Encode",decoded)!;
 Require(!roundtrip.Contains("RoomCheckpoint"),"legacy acquired a restore stamp");
 Require(roundtrip.Contains("unknown-old-visit")&&roundtrip.Contains("keep_old_key")&&roundtrip.Contains("keep_root_key"),"unknown old data was erased");
-foreach(string stamp in new[]{"{\"Version\":2,\"RngCounter\":3}","{\"Version\":1,\"RngCounter\":-1}","{\"Version\":1,\"RngCounter\":100001}","{\"RngCounter\":3}"}){
+foreach(string stamp in new[]{"{\"Version\":2,\"RngCounter\":3}","{\"Version\":1,\"RngCounter\":-1}","{\"Version\":1,\"RngCounter\":100001}","{\"RngCounter\":3}","{\"Version\":1,\"RngCounter\":3,\"RngState111\":[1,2,3]}","{\"Version\":1,\"RngCounter\":3,\"RngState111\":[0,0,0,0]}"}){
  var n=JsonNode.Parse(legacy)!;n["Visits"]!["unknown-old-visit"]!["RoomCheckpoint"]=JsonNode.Parse(stamp);
  Require(Rejected(()=>Call(state,"Decode",n.ToJsonString())),"unsupported/damaged restore stamp admitted");
 }
 Console.WriteLine("legacy absent-stamp / unknown old fields and visits / future or damaged stamp rejection PASS");
 
 var harmony=new Harmony("issue238.save-boundary.offline");
+// Keep native save and RNG implementations; replace only unhosted platform/logging calls.
+harmony.Patch(AccessTools.Method(typeof(PeerVersionInfo), nameof(PeerVersionInfo.LocalDefault)), prefix: new HarmonyMethod(typeof(OfflinePlatformFixture), nameof(OfflinePlatformFixture.LocalVersion)));
+harmony.Patch(AccessTools.Method(typeof(Godot.OS), nameof(Godot.OS.GetCmdlineArgs)), prefix: new HarmonyMethod(typeof(OfflinePlatformFixture), nameof(OfflinePlatformFixture.Args)));
+harmony.Patch(AccessTools.Method(typeof(Godot.OS), nameof(Godot.OS.HasFeature)), prefix: new HarmonyMethod(typeof(OfflinePlatformFixture), nameof(OfflinePlatformFixture.Feature)));
+harmony.Patch(AccessTools.Method(typeof(ConsoleLogPrinter), nameof(ConsoleLogPrinter.Print)), prefix: new HarmonyMethod(typeof(OfflinePlatformFixture), nameof(OfflinePlatformFixture.Print)));
 foreach(var t in mod.GetTypes().Where(t=>t.Name.StartsWith("ShinGetterEventState")&&t.GetCustomAttribute<HarmonyPatch>()!=null))new PatchClassProcessor(harmony,t).Patch();
 Call(state,"VerifyJsonMetadata");
 SerializablePlayer SavedPlayer()=>new(){NetId=1,CharacterId=new("CHARACTER","SHIN_GETTER"),CurrentHp=72,MaxHp=72,Gold=99,Rng=new(),Odds=new(),RelicGrabBag=new(),ExtraFields=new(),UnlockState=new()};
@@ -83,7 +89,7 @@ var clock=Fresh();clock.SaveTime+=200;clock.RunTime+=300;Require(Stable(clock)==
 foreach(var change in new Action<SerializableRun>[] {
  r=>r.PreFinishedRoom=null,r=>r.PreFinishedRoom!.IsPreFinished=false,r=>r.PreFinishedRoom!.EventId=new("EVENT","SAPPHIRE_SEED"),
  r=>r.MapPointHistory[0].Add(new()),r=>r.Acts[0].SerializableRooms.EventsVisited++,r=>r.Acts[0].SerializableRooms.EventIds.Reverse(),
- r=>r.EventsSeen.Add(new("EVENT","SAPPHIRE_SEED")),r=>r.VisitedMapCoords.Add(new(2,2)),r=>r.SerializableRng.Counters[RunRngType.UpFront]=1,
+ r=>r.EventsSeen.Add(new("EVENT","SAPPHIRE_SEED")),r=>r.VisitedMapCoords.Add(new(2,2)),r=>r.SerializableRng.Rngs[RunRngType.UpFront]=new Rng(19).ToSerializable(),
  r=>r.Players[0].Gold++,r=>Call(state,"SetWire",r.Players[0],legacy.Replace("\"Candidates\":[]","\"Candidates\":[\"HAYATO|CARD.ONE\"]"))
 }){var altered=Fresh();change(altered);Require(Stable(altered)!=fingerprint,"room/history/pool/RNG/player/journal mismatch hidden");}
 Console.WriteLine("actual native complete-run fingerprint: clock-only tolerance; 11 gameplay mutations detected PASS");
@@ -117,9 +123,23 @@ var data=Call(state,"Get",owner)!;
 var visits=(System.Collections.IDictionary)data.GetType().GetProperty("Visits")!.GetValue(data)!;
 var visitType=state.GetNestedType("Visit",BindingFlags.NonPublic)!;
 var cpType=state.GetNestedType("EnteredRoomCheckpoint",BindingFlags.NonPublic)!;
+static Rng FixtureRng(int draws) {
+ var rng=new Rng(123);
+ for(int i=0;i<draws;i++) {
+  if(i%3==0) rng.NextDouble();
+  else if(i%3==1) rng.NextUnsignedLong();
+  else rng.NextInt(7);
+ }
+ return rng;
+}
 object Visit(int? rng,string completed=""){
  var savedVisit=Activator.CreateInstance(visitType)!;Prop(savedVisit,visitType,"CompletedRoute",completed);
- if(rng.HasValue){var c=Activator.CreateInstance(cpType)!;Prop(c,cpType,"RngCounter",rng.Value);Prop(savedVisit,visitType,"RoomCheckpoint",c);}return savedVisit;
+ if(rng.HasValue){
+  var native=FixtureRng(rng.Value).ToSerializable();var c=Activator.CreateInstance(cpType)!;
+  Prop(c,cpType,"RngCounter",native.counter);Prop(c,cpType,"RngState111",new[]{native.state0,native.state1,native.state2,native.state3});
+  Prop(savedVisit,visitType,"RoomCheckpoint",c);
+ }
+ return savedVisit;
 }
 bool Gate()=> (bool)Call(service,"IsRestoringFourthRoom",run,checkpoint)!;
 visits[Key()]=Visit(null);Require(!Gate(),"old stamp absence relaxed native restrictions");
@@ -156,15 +176,19 @@ harmony.Patch(AccessTools.Method(typeof(LocString),nameof(LocString.GetIfExists)
 harmony.Patch(AccessTools.Method(typeof(LocString),nameof(LocString.GetFormattedText)),prefix:new HarmonyMethod(typeof(TooltipFixture),nameof(TooltipFixture.FormatPrefix)));
 var initial=AccessTools.Method(typeof(EventModel),"SetInitialEventState");
 EventModel Mutable<T>(string entry)where T:EventModel{
- var model=Model<T>(entry,true);Prop(model,typeof(EventModel),nameof(EventModel.Owner),owner);Prop(model,typeof(EventModel),nameof(EventModel.Rng),new Rng(123,2));return model;
+ var model=Model<T>(entry,true);Prop(model,typeof(EventModel),nameof(EventModel.Owner),owner);Prop(model,typeof(EventModel),nameof(EventModel.Rng),FixtureRng(2));return model;
 }
-var pending=Mutable<AromaOfChaos>("AROMA_OF_CHAOS");initial.Invoke(pending,new object[]{true});Require(!pending.IsFinished&&pending.CurrentOptions.Count>0&&pending.Rng.Counter==7,"pending stamped event not interactive or RNG not restored");
+var expectedRng=FixtureRng(7);
+var pending=Mutable<AromaOfChaos>("AROMA_OF_CHAOS");initial.Invoke(pending,new object[]{true});Require(!pending.IsFinished&&pending.CurrentOptions.Count>0&&pending.Rng.ToSerializable()==expectedRng.ToSerializable(),"pending stamped event not interactive or RNG not restored");
 bool wrongModelRejected=false;try{initial.Invoke(Mutable<SapphireSeed>("SAPPHIRE_SEED"),new object[]{true});}catch(TargetInvocationException ex)when(ex.InnerException is InvalidOperationException){wrongModelRejected=true;}
 Require(wrongModelRejected,"event model mismatch bypassed native prefinished guard");
 var cached=service.GetMethods(Static).Single(m=>m.Name=="CachedFourthChoices").MakeGenericMethod(typeof(CardModel));
 var offered=await (Task<List<CardModel>>)cached.Invoke(null,new object[]{pending,"HAYATO",cachedCards.Reverse()})!;
-Require(offered.Select(c=>c.Id).SequenceEqual(cachedCards.Select(c=>c.Id))&&pending.Rng.Counter==7,"persisted candidates rerolled/reordered or consumed event RNG");
-Require(pending.Rng.NextInt()==new Rng(123,7).NextInt(),"native RNG next result diverged");
+Require(offered.Select(c=>c.Id).SequenceEqual(cachedCards.Select(c=>c.Id))&&pending.Rng.ToSerializable()==expectedRng.ToSerializable(),"persisted candidates rerolled/reordered or consumed event RNG");
+for(int i=0;i<16;i++) Require(pending.Rng.NextUnsignedLong()==expectedRng.NextUnsignedLong()&&pending.Rng.NextInt(7)==expectedRng.NextInt(7)&&pending.Rng.NextDouble()==expectedRng.NextDouble(),"native mixed RNG continuation diverged");
+var oldVisit=Visit(7);Prop(visitType.GetProperty("RoomCheckpoint")!.GetValue(oldVisit)!,cpType,"RngState111",null);
+visits[Key()]=oldVisit;Require(Rejected(()=>Call(service,"RestoreFourthState",Mutable<AromaOfChaos>("AROMA_OF_CHAOS"),true)),"pre-0.111 counter-only checkpoint was treated as restorable");
+visits[Key()]=v;
 await Hook.AfterRoomEntered(run,checkpoint); // Actual patch must skip; fixture has no hook inventory.
 visits[Key()]=Visit(null);bool nativeRejected=false;try{initial.Invoke(Mutable<AromaOfChaos>("AROMA_OF_CHAOS"),new object[]{true});}catch(TargetInvocationException ex)when(ex.InnerException is InvalidOperationException){nativeRejected=true;}
 Require(nativeRejected,"old non-Ancient prefinished event bypassed native guard");
@@ -173,10 +197,10 @@ Console.WriteLine("actual Harmony/native initial state: pending interactive + RN
 var stoneCanonical=Model<StoneOfAllTime>("STONE_OF_ALL_TIME");var stoneRoom=new EventRoom(stoneCanonical);stoneRoom.MarkPreFinished();rooms[0]=stoneRoom;history[0][0].Rooms[0].ModelId=stoneCanonical.Id;
 string stoneKey=(string)Call(service,"FourthVisitKey",owner,stoneCanonical.Id)!;visits[stoneKey]=Visit(9,"BENKEI");
 var stone=Mutable<StoneOfAllTime>("STONE_OF_ALL_TIME");
-owner.CanRemovePotions=true;
+owner.CanUseOrRemovePotions=true;
 await (Task)AccessTools.Method(typeof(StoneOfAllTime),"BeforeEventStarted").Invoke(stone,new object[]{true})!;
-Require(!owner.CanRemovePotions,"native Stone initial side effect not established");
-initial.Invoke(stone,new object[]{true});Require(stone.IsFinished&&owner.CanRemovePotions&&stone.CurrentOptions.Count==0&&stone.Rng.Counter==9,"completed restore failed native cleanup/potion flag/RNG");
+Require(!owner.CanUseOrRemovePotions,"native Stone initial side effect not established");
+initial.Invoke(stone,new object[]{true});Require(stone.IsFinished&&owner.CanUseOrRemovePotions&&stone.CurrentOptions.Count==0&&stone.Rng.ToSerializable()==FixtureRng(9).ToSerializable(),"completed restore failed native cleanup/potion flag/RNG");
 Console.WriteLine("actual completed Stone: native BeforeEventStarted flag -> completed Finish/EnsureCleanup unlocks potions, no reward route replay PASS");
 
 var verify=verification.GetMethod("Verify",Static)!;
@@ -204,6 +228,14 @@ Console.WriteLine("ALL_SAVE_BOUNDARY_CLR_CONTRACTS_PASS; REAL_AUTO_SAVE_CONTINUE
 public class HostProxy:DispatchProxy
 {
  protected override object? Invoke(MethodInfo? method,object?[]? args)=>method?.Name=="get_Type"?NetGameType.Host:method?.ReturnType.IsValueType==true?Activator.CreateInstance(method.ReturnType):null;
+}
+
+public static class OfflinePlatformFixture
+{
+ public static bool LocalVersion(ref PeerVersionInfo __result) { __result = new() { version = "0.111.1" }; return false; }
+ public static bool Args(ref string[] __result) { __result = []; return false; }
+ public static bool Feature(ref bool __result) { __result = false; return false; }
+ public static bool Print(LogLevel logLevel, string text) { Console.WriteLine($"[{logLevel}] {text}"); return false; }
 }
 
 public static class TooltipFixture

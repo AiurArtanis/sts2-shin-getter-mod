@@ -8,7 +8,7 @@
 
 Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter 1's explosive offense, Shin Getter 2's high-speed tactics, and Shin Getter 3's iron defense; then awaken Shin Getter Dragon and let the Getter Rays consume the tower. This is a gameplay character mod built around transformations, deckbuilding, and presentation, not a simple reskin.
 
-> Current source `v1.3.0` (stable game `0.109`) · published 0.111 Beta build `v1.2.2-beta.111` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> Unreleased `v1.4.0` integration candidate for the stable `0.111.1` game build. Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
 [Stable downloads](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest) · [Published 0.111 Beta](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
@@ -17,7 +17,7 @@ Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter
 - **Stable 109:** use `shin-getter-mod-v1.2.2.zip`.
 - **Slay the Spire 2 0.111 Beta:** use `shin-getter-mod-v1.2.2.111-beta.zip`.
 - Stable: [v1.2.2 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2); 0.111 Beta: [v1.2.2 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2).
-- The v1.3.0 source additions target stable 109; download the version actually listed in Release assets. The currently published 111 Beta package remains v1.2.2 and does not include the v1.3.0 additions below.
+- The `v1.2.2` downloads above are historical. This branch targets stable `0.111.1`, not `0.109` or Beta. Check the actual Release assets for available packages.
 - Do not mix the stable and Beta four-file packages. After switching game branches, replace the DLL, PCK, JSON, and `mod_image.png` together, then restart the game.
 - Known external compatibility issue: old `BaseLib 3.3.7` fails its `CardPileCmd.Add` transpiler on 0.111 Beta and can freeze manual card play. Update BaseLib, or disable BaseLib and dependent mods in the Beta environment.
 
@@ -156,7 +156,7 @@ Once the Workshop edition is available, enable it as follows:
 
 ### Requirements
 
-- The stable *Slay the Spire 2* `0.107.0+` line; this source targets `0.109`. For `0.111.0` Beta, use its corresponding compatibility branch and published package instead of this stable source.
+- Build this branch against `sts2.dll` and `0Harmony.dll` from *Slay the Spire 2* stable `0.111.1`. Use the matching compatibility branch for Beta; do not mix assemblies.
 - Godot `4.5.1 Mono`
 - .NET SDK `9`
 - A local game project directory that Godot can load for validation

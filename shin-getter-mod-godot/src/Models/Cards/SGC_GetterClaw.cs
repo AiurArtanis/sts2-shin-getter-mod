@@ -29,7 +29,7 @@ public sealed class SGC_GetterClaw : ShinGetterCardBase
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
         int hitCount = HasForm(Owner, ShinGetterForm.Getter2) ? 2 : 1;
         await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue)
-            .FromCard(this)
+            .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target)
             .WithHitCount(hitCount)
             .AfterAttackerAnim(AccelerateFollowupAnimations(hitCount))

@@ -84,7 +84,7 @@ public sealed class SGC_StarSlash : ShinGetterCardBase
                 impactVfx = ShinGetterCombatVfx.PlayHeavyCleave(Owner.Creature, new[] { cardPlay.Target });
             }
             else await PlayLegacyAnimationToImpact(cardPlay.Target);
-            Task damage = DamageCmd.Attack(DynamicVars.Damage.BaseValue + stackedValue).FromCard(this)
+            Task damage = DamageCmd.Attack(DynamicVars.Damage.BaseValue + stackedValue).FromCard(this, cardPlay)
                 .WithNoAttackerAnim()
                 .Targeting(cardPlay.Target)
                 .WithHitFx("vfx/vfx_giant_horizontal_slash").Execute(choiceContext);

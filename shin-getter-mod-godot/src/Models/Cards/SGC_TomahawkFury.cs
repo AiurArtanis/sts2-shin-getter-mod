@@ -32,7 +32,7 @@ public sealed class SGC_TomahawkFury : ShinGetterCardBase
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, DynamicVars["VigorPower"].BaseValue, Owner.Creature, this);
-        var attack = await DamageCmd.Attack(DynamicVars.Damage.BaseValue).WithHitCount(2).FromCard(this)
+        var attack = await DamageCmd.Attack(DynamicVars.Damage.BaseValue).WithHitCount(2).FromCard(this, cardPlay)
             .TargetingAllOpponents(CombatState)
             .AfterAttackerAnim(AccelerateFollowupAnimations(2))
             .WithHitFx("vfx/vfx_giant_horizontal_slash").Execute(choiceContext);

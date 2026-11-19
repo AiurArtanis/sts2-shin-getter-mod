@@ -31,6 +31,8 @@ internal static class ShinGetterPlayerEventState
         public int Version { get; set; } = 1;
         [JsonRequired]
         public int RngCounter { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public ulong[]? RngState111 { get; set; }
         [JsonExtensionData]
         public Dictionary<string, JsonElement>? Extra { get; set; }
     }
@@ -129,7 +131,8 @@ internal static class ShinGetterPlayerEventState
         foreach (var pair in state.Visits)
             if (pair.Key.Length > 512 || pair.Value == null || pair.Value.Target == null
                 || pair.Value.CompletedRoute == null || pair.Value.CompletedRoute.Length > 64
-                || pair.Value.RoomCheckpoint is { } checkpoint && (checkpoint.Version != 1 || checkpoint.RngCounter is < 0 or > 100000)
+                || pair.Value.RoomCheckpoint is { } checkpoint && (checkpoint.Version != 1 || checkpoint.RngCounter is < 0 or > 100000
+                    || checkpoint.RngState111 is { } rng && (rng.Length != 4 || rng.All(word => word == 0)))
                 || pair.Value.Candidates == null || pair.Value.Candidates.Count > 3
                 || pair.Value.Candidates.Any(id => id == null || id.Length > 256))
                 throw new JsonException("Damaged event visit.");

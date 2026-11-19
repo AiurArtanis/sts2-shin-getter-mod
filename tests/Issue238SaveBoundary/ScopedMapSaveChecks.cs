@@ -6,6 +6,7 @@ using System.Text.Json.Serialization.Metadata;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Map;
+using MegaCrit.Sts2.Core.Random;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves;
@@ -108,7 +109,7 @@ internal static class ScopedMapSaveChecks
         Call(verifier, "Compare", expected, Snapshot(readback));
         readback.Acts[0].SavedMap!.BossPoint.CanBeModified = true;
         readback.Acts[0].SerializableRooms.EventsVisited++;
-        readback.SerializableRng.Counters[MegaCrit.Sts2.Core.Entities.Rngs.RunRngType.UpFront] = 17;
+        readback.SerializableRng.Rngs[MegaCrit.Sts2.Core.Entities.Rngs.RunRngType.UpFront] = new Rng(17).ToSerializable();
         readback.PreFinishedRoom!.IsPreFinished = false;
         var capture = new DiagnosticCapture();
         var sink = verifier.GetProperty("DiagnosticSink", Static)!;
@@ -158,7 +159,7 @@ internal static class ScopedMapSaveChecks
         Type peer = typeof(RunManager).Assembly.GetType("MegaCrit.Sts2.Core.Multiplayer.Game.PeerInput.PeerInputSynchronizer", true)!;
         harmony.Patch(peer.GetConstructors().Single(), prefix: new HarmonyMethod(typeof(StopAfterReload), nameof(StopAfterReload.PeerCtorPrefix)));
         harmony.Patch(AccessTools.Method(typeof(RunManager), "InitializeShared"), prefix: new HarmonyMethod(typeof(StopAfterReload), nameof(StopAfterReload.Prefix)));
-        MethodInfo setup = AccessTools.Method(typeof(RunManager), nameof(RunManager.SetUpSavedSinglePlayer));
+        MethodInfo setup = AccessTools.Method(typeof(RunManager), nameof(RunManager.SetUpSavedSingleplayer));
         foreach (bool stamped in new[] { true, false })
         {
             var current = Copy(save);

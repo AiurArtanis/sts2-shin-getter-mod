@@ -75,7 +75,7 @@ public sealed class SGC_SaintDragonRoar : ShinGetterCardBase
         NShinGetterStaticVisuals.TryPlayCreatureActionAnimation(Owner.Creature, "Cast");
         decimal totalDamage = DynamicVars.Damage.BaseValue
             + getterCards.Count * DynamicVars["BurnDamage"].BaseValue;
-        await DamageCmd.Attack(totalDamage).FromCard(this)
+        await DamageCmd.Attack(totalDamage).FromCard(this, cardPlay)
             .TargetingAllOpponents(combatState)
             .WithNoAttackerAnim()
             .BeforeDamage(() => ShinGetterCombatVfx.PlaySaintDragonRoarAtScreenCenter(Owner.Creature))

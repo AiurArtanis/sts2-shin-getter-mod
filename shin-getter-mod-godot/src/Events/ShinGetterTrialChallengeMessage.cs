@@ -9,7 +9,7 @@ namespace ShinGetterMod.Events;
 public struct ShinGetterTrialChallengeMessage : INetMessage, IRunLocationTargetedMessage
 {
     public ulong OwnerId;
-    public uint RunSeed;
+    public ulong RunSeed;
     public RunLocation Location { get; set; }
 
     public bool ShouldBroadcast => false;
@@ -20,14 +20,14 @@ public struct ShinGetterTrialChallengeMessage : INetMessage, IRunLocationTargete
     public void Serialize(PacketWriter writer)
     {
         writer.WriteULong(OwnerId);
-        writer.WriteUInt(RunSeed);
+        writer.WriteULong(RunSeed);
         writer.Write(Location);
     }
 
     public void Deserialize(PacketReader reader)
     {
         OwnerId = reader.ReadULong();
-        RunSeed = reader.ReadUInt();
+        RunSeed = reader.ReadULong();
         Location = reader.Read<RunLocation>();
     }
 }

@@ -24,7 +24,7 @@ public sealed class SGC_TripleCyclone : ShinGetterEventCardBase
     {
         if (CombatState == null) return;
         bool isDragon = Owner.Creature.GetPower<SGP_ShinForm>() != null;
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).WithHitCount(3).FromCard(this)
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).WithHitCount(3).FromCard(this, cardPlay)
             .TargetingAllOpponents(CombatState).AfterAttackerAnim(AccelerateFollowupAnimations(3))
             .Execute(choiceContext);
         for (int i = 0; i < 3; i++)

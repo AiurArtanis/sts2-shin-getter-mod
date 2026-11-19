@@ -1,7 +1,7 @@
 {
-  "native_sha256": "C2D3E15310259957BA312F9D2362CBA193512EBE9819456A062366E6AF38B9B0",
+  "native_sha256": "3FB1FA1BF0249087B706A5D0F062A60579E2F5B08DF4EE477DDD6F2607F654D5",
   "godot_sharp_version": "4.5.1",
-  "authority": "formal109 native classes / actual ModelDb.GetId(Type); identity only, not game-entry acceptance",
+  "authority": "formal 0.111.1 native classes / actual ModelDb.GetId(Type); identity only, not game-entry acceptance",
   "events": [
     {
       "type": "WhisperingHollow",

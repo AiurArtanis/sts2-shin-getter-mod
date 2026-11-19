@@ -73,7 +73,7 @@ def validate_mod() -> None:
     has(shift, "new() { CardTag.Strike }", "Shift must keep Strike tag")
     has(shift, "base(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)",
         "Shift cost/type/target must remain unchanged")
-    attack = ('DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this)'
+    attack = ('DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this, cardPlay)'
               '.Targeting(target).WithNoAttackerAnim().WithHitFx("vfx/vfx_attack_slash");')
     ordered(play, [
         'ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");',
@@ -120,7 +120,7 @@ def validate_mod() -> None:
         "|| dealer.IsDead || Owner.IsDead || !props.IsPoweredAttack() || Amount <= 0 "
         "|| props.HasFlag(CounterDamage)) return;", "Counter only handles live hostile powered damage")
     has(before, "await CreatureCmd.Damage(choiceContext, dealer, Amount, "
-        "ValueProp.Move | ValueProp.SkipHurtAnim | CounterDamage, Owner, null);",
+        "ValueProp.Move | ValueProp.SkipHurtAnim | CounterDamage, Owner, null, null);",
         "Counter keeps stack damage/dealer and adds only the source tag")
     require("DamageCmd.Attack" not in spirit and "ValueProp.Unpowered" not in spirit,
             "Counter must not consume Vigor or disable all powered modifiers")
@@ -196,8 +196,8 @@ def validate_original(root: Path) -> None:
                      "await Hook.AfterAttack(", "return this;"], "ORIGINAL results returned after hooks")
     cmd = read(core / "Commands/CreatureCmd.cs")
     damage = block(cmd, "public static async Task<IEnumerable<DamageResult>> Damage(PlayerChoiceContext "
-                   "choiceContext, IEnumerable<Creature> targets, decimal amount, ValueProp props, "
-                   "Creature? dealer, CardModel? cardSource)")
+                   "choiceContext, IEnumerable<Creature>? targets, decimal amount, ValueProp props, "
+                   "Creature? dealer, CardModel? cardSource, CardPlay? cardPlay)")
     ordered(damage, ["Hook.ModifyDamage(", "await Hook.BeforeDamageReceived(",
                     "creature.DamageBlockInternal(modifiedAmount, props)",
                     "HpLossHookPhase.BeforeOsty", "Hook.ModifyUnblockedDamageTarget(",
@@ -248,9 +248,9 @@ def validate_original(root: Path) -> None:
             f"ORIGINAL Unpowered also suppresses {name}; private tag must preserve it")
     hooks = read(core / "Hooks/Hook.cs")
     ordered(block(hooks, "private static decimal ModifyDamageInternal("),
-            ["item.ModifyDamageAdditive(target, num, props, dealer, cardSource)", "num += num2;",
-             "item2.ModifyDamageMultiplicative(target, num, props, dealer, cardSource)", "num *= num3;",
-             "item3.ModifyDamageCap(target, props, dealer, cardSource)"],
+            ["item.ModifyDamageAdditive(target, num, props, dealer, cardSource, cardPlay)", "num += num2;",
+             "item2.ModifyDamageMultiplicative(target, num, props, dealer, cardSource, cardPlay)", "num *= num3;",
+             "item3.ModifyDamageCap(target, props, dealer, cardSource, cardPlay)"],
             "ORIGINAL modifiers: remove only Vigor additive, preserve multiply/cap")
     has(block(hooks, "public static decimal ModifyHpLost("),
         "item4.ModifyHpLostAfterOstyLate(target, num, props, dealer, cardSource)",

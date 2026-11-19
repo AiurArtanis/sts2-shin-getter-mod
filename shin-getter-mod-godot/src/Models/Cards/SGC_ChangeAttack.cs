@@ -49,7 +49,7 @@ public sealed class SGC_ChangeAttack : ShinGetterCardBase
             if (!CanContinueChangeAttack(cardPlay.Target))
                 break;
 
-            var attack = DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this)
+            var attack = DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this, cardPlay)
                 .Targeting(cardPlay.Target).WithNoAttackerAnim().WithHitFx("vfx/vfx_attack_slash");
             await NShinGetterStaticVisuals.PlayCompleteCreatureAttack(Owner.Creature,
                 () => CanContinueChangeAttack(cardPlay.Target)

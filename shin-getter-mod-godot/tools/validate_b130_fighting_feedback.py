@@ -48,7 +48,7 @@ def counter_contract(text: str) -> None:
     ordered(before, ["if (data.IsCountering) return;", "data.CanceledAttacker = null;",
                      "data.CanceledCardSource = null;", "data.IsCountering = true;", "try",
                      "await CreatureCmd.Damage(choiceContext, dealer, Amount, "
-                     "ValueProp.Move | ValueProp.SkipHurtAnim | CounterDamage, Owner, null);",
+                     "ValueProp.Move | ValueProp.SkipHurtAnim | CounterDamage, Owner, null, null);",
                      "if (dealer.IsDead)", "data.CanceledAttacker = dealer;",
                      "data.CanceledProps = props;", "data.CanceledCardSource = cardSource;",
                      "finally", "data.IsCountering = false;"],
@@ -135,8 +135,8 @@ class FightingFeedbackTests(unittest.TestCase):
     def test_current_hit_not_precomputed_hp_loss(self) -> None:
         cmd = source(self.core / "Commands/CreatureCmd.cs")
         damage = block(cmd, "public static async Task<IEnumerable<DamageResult>> Damage(PlayerChoiceContext "
-                       "choiceContext, IEnumerable<Creature> targets, decimal amount, ValueProp props, "
-                       "Creature? dealer, CardModel? cardSource)")
+                       "choiceContext, IEnumerable<Creature>? targets, decimal amount, ValueProp props, "
+                       "Creature? dealer, CardModel? cardSource, CardPlay? cardPlay)")
         ordered(damage, ["if (dealer != null && dealer.IsDead)", "Hook.ModifyDamage(",
                          "await Hook.BeforeDamageReceived(", "creature.DamageBlockInternal(",
                          "HpLossHookPhase.BeforeOsty", "Hook.ModifyUnblockedDamageTarget(",

@@ -8,8 +8,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ShinGetterMod"><HintPath>$(ModOutput)/ShinGetterMod.dll</HintPath></Reference>
-    <Reference Include="sts2"><HintPath>$(ModOutput)/sts2.dll</HintPath></Reference>
-    <Reference Include="0Harmony"><HintPath>$(ModOutput)/0Harmony.dll</HintPath></Reference>
-    <Reference Include="GodotSharp"><HintPath>$(ModOutput)/GodotSharp.dll</HintPath></Reference>
+    <Reference Include="sts2"><HintPath>$(Sts2ReferenceDir)/sts2.dll</HintPath></Reference>
+    <Reference Include="0Harmony"><HintPath>$(Sts2ReferenceDir)/0Harmony.dll</HintPath></Reference>
+    <Reference Include="GodotSharp"><HintPath>$(Sts2ReferenceDir)/GodotSharp.dll</HintPath></Reference>
+    <Reference Include="Sentry"><HintPath>$(Sts2ReferenceDir)/Sentry.dll</HintPath></Reference>
+    <Reference Include="Sentry.Godot"><HintPath>$(Sts2ReferenceDir)/Sentry.Godot.dll</HintPath></Reference>
+    <Reference Include="System.IO.Hashing"><HintPath>$(Sts2ReferenceDir)/System.IO.Hashing.dll</HintPath></Reference>
   </ItemGroup>
 </Project>

@@ -39,7 +39,7 @@ public sealed class SGC_HurricaneStrike : ShinGetterCardBase
         await WaitForShinDragonSpecialEffect(1.0f);
         int targetCount = CombatState.HittableEnemies.Count;
         await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue)
-            .FromCard(this)
+            .FromCard(this, cardPlay)
             .TargetingAllOpponents(CombatState)
             .BeforeDamage(() => ShinGetterCombatVfx.PlayDaggerSpray(Owner.Creature, CombatState.HittableEnemies))
             .Execute(choiceContext);

@@ -54,14 +54,14 @@ public sealed class SGC_ShiningSpark : ShinGetterCardBase
 				await PlayShiningSparkFallback(cardPlay.Target);
 
 			Task impactVisual = sequence?.PlayImpact() ?? Task.CompletedTask;
-			Task initialHit = DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
+			Task initialHit = DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this, cardPlay).Targeting(cardPlay.Target)
 				.WithNoAttackerAnim()
 				.WithHitFx("vfx/vfx_starry_impact").Execute(choiceContext);
 			await Task.WhenAll(impactVisual, initialHit);
 			int ki = Owner.Creature.GetPower<SGP_Ki>()?.Amount ?? 0;
 			if (ki > 0 && Owner.Creature.CombatState is { } combatState)
 			{
-				var followup = DamageCmd.Attack(DynamicVars["KiDamage"].BaseValue).WithHitCount(ki).FromCard(this)
+				var followup = DamageCmd.Attack(DynamicVars["KiDamage"].BaseValue).WithHitCount(ki).FromCard(this, cardPlay)
 					.TargetingRandomOpponents(combatState);
 				if (sequence != null)
 					followup.WithNoAttackerAnim();

@@ -62,7 +62,7 @@ internal static class ShinGetterAnnotationsCardChoice
         EnsureLive();
         var synchronizer = manager.PlayerChoiceSynchronizer;
         uint choiceId = synchronizer.ReserveChoiceId(owner);
-        await context.SignalPlayerChoiceBegun(PlayerChoiceOptions.CancelPlayCardActions);
+        await context.SignalPlayerChoiceBegun(owner, PlayerChoiceOptions.CancelPlayCardActions);
         // Hook contexts create their action in SignalPlayerChoiceBegun.
         if (context is HookPlayerChoiceContext hookContext) action = hookContext.GameAction;
         EnsureLive();

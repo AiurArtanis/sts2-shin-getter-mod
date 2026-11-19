@@ -58,7 +58,7 @@ def validate_sources(sources: dict[str, str]) -> None:
     require(roar, "new DamageVar(20m, ValueProp.Move)", 'new IntVar("BurnDamage", 5m)',
             "DynamicVars.Damage.UpgradeValueBy(8m)", 'DynamicVars["BurnDamage"].UpgradeValueBy(3m)',
             "PileType.Draw", "PileType.Hand", "PileType.Discard", "card != this",
-            "DamageCmd.Attack(totalDamage).FromCard(this)")
+            "DamageCmd.Attack(totalDamage).FromCard(this, cardPlay)")
     compact_roar = re.sub(r"\s+", "", roar)
     require(compact_roar, 'decimal totalDamage = DynamicVars.Damage.BaseValue'.replace(" ", "")
             + '+getterCards.Count*DynamicVars["BurnDamage"].BaseValue;')

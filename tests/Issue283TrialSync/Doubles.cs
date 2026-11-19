@@ -112,7 +112,7 @@ namespace MegaCrit.Sts2.Core.Multiplayer.Game
         public List<EventModel> Models { get; } = new();
         public IReadOnlyList<EventModel> Events => Models;
         public EventModel GetLocalEvent() => GetEventForPlayer(players.GetPlayer(localId)!);
-        public EventModel GetEventForPlayer(Player player) => Models.Single(model => ReferenceEquals(model.Owner, player));
+        public EventModel GetEventForPlayer(Player player) => Models[Array.IndexOf(players.Players.ToArray(), player)];
         public List<ulong> History { get; } = new();
         public List<(ulong Owner, int Index)> OutgoingChoices { get; } = new();
         public void BeginEvent() { }
@@ -143,6 +143,7 @@ namespace MegaCrit.Sts2.Core.Multiplayer.Game
 namespace MegaCrit.Sts2.Core.Runs
 {
     public readonly record struct RunLocation(int Act, int Floor, int Room);
+    public interface IRunState { }
     public sealed class RunState { public RunLocation RunLocation { get; set; } }
     public sealed class RunManager
     {
@@ -177,10 +178,15 @@ namespace MegaCrit.Sts2.Core.Models
     public class EventModel(Player? owner)
     {
         public Player? Owner { get; set; } = owner;
+        public EventModel CanonicalInstance { get; init; } = null!;
         public List<EventOption> CurrentOptions { get; } = new();
     }
 }
-namespace MegaCrit.Sts2.Core.Models.Events { public sealed class Trial(Player? owner) : EventModel(owner) { } }
+namespace MegaCrit.Sts2.Core.Models.Events
+{
+    public sealed class Trial(Player? owner) : EventModel(owner) { }
+    public sealed class ByrdonisNest(Player? owner) : EventModel(owner) { }
+}
 namespace MegaCrit.Sts2.Core.Events
 {
     public sealed class EventOption(string textKey, Action? onChosen = null, bool isProceed = true)
@@ -235,19 +241,19 @@ namespace ShinGetterMod.Events
     internal static class ShinGetterEventInvasionService
     {
         public static readonly Dictionary<Player, int> Pending = new();
-        public static readonly List<(EventModel Event, Player Owner)> Entries = new();
+        public static readonly List<(EventModel Event, IReadOnlyList<EventModel> Slots, Player Owner)> Entries = new();
         public static bool FailEntry;
-        public static void StartCommittedTrialBattle(EventModel localEvent, Player owner)
+        public static void StartCommittedEventBattle(EventModel localEvent, IReadOnlyList<EventModel> events, Player owner)
         {
             Pending.Add(owner, 1);
-            Entries.Add((localEvent, owner));
+            Entries.Add((localEvent, events, owner));
             if (FailEntry)
             {
                 Pending.Remove(owner);
                 throw new InvalidOperationException("simulated synchronous native entry failure");
             }
         }
-        public static void ClearPendingTrialSetup(IEnumerable<Player> players)
+        public static void ClearPendingEventBattleSetup(IEnumerable<Player> players)
         {
             foreach (Player player in players)
                 Pending.Remove(player);

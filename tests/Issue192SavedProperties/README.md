@@ -1,45 +1,39 @@
-# issue#192: native 109 saved-property component regression
+# issue#192: native saved-property component regression
 
-Build the isolated production project against the official 109 `sts2.dll` and
-its normal Harmony dependency, then run this console test against that output:
+Build the isolated production project against the official stable `0.111.1`
+`sts2.dll` and Harmony dependency, then run this console test against that output:
 
 ```powershell
 dotnet build shin-getter-mod-godot/ShinGetterMod.csproj --nologo -v:q
-dotnet build tests/Issue192SavedProperties --nologo -v:q
-dotnet tests/Issue192SavedProperties/bin/Debug/net9.0/Issue192SavedProperties.dll standalone
-dotnet tests/Issue192SavedProperties/bin/Debug/net9.0/Issue192SavedProperties.dll pre-registered
-dotnet tests/Issue192SavedProperties/bin/Debug/net9.0/Issue192SavedProperties.dll post-registered
+dotnet run --project tests/Issue192SavedProperties/Issue192SavedProperties.csproj "-p:ModOutput=$modOutput" "-p:Sts2ReferenceDir=$gameAssemblies"
 python shin-getter-mod-godot/tools/validate_issue_192.py
 ```
 
-`ModOutput` can override the test project's reference directory. Do not point
+`$modOutput` is the isolated directory containing `ShinGetterMod.dll`;
+`$gameAssemblies` is the matching official game assembly directory. Do not point
 build output at a shared deployment or frozen acceptance runtime.
 
-The test uses the actual product assembly, 109 cache, `SavedProperties.From`,
-JSON serialization/restoration, packet writer/reader, and Harmony startup hook.
-It starts no game, broker, or test bridge. Model fixtures supply component input;
-the test does not create or edit a run save. A passing result does not establish
-native `SaveRun`, new-process loading, merchant transactions, or event navigation.
+The test uses the actual product assembly, the native `SavedPropertiesTypeCache`
+pipeline, `SavedProperties.From`, JSON restoration and packet encoding/decoding.
+The stable API now registers properties through the native pipeline; the old
+109 mod postfix is not installed. The console fixture stubs Godot environment
+queries and output, starts no game, and does not create or edit a run save.
 
 Coverage:
 
 - Every concrete product `AbstractModel`, including inherited saved properties.
-- Native attribute/property ordering, existing IDs, repeated initialization.
+- Native registration, inherited properties, deterministic cache hash in reverse model order.
 - A relic without its own saved attributes retains `IsWax`/`IsMelted` coverage.
 - Empty and nonempty Good Citizen purchase history; independent restored lists.
 - Non-voice positive save controls alongside nonzero local voice history.
 - Shared evolution, card progress, and disabled event invasion persistence.
-- Actual `SavedProperties` packet round trip and property ID field width.
-- Pre-registered native cache entries and a width boundary (66 names, 7 bits).
-- Later repeated registration in reverse model order preserves assigned IDs.
+- Actual `SavedProperties` packet round trip.
 
-The coexistence modes simulate BaseLib's calls to the native registration API;
-they are not a claim of full integration with a running BaseLib installation.
-The production postfix runs after BaseLib's `ModelDb.InitIds` prefix, leaves
-existing property IDs untouched, and recalculates width using the complete map.
-Different peers must still use the same game/mod configuration.
+This does not verify BaseLib coexistence, native `SaveRun`, a new process loading
+the save, merchant transactions, or event navigation. Different peers must use
+the same game/mod configuration.
 
-Recorded development results (2026-09-07):
+Historical 109 development results (2026-09-07, old implementation):
 
 - Baseline `bcd321a7`: the component test fails with
   `cache missing: SGC_InfiniteEvolution`; the expanded static check fails with

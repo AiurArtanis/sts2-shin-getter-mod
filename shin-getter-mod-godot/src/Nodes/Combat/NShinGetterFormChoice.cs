@@ -48,7 +48,7 @@ internal static class NShinGetterFormChoice
 
         var synchronizer = RunManager.Instance.PlayerChoiceSynchronizer;
         uint choiceId = synchronizer.ReserveChoiceId(player);
-        await choiceContext.SignalPlayerChoiceBegun(PlayerChoiceOptions.None);
+        await choiceContext.SignalPlayerChoiceBegun(player, PlayerChoiceOptions.None);
         try
         {
             if (!ShouldSelectLocalForm(player))
