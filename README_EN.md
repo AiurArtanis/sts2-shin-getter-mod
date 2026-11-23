@@ -10,12 +10,13 @@ Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter
 
 > Adaptation source `v1.4.0-beta.113` (game `0.113.0`, not released) · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
-[Published releases](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest) · [113 adaptation: issue#287](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues/287) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+[v1.4.0 stable prerelease](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.4.0) · [113 adaptation: issue#287](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues/287) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
 ## 🧪 Maintained Beta target
 
 - **Current maintenance target: 0.113 Beta.** This branch is being adapted and validated; no 113 package has been released. Track issue#287. A successful build alone does not establish runtime compatibility.
 - Since 2026-11-13, 111-beta is historical only, with no new development, validation or releases. Existing branches and evidence are retained.
+- The [v1.4.0 stable prerelease](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.4.0) contains only the package for game version `0.111.1` (stable), not 113 Beta.
 - Historical stable-109 `shin-getter-mod-v1.3.0.zip` and 111-Beta `shin-getter-mod-v1.3.0-beta.111.zip` are available in the [v1.3.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.3.0). They are not 113-compatible packages.
 - Do not mix the stable and Beta four-file packages. After switching game branches, replace the DLL, PCK, JSON, and `mod_image.png` together, then restart the game.
 - Known external compatibility issue: old `BaseLib 3.3.7` fails its `CardPileCmd.Add` transpiler on 0.111 Beta and can freeze manual card play. Update BaseLib, or disable BaseLib and dependent mods in the Beta environment.
@@ -38,11 +39,11 @@ Ki supports several high-impact effects. Evolution and Radiation create addition
 
 ## 📦 What's included
 
-The content currently registered in the `v1.3.0` source includes:
+Version `v1.4.0-beta.113` includes:
 
-- **77 cards** spanning four forms and several core mechanics
-- **13 relics**, **6 potions**, and **2 enchantments**
-- Multiple **event invasions**, **1 exclusive event**, and dedicated Ancient dialogue
+- **82 cards** (including event and generated cards) spanning four forms and several core mechanics
+- **16 relics**, **7 potions**, and **2 enchantments**
+- **Event Invasions**, **1 exclusive event**, and dedicated Ancient dialogue; the fourth wave adds 20 Shin Getter routes across 15 base-game events
 - Simplified Chinese, English, and Japanese localization
 - A complete character mod loaded through DLL, PCK, and JSON artifacts
 
@@ -51,6 +52,29 @@ The content currently registered in the `v1.3.0` source includes:
 In a standard single-player Shin Getter run, complete the shared first meeting, then choose separate conversations with Ryoma, Hayato or Benkei. Their stories progress independently and relationships persist across runs. Reloading the same room restores the current conversation. Familiar themes unlock as bonds develop, with dedicated Neow and Architect dialogue and story callbacks.
 
 These stories do not replace the original event's combat, rewards or scoring. The `sgd` console command inspects and constructs bond progress; changing progress is a debugging operation.
+
+## v1.4.0-beta.113
+
+Targets game 0.113 Beta (minimum 0.113.0). Do not mix these files with the stable package.
+
+### Gameplay
+
+- Added the fourth wave of Event Invasions: 20 Shin Getter routes across 15 base-game events, with new event cards, relics, and a potion. Rewrote parts of existing invasion routes.
+- Added a cheat command. Enter this phrase in the console: Now is not the time to worry about the laws of physics
+
+### Bug Fixes
+
+- Fixed a mixed-character multiplayer stall when challenging the three knights on Shin Getter's route in The Trial, and fixed combat-start synchronization on Shin Getter's route in Byrdonis Nest.
+- Buying the Good Citizen Card still costs gold and no longer uses up that act's free purchase.
+- Fixed some eligible Shin Getter skills that directly grant Block not gaining Nimble when acquired after Fresnel Lens.
+
+### QoL / Balance
+
+- Sped up Change Attack's transformation sequence. Spirit Commands now show the Ki icon and required amount alongside their existing card type.
+- Added “Fragment of the Emperor” as a selectable BGM track. The merchant now greets Good Citizen Card holders based on whether that act's free purchase is still available and reacts differently when it is used.
+- Chosen One grants less Block per transformation. Ki gain is unchanged.
+- Reworked Spare Musashi Clone into Musashi's Hat.
+- Saint Dragon Roar now has Eternal and deals more base damage. The copy obtained from Getter Mandala no longer comes with Corrupted.
 
 ## v1.3.0 2026-10-12
 

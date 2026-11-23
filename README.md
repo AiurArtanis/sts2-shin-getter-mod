@@ -10,12 +10,13 @@
 
 > 当前适配源码 `v1.4.0-beta.113`（游戏 `0.113.0`，尚未发布）· Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
-[已发布版本](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest) · [113适配进度：issue#287](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues/287) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+[v1.4.0 正式预发布](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.4.0) · [113适配进度：issue#287](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues/287) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
 ## 🧪 Beta维护目标
 
 - **当前维护目标：0.113 Beta。** 本支线正在适配验证，尚无113发布包；进度见issue#287，不把编译通过等同运行兼容通过。
 - 自2026-11-13起，111-beta仅保留历史，不再追加开发、验证或发布，不删除旧分支和证据。
+- [v1.4.0 正式预发布](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.4.0)只含游戏正式 `0.111.1` 的包，不包含 113 Beta。
 - 已发布的历史正式109包 `shin-getter-mod-v1.3.0.zip` 与111 Beta包 `shin-getter-mod-v1.3.0-beta.111.zip` 均在[v1.3.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.3.0)；它们不是113兼容包。
 - 正式版与 Beta 版四件套不能混用。切换游戏分支后，请完整覆盖 DLL、PCK、JSON 与 `mod_image.png`，然后重启游戏。
 - 已知外部兼容问题：旧版 `BaseLib 3.3.7` 在 0.111 Beta 中会因 `CardPileCmd.Add` transpiler 失败导致出牌卡住。请更新 BaseLib，或在 Beta 环境中禁用 BaseLib 及依赖它的模组。
@@ -38,11 +39,11 @@
 
 ## 📦 内容一览
 
-`v1.3.0` 当前源码注册内容包括：
+`v1.4.0-beta.113` 收录：
 
-- **77 张卡牌**，覆盖四种形态与多套核心机制
-- **13 个遗物**、**6 瓶药水**、**2 个附魔**
-- 多项**事件入侵**内容、**1 个专属事件**与专属先古对话
+- **82 张卡牌**（含事件与衍生卡），覆盖四种形态与多套核心机制
+- **16 个遗物**、**7 瓶药水**、**2 个附魔**
+- **事件入侵**、**1 个专属事件**与专属先古对话；第四批在 15 个原版事件中加入 20 条专属路线
 - 中、英、日三语本地化
 - DLL、PCK 与 JSON 组合加载的完整角色 Mod
 
@@ -51,6 +52,29 @@
 在普通真盖塔单人局中，先与先古之民完成共同初见，再分别选择龙马、隼人或弁庆交流。三人的故事各自递进，关系进度会跨局保留；同房读档会恢复本次交谈。完成羁绊后还会出现熟人主题，涅奥和建筑师也有专属对白与前情回响。
 
 这些故事不替换原事件的战斗、奖励或评分。`sgd`控制台指令用于查看和构造羁绊进度；修改进度属于调试操作。
+
+## v1.4.0-beta.113
+
+面向游戏 0.113 Beta（最低 0.113.0）；不能与正式版四件套混用。
+
+### 玩法
+
+- 新增第四批事件入侵：在 15 个原版事件中加入 20 条真盖塔专属路线，新增事件卡牌、遗物和药水，并改写部分既有入侵分支的剧情。
+- 新增作弊指令，控制台输入：现在可不是计较物理法则的时候
+
+### BUG修复
+
+- 修复混合角色联机在「审判」的真盖塔路线挑战三骑士时卡住的问题，并修正「多尼斯异鸟巢」真盖塔路线的开战同步。
+- 购买良好市民证仍需付费，但不再消耗本幕的零元购资格。
+- 修复获得菲涅耳透镜后，部分新获得、符合条件且直接提供格挡的真盖塔技能牌没有获得「灵巧」附魔的问题。
+
+### QoL / 平衡性
+
+- 加快「变形攻击」的连段演出；精神指令牌在原有类型栏中显示气力图标和所需数值。
+- 新增可选 BGM《皇帝的碎片》；持有良好市民证时，商人会根据本幕免费资格是否已用改变招呼，零元购成交也有专属反应。
+- 「天选之子」每次变形获得的格挡降低；气力不变。
+- 「备用武藏克隆」重做为「武藏的帽子」
+- 「圣龙咆哮」新增「永恒」，基础伤害提高；盖塔曼陀罗奖励的这张牌不再自带「腐化」。
 
 ## v1.3.0 2026-10-12
 
