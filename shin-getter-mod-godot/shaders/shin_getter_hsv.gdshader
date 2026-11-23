@@ -34,8 +34,10 @@ void fragment() {
 		vec3(0.0, 0.0, s)) * col.rgb;
 	col.rgb *= v;
 	col.rgb = inverse(rgb_to_yiq) * col.rgb;
-	float edge_distance = min(min(UV.x, 1.0 - UV.x), min(UV.y, 1.0 - UV.y));
-	float edge_mask = 1.0 - smoothstep(0.050, 0.115, edge_distance);
+	// UV addresses the atlas; measure the outline within the drawn frame instead.
+	vec2 frame_uv = (UV - REGION_RECT.xy) / max(abs(REGION_RECT.zw), vec2(0.00001));
+	float edge_distance = min(min(frame_uv.x, 1.0 - frame_uv.x), min(frame_uv.y, 1.0 - frame_uv.y));
+	float edge_mask = 1.0 - smoothstep(0.050, 0.070, edge_distance);
 	col.rgb = mix(col.rgb, border_color.rgb, edge_mask * border_tint_strength);
 	COLOR = col * modulate_color;
 }
