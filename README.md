@@ -8,17 +8,16 @@
 
 让真盖塔穿越时空登上高塔。切换一号机的爆发、二号机的高速战术与三号机的钢铁防线，最终唤醒真盖塔龙，用盖塔射线吞没高塔。这里不是换一张角色皮肤，而是一套围绕变形、卡组与演出共同运转的玩法型角色 Mod。
 
-> 当前源码为 `v1.4.0` 集成线的正式 `0.111.1` 兼容候选，尚未发布。Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> 真盖塔模组 `v1.4.0` · 游戏正式版 `0.111.1` · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
-[正式版下载](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest) · [已发布0.111 Beta](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+[正式版下载](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/latest) · [历史版本](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.3.0) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
-## 🧪 0.111 Beta 适配
+## 版本与下载
 
-- **正式109：**使用 `shin-getter-mod-v1.2.2.zip`。
-- **Slay the Spire 2 0.111 Beta：**使用 `shin-getter-mod-v1.2.2.111-beta.zip`。
-- 正式版：[v1.2.2 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2)；0.111 Beta：[v1.2.2 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.2.2)。
-- 上面列出的是历史 `v1.2.2` 下载。本分支针对正式 `0.111.1`，不适用于旧版 `0.109` 或 Beta；可下载版本以 Release 实际资产为准。
-- 正式版与 Beta 版四件套不能混用。切换游戏分支后，请完整覆盖 DLL、PCK、JSON 与 `mod_image.png`，然后重启游戏。
+- 游戏正式 `0.111.1`：使用 `shin-getter-mod-v1.4.0.zip`。本次不提供 113 Beta 包。
+- 游戏正式 `0.109`：[历史正式包 v1.3.0](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.3.0/shin-getter-mod-v1.3.0.zip)。
+- 游戏 `0.111 Beta`：[历史 111 Beta 包 v1.3.0](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.3.0/shin-getter-mod-v1.3.0-beta.111.zip)。
+- 切换游戏版本时，完整替换 DLL、PCK、JSON 和 `mod_image.png`，再重启游戏；不要混用不同版本的文件。
 - 已知外部兼容问题：旧版 `BaseLib 3.3.7` 在 0.111 Beta 中会因 `CardPileCmd.Add` transpiler 失败导致出牌卡住。请更新 BaseLib，或在 Beta 环境中禁用 BaseLib 及依赖它的模组。
 
 ## ⚡ 战斗核心
@@ -39,11 +38,11 @@
 
 ## 📦 内容一览
 
-`v1.3.0` 当前源码注册内容包括：
+`v1.4.0` 收录：
 
-- **77 张卡牌**，覆盖四种形态与多套核心机制
-- **13 个遗物**、**6 瓶药水**、**2 个附魔**
-- 多项**事件入侵**内容、**1 个专属事件**与专属先古对话
+- **82 张卡牌**（含事件与衍生卡），覆盖四种形态与多套核心机制
+- **16 个遗物**、**7 瓶药水**、**2 个附魔**
+- **事件入侵**、**1 个专属事件**与专属先古对话；第四批在 15 个原版事件中加入 20 条专属路线
 - 中、英、日三语本地化
 - DLL、PCK 与 JSON 组合加载的完整角色 Mod
 
@@ -52,6 +51,29 @@
 在普通真盖塔单人局中，先与先古之民完成共同初见，再分别选择龙马、隼人或弁庆交流。三人的故事各自递进，关系进度会跨局保留；同房读档会恢复本次交谈。完成羁绊后还会出现熟人主题，涅奥和建筑师也有专属对白与前情回响。
 
 这些故事不替换原事件的战斗、奖励或评分。`sgd`控制台指令用于查看和构造羁绊进度；修改进度属于调试操作。
+
+## v1.4.0
+
+适配游戏正式版 0.111.1。
+
+### 玩法
+
+- 新增第四批事件入侵：在 15 个原版事件中加入 20 条真盖塔专属路线，新增事件卡牌、遗物和药水，并改写部分既有入侵分支的剧情。
+- 新增作弊指令，控制台输入：现在可不是计较物理法则的时候
+
+### BUG修复
+
+- 修复混合角色联机在「审判」的真盖塔路线挑战三骑士时卡住的问题，并修正「多尼斯异鸟巢」真盖塔路线的开战同步。
+- 购买良好市民证仍需付费，但不再消耗本幕的零元购资格。
+- 修复获得菲涅耳透镜后，部分新获得、符合条件且直接提供格挡的真盖塔技能牌没有获得「灵巧」附魔的问题。
+
+### QoL / 平衡性
+
+- 加快「变形攻击」的连段演出；精神指令牌在原有类型栏中显示气力图标和所需数值。
+- 新增可选 BGM《皇帝的碎片》；持有良好市民证时，商人会根据本幕免费资格是否已用改变招呼，零元购成交也有专属反应。
+- 「天选之子」每次变形获得的格挡降低；气力不变。
+- 「备用武藏克隆」重做为「武藏的帽子」
+- 「圣龙咆哮」新增「永恒」，基础伤害提高；盖塔曼陀罗奖励的这张牌不再自带「腐化」。
 
 ## v1.3.0 2026-10-12
 
