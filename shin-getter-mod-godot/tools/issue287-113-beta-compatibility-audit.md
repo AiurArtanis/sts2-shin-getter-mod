@@ -140,3 +140,35 @@ rendered pixels, a native Blitz run, or release acceptance.
 The new compatibility audit resolves both Blitz Harmony callbacks, the
 `_bgContainer` field and the relic's virtual slot against the official DLL.
 The prior frozen binding snapshot is not reused as the candidate fingerprint.
+
+## 0.113.0 to 0.113.1 Incremental Review
+
+Reviewed the 19 changed native source files from the UI/Blitz candidate
+`6e6e51c2`. The only product change is the fallback animation for native skill
+cards played by Getter: a skill that gains Block solely through its enchantment
+now uses `Block` rather than `Cast`. The mod binds the new virtual getter once if
+present; on 0.113.0, which does not expose it, the old animation rule still applies.
+Attack, power, mod-card and non-Getter animation paths are unchanged.
+
+| Native delta | Mod intersection and disposition |
+| --- | --- |
+| Enchantment Block, Adroit and Stretch | Adaptation and Devolution do not grant Block, so neither overrides the capability. Annotations still uses Nimble's native requirement that the card itself grants Block. No power or enchantment rules were changed. |
+| Show Off upgrade | Removes the native no-op Aim upgrade; no mod hook or text override for this card. |
+| Potion/Boss tooltip positioning and Dread tooltip | Native placement uses `SetAlignmentBelow`. The mod does not use the removed `Center` value; its separate card-hover and config paths keep their existing bindings. |
+| Card library | The mod registers its own pool and uses the native filter. It does not override the new in-run default for multiplayer-only cards. |
+| Bestiary and arrow slots | No mod hook targets the affected monsters, animation callbacks or slots. The existing MonsterModel death-sound postfix only affects Snapping Jaxfruit. |
+| Cloud and run history | Bond history uses native `GetAllRunHistoryNames()` and benefits from the `.run` filter. Its own journal is local. Event checkpoints still use the native save entry point; neither recovery suffix is used by those checkpoints. |
+| Resources, project and dependencies | The 84 logical resource changes had no direct mod path reference/overlap; no changed native key was shadowed in the seven matching localization tables. Only a local Sentry props import was removed from the reconstructed project; package lock, Godot project and all 33 official assembly references match. |
+
+The 22 affected existing member signatures match across the two official DLLs.
+The new getter and the native Stretch classifier are present only on 0.113.1.
+The 0.113.1 build is clean. The probe reproduced `Acrobatics + Adroit` selecting
+`Cast` before the fix; the fixed DLL passed all eight cases on each official
+version, including the optional-getter fallback. Reproduce without a game:
+
+```powershell
+pwsh -NoProfile -File ./shin-getter-mod-godot/tools/probe_issue287_enchantment_block.ps1 -GameAssemblies $gameAssemblies -ModDll $modDll
+```
+
+No previous UI/Blitz checks were rerun. This delta did not change the PCK,
+manifest, release state or existing pending gameplay acceptance.

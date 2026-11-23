@@ -1,3 +1,5 @@
+#nullable enable
+using System;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
@@ -12,6 +14,10 @@ namespace ShinGetterMod.Patches;
 [HarmonyPatch(typeof(CardModel), nameof(CardModel.OnPlayWrapper))]
 internal static class ShinGetterCardPlayVoicePatch
 {
+    // The stable Beta minimum (0.113.0) does not expose this virtual getter.
+    private static readonly Func<EnchantmentModel, bool>? EnchantmentGainsBlock =
+        typeof(EnchantmentModel).GetProperty("GainsBlock")?.GetMethod?.CreateDelegate<Func<EnchantmentModel, bool>>();
+
     private static void Prefix(CardModel __instance)
     {
         ShinGetterVoiceService.TryPlayCardVoiceAtCardPlayStart(__instance);
@@ -21,14 +27,15 @@ internal static class ShinGetterCardPlayVoicePatch
             || __instance.Owner?.Character is not ShinGetter)
             return;
 
-        string trigger = __instance.Type switch
-        {
-            CardType.Attack => "Attack",
-            CardType.Skill when __instance.GainsBlock => "Block",
-            CardType.Skill or CardType.Power => "Cast",
-            _ => "Dash",
-        };
-
-        NShinGetterStaticVisuals.TryPlayCreatureActionAnimation(__instance.Owner.Creature, trigger);
+        NShinGetterStaticVisuals.TryPlayCreatureActionAnimation(__instance.Owner.Creature, AnimationTriggerFor(__instance));
     }
+
+    private static string AnimationTriggerFor(CardModel card) => card.Type switch
+    {
+        CardType.Attack => "Attack",
+        CardType.Skill when card.GainsBlock
+            || (card.Enchantment is { } enchantment && EnchantmentGainsBlock?.Invoke(enchantment) == true) => "Block",
+        CardType.Skill or CardType.Power => "Cast",
+        _ => "Dash",
+    };
 }
