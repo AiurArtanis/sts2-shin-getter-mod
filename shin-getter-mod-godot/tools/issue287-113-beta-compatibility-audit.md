@@ -108,3 +108,35 @@ retry, shutdown or multiplayer acceptance; those remain separately recorded.
 An independently packed candidate PCK was loaded in an empty Godot 4.5.1 project: 1008 files, 207 textures, 94 audio streams, 167 binary atlases and 52 JSON files, `failed=false`. No game was launched for this asset verification. Assets retain the previous approved runtime payload; no new artwork or sound was made or approved here.
 
 Full direct-member/override/Harmony/AccessTools/IL probe results and actual initialization are recorded separately when available. Do not interpret this section as clearance to release or shared-deploy the candidate.
+
+## 0.113.1 UI Atlas and Blitz Follow-up
+
+The mod bundled an import remap for the native `res://images/atlases/ui_atlas.png`
+path. Native mod loading replaces existing resource paths, so the native
+`ui_atlas.tpsheet` read the mod's 899x276 texture instead of its own 2056x4060
+texture. The mod atlas now uses `shin_getter_ui_atlas.png`; its pixel data,
+energy icon and BGM-control regions are unchanged. The packer and verifier reject
+the native atlas path, including its import/remap variants.
+
+The only new Blitz gameplay restriction is that Good Citizen Permit no longer
+rolls as a reward or free shop option. It has no effect in a mode with native
+free shop choices, which remain unchanged. The dedicated `NBlitzScreen` now
+refreshes the Getter background on direct selection and on the native random
+roll. Native Neow picks, straight-line map, shop limits and save flow are not
+replaced. Existing Standard, Dread and bond behavior remains unchanged.
+
+To compare a candidate against the official 0.113.1 package without starting the
+game, run from an empty Godot project:
+
+```powershell
+godot --headless --path $emptyProject --script "$tools/probe_issue287_ui_atlas.gd" -- $officialPck $modPck
+```
+
+The legacy package fails with the replacement dimensions and out-of-bounds
+regions; the candidate retains the five sampled native UI regions and loads the
+Getter energy atlas from the new path. This verifies resource resolution, not
+rendered pixels, a native Blitz run, or release acceptance.
+
+The new compatibility audit resolves both Blitz Harmony callbacks, the
+`_bgContainer` field and the relic's virtual slot against the official DLL.
+The prior frozen binding snapshot is not reused as the candidate fingerprint.

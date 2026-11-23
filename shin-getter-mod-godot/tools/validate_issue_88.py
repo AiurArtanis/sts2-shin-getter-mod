@@ -70,7 +70,7 @@ def validate_catalog_and_assets() -> None:
         if path.stat().st_size < 100_000:
             raise AssertionError(f"BGM asset is unexpectedly small: {path}")
 
-    atlas = ROOT / "images/atlases/ui_atlas.png"
+    atlas = ROOT / "images/atlases/shin_getter_ui_atlas.png"
     if not atlas.is_file() or read_png_size(atlas) != (899, 276):
         raise AssertionError("Compact UI atlas must be exactly 899x276.")
 
@@ -86,14 +86,14 @@ def validate_catalog_and_assets() -> None:
     energy_texture = ENERGY_TEXTURE.read_text(encoding="utf-8")
     require(
         energy_texture,
-        'path="res://images/atlases/ui_atlas.png"',
+        'path="res://images/atlases/shin_getter_ui_atlas.png"',
         "region = Rect2(828, 0, 71, 79)",
     )
 
     gate = RESOURCE_GATE.read_text(encoding="utf-8")
     for filename in sorted(ALBUM_FILES):
         require(gate, f'res://audio/music/shin_getter/album/{filename}')
-    require(gate, "res://images/atlases/ui_atlas.png")
+    require(gate, "res://images/atlases/shin_getter_ui_atlas.png")
 
 
 def validate_localization() -> None:
@@ -229,7 +229,7 @@ def validate_ui_and_preview() -> None:
     )
     require(
         controls,
-        "res://images/atlases/ui_atlas.png",
+        "res://images/atlases/shin_getter_ui_atlas.png",
         "CreateAtlasIcon(0)",
         "CreateAtlasIcon(1)",
         "new Rect2(0f, 0f, 276f, 276f)",

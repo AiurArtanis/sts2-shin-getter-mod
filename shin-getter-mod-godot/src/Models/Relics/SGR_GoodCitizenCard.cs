@@ -55,6 +55,10 @@ public sealed class SGR_GoodCitizenCard : ShinGetterRelicBase
         _freePurchaseActIndices = new List<int>();
     }
 
+    // Blitz shops use free choices rather than gold; do not roll an unusable permit.
+    protected override bool IsAllowedInternal(IRunState runState) =>
+        runState.GameMode != GameMode.Blitz && base.IsAllowedInternal(runState);
+
     public override decimal ModifyMerchantPrice(Player player, MerchantEntry entry, decimal originalPrice)
     {
         // Relic purchase reads Cost again after Obtain, before reporting goldSpent.

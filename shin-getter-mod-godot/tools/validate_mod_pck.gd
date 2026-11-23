@@ -1,5 +1,7 @@
 extends SceneTree
 
+const NATIVE_UI_ATLAS := "res://images/atlases/ui_atlas.png"
+
 var failed := false
 var resources: Array[String] = []
 
@@ -33,6 +35,8 @@ func _initialize() -> void:
 			ensure(FileAccess.get_sha256(entry["path"]) == entry.get("sha256", ""), "Packaged SHA-256 mismatch: " + str(entry["path"]))
 	for resource in resources:
 		ensure(expected.has(resource), "Unexpected packaged resource: " + resource)
+		ensure(resource.trim_suffix(".remap").trim_suffix(".import") != NATIVE_UI_ATLAS,
+			"Mod PCK overrides the native UI atlas: " + resource)
 		ensure(not resource.begins_with("res://src/") and not resource.begins_with("res://tools/") and not resource.begins_with("res://art_sources/"), "Development resource leaked")
 		ensure(not resource.get_file().begins_with("sprite_0") and not resource.ends_with(".md5"), "Source frame/editor metadata leaked")
 	ensure(resources.size() == expected.size(), "Package inventory count mismatch")

@@ -126,6 +126,32 @@ class Issue287SourceContracts(unittest.TestCase):
         self.assertIn("entry is BlitzMerchantEntry", source)
         self.assertIn("FreePurchaseActIndices.Add(Owner.RunState.CurrentActIndex)", source)
 
+    def test_blitz_does_not_roll_certificate(self):
+        source = read("Models/Relics/SGR_GoodCitizenCard.cs")
+        self.assertRegex(source, r"override bool IsAllowedInternal\(IRunState runState\)\s*=>\s*"
+                         r"runState.GameMode != GameMode.Blitz && base.IsAllowedInternal\(runState\)")
+
+    def test_blitz_direct_and_random_background(self):
+        source = read("Patches/ShinGetterVisualsPatch.cs")
+        patch = source.split("[HarmonyPatch(typeof(NBlitzScreen))]", 1)[1].split(
+            "[HarmonyPatch(typeof(NMultiplayerLoadGameScreen)", 1)[0]
+        self.assertIn('FieldRefAccess<NBlitzScreen, Control>("_bgContainer")', patch)
+        self.assertIn("nameof(NBlitzScreen.SelectCharacter), new[] { typeof(NCharacterSelectButton) }", patch)
+        self.assertIn('"DoRandomCharacterChange", new[] { typeof(Player) }', patch)
+        self.assertIn("if (charSelectButton.Character is ShinGetter)", patch)
+        self.assertIn("if (player.Character is ShinGetter)", patch)
+        self.assertIn("RefreshMarkedBackgrounds(BackgroundContainer(screen))", patch)
+
+    def test_mod_ui_atlas_uses_its_own_path(self):
+        path = "res://images/atlases/shin_getter_ui_atlas.png"
+        atlas = PROJECT / "images/atlases"
+        self.assertFalse((atlas / "ui_atlas.png").exists())
+        self.assertFalse((atlas / "ui_atlas.png.import").exists())
+        self.assertTrue((atlas / "shin_getter_ui_atlas.png").is_file())
+        self.assertIn(f'source_file="{path}"', (atlas / "shin_getter_ui_atlas.png.import").read_text())
+        self.assertIn(f'path="{path}"', (atlas / "ui_atlas.sprites/card/energy_shin_getter.tres").read_text())
+        self.assertIn(path, read("Nodes/Config/NShinGetterBgmPreviewControls.cs"))
+
     def test_blitz_native_presentation(self):
         source = read("Nodes/Screens/Shops/ShinGetterMerchantReactions.cs")
         self.assertGreaterEqual(source.count("GameMode.Blitz"), 2)

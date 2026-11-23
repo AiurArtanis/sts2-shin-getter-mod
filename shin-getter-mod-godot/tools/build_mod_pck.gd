@@ -4,6 +4,7 @@ const EXCLUDED_DIRS := [".git", ".godot", "Godot", "src", "lib", "obj", "bin", "
 const EXCLUDED_EXTENSIONS := ["cs", "csproj", "sln", "pdb", "dll", "cache", "md", "md5", "pck", "uid", "psd", "mp4", "gif", "py", "pyc", "ps1"]
 const IMPORTED_SOURCE_EXTENSIONS := ["png", "jpg", "jpeg", "webp", "svg", "wav", "mp3", "ogg"]
 const SOURCE_FREE_IMPORTERS := ["texture", "wav", "mp3", "oggvorbis"]
+const NATIVE_UI_ATLAS := "res://images/atlases/ui_atlas.png"
 
 var packer := PCKPacker.new()
 var packed: Dictionary = {}
@@ -135,6 +136,9 @@ func add_binary_atlas(resource: String) -> void:
 
 func add_file(resource: String, source: String) -> void:
 	if failed or packed.has(resource):
+		return
+	if not ensure(resource.trim_suffix(".remap").trim_suffix(".import") != NATIVE_UI_ATLAS,
+		"Mod PCK would override the native UI atlas: " + resource):
 		return
 	if not ensure(FileAccess.file_exists(source), "Missing resource dependency: " + source):
 		return

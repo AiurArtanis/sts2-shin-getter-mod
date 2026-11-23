@@ -2,7 +2,9 @@
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Multiplayer;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes.Screens.Blitz;
 using MegaCrit.Sts2.Core.Nodes.Screens.CharacterSelect;
 using ShinGetterMod.Models.Characters;
 using ShinGetterMod.Nodes.Screens;
@@ -41,6 +43,33 @@ internal static class ShinGetterRandomCharacterSelectBgLayoutPatch
         if (player.character is ShinGetter)
             ShinGetterCharacterSelectBgPatchHelpers.Refresh(__instance);
     }
+}
+
+[HarmonyPatch(typeof(NBlitzScreen))]
+internal static class ShinGetterBlitzCharacterSelectBgLayoutPatch
+{
+    private static readonly AccessTools.FieldRef<NBlitzScreen, Control> BackgroundContainer =
+        AccessTools.FieldRefAccess<NBlitzScreen, Control>("_bgContainer");
+
+    [HarmonyPostfix]
+    [HarmonyPatch(nameof(NBlitzScreen.SelectCharacter), new[] { typeof(NCharacterSelectButton) })]
+    private static void SelectCharacterPostfix(NBlitzScreen __instance, NCharacterSelectButton charSelectButton)
+    {
+        if (charSelectButton.Character is ShinGetter)
+            Refresh(__instance);
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("DoRandomCharacterChange", new[] { typeof(Player) })]
+    private static void RandomCharacterPostfix(NBlitzScreen __instance, Player player)
+    {
+        // The native method attaches the chosen background before its first await.
+        if (player.Character is ShinGetter)
+            Refresh(__instance);
+    }
+
+    private static void Refresh(NBlitzScreen screen) =>
+        NShinGetterCharacterSelectBackground.RefreshMarkedBackgrounds(BackgroundContainer(screen));
 }
 
 [HarmonyPatch(typeof(NMultiplayerLoadGameScreen), nameof(NMultiplayerLoadGameScreen.InitializeAsHost))]

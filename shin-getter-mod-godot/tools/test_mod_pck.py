@@ -82,6 +82,12 @@ def main(godot):
         assert 'Invalid packaging receipt' in validate(tampered, success=False)
         print('PASS: wrong package/file hash, incomplete inventory and invalid receipt fail closed')
 
+        reserved = source / 'images/atlases/ui_atlas.png.remap'
+        write(reserved, '[remap]\npath="res://images/test.svg"\n')
+        assert 'override the native UI atlas' in pack(success=False)
+        reserved.unlink()
+        print('PASS: a mod remap cannot replace the native UI atlas')
+
         write(source / 'images/missing.svg', '<svg/>')
         assert 'no import metadata' in pack(success=False)
         (source / 'images/missing.svg').unlink()

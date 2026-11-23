@@ -8,7 +8,7 @@ namespace ShinGetterMod.Nodes.Config;
 
 public partial class NShinGetterBgmPreviewControls : HBoxContainer
 {
-    private const string AtlasPath = "res://images/atlases/ui_atlas.png";
+    private const string AtlasPath = "res://images/atlases/shin_getter_ui_atlas.png";
     private const string LocTable = "settings_ui";
 
     private readonly NShinGetterBgmPreviewButton _playPauseButton;
