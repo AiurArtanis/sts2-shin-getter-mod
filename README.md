@@ -14,7 +14,8 @@
 
 ## 版本与下载
 
-- 游戏正式 `0.111.1`：使用 `shin-getter-mod-v1.4.0.zip`。本次不提供 113 Beta 包。
+- 游戏正式 `0.111.1`：[正式版 ZIP](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.4.0/shin-getter-mod-v1.4.0.zip)。
+- 游戏 `0.113 Beta`（实测 `0.113.1`）：[113 Beta ZIP](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.4.0/shin-getter-mod-v1.4.0-beta.113.zip)。不要混用两版文件。
 - 游戏正式 `0.109`：[历史正式包 v1.3.0](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.3.0/shin-getter-mod-v1.3.0.zip)。
 - 游戏 `0.111 Beta`：[历史 111 Beta 包 v1.3.0](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.3.0/shin-getter-mod-v1.3.0-beta.111.zip)。
 - 切换游戏版本时，完整替换 DLL、PCK、JSON 和 `mod_image.png`，再重启游戏；不要混用不同版本的文件。

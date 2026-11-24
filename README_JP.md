@@ -14,7 +14,8 @@
 
 ## 対応バージョンとダウンロード
 
-- ゲーム正式版 `0.111.1`：`shin-getter-mod-v1.4.0.zip` を使用してください。今回のリリースに113 Beta用パッケージは含まれません。
+- ゲーム正式版 `0.111.1`：[正式版 ZIP](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.4.0/shin-getter-mod-v1.4.0.zip)。
+- ゲーム `0.113 Beta`（`0.113.1` で動作確認）：[113 Beta 版 ZIP](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.4.0/shin-getter-mod-v1.4.0-beta.113.zip)。両パッケージのファイルを混在させないでください。
 - ゲーム正式版 `0.109`：[旧正式版v1.3.0](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.3.0/shin-getter-mod-v1.3.0.zip)。
 - ゲーム `0.111 Beta`：[旧v1.3.0の111 Beta用パッケージ](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.3.0/shin-getter-mod-v1.3.0-beta.111.zip)。
 - ゲームのバージョンを切り替えるときは、DLL、PCK、JSON、`mod_image.png` をまとめて差し替え、ゲームを再起動してください。別々の配布物のファイルを混在させないでください。

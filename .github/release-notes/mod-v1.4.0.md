@@ -1,5 +1,11 @@
 # v1.4.0
 
+请选择与你的游戏版本匹配的 ZIP，不要混用正式版和 Beta 文件。
+
+Download the ZIP that matches your game version. Do not mix files from the stable and Beta packages.
+
+ゲームのバージョンに合った ZIP を選び、正式版と Beta 版のファイルを混在させないでください。
+
 ## 简体中文
 
 ### 玩法
@@ -71,7 +77,12 @@ Targets game version 0.111.1 (stable).
 
 ## Package Contract
 
-- Tag: `mod-v1.4.0`
-- Stable archive: `shin-getter-mod-v1.4.0.zip` (game `0.111.1` stable)
+- [Stable ZIP](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.4.0/shin-getter-mod-v1.4.0.zip): game `0.111.1` stable; source tag `mod-v1.4.0`.
+- [113 Beta ZIP](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.4.0/shin-getter-mod-v1.4.0-beta.113.zip): game `0.113 Beta`, tested on `0.113.1`; source tag `mod-v1.4.0-beta.113`.
 - Archive root: `ShinGetterMod.dll`, `ShinGetterMod.pck`, `ShinGetterMod.json`, `mod_image.png`
-- No Beta package is included in this release.
+
+### 113 Beta
+
+- 修正卡牌边框和变形着色，适配极速模式（Blitz），修正 0.113.1 的格挡附魔识别。
+- Fixed card borders and form tinting, adapted the mod for Blitz, and fixed Block-granting enchantment detection on 0.113.1.
+- カード枠と変形時の色を修正し、Blitz に対応。0.113.1 でブロックを付与するエンチャントの判定も修正しました。
