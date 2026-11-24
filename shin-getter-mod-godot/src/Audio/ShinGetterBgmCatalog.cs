@@ -17,7 +17,8 @@ internal sealed record ShinGetterBgmTrack(
     string Id,
     string ResourcePath,
     string LocalizationKey,
-    string FallbackTitle);
+    string FallbackTitle,
+    float? LoopOffsetSeconds = null);
 
 internal static class ShinGetterBgmCatalog
 {
@@ -60,6 +61,7 @@ internal static class ShinGetterBgmCatalog
             Track(HeatsSts2TrackId, $"{AlbumRoot}/heats_sts2.mp3", "HEATS_STS2", "HEATS(slay the spire 2 ver.)"),
             Track(GetterRoboSts2TrackId, $"{AlbumRoot}/getter_robo_sts2.mp3", "GETTER_ROBO_STS2", "GETTER ROBO(slay the spire 2 ver.)"),
             Track("bravery_iron_saga", $"{AlbumRoot}/bravery_iron_saga.mp3", "BRAVERY_IRON_SAGA", "Bravery(Iron Saga Ver.)"),
+            Track("emperor_fragment", $"{AlbumRoot}/emperor_fragment.mp3", "EMPEROR_FRAGMENT", "Fragment of the Emperor", 21f),
             Track(RandomTrackId, string.Empty, "RANDOM", "Random"),
         };
 
@@ -87,6 +89,17 @@ internal static class ShinGetterBgmCatalog
         track.Id != DefaultTrackId
         && (track.Id == RandomTrackId || !string.IsNullOrWhiteSpace(track.ResourcePath));
 
+    internal static float? GetLoopOffset(string resourcePath)
+    {
+        foreach (ShinGetterBgmTrack track in Tracks)
+        {
+            if (string.Equals(track.ResourcePath, resourcePath, StringComparison.Ordinal))
+                return track.LoopOffsetSeconds;
+        }
+
+        return null;
+    }
+
     internal static float GetRelativeVolume(ShinGetterBgmCategory category) =>
         category == ShinGetterBgmCategory.Execution ? 1f : 0.70f;
 
@@ -94,10 +107,12 @@ internal static class ShinGetterBgmCatalog
         string id,
         string resourcePath,
         string localizationSuffix,
-        string fallbackTitle) =>
+        string fallbackTitle,
+        float? loopOffsetSeconds = null) =>
         new(
             id,
             resourcePath,
             $"SHIN_GETTER_CHUNIBYO.BGM.TRACK.{localizationSuffix}",
-            fallbackTitle);
+            fallbackTitle,
+            loopOffsetSeconds);
 }

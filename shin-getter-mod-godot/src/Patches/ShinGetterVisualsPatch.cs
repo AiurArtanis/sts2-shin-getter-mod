@@ -36,7 +36,7 @@ internal static class ShinGetterRandomCharacterSelectBgLayoutPatch
 {
     private static void Postfix(
         NCharacterSelectScreen __instance,
-        LobbyPlayer player,
+        StartRunLobbyPlayer player,
         bool isRandomCharacterResolution)
     {
         if (isRandomCharacterResolution && player.character is ShinGetter)

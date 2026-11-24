@@ -149,6 +149,11 @@ public abstract class ShinGetterCardBase : CardModel
             ["SGC_RescheduleTicket"] = new[] { "抽牌", "二号机" },
             ["SGC_PressureBreath"] = new[] { "格挡", "覆甲", "三号机" },
             ["SGC_WispCoordinate"] = new[] { "抽牌", "辐射", "二号机" },
+            ["SGC_TabletOfTruth"] = new[] { "消耗" },
+            ["SGC_TripleCyclone"] = new[] { "格挡", "真盖塔龙", "衰退" },
+            ["SGC_DrillMissile"] = new[] { "真盖塔龙", "分身" },
+            ["SGC_BrokenDrill"] = new[] { "衰退", "气力" },
+            ["SGC_Annotations"] = new[] { "一号机", "活力", "消耗" },
         };
 
     private static readonly IReadOnlyDictionary<string, IReadOnlySet<string>> ContextualHoverTipExclusions =
@@ -722,7 +727,7 @@ public abstract class ShinGetterCardBase : CardModel
         }
 
         await NotifyTransform(creature);
-        if (cardSource is SGC_ChangeAttack)
+        if (cardSource is SGC_ChangeAttack or SGC_ShiftStrike)
             await transformVoiceTask;
     }
 

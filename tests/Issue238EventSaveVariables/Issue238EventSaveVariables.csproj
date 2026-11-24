@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <VerifierSource Condition="'$(VerifierSource)' == ''">../../shin-getter-mod-godot/src/Events/ShinGetterEventSaveVerification.cs</VerifierSource>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Compile only these production helpers, never the mod/game project. -->
+    <Compile Include="$(VerifierSource)" Link="Production/ShinGetterEventSaveVerification.cs" />
+    <Compile Include="../../shin-getter-mod-godot/src/Events/ShinGetterEventMapSaveScope.cs" Link="Production/ShinGetterEventMapSaveScope.cs" />
+    <Reference Include="sts2"><HintPath>$(FormalGameDirectory)/sts2.dll</HintPath></Reference>
+    <Reference Include="GodotSharp"><HintPath>$(FormalGameDirectory)/GodotSharp.dll</HintPath></Reference>
+    <Reference Include="Sentry"><HintPath>$(FormalGameDirectory)/Sentry.dll</HintPath></Reference>
+    <Reference Include="Steamworks.NET"><HintPath>$(FormalGameDirectory)/Steamworks.NET.dll</HintPath></Reference>
+    <Reference Include="0Harmony"><HintPath>$(FormalGameDirectory)/0Harmony.dll</HintPath></Reference>
+  </ItemGroup>
+  <Target Name="RequireFormalDependencies" BeforeTargets="ResolveReferences">
+    <Error Condition="!Exists('$(FormalGameDirectory)/sts2.dll')" Text="Pass FormalGameDirectory with the unchanged official109 dependency files." />
+  </Target>
+</Project>

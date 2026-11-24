@@ -40,10 +40,10 @@ public sealed class SGC_Avalanche : ShinGetterCardBase
         decimal plating = HasForm(Owner, ShinGetterForm.Getter3)
             ? Owner.Creature.GetPower<PlatingPower>()?.Amount ?? 0
             : 0;
-        await CreatureCmd.LoseBlock(Owner.Creature, consumedBlock);
+        await CreatureCmd.LoseBlock(choiceContext, Owner.Creature, consumedBlock, null);
         await WaitForShinDragonSpecialEffect(1.2f);
         await DamageCmd.Attack(DynamicVars.CalculatedDamage.BaseValue + consumedBlock + plating)
-            .FromCard(this).Targeting(cardPlay.Target)
+            .FromCard(this, cardPlay).Targeting(cardPlay.Target)
             .BeforeDamage(() => ShinGetterCombatVfx.PlayAvalanche(cardPlay.Target))
             .WithHitFx("vfx/vfx_rock_shatter").Execute(choiceContext);
     }

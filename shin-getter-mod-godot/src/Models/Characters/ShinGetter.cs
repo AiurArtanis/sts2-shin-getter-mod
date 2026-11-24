@@ -4,6 +4,7 @@ using Godot;
 using MegaCrit.Sts2.Core.Animation;
 using MegaCrit.Sts2.Core.Bindings.MegaSpine;
 using MegaCrit.Sts2.Core.Entities.Characters;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Models.Relics;
@@ -72,7 +73,7 @@ public sealed class ShinGetter : CharacterModel
 		return new List<string> { "vfx/vfx_attack_slash", "vfx/vfx_bloody_impact", "vfx/vfx_attack_blunt" };
 	}
 
-	public override CreatureAnimator GenerateAnimator(MegaSprite controller)
+	public override CreatureAnimator GenerateAnimator(MegaSprite controller, Creature creature)
 	{
 		var idle = new AnimState("idle_loop", isLooping: true);
 		var animator = new CreatureAnimator(idle, controller);

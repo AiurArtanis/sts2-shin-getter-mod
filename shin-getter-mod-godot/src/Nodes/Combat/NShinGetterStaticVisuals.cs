@@ -159,8 +159,9 @@ public static partial class NShinGetterStaticVisuals
         await Cmd.CustomScaledWait(duration, duration, cancellationToken: cancellationToken);
     }
 
-    // Shift Strike waits for the recovery frames before it can transform or attack again.
-    public static async Task PlayCompleteCreatureAttack(Creature creature, Func<Task> onImpact)
+    // The next transform/attack cannot start until this attack's recovery frames finish.
+    public static async Task PlayCompleteCreatureAttack(
+        Creature creature, Func<Task> onImpact, float speedScale = 1f)
     {
         var creatureNode = NCombatRoom.Instance?.GetCreatureNode(creature);
         if (NonInteractiveMode.IsActive || SaveManager.Instance.PrefsSave.FastMode == FastModeType.Instant
@@ -176,7 +177,8 @@ public static partial class NShinGetterStaticVisuals
             await onImpact();
             return;
         }
-        NShinGetterSpriteAnimationStateMachine.QueueNextActionSpeed(sprite, 1f);
+        float actionSpeed = Math.Max(0.05f, speedScale);
+        NShinGetterSpriteAnimationStateMachine.QueueNextActionSpeed(sprite, actionSpeed);
         if (!NShinGetterSpriteAnimationStateMachine.TryStartFreshAttack(sprite, form.EnsureLoaded)
             || sprite.SpriteFrames is not { } frames)
         {
@@ -188,7 +190,7 @@ public static partial class NShinGetterStaticVisuals
         double fps = frames.GetAnimationSpeed(animation);
         double frameUnits = Enumerable.Range(0, frames.GetFrameCount(animation))
             .Sum(index => frames.GetFrameDuration(animation, index));
-        float duration = fps > 0d ? (float)(frameUnits / fps) : 0.5f;
+        float duration = fps > 0d ? (float)(frameUnits / fps / actionSpeed) : 0.5f / actionSpeed;
         await WaitForAttackPhase(creature, sprite, animation, frames, frameUnits * 0.5d, duration);
         await onImpact();
         await WaitForAttackPhase(creature, sprite, animation, frames, frameUnits, duration);

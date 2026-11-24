@@ -14,6 +14,8 @@ namespace ShinGetterMod.Models.Cards;
 
 public sealed class SGC_HedgehogTactic : ShinGetterCardBase
 {
+    public override bool GainsBlock => true;
+
     protected override IEnumerable<IHoverTip> ExtraHoverTips => WithContextualHoverTips(HoverTipFactory.FromPowerWithPowerHoverTips<VigorPower>()
         .Concat(HoverTipFactory.FromPowerWithPowerHoverTips<ThornsPower>()));
 

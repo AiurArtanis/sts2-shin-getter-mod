@@ -18,6 +18,8 @@ namespace ShinGetterMod.Models.Cards;
 /// </summary>
 public sealed class SGC_ShiftStrike : ShinGetterCardBase
 {
+    internal const float TransformSpeedScale = 1.5f;
+
     protected override HashSet<CardTag> CanonicalTags => new() { CardTag.Strike };
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new DamageVar(6m, ValueProp.Move) };
 
@@ -35,7 +37,7 @@ public sealed class SGC_ShiftStrike : ShinGetterCardBase
         if (IsUpgraded)
             await Transform(choiceContext, Owner, this);
 
-        var firstAttack = DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(target)
+        var firstAttack = DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this, cardPlay).Targeting(target)
             .WithNoAttackerAnim().WithHitFx("vfx/vfx_attack_slash");
         await NShinGetterStaticVisuals.PlayCompleteCreatureAttack(Owner.Creature,
             () => firstAttack.Execute(choiceContext));
@@ -52,7 +54,7 @@ public sealed class SGC_ShiftStrike : ShinGetterCardBase
             || combatState == null || !combatState.ContainsCreature(target) || !target.IsHittable)
             return;
 
-        var followup = DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(target)
+        var followup = DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this, cardPlay).Targeting(target)
             .WithNoAttackerAnim().WithHitFx("vfx/vfx_attack_slash");
         await NShinGetterStaticVisuals.PlayCompleteCreatureAttack(Owner.Creature,
             () => followup.Execute(choiceContext));

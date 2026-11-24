@@ -61,6 +61,7 @@ public sealed class SGP_FightingSpirit : PowerModel
                 Amount,
                 ValueProp.Move | ValueProp.SkipHurtAnim | CounterDamage,
                 Owner,
+                null,
                 null);
 
             if (dealer.IsDead)

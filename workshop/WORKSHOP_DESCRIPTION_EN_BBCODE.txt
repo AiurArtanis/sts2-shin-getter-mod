@@ -20,9 +20,9 @@ Pilot Shin Getter up the Spire. Switch between four forms and make transformatio
 
 [h2]Beyond combat[/h2]
 [list]
-[*][b]Event invasions:[/b] Discover Getter-team branches in familiar Spire events, plus the Getter Mandala event.
+[*][b]Event invasions:[/b] Explore Getter-team branches in familiar Spire events and discover Getter Mandala. The fourth wave adds 20 routes across 15 base-game events, available in single-player Shin Getter runs with Event Invasion enabled at the start.
 [*][b]Ancient bonds:[/b] Progress through dialogue and bonds between the three-pilot team and the Ancients in standard single-player Shin Getter runs, without changing the original events' combat, rewards, or scoring.
-[*][b]Battle presentation:[/b] Form animations, attack effects, character voices, and selectable BGM bring Getter's combat style to life.
+[*][b]Battle presentation:[/b] Form animations, attack effects, and character voices bring Getter's combat style to life. Chunibyo Config offers selectable BGM, including “Fragment of the Emperor”.
 [/list]
 
-Includes 77 cards, 13 relics, 6 potions, and 2 enchantments. Available in Simplified Chinese, English, and Japanese.
+Includes 82 cards (including event and generated cards), 16 relics, 7 potions, and 2 enchantments. Available in Simplified Chinese, English, and Japanese.

@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net9.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable></PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ShinGetterMod"><HintPath>../../build/ShinGetterMod.dll</HintPath></Reference>
+    <Reference Include="sts2"><HintPath>../../lib/sts2.dll</HintPath></Reference>
+    <Reference Include="0Harmony"><HintPath>../../lib/0Harmony.dll</HintPath></Reference>
+    <Reference Include="GodotSharp"><HintPath>$(UserProfile)/.nuget/packages/godotsharp/4.5.1/lib/net8.0/GodotSharp.dll</HintPath></Reference>
+  </ItemGroup>
+</Project>

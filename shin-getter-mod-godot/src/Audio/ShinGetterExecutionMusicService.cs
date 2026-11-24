@@ -41,6 +41,20 @@ internal static class ShinGetterExecutionMusicService
             TryStart(owner, card, allowFirstTurn: true);
     }
 
+    internal static void TryStartFromCheat(Player owner)
+    {
+        if (!ShinGetterChunibyoConfigService.IsBgmEnabled
+            || owner.Creature.CombatState is not CombatState combatState
+            || !CombatManager.Instance.IsInProgress || CombatManager.Instance.IsOverOrEnding)
+            return;
+        ExecutionMusicState state = States.GetOrCreateValue(combatState);
+        if (ReferenceEquals(_activeState, state) && state.IsActive
+            && state.Player is { } player && GodotObject.IsInstanceValid(player) && player.Playing)
+            return;
+        state.HasTriggered = true;
+        StartPlayback(state);
+    }
+
     private static void TryStart(Player owner, CardModel card, bool allowFirstTurn)
     {
         // Check before the per-combat one-shot is consumed or any random track is drawn.
@@ -162,7 +176,7 @@ internal static class ShinGetterExecutionMusicService
         }
 
         AudioStream stream = loadedStream.Duplicate() as AudioStream ?? loadedStream;
-        ShinGetterBgmPreviewService.EnableLoop(stream);
+        ShinGetterBgmPreviewService.EnableLoop(stream, trackPath);
         bool replacedEncounterMusic = ShinGetterEncounterMusicService.SuspendForExecution();
         ExecutionMusicState? previousState = _activeState;
         _activeState = null;

@@ -24,17 +24,17 @@ public sealed class SGC_GetterChop : ShinGetterCardBase
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
 
         for (int i = 0; i < 2 && cardPlay.Target.Block > 0m; i++)
-            await PlunderShield(cardPlay);
+            await PlunderShield(choiceContext, cardPlay);
 
-        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this, cardPlay).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
         if (cardPlay.Target.IsAlive)
         {
             await QueueAcceleratedFollowupAnimation();
-            await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+            await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue).FromCard(this, cardPlay).Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
         }
     }
 
-    private async Task PlunderShield(CardPlay cardPlay)
+    private async Task PlunderShield(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         decimal plunderLimit = Hook.ModifyBlock(
             CombatState,
@@ -47,7 +47,7 @@ public sealed class SGC_GetterChop : ShinGetterCardBase
         decimal stolenBlock = Math.Min(cardPlay.Target.Block, plunderLimit);
         if (stolenBlock > 0m)
         {
-            await CreatureCmd.LoseBlock(cardPlay.Target, stolenBlock);
+            await CreatureCmd.LoseBlock(choiceContext, cardPlay.Target, stolenBlock, Owner.Creature);
             await CreatureCmd.GainBlock(Owner.Creature, stolenBlock, ValueProp.Unpowered, cardPlay);
         }
     }

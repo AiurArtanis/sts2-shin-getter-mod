@@ -23,6 +23,7 @@ using MegaCrit.Sts2.Core.Models.Enchantments;
 using MegaCrit.Sts2.Core.Models.Events;
 using MegaCrit.Sts2.Core.Models.Monsters;
 using MegaCrit.Sts2.Core.Models.Relics;
+using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Rewards;
 using MegaCrit.Sts2.Core.Rooms;
@@ -33,6 +34,7 @@ using ShinGetterMod.Models.Cards;
 using ShinGetterMod.Models.Characters;
 using ShinGetterMod.Models.Potions;
 using ShinGetterMod.Models.Relics;
+using ShinGetterMod.Services;
 using ByrdpipRelic = MegaCrit.Sts2.Core.Models.Relics.Byrdpip;
 using LostWispEvent = MegaCrit.Sts2.Core.Models.Events.LostWisp;
 
@@ -118,7 +120,7 @@ internal static partial class ShinGetterEventInvasionService
             _ => Array.Empty<EventOption>(),
         };
 
-        foreach (EventOption invasion in invasions)
+        foreach (EventOption invasion in invasions.Concat(BuildFourthOptions(eventModel)))
         {
             if (options.All(option => option.TextKey != invasion.TextKey))
                 options.Add(invasion);
@@ -150,9 +152,7 @@ internal static partial class ShinGetterEventInvasionService
         if (!isInitialPage && !isTrialVerdictPage && !isTinkerCardTypePage)
             return false;
 
-        return owner.GetRelic<SGR_GetterFurnace>()?.EventInvasionEnabled
-            ?? owner.GetRelic<SGR_EmperorsFragment>()?.EventInvasionEnabled
-            ?? false;
+        return ShinGetterPlayerEventState.Get(owner).Enabled;
     }
 
     internal static bool IsEnteringSinglePlayerEventCombat(EventModel eventModel) =>
@@ -168,7 +168,8 @@ internal static partial class ShinGetterEventInvasionService
 
         PendingBattleSetups.Remove(owner);
         var combatState = owner.Creature.CombatState;
-        if (combatState == null || !ReferenceEquals(combatState.Encounter, pending.Encounter))
+        if (combatState == null
+            || !ReferenceEquals(combatState.Encounter?.CanonicalInstance, pending.Encounter))
             return;
 
         if (combatState.Encounter is not ByrdonisElite)
@@ -194,7 +195,7 @@ internal static partial class ShinGetterEventInvasionService
         var combatState = owner.Creature.CombatState;
         PlayerCombatState? playerCombatState = owner.PlayerCombatState;
         if (combatState == null
-            || !ReferenceEquals(combatState.Encounter, pending.Encounter)
+            || !ReferenceEquals(combatState.Encounter?.CanonicalInstance, pending.Encounter)
             || combatState.Encounter is not KnightsElite
             || playerCombatState == null
             || playerCombatState.TurnNumber != 1)
@@ -234,6 +235,11 @@ internal static partial class ShinGetterEventInvasionService
 
         Player owner = RequireOwner(eventModel);
         if (!owner.Deck.Cards.Any(card => card is ByrdonisEgg))
+            return;
+        // A player who merely took an egg via the native option did not choose to hatch it here.
+        if (owner.RunState.Players.Count > 1
+            && owner.RunState.CurrentMapPointHistoryEntry?.GetEntry(owner.NetId).EventChoices.Any(
+                choice => choice.Title.LocEntryKey == $"{Key("BYRDONIS_NEST", "RYOMA")}.title") != true)
             return;
 
         Finish(eventModel, PageKey("BYRDONIS_NEST", "RYOMA_HATCH"));
@@ -651,14 +657,7 @@ internal static partial class ShinGetterEventInvasionService
         Player owner = RequireOwner(eventModel);
         CardModel byrdonisEgg = owner.RunState.CreateCard<ByrdonisEgg>(owner);
         CardCmd.PreviewCardPileAdd(await CardPileCmd.Add(byrdonisEgg, PileType.Deck), 2f);
-        BeginEventBattle(
-            eventModel,
-            "BYRDONIS_NEST",
-            "RYOMA",
-            ModelDb.Encounter<ByrdonisElite>().ToMutable(),
-            Array.Empty<Reward>(),
-            PendingBattleSetup.ByrdonisNest,
-            shouldResumeAfterCombat: true);
+        BeginEventBattle(eventModel, "BYRDONIS_NEST", "RYOMA");
     }
 
     private static async Task InfestedAutomatonHayato(InfestedAutomaton eventModel)
@@ -717,13 +716,7 @@ internal static partial class ShinGetterEventInvasionService
 
     private static Task TrialRyoma(Trial eventModel)
     {
-        BeginEventBattle(
-            eventModel,
-            "TRIAL",
-            "RYOMA",
-            ModelDb.Encounter<KnightsElite>().ToMutable(),
-            Array.Empty<Reward>(),
-            PendingBattleSetup.Trial);
+        BeginEventBattle(eventModel, "TRIAL", "RYOMA");
         return Task.CompletedTask;
     }
 
@@ -840,23 +833,11 @@ internal static partial class ShinGetterEventInvasionService
             .CardsEnchanted.Add(new CardEnchantmentHistoryEntry(card, spiral.Id));
     }
 
-    private static void BeginEventBattle(
-        EventModel eventModel,
-        string eventName,
-        string pageName,
-        EncounterModel encounter,
-        IReadOnlyList<Reward> extraRewards,
-        PendingBattleSetup setup,
-        bool shouldResumeAfterCombat = false)
+    private static void BeginEventBattle(EventModel eventModel, string eventName, string pageName)
     {
         EventOption startFight = new(
             eventModel,
-            () => StartEventBattle(
-                eventModel,
-                encounter,
-                extraRewards,
-                setup,
-                shouldResumeAfterCombat),
+            () => StartEventBattle(eventModel),
             PageOptionKey(eventName, pageName, "START_FIGHT"),
             disableOnChosen: true,
             isProceed: true);
@@ -869,20 +850,54 @@ internal static partial class ShinGetterEventInvasionService
             });
     }
 
-    private static Task StartEventBattle(
-        EventModel eventModel,
-        EncounterModel encounter,
-        IReadOnlyList<Reward> extraRewards,
-        PendingBattleSetup setup,
-        bool shouldResumeAfterCombat)
+    private static Task StartEventBattle(EventModel eventModel)
     {
         Player owner = RequireOwner(eventModel);
-        PendingBattleSetups[owner] = (setup, encounter);
-        EventsEnteringSinglePlayerCombat.Add(eventModel);
+        IReadOnlyList<Player> players = owner.RunState.Players;
+        if (players.Count > 1 && RunManager.Instance.NetService.Type is NetGameType.Host or NetGameType.Client)
+        {
+            ShinGetterTrialCombatSync.Request(RunManager.Instance.EventSynchronizer, eventModel);
+            return Task.CompletedTask;
+        }
+
+        EventModel[] events = players.Count == 1
+            ? new[] { eventModel }
+            : ShinGetterTrialCombatSync.ResolveCombatEvents(RunManager.Instance.EventSynchronizer, eventModel, players);
+        StartCommittedEventBattle(eventModel, events, owner);
+        return Task.CompletedTask;
+    }
+
+    internal static void StartCommittedEventBattle(EventModel activeEvent, IReadOnlyList<EventModel> events, Player owner)
+    {
+        (PendingBattleSetup Setup, EncounterModel Encounter, bool ShouldResume) battle = activeEvent switch
+        {
+            Trial => (PendingBattleSetup.Trial, ModelDb.Encounter<KnightsElite>(), false),
+            ByrdonisNest => (PendingBattleSetup.ByrdonisNest, ModelDb.Encounter<ByrdonisElite>(), true),
+            _ => throw new InvalidOperationException("Unsupported mod event combat."),
+        };
+        PendingBattleSetups[owner] = (battle.Setup, battle.Encounter);
+        foreach (EventModel playerEvent in events)
+            EnterEventCombat(playerEvent, owner, battle.Encounter, Array.Empty<Reward>(), battle.ShouldResume);
+    }
+
+    internal static void ClearPendingEventBattleSetup(IEnumerable<Player> players)
+    {
+        foreach (Player player in players)
+            PendingBattleSetups.Remove(player);
+    }
+
+    private static void EnterEventCombat(
+        EventModel combatEvent,
+        Player owner,
+        EncounterModel encounter,
+        IReadOnlyList<Reward> extraRewards,
+        bool shouldResumeAfterCombat)
+    {
+        EventsEnteringSinglePlayerCombat.Add(combatEvent);
         try
         {
             EnterCombatWithoutExitingEventMethod.Invoke(
-                eventModel,
+                combatEvent,
                 new object[] { encounter, extraRewards, shouldResumeAfterCombat });
         }
         catch
@@ -892,9 +907,8 @@ internal static partial class ShinGetterEventInvasionService
         }
         finally
         {
-            EventsEnteringSinglePlayerCombat.Remove(eventModel);
+            EventsEnteringSinglePlayerCombat.Remove(combatEvent);
         }
-        return Task.CompletedTask;
     }
 
     private static Task LoseHp(Player owner, int amount) =>

@@ -464,7 +464,9 @@ internal static partial class ShinGetterEventInvasionService
         Issue89EventState state = Issue89States.GetOrCreateValue(eventModel);
         await PlayerCmd.LoseGold(50m, owner, GoldLossType.Spent);
         state.HasRerolledTinkerTypes = true;
-        await (Task)TinkerChooseCardTypeMethod.Invoke(eventModel, null)!;
+        ShinGetterEventReturnProse.Begin(eventModel, "TINKER_TIME.pages.CHOOSE_CARD_TYPE.description", PageKey("TINKER_TIME", "HAYATO"));
+        try { await (Task)TinkerChooseCardTypeMethod.Invoke(eventModel, null)!; }
+        catch { ShinGetterEventReturnProse.Clear(eventModel); throw; }
     }
 
     private static async Task ReflectionsTripleUnity(Reflections eventModel)
@@ -630,6 +632,7 @@ internal static partial class ShinGetterEventInvasionService
         await AddEventCard<SGC_RescheduleTicket>(owner);
         state.HasTakenRescheduleTicket = true;
         var options = (IReadOnlyList<EventOption>)EndlessConveyorGenerateOptionsMethod.Invoke(eventModel, null)!;
+        ShinGetterEventReturnProse.Begin(eventModel, "ENDLESS_CONVEYOR.pages.INITIAL.description", PageKey("ENDLESS_CONVEYOR", "HAYATO"));
         SetState(eventModel, "ENDLESS_CONVEYOR.pages.INITIAL.description", options);
     }
 

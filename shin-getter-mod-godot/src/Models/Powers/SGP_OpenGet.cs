@@ -134,7 +134,8 @@ public sealed class SGP_OpenGet : PowerModel
         decimal amount,
         ValueProp props,
         Creature? dealer,
-        CardModel? cardSource)
+        CardModel? cardSource,
+        CardPlay? cardPlay)
     {
         // Qualification must happen only after every additive, multiplicative, and cap hook.
         // The Hook.ModifyDamage postfix performs the actual avoidance using that final amount.

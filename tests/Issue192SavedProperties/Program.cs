@@ -1,6 +1,9 @@
 using System.Reflection;
 using System.Text.Json;
+using Godot;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Logging;
+using MegaCrit.Sts2.Core.Modding;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Multiplayer.Serialization;
 using MegaCrit.Sts2.Core.Saves.Runs;
@@ -14,26 +17,22 @@ static class Program
     private static int _assertions;
     private static readonly JsonSerializerOptions JsonOptions = new() { IncludeFields = true };
 
-    public static void Main(string[] args)
+    public static void Main()
     {
-        string mode = args.FirstOrDefault() ?? "standalone";
-        var originalIds = Ids();
-        if (mode == "pre-registered")
-        {
-            // Component-only simulation of BaseLib's existing native cache registration.
-            SavedPropertiesTypeCache.InjectTypeIntoCache(typeof(SGR_GoodCitizenCard));
-            SavedPropertiesTypeCache.InjectTypeIntoCache(typeof(ForeignSaveHolder));
-        }
-        var beforeIds = Ids();
         Assembly mod = typeof(Entry).Assembly;
-        Type? patch = mod.GetType("ShinGetterMod.Patches.ShinGetterSavedPropertiesPatch");
-        if (patch != null)
-            new Harmony("ShinGetterMod.Tests.Issue192").CreateClassProcessor(patch).Patch();
-
-        // Invoke the actual patched startup hook, with an empty model database and no game process.
-        ModelDb.InitIds();
         Type[] types = mod.GetTypes().Where(t => !t.IsAbstract && !t.ContainsGenericParameters
             && typeof(AbstractModel).IsAssignableFrom(t)).OrderBy(t => t.FullName, StringComparer.Ordinal).ToArray();
+        Require(mod.GetType("ShinGetterMod.Patches.ShinGetterSavedPropertiesPatch") == null, "obsolete cache hook remains");
+        // The standalone process has no Godot platform or print bridge.
+        var harmony = new Harmony("ShinGetterMod.Tests.Issue192");
+        harmony.Patch(AccessTools.Method(typeof(OS), nameof(OS.GetCmdlineArgs)), prefix: new HarmonyMethod(typeof(Program), nameof(NoEngineArgs)));
+        harmony.Patch(AccessTools.Method(typeof(OS), nameof(OS.HasFeature)), prefix: new HarmonyMethod(typeof(Program), nameof(NoEngineFeature)));
+        harmony.Patch(AccessTools.Method(typeof(ConsoleLogPrinter), nameof(ConsoleLogPrinter.Print)),
+            prefix: new HarmonyMethod(typeof(Program), nameof(PrintToConsole)));
+        AssemblyInfo.Init();
+        AssemblyInfo.ModMap!.Add(mod, new Mod { path = "fixture", state = ModLoadState.Loaded,
+            manifest = new ModManifest { id = "ShinGetterMod" }, assemblies = [mod] });
+        InitializeModels(types);
         int cached = 0;
         foreach (Type type in types)
         {
@@ -41,41 +40,26 @@ static class Program
                 .Where(p => p.GetCustomAttribute<SavedPropertyAttribute>() != null)
                 .OrderBy(p => p.GetCustomAttribute<SavedPropertyAttribute>()!.order)
                 .ThenBy(p => p.Name, StringComparer.Ordinal).ToArray();
-            var actual = SavedPropertiesTypeCache.GetJsonPropertiesForType(type);
+            var actual = ModelIdSerializationCache.GetJsonPropertiesForType(type);
             if (expected.Length == 0) continue;
             Require(actual != null, $"cache missing: {type.Name}");
             Require(actual!.Select(p => p.Name).SequenceEqual(expected.Select(p => p.Name)), $"properties/order: {type.Name}");
             cached++;
         }
-        foreach (var pair in beforeIds)
-            Require(Ids()[pair.Key] == pair.Value, $"existing ID changed: {pair.Key}");
-        foreach (var pair in originalIds)
-            Require(Ids()[pair.Key] == pair.Value, $"native ID changed: {pair.Key}");
-
         var firstIds = Ids();
-        int firstWidth = SavedPropertiesTypeCache.NetIdBitSize;
-        ModelDb.InitIds();
-        Require(Ids().OrderBy(x => x.Key).SequenceEqual(firstIds.OrderBy(x => x.Key)), "repeat registration changed IDs");
-        Require(SavedPropertiesTypeCache.NetIdBitSize == firstWidth, "repeat registration changed bit width");
+        int firstWidth = ModelIdSerializationCache.PropertyIdBitSize;
+        uint firstHash = ModelIdSerializationCache.Hash;
+        InitializeModels(types.Reverse().ToArray());
+        Require(Ids().SequenceEqual(firstIds), "reverse registration changed property IDs");
+        Require(ModelIdSerializationCache.PropertyIdBitSize == firstWidth, "reverse registration changed bit width");
+        Require(ModelIdSerializationCache.Hash == firstHash, "reverse registration changed the native registry hash");
 
-        if (mode == "post-registered")
-        {
-            foreach (Type type in types.Reverse()) SavedPropertiesTypeCache.InjectTypeIntoCache(type);
-            Require(Ids().OrderBy(x => x.Key).SequenceEqual(firstIds.OrderBy(x => x.Key)), "BaseLib-style repeat changed IDs");
-        }
+        int nameCount = firstIds.Length;
+        Require((1L << firstWidth) >= nameCount, "network bit width too small");
+        Require(firstWidth == 0 || (1L << (firstWidth - 1)) < nameCount, "network bit width not minimal");
+        for (int i = 0; i < firstIds.Length; i++)
+            Require(ModelIdSerializationCache.GetNetIdForPropertyName(firstIds[i]) == i, "network ID round trip");
 
-        int nameCount = Ids().Count;
-        if (mode == "pre-registered")
-            Require(firstWidth > 6, "coexistence fixture must exercise a network width boundary");
-        Require((1L << SavedPropertiesTypeCache.NetIdBitSize) >= nameCount, "network bit width too small");
-        Require(SavedPropertiesTypeCache.NetIdBitSize == 0 || (1L << (SavedPropertiesTypeCache.NetIdBitSize - 1)) < nameCount,
-            "network bit width not minimal");
-        foreach (var pair in Ids())
-            Require(SavedPropertiesTypeCache.GetPropertyNameForNetId(pair.Value) == pair.Key, "network ID round trip");
-
-        foreach (Type type in new[] { typeof(SGR_GoodCitizenCard), typeof(SGR_GetterFurnace),
-                     typeof(SGR_EmperorsFragment), typeof(SGC_InfiniteEvolution), typeof(SGR_AlloyPlate) })
-            ModelDb.Inject(type);
         var citizen = (SGR_GoodCitizenCard)ModelDb.Relic<SGR_GoodCitizenCard>().ToMutable();
         citizen.LastFreeFloor = 7;
         citizen.FreePurchaseActIndices.AddRange([0, 2]);
@@ -128,14 +112,28 @@ static class Program
         var alloy = (SGR_AlloyPlate)ModelDb.Relic<SGR_AlloyPlate>().ToMutable();
         alloy.IsWax = true;
         Require(SaveRoundTrip(alloy).GetRawText().Contains("IsWax"), "unlisted relic inherited property absent");
-        Console.WriteLine(JsonSerializer.Serialize(new { mode, assertions = _assertions, models = types.Length,
-            cached, names = nameCount, bitWidth = firstWidth, verdict = "PASS", scope = "managed-component-real-109-assemblies" }));
+        Console.WriteLine(JsonSerializer.Serialize(new { assertions = _assertions, models = types.Length,
+            cached, names = nameCount, bitWidth = firstWidth, verdict = "PASS", scope = "managed-component-real-0.111.1-assemblies" }));
     }
 
-    private static Dictionary<string, int> Ids()
+    private static void InitializeModels(Type[] types)
     {
-        _ = SavedPropertiesTypeCache.GetJsonPropertiesForType(typeof(SGR_GoodCitizenCard));
-        return new((Dictionary<string, int>)AccessTools.Field(typeof(SavedPropertiesTypeCache), "_propertyNameToNetIdMap").GetValue(null)!);
+        ModelDb.ResetForTest();
+        ModelIdSerializationCache.ResetForTest();
+        ModelDb.Init(types);
+        ModelIdSerializationCache.Init();
+        ModelDb.InitIds();
+    }
+
+    private static string[] Ids() => Enumerable.Range(0, ModelIdSerializationCache.MaxPropertyId + 1)
+        .Select(ModelIdSerializationCache.GetPropertyNameForNetId).ToArray();
+
+    private static bool NoEngineArgs(ref string[] __result) { __result = []; return false; }
+    private static bool NoEngineFeature(ref bool __result) { __result = false; return false; }
+    private static bool PrintToConsole(LogLevel logLevel, string text)
+    {
+        Console.WriteLine($"[{logLevel}] {text}");
+        return false;
     }
 
     private static JsonElement SaveRoundTrip(AbstractModel model)
@@ -150,17 +148,4 @@ static class Program
         if (!condition) throw new InvalidOperationException(message);
         _assertions++;
     }
-}
-
-sealed class ForeignSaveHolder
-{
-    [SavedProperty] public int ForeignCounter { get; set; }
-    [SavedProperty] public int ForeignA { get; set; }
-    [SavedProperty] public int ForeignB { get; set; }
-    [SavedProperty] public int ForeignC { get; set; }
-    [SavedProperty] public int ForeignD { get; set; }
-    [SavedProperty] public int ForeignE { get; set; }
-    [SavedProperty] public int ForeignF { get; set; }
-    [SavedProperty] public int ForeignG { get; set; }
-    [SavedProperty] public int ForeignH { get; set; }
 }

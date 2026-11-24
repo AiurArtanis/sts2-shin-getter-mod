@@ -9,14 +9,14 @@ using MegaCrit.Sts2.Core.Random;
 
 namespace ShinGetterMod.Patches;
 
-[HarmonyPatch(typeof(PotionFactory), "CreateRandomPotion")]
+[HarmonyPatch(typeof(PotionFactory), "CreateRandomPotions")]
 internal static class ShinGetterPotionFactoryWeightPatch
 {
     private static bool Prefix(
         IEnumerable<PotionModel> options,
         int count,
         Rng rng,
-        ref List<PotionModel> __result)
+        ref IEnumerable<PotionModel> __result)
     {
         var available = options.ToList();
         var selected = new List<PotionModel>();

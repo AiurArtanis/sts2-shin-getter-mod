@@ -18,7 +18,7 @@ def require(condition, message):
 
 manifest = json.loads((PROJECT / "ShinGetterMod.json").read_text(encoding="utf-8"))
 require(manifest["version"] == VERSION, "Stable manifest version mismatch")
-require(manifest["min_game_version"] == "0.107.0", "Stable minimum game version changed")
+require(manifest["min_game_version"] == "0.111.1", "Stable manifest must target official 0.111.1")
 history = json.loads((PROJECT / "ShinGetterMod/update_history.json").read_text(encoding="utf-8"))
 require(history[0]["version"] == VERSION and history[0]["localization_key"] == KEY, "Newest history entry mismatch")
 require(sum(item["version"] == VERSION for item in history) == 1, "Duplicate v1.3.0 history")
