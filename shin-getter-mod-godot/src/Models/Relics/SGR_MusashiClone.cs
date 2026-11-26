@@ -18,6 +18,7 @@ using MegaCrit.Sts2.Core.Saves.Runs;
 using ShinGetterMod.Audio;
 using ShinGetterMod.Models.Cards;
 using ShinGetterMod.Models.Powers;
+using ShinGetterMod.Patches;
 
 namespace ShinGetterMod.Models.Relics;
 
@@ -78,6 +79,8 @@ public sealed class SGR_MusashiClone : ShinGetterRelicBase
             || !CombatManager.Instance.IsInProgress
             || CombatManager.Instance.IsOverOrEnding)
             return amount;
+        if (ShinGetterDamagePreviewPatch.IsActive)
+            return 0m;
 
         _pendingShinDragon = target.HasPower<SGP_ShinForm>();
         _pendingForms = new[] { ShinGetterForm.Getter1, ShinGetterForm.Getter2, ShinGetterForm.Getter3 }

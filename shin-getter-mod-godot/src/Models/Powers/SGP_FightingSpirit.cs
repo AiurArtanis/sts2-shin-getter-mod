@@ -38,7 +38,7 @@ public sealed class SGP_FightingSpirit : PowerModel
 
     protected override object InitInternalData() => new Data();
 
-    public override async Task BeforeDamageReceived(PlayerChoiceContext choiceContext, Creature target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
+    internal async Task CounterBeforeDamageCalculation(PlayerChoiceContext choiceContext, Creature target, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
         if (target != Owner || dealer == null || dealer.Side == Owner.Side
             || dealer.IsDead || Owner.IsDead || !props.IsPoweredAttack() || Amount <= 0
@@ -109,7 +109,7 @@ internal static class FightingSpiritIncomingHpLossPatch
         CardModel? cardSource,
         ref decimal __result)
     {
-        // CreatureCmd does not recheck a dealer killed inside BeforeDamageReceived.
+        // CreatureCmd still settles the original hit after the counter kills its dealer.
         // Only this power's recorded counter kill overrides the final HP-loss result.
         if (target.GetPower<SGP_FightingSpirit>()?.CancelsIncomingDamage(target, props, dealer, cardSource) == true)
             __result = 0m;

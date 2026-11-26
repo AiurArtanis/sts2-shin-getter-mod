@@ -1,0 +1,19 @@
+<Project Sdk="Godot.NET.Sdk/4.5.1">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <GameDirectory Condition="'$(GameDirectory)' == ''">$(STS2_114_GAME_DIRECTORY)</GameDirectory>
+    <ModDll Condition="'$(ModDll)' == ''">$(STS2_114_MOD_DLL)</ModDll>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="sts2"><HintPath>$(GameDirectory)/sts2.dll</HintPath></Reference>
+    <Reference Include="0Harmony"><HintPath>$(GameDirectory)/0Harmony.dll</HintPath></Reference>
+    <Reference Include="ShinGetterMod"><HintPath>$(ModDll)</HintPath></Reference>
+    <Content Include="$(GameDirectory)/*.dll"
+             Exclude="$(GameDirectory)/GodotSharp*.dll;$(GameDirectory)/sts2.dll;$(GameDirectory)/0Harmony.dll"
+             Link="%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>
