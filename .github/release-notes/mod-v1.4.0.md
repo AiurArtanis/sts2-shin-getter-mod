@@ -78,11 +78,11 @@ Targets game version 0.111.1 (stable).
 ## Package Contract
 
 - [Stable ZIP](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.4.0/shin-getter-mod-v1.4.0.zip): game `0.111.1` stable; source tag `mod-v1.4.0`.
-- [113 Beta ZIP](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.4.0/shin-getter-mod-v1.4.0-beta.113.zip): game `0.113 Beta`, tested on `0.113.1`; source tag `mod-v1.4.0-beta.113`.
+- [114 Beta ZIP](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.4.0/shin-getter-mod-v1.4.0-beta.114.zip): game `0.114.0 Beta`; source tag `mod-v1.4.0-beta.114`.
 - Archive root: `ShinGetterMod.dll`, `ShinGetterMod.pck`, `ShinGetterMod.json`, `mod_image.png`
 
-### 113 Beta
+### 114 Beta
 
-- 修正卡牌边框和变形着色，适配极速模式（Blitz），修正 0.113.1 的格挡附魔识别。
-- Fixed card borders and form tinting, adapted the mod for Blitz, and fixed Block-granting enchantment detection on 0.113.1.
-- カード枠と変形時の色を修正し、Blitz に対応。0.113.1 でブロックを付与するエンチャントの判定も修正しました。
+- 适配 0.114.0：修正斗志反杀后的伤害结算，且伤害预览不再消耗不屈、活化蓝宝石和武藏的帽子效果。
+- Updated for 0.114.0: fixed damage resolution when Fighting Spirit kills the attacker. Damage previews no longer spend Indomitable, Activated Sapphire, or Musashi's Hat.
+- 0.114.0 に対応。闘志の反撃で攻撃者を倒した際のダメージ処理と、プレビューで不屈・活性化サファイア・武蔵の帽子の効果が消費される問題を修正しました。
