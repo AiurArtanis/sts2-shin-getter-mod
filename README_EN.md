@@ -15,7 +15,7 @@ Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter
 ## Versions and downloads
 
 - Game stable `0.111.1`: [stable ZIP](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.4.0/shin-getter-mod-v1.4.0.zip).
-- Game `0.113 Beta` (tested on `0.113.1`): [113 Beta ZIP](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.4.0/shin-getter-mod-v1.4.0-beta.113.zip). Do not mix files from the two packages.
+- Game `0.114.0 Beta`: [114 Beta ZIP](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.4.0/shin-getter-mod-v1.4.0-beta.114.zip). Do not mix files from the two packages.
 - Game stable `0.109`: [previous stable v1.3.0 package](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.3.0/shin-getter-mod-v1.3.0.zip).
 - Game `0.111 Beta`: [previous v1.3.0 package for 111 Beta](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.3.0/shin-getter-mod-v1.3.0-beta.111.zip).
 - When switching game versions, replace the DLL, PCK, JSON, and `mod_image.png` together, then restart the game. Do not mix files from different packages.
