@@ -8,15 +8,15 @@
 
 Shin Getter crosses space and time to climb the Spire. Shift between Shin Getter 1's explosive offense, Shin Getter 2's high-speed tactics, and Shin Getter 3's iron defense; then awaken Shin Getter Dragon and let the Getter Rays consume the tower. This is a gameplay character mod built around transformations, deckbuilding, and presentation, not a simple reskin.
 
-> Adaptation source `v1.4.0-beta.113` (game `0.113.0`, not released) · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> Beta adaptation source `v1.4.0-beta.114` (game `0.114.0`) · Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
-[v1.4.0 stable prerelease](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.4.0) · [113 adaptation: issue#287](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues/287) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+[v1.4.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.4.0) · [114 adaptation: issue#295](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues/295) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
 ## 🧪 Maintained Beta target
 
-- **Current maintenance target: 0.113 Beta.** This branch is being adapted and validated; no 113 package has been released. Track issue#287. A successful build alone does not establish runtime compatibility.
+- **Current Beta target: 0.114.0.** [114 Beta ZIP](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.4.0/shin-getter-mod-v1.4.0-beta.114.zip). Follow [issue#295](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues/295) for compatibility work. The 113 Beta branch is kept for reference.
 - Since 2026-11-13, 111-beta is historical only, with no new development, validation or releases. Existing branches and evidence are retained.
-- The [v1.4.0 stable prerelease](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.4.0) contains only the package for game version `0.111.1` (stable), not 113 Beta.
+- [v1.4.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.4.0) provides separate packages for game versions `0.111.1` stable and `0.114.0` Beta. Do not mix them.
 - Historical stable-109 `shin-getter-mod-v1.3.0.zip` and 111-Beta `shin-getter-mod-v1.3.0-beta.111.zip` are available in the [v1.3.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.3.0). They are not 113-compatible packages.
 - Do not mix the stable and Beta four-file packages. After switching game branches, replace the DLL, PCK, JSON, and `mod_image.png` together, then restart the game.
 - Known external compatibility issue: old `BaseLib 3.3.7` fails its `CardPileCmd.Add` transpiler on 0.111 Beta and can freeze manual card play. Update BaseLib, or disable BaseLib and dependent mods in the Beta environment.
@@ -39,7 +39,7 @@ Ki supports several high-impact effects. Evolution and Radiation create addition
 
 ## 📦 What's included
 
-Version `v1.4.0-beta.113` includes:
+Version `v1.4.0-beta.114` includes:
 
 - **82 cards** (including event and generated cards) spanning four forms and several core mechanics
 - **16 relics**, **7 potions**, and **2 enchantments**
@@ -53,9 +53,9 @@ In a standard single-player Shin Getter run, complete the shared first meeting, 
 
 These stories do not replace the original event's combat, rewards or scoring. The `sgd` console command inspects and constructs bond progress; changing progress is a debugging operation.
 
-## v1.4.0-beta.113
+## v1.4.0-beta.114
 
-Targets game 0.113 Beta (minimum 0.113.0). Do not mix these files with the stable package.
+Supports game 0.114.0 Beta. Fixes damage resolution when Fighting Spirit kills the attacker, and prevents damage previews from spending Indomitable, Activated Sapphire, or Musashi's Hat.
 
 ### Gameplay
 
@@ -179,7 +179,7 @@ Once the Workshop edition is available, enable it as follows:
 
 ### Requirements
 
-- This adaptation branch targets *Slay the Spire 2* `0.113.0` Beta and is still being validated, not released. Historical 109 and 111 packages must not be treated as 113-compatible.
+- This adaptation branch targets *Slay the Spire 2* `0.114.0` Beta. Do not use the historical 109, 111, or 113 packages with 114.
 - Godot `4.5.1 Mono`
 - .NET SDK `9`
 - A local game project directory that Godot can load for validation

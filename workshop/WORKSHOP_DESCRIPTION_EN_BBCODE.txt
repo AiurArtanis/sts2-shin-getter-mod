@@ -26,3 +26,5 @@ Pilot Shin Getter up the Spire. Switch between four forms and make transformatio
 [/list]
 
 Includes 82 cards (including event and generated cards), 16 relics, 7 potions, and 2 enchantments. Available in Simplified Chinese, English, and Japanese.
+
+[b]This package targets game version 0.114.0 Beta.[/b] Stable players should use the stable package from the Release. [url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.4.0/shin-getter-mod-v1.4.0-beta.114.zip]114 Beta download[/url]
