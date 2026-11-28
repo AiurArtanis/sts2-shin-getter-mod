@@ -2,8 +2,8 @@
 
 ## Beta Maintenance Target
 
-- Effective 2026-11-13, 113-beta replaces 111-beta as the only actively maintained Beta target. Retain 111 branches, releases, and evidence as historical records; do not add new 111 development, validation, or releases.
-- Track each Beta adaptation as a real GitHub sub-issue of issue#93. issue#287 tracks the v1.4.0 / game v0.113.0 adaptation.
+- The 114 Beta candidate starts from the released 113 Beta line. Retain earlier branches, releases, and evidence without modifying them for this adaptation.
+- Track each Beta adaptation as a real GitHub sub-issue of issue#93. issue#295 tracks the game v0.114.0 adaptation; issue#287 records the 113 Beta delivery.
 - Before changing code, compare the previous and new Beta APIs and audit direct calls, overrides, Harmony targets, and reflection against the official target DLL. Decompiled builds are analysis aids, not official runtime substitutes.
 - Record compilation, native runtime checks, human acceptance, and publishing separately. This development authorization does not permit shared deployment or release publication.
 

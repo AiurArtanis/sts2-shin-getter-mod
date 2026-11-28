@@ -16,12 +16,17 @@ internal sealed record Finding(string Category, string Id, string Status, string
 internal sealed class Audit
 {
     public const string OfficialSha = "62ECBE91093E1FA862DE4329AAC865209DCB297804CAF0F0520D92D8C0B4A9C3";
+    public const string Official114Sha = "DDCEB87905B6096DEB7BE975922E24A53992453675DF26DF545B1C46B1826C5D";
     public const string HarmonySha = "EF1898322C9F5C86DC1B0758B272A9C440823B4A41CA9A0B82A3AA6B3D206387";
     public const BindingFlags All = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
     public required string Root { get; init; }
     public required string Dependencies { get; init; }
     public required string ModPath { get; init; }
     public required string RunOutput { get; init; }
+    public bool Is114 { get; init; }
+    private int Issue => Is114 ? 295 : 287;
+    private int GameVersion => Is114 ? 114 : 113;
+    private string GameSha => Is114 ? Official114Sha : OfficialSha;
     public required Assembly Game { get; init; }
     public required Assembly Mod { get; init; }
     public required ModuleDefinition Metadata { get; init; }
@@ -127,7 +132,7 @@ internal sealed class Audit
     {
         foreach (var (path, before) in InitialHashes.ToArray())
             if (Hash(path) != before) Add("snapshot", Relative(path), "FAIL", path, Relative(path), "Input changed during audit; rerun on the final build.");
-        string jsonPath = Path.Combine(Root, ".github", "issue-287-dynamic-audit.json");
+        string jsonPath = Path.Combine(Is114 ? RunOutput : Path.Combine(Root, ".github"), $"issue-{Issue}-dynamic-audit.json");
         string mdPath = Path.ChangeExtension(jsonPath, ".md");
         var stable = Findings.Select(Stable).OrderBy(f => f.Category, StringComparer.Ordinal).ThenBy(f => f.Id, StringComparer.Ordinal).ThenBy(f => f.Source, StringComparer.Ordinal).ToArray();
         var counts = stable.GroupBy(f => f.Category).Select(g => new { category = g.Key, total = g.Count(),
@@ -151,11 +156,11 @@ internal sealed class Audit
             groups = graph.Select(g => new { category = g.Key, count = g.Value.Length, sha256 = Digest(JsonSerializer.Serialize(g.Value)) }).ToArray() };
         var expectedHarmonyRegistry = new
         {
-            schema = "issue287-expected-harmony-registry-v2",
+            schema = $"issue{Issue}-expected-harmony-registry-v2",
             interpretation = "DECLARATION CONTRACT ONLY. Match canonical signatures and owner, NOT product MVID/token/SHA. Actual engineering identities are in the external run report. Not proof of installed hooks.",
             owner = "Artanis.ShinGetterMod",
             status = unresolvedDeclarations.Length > 0 ? "INCOMPLETE_DECLARATIONS" : "ALL_DECLARED_TARGETS_RESOLVED",
-            gameSha256 = OfficialSha, semanticSha256 = semanticFingerprint.aggregateSha256,
+            gameSha256 = GameSha, semanticSha256 = semanticFingerprint.aggregateSha256,
             originalCount = ExpectedPatches.Select(p => p.Target).Distinct().Count(),
             callbackEdges = ExpectedPatches.Count,
             offlineParameterFailures = Findings.Count(f => f.Category == "harmony-parameters" && f.Status == "FAIL"),
@@ -171,13 +176,14 @@ internal sealed class Audit
             }).ToArray(),
             exclusions = new[] { "St2bs optional adapter: not loaded, not installed, outside ShinGetter-only native registry contract." }
         };
-        var doc = new { schema = "issue287-official113-semantic-audit-v2",
+        var doc = new { schema = $"issue{Issue}-official{GameVersion}-semantic-audit-v2",
             verdict = failures.Length > 0 ? "FAIL" : unresolved.Length > 0 ? "PARTIAL_WITH_UNRESOLVED" : "OFFLINE_GATES_PASS_ONLY",
             scope = "ShinGetterMod only. No game launch, no Entry.Init, no Patch/PatchAll, no gameplay, no shared deployment.",
-            pins = new { officialGameSha256 = OfficialSha, harmonySha256 = HarmonySha },
+            pins = new { officialGameSha256 = GameSha, harmonySha256 = HarmonySha },
             semanticFingerprint, normalizedBindingGraph = graph,
             counts, failures = failures.Length, unresolved = unresolved.Length, expectedHarmonyRegistry, findings = stable,
-            attribution = "Grid ReflectedType mismatch was introduced temporarily by this adaptation's derived-type lookup, not an original 111 mod defect or official 113 break. The preserved external first-failure evidence must not be reclassified." };
+            attribution = Is114 ? "114 audit is separate from the historical 113 audit."
+                : "Grid ReflectedType mismatch was introduced temporarily by this adaptation's derived-type lookup, not an original 111 mod defect or official 113 break. The preserved external first-failure evidence must not be reclassified." };
         var options = new JsonSerializerOptions { WriteIndented = true };
         bool matches = true;
         string checkResult = "NOT_REQUESTED";
@@ -195,7 +201,7 @@ internal sealed class Audit
         string runDirectory = Path.Combine(RunOutput, DateTime.UtcNow.ToString("yyyyMMddTHHmmssfffffffZ"));
         Directory.CreateDirectory(runDirectory);
         string runPath = Path.Combine(runDirectory, "run.json");
-        File.WriteAllText(runPath, JsonSerializer.Serialize(new { schema = "issue287-engineering-run-v2", generatedUtc = DateTime.UtcNow,
+        File.WriteAllText(runPath, JsonSerializer.Serialize(new { schema = $"issue{Issue}-engineering-run-v2", generatedUtc = DateTime.UtcNow,
             doc.verdict, doc.failures, doc.unresolved, checkResult, semanticFingerprint, inputs = Inputs,
             runtime = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription,
             actualModuleIdentities = new { product = new { sha256 = InitialHashes[ModPath], moduleMvid = Mod.ManifestModule.ModuleVersionId },
@@ -207,13 +213,16 @@ internal sealed class Audit
             Directory.CreateDirectory(Path.GetDirectoryName(jsonPath)!);
             File.WriteAllText(jsonPath, JsonSerializer.Serialize(doc, options), new UTF8Encoding(false));
         }
-        var md = new StringBuilder("# Issue 287: Official 113 Dynamic and Binary Audit\n\n");
+        var md = new StringBuilder($"# Issue {Issue}: Official {GameVersion} Dynamic and Binary Audit\n\n");
         md.AppendLine($"Verdict: **{doc.verdict}**. Failures: {failures.Length}; unresolved: {unresolved.Length}.");
         md.AppendLine("\nOffline evidence only. `Entry.Init`, native `PatchClassProcessor.Patch` / `PatchAll`, Godot callbacks and gameplay were NOT executed. No other mod was loaded.\n");
         md.AppendLine("## Stable Identity\n");
-        md.AppendLine($"- Official 113 DLL SHA-256 (strict pin): `{OfficialSha}`\n- Actual Harmony SHA-256 (strict pin): `{HarmonySha}`\n- Normalized binding graph SHA-256: `{semanticFingerprint.aggregateSha256}`");
-        md.AppendLine("\nProduct DLL SHA/MVID/tokens, PDB SHA, timestamps, absolute input paths and raw per-run evidence are external engineering facts, not future semantic equality gates. Run reports are written under `E:/Work/outputs/issue113-beta-20261113/dynamic-probe-run/` by default. `--check` compares only the normalized binding graph and never updates this baseline.");
-        md.AppendLine("\nGrid attribution: the temporary derived-type reflection lookup was introduced during this adaptation. Its ReflectedType mismatch was NOT a pre-existing 111 baseline defect or an official 113 break. The external first-FAIL snapshot is preserved separately.");
+        md.AppendLine($"- Official {GameVersion} DLL SHA-256 (strict pin): `{GameSha}`\n- Actual Harmony SHA-256 (strict pin): `{HarmonySha}`\n- Normalized binding graph SHA-256: `{semanticFingerprint.aggregateSha256}`");
+        md.AppendLine("\nProduct DLL SHA/MVID/tokens, PDB SHA, timestamps, absolute input paths and raw per-run evidence are external engineering facts, not future semantic equality gates. `--check` compares only the normalized binding graph and never updates this baseline.");
+        if (Is114)
+            md.AppendLine("\nUse `--official-114 --run-output <external-evidence-directory>` to keep this report separate from the 113 baseline.");
+        else
+            md.AppendLine("\nGrid attribution: the temporary derived-type reflection lookup was introduced during this adaptation. Its ReflectedType mismatch was NOT a pre-existing 111 baseline defect or an official 113 break. The external first-FAIL snapshot is preserved separately.");
         md.AppendLine("\n## Counts\n\n| Category | Total | PASS | FAIL | Unresolved | Scoped out |\n|---|---:|---:|---:|---:|---:|");
         foreach (var c in counts) md.AppendLine($"| {c.category} | {c.total} | {c.pass} | {c.fail} | {c.unresolved} | {c.scopedOut} |");
         md.AppendLine("\n## Findings and Boundaries\n");
@@ -243,7 +252,11 @@ internal static class Program
         string lib = Path.Combine(root, "shin-getter-mod-godot", "lib");
         string gamePath = Path.Combine(lib, "sts2.dll");
         string modPath = Path.GetFullPath(Option("--mod", Path.Combine(root, "shin-getter-mod-godot", "build", "ShinGetterMod.dll")));
-        if (Audit.Hash(gamePath) != Audit.OfficialSha) throw new InvalidOperationException("Official 113 SHA gate failed.");
+        bool is114 = args.Contains("--official-114", StringComparer.Ordinal);
+        if (is114 && !args.Contains("--run-output", StringComparer.Ordinal))
+            throw new ArgumentException("The 114 audit requires a separate --run-output directory.");
+        if (Audit.Hash(gamePath) != (is114 ? Audit.Official114Sha : Audit.OfficialSha))
+            throw new InvalidOperationException($"Official {(is114 ? 114 : 113)} SHA gate failed.");
         if (Audit.Hash(typeof(Harmony).Assembly.Location) != Audit.HarmonySha) throw new InvalidOperationException("Actual 0Harmony SHA gate failed.");
         AssemblyLoadContext.Default.Resolving += (_, name) =>
         {
@@ -256,10 +269,10 @@ internal static class Program
         resolver.AddSearchDirectory(deps);
         resolver.AddSearchDirectory(System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory());
         using var metadata = ModuleDefinition.ReadModule(modPath, new ReaderParameters { ReadSymbols = true, InMemory = true, AssemblyResolver = resolver });
-        var audit = new Audit { Root = root, Dependencies = deps, ModPath = modPath, Metadata = metadata,
+        var audit = new Audit { Root = root, Dependencies = deps, ModPath = modPath, Metadata = metadata, Is114 = is114,
             RunOutput = Path.GetFullPath(Option("--run-output", @"E:\Work\outputs\issue113-beta-20261113\dynamic-probe-run")),
             Game = AssemblyLoadContext.Default.LoadFromAssemblyPath(gamePath), Mod = AssemblyLoadContext.Default.LoadFromAssemblyPath(modPath) };
-        audit.Input(gamePath, "official113");
+        audit.Input(gamePath, is114 ? "official114" : "official113");
         audit.Input(modPath, "compiled-product");
         audit.Input(Path.ChangeExtension(modPath, ".pdb"), "compiled-product-symbols");
         audit.Input(typeof(Harmony).Assembly.Location, "executed-harmony");

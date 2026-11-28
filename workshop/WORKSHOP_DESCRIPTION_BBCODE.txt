@@ -26,3 +26,5 @@
 [/list]
 
 收录 82 张卡牌（含事件与衍生卡）、16 个遗物、7 瓶药水与 2 个附魔，支持简体中文、English、日本語。
+
+[b]该模组包适用于游戏 0.114.0 Beta。[/b] 正式版玩家请使用 Release 中的正式包。[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.4.0/shin-getter-mod-v1.4.0-beta.114.zip]114 Beta 下载[/url]

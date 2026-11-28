@@ -26,3 +26,5 @@
 [/list]
 
 イベント・生成カードを含むカード82枚、レリック16個、ポーション7種、エンチャント2種を収録。簡体字中国語・英語・日本語に対応。
+
+[b]このパッケージはゲーム 0.114.0 Beta 向けです。[/b] 正式版では、リリースにある正式版向けパッケージをご利用ください。[url=https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.4.0/shin-getter-mod-v1.4.0-beta.114.zip]114 Beta 版のダウンロード[/url]

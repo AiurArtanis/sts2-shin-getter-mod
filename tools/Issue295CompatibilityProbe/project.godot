@@ -1,0 +1,8 @@
+config_version=5
+
+[application]
+config/name="Issue295CompatibilityProbe"
+run/main_scene="res://Probe.tscn"
+
+[dotnet]
+project/assembly_name="Issue295CompatibilityProbe"

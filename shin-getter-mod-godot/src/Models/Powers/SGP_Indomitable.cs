@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
+using ShinGetterMod.Patches;
 
 namespace ShinGetterMod.Models.Powers;
 
@@ -32,7 +33,8 @@ public sealed class SGP_Indomitable : PowerModel
         if (delayedDamage <= 0 || Amount <= 0)
             return amount;
 
-        GetInternalData<Data>().pendingDamage += delayedDamage;
+        if (!ShinGetterDamagePreviewPatch.IsActive)
+            GetInternalData<Data>().pendingDamage += delayedDamage;
         return 0m;
     }
 

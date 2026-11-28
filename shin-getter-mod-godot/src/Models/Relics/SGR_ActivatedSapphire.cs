@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Relics;
+using ShinGetterMod.Patches;
 
 namespace ShinGetterMod.Models.Relics;
 
@@ -23,6 +24,8 @@ public sealed class SGR_ActivatedSapphire : ShinGetterEventRelic
     {
         if (target != Owner.Creature || target.CombatState == null || _hits >= 4 || amount < 1m)
             return amount;
+        if (ShinGetterDamagePreviewPatch.IsActive)
+            return _hits == 3 ? 0m : amount;
         _hits++;
         InvokeDisplayAmountChanged();
         if (_hits != 4) return amount;

@@ -8,15 +8,15 @@
 
 让真盖塔穿越时空登上高塔。切换一号机的爆发、二号机的高速战术与三号机的钢铁防线，最终唤醒真盖塔龙，用盖塔射线吞没高塔。这里不是换一张角色皮肤，而是一套围绕变形、卡组与演出共同运转的玩法型角色 Mod。
 
-> 当前适配源码 `v1.4.0-beta.113`（游戏 `0.113.0`，尚未发布）· Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> Beta 适配源码 `v1.4.0-beta.114`（游戏 `0.114.0`）· Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
-[v1.4.0 正式预发布](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.4.0) · [113适配进度：issue#287](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues/287) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+[v1.4.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.4.0) · [114 适配：issue#295](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues/295) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
 ## 🧪 Beta维护目标
 
-- **当前维护目标：0.113 Beta。** 本支线正在适配验证，尚无113发布包；进度见issue#287，不把编译通过等同运行兼容通过。
+- **当前 Beta 目标：0.114.0。** [114 Beta ZIP](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.4.0/shin-getter-mod-v1.4.0-beta.114.zip)，兼容适配见 [issue#295](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues/295)。113 Beta 源码分支仅作历史保留。
 - 自2026-11-13起，111-beta仅保留历史，不再追加开发、验证或发布，不删除旧分支和证据。
-- [v1.4.0 正式预发布](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.4.0)只含游戏正式 `0.111.1` 的包，不包含 113 Beta。
+- [v1.4.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.4.0) 同时提供游戏正式 `0.111.1` 和 `0.114.0` Beta 包。不要混用。
 - 已发布的历史正式109包 `shin-getter-mod-v1.3.0.zip` 与111 Beta包 `shin-getter-mod-v1.3.0-beta.111.zip` 均在[v1.3.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.3.0)；它们不是113兼容包。
 - 正式版与 Beta 版四件套不能混用。切换游戏分支后，请完整覆盖 DLL、PCK、JSON 与 `mod_image.png`，然后重启游戏。
 - 已知外部兼容问题：旧版 `BaseLib 3.3.7` 在 0.111 Beta 中会因 `CardPileCmd.Add` transpiler 失败导致出牌卡住。请更新 BaseLib，或在 Beta 环境中禁用 BaseLib 及依赖它的模组。
@@ -39,7 +39,7 @@
 
 ## 📦 内容一览
 
-`v1.4.0-beta.113` 收录：
+`v1.4.0-beta.114` 收录：
 
 - **82 张卡牌**（含事件与衍生卡），覆盖四种形态与多套核心机制
 - **16 个遗物**、**7 瓶药水**、**2 个附魔**
@@ -53,9 +53,9 @@
 
 这些故事不替换原事件的战斗、奖励或评分。`sgd`控制台指令用于查看和构造羁绊进度；修改进度属于调试操作。
 
-## v1.4.0-beta.113
+## v1.4.0-beta.114
 
-面向游戏 0.113 Beta（最低 0.113.0）；不能与正式版四件套混用。
+适配游戏 0.114.0 Beta，修正斗志反杀结算以及伤害预览消耗不屈、活化蓝宝石和武藏的帽子效果的问题。
 
 ### 玩法
 
@@ -179,7 +179,7 @@ v1.2.2同时提供正式109与0.111 Beta独立四件套；Beta版也包含本次
 
 ### 环境要求
 
-- 本适配支线面向《杀戮尖塔2》`0.113.0` Beta，仍在验证，未发布。历史109与111发布包不可当作113兼容包。
+- 本适配支线面向《杀戮尖塔2》`0.114.0` Beta；历史 109、111 和 113 包不能用于 114。
 - Godot `4.5.1 Mono`
 - .NET SDK `9`
 - 本机可供 Godot 加载验证的游戏工程目录

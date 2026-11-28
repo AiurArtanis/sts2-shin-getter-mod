@@ -8,15 +8,15 @@
 
 時空を越えた真ゲッターが塔へ挑みます。ゲッター1の爆発力、ゲッター2の高速戦術、ゲッター3の鉄壁の防御を切り替え、最後には真ゲッタードラゴンを目覚めさせてゲッターレイで塔を飲み込みましょう。単なる見た目変更ではなく、変形、デッキ構築、演出が一体となったプレイアブルキャラクターMODです。
 
-> 対応作業中のソース `v1.4.0-beta.113`（ゲーム `0.113.0`、未公開）· Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
+> ベータ版対応ソース `v1.4.0-beta.114`（ゲーム `0.114.0`）· Godot `4.5.1 Mono` · .NET `9` · 简体中文 / English / 日本語
 
-[v1.4.0 正式版のプレリリース](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.4.0) · [113対応状況：issue#287](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues/287) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
+[v1.4.0 リリース](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.4.0) · [114 対応状況：issue#295](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues/295) · [GitHub Issues](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues)
 
 ## 🧪 Betaの保守対象
 
-- **現在の保守対象は0.113 Betaです。** 本ブランチは対応・検証中で、113版パッケージは未公開です。進捗はissue#287を参照してください。ビルド成功だけでは実行時の互換性を保証しません。
+- **現在のベータ版対応対象は 0.114.0 です。** [114 Beta 版 ZIP](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/download/mod-v1.4.0/shin-getter-mod-v1.4.0-beta.114.zip)。対応状況は [issue#295](https://github.com/AiurArtanis/sts2-shin-getter-mod/issues/295) を参照してください。113 Beta ブランチは履歴として残しています。
 - 2026-11-13以降、111-betaは履歴としてのみ保持し、新規開発・検証・公開を行いません。既存ブランチと証拠は削除しません。
-- [v1.4.0 正式版のプレリリース](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.4.0)にはゲーム正式版 `0.111.1` 用のみを収録し、113 Beta 版は含まれません。
+- [v1.4.0 リリース](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.4.0) では、ゲーム正式版 `0.111.1` 用と `0.114.0` Beta 用を別々に配布しています。両者を混在させないでください。
 - 過去の正式109版`shin-getter-mod-v1.3.0.zip`と111 Beta版`shin-getter-mod-v1.3.0-beta.111.zip`は[v1.3.0 Release](https://github.com/AiurArtanis/sts2-shin-getter-mod/releases/tag/mod-v1.3.0)にあります。113対応パッケージではありません。
 - 正式版とBeta版の4ファイルを混在させないでください。ゲームブランチ切替後はDLL、PCK、JSON、`mod_image.png`をまとめて上書きし、ゲームを再起動してください。
 - 既知の外部互換性問題：旧版 `BaseLib 3.3.7` は0.111 Betaで `CardPileCmd.Add` のtranspilerに失敗し、カード使用時に停止する場合があります。BaseLibを更新するか、Beta環境ではBaseLibとその依存Modを無効にしてください。
@@ -39,7 +39,7 @@
 
 ## 📦 収録内容
 
-`v1.4.0-beta.113` の収録内容：
+`v1.4.0-beta.114` の収録内容：
 
 - 4形態と複数の主要メカニクスを扱う**カード82枚**（イベント・生成カードを含む）
 - **レリック16個**、**ポーション7種**、**エンチャント2種**
@@ -53,9 +53,9 @@
 
 元のイベントの戦闘・報酬・採点は置き換えません。`sgd`コンソールコマンドで絆の進行を確認・設定できますが、進行の変更はデバッグ操作です。
 
-## v1.4.0-beta.113
+## v1.4.0-beta.114
 
-ゲーム 0.113 Beta（最低 0.113.0）向け。正式版のファイルと混在させないでください。
+ゲーム 0.114.0 Beta に対応。闘志の反撃で攻撃者を倒した際のダメージ処理と、ダメージのプレビューで不屈、活性化サファイア、武蔵の帽子の効果が消費される問題を修正しました。
 
 ### ゲームプレイ
 
@@ -179,7 +179,7 @@ Workshop版の公開後は、次の手順でも有効化できます。
 
 ### 必要な環境
 
-- 本対応ブランチは『Slay the Spire 2』`0.113.0` Beta向けの検証中ソースで、未公開です。過去の109版・111版を113対応パッケージとして使用しないでください。
+- 本対応ブランチは『Slay the Spire 2』`0.114.0` Beta 向けです。過去の 109・111・113 向けパッケージは 114 では使用しないでください。
 - Godot `4.5.1 Mono`
 - .NET SDK `9`
 - Godotが検証用に読み込めるローカルのゲームプロジェクトディレクトリ

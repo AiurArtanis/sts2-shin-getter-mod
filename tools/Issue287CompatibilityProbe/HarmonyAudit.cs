@@ -10,7 +10,8 @@ internal static class HarmonyAudit
     private static readonly HashSet<string> ReviewedHelpers = new(StringComparer.Ordinal)
     {
         "ShinGetterAnnotationsPreparationPatch", "ShinGetterBondNativeLineFocusPatch", "ShinGetterCardMutationPowerPatch",
-        "ShinGetterFourthSelectionPresentationPatch", "ShinGetterEventReloadSavePatch", "ShinGetterMerchantWelcomePatch"
+        "ShinGetterFourthSelectionPresentationPatch", "ShinGetterEventReloadSavePatch", "ShinGetterMerchantWelcomePatch",
+        "ShinGetterFightingSpiritTimingPatch"
     };
 
     internal static void Run(Audit a)
@@ -175,6 +176,7 @@ internal static class HarmonyAudit
             "ShinGetterMerchantReactionPatch" => new[] { ("Play", "PlayPurchase"), ("ShowForPurchaseAttempt", "ShowPurchase") },
             "ShinGetterAnnotationsPreparationPatch" => new[] { ("SpendResources", "PrepareResources"), ("OnPlayWrapper", "PlayPreparedCard") },
             "ShinGetterEventReloadSavePatch" => new[] { ("IncrementNumReloads", "SaveReloadCheckpoint") },
+            "ShinGetterFightingSpiritTimingPatch" => new[] { ("AfterModifyingDamageAmount", "AfterModifiersThenCounter") },
             "ShinGetterFourthSelectionPresentationPatch" => target.DeclaringType!.Name.Contains("FromChooseACardScreen", StringComparison.Ordinal)
                 ? new[] { ("CardsSelected", "ChooseAfterPresentation") } : new[] { ("CardsSelected", "GridAfterPresentation") },
             _ => throw new InvalidOperationException("New transpiler requires an explicit layout contract: " + hook)
